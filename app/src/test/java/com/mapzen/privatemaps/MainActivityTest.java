@@ -1,4 +1,4 @@
-package com.ecgreb.robogradleplugin;
+package com.mapzen.privatemaps;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +26,6 @@ public class MainActivityTest {
 
     @Test
     public void shouldReturnAppName() throws Exception {
-        assertThat(activity.getString(R.string.app_name)).isEqualTo("Robo Gradle Plugin");
+        assertThat(activity.getString(R.string.app_name)).isEqualTo("Private Maps");
     }
 }
