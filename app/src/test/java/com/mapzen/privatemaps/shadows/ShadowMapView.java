@@ -20,6 +20,8 @@ import android.util.AttributeSet;
 public class ShadowMapView extends ShadowRelativeLayout {
     @RealObject MapView realMapView;
 
+    private static AndroidMap map;
+
     public void __constructor__(Context context, AttributeSet attributeSet) {
         AndroidGraphics.init();
         AndroidAssets.init(context);
@@ -32,8 +34,11 @@ public class ShadowMapView extends ShadowRelativeLayout {
     }
 
     public static Map getMockAndroidMap() {
-        AndroidMap map = Mockito.mock(AndroidMap.class);
-        Mockito.when(map.viewport()).thenReturn(new TestViewport());
+        if (map == null) {
+            map = Mockito.mock(AndroidMap.class);
+            Mockito.when(map.viewport()).thenReturn(new TestViewport());
+        }
+
         return map;
     }
 }
