@@ -23,9 +23,15 @@ android {
   }
 }
 
+repositories {
+  mavenLocal()
+}
+
 dependencies {
   compile 'com.android.support:appcompat-v7:22.0.0'
   compile 'org.jetbrains.kotlin:kotlin-stdlib:0.11.91'
+  compile 'org.oscim:vtm:0.5.9-SNAPSHOT'
+  compile 'org.oscim:vtm-android:0.5.9-SNAPSHOT@aar'
 
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.9.5'
