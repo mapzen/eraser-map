@@ -3,9 +3,8 @@ package com.mapzen.privatemaps;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.oscim.android.MapView;
-import org.oscim.tiling.TileSource;
+import org.oscim.layers.tile.vector.VectorTileLayer;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -39,6 +38,6 @@ public class MainActivityTest {
     @Test
     public void shouldHaveBaseMap() throws Exception {
         MapView mapView = (MapView) activity.findViewById(R.id.map);
-        Mockito.verify(mapView.map()).setBaseMap(Mockito.any(TileSource.class));
+        assertThat(mapView.map().layers().get(1)).isInstanceOf(VectorTileLayer.class);
     }
 }
