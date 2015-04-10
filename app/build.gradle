@@ -32,6 +32,7 @@ dependencies {
   compile 'org.jetbrains.kotlin:kotlin-stdlib:0.11.91'
   compile 'org.oscim:vtm:0.5.9-SNAPSHOT'
   compile 'org.oscim:vtm-android:0.5.9-SNAPSHOT@aar'
+  compile 'com.mapzen.android:map-burrito:0.1-SNAPSHOT@aar'
 
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.9.5'

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.ActionBarActivity
 import android.view.Menu
 import android.view.MenuItem
+import com.mapzen.mapburrito.MapBuilder
 import org.oscim.android.MapView
 import org.oscim.backend.AssetAdapter
 import org.oscim.layers.tile.buildings.BuildingLayer
@@ -19,10 +20,12 @@ public class MainActivity : ActionBarActivity() {
         setContentView(R.layout.activity_main)
 
         val mapView = findViewById(R.id.map) as MapView;
-        val baseLayer = mapView.map().setBaseMap(OSciMap4TileSource("https://vector.mapzen.com/osm/all"));
-        mapView.map().layers().add(BuildingLayer(mapView.map(), baseLayer));
-        mapView.map().layers().add(LabelLayer(mapView.map(), baseLayer));
-        mapView.map().setTheme(MapzenTheme());
+        MapBuilder(mapView.map())
+                .setBaseMap(OSciMap4TileSource("https://vector.mapzen.com/osm/all"))
+                .addBuildingLayer()
+                .addLabelLayer()
+                .setTheme(MapzenTheme())
+                .build();
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
