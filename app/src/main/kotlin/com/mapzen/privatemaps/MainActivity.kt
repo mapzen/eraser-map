@@ -21,10 +21,10 @@ public class MainActivity : ActionBarActivity() {
 
         val mapView = findViewById(R.id.map) as MapView;
         MapBuilder(mapView.map())
-                .setBaseMap(OSciMap4TileSource("https://vector.mapzen.com/osm/all"))
+                .setTileSource("https://vector.mapzen.com/osm/all")
                 .addBuildingLayer()
                 .addLabelLayer()
-                .setTheme(MapzenTheme())
+                .setTheme("styles/mapzen.xml")
                 .build();
     }
 
@@ -46,11 +46,5 @@ public class MainActivity : ActionBarActivity() {
         }
 
         return super.onOptionsItemSelected(item)
-    }
-
-    class MapzenTheme : ThemeFile {
-        override fun getRenderThemeAsStream(): InputStream? {
-            return AssetAdapter.readFileAsStream("styles/mapzen.xml");
-        }
     }
 }
