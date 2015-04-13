@@ -1,8 +1,12 @@
 package com.mapzen.privatemaps;
 
+import org.oscim.core.GeoPoint;
+import org.oscim.map.Animator;
 import org.oscim.map.Map;
 
 public class TestMap extends Map {
+    private Animator animator = new TestAnimator(this);
+
     @Override
     public void updateMap(boolean b) {
     }
@@ -29,5 +33,27 @@ public class TestMap extends Map {
     @Override
     public int getHeight() {
         return 0;
+    }
+
+    @Override
+    public Animator animator() {
+        return animator;
+    }
+
+    public static class TestAnimator extends Animator {
+        private static GeoPoint geoPoint;
+
+        public TestAnimator(Map map) {
+            super(map);
+        }
+
+        @Override
+        public synchronized void animateTo(GeoPoint geoPoint) {
+            TestAnimator.geoPoint = geoPoint;
+        }
+
+        public static GeoPoint getLastGeoPointAnimatedTo() {
+            return geoPoint;
+        }
     }
 }

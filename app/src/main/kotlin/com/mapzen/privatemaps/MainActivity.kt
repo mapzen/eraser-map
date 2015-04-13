@@ -1,10 +1,16 @@
 package com.mapzen.privatemaps
 
+import android.location.Location
 import android.os.Bundle
 import android.support.v7.app.ActionBarActivity
 import android.view.Menu
 import android.view.MenuItem
-import com.mapzen.mapburrito.MapBuilder
+import android.widget.ImageButton
+import android.widget.Toast
+import com.mapzen.android.lost.api.FusedLocationProviderApi
+import com.mapzen.android.lost.api.LocationServices
+import com.mapzen.android.lost.api.LostApiClient
+import com.mapzen.mapburrito.MapController
 import org.oscim.android.MapView
 import org.oscim.backend.AssetAdapter
 import org.oscim.layers.tile.buildings.BuildingLayer
@@ -18,14 +24,22 @@ public class MainActivity : ActionBarActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        LostApiClient.Builder(this).build().connect()
 
-        val mapView = findViewById(R.id.map) as MapView;
-        MapBuilder(mapView.map())
+        val mapView = findViewById(R.id.map) as MapView
+        val mapController = MapController(mapView.map())
                 .setTileSource("https://vector.mapzen.com/osm/all")
                 .addBuildingLayer()
                 .addLabelLayer()
                 .setTheme("styles/mapzen.xml")
-                .build();
+
+        val findMe = findViewById(R.id.find_me) as ImageButton
+        findMe.setOnClickListener({
+            val location = LocationServices.FusedLocationApi.getLastLocation()
+            if (location != null) {
+                mapController.centerOn(location)
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
