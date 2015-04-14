@@ -10,6 +10,7 @@ import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.mapburrito.MapController
 import org.oscim.android.MapView
+import org.oscim.tiling.source.OkHttpEngine
 
 public class MainActivity : ActionBarActivity() {
     private val BASE_TILE_URL = "https://vector.mapzen.com/osm/all"
@@ -52,6 +53,7 @@ public class MainActivity : ActionBarActivity() {
     private fun initMap() {
         mapView = findViewById(R.id.map) as MapView
         mapController = MapController(mapView?.map())
+                .setHttpEngine(OkHttpEngine.OkHttpFactory())
                 .setTileSource(BASE_TILE_URL)
                 .addBuildingLayer()
                 .addLabelLayer()

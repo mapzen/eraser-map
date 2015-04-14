@@ -11,9 +11,12 @@ import org.oscim.layers.marker.MarkerItem;
 import org.oscim.layers.tile.buildings.BuildingLayer;
 import org.oscim.layers.tile.vector.VectorTileLayer;
 import org.oscim.layers.tile.vector.labeling.LabelLayer;
+import org.oscim.tiling.source.OkHttpEngine;
+import org.oscim.tiling.source.oscimap4.OSciMap4TileSource;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLocationManager;
+import org.robolectric.util.ReflectionHelpers;
 
 import android.location.Location;
 import android.location.LocationManager;
@@ -69,6 +72,13 @@ public class MainActivityTest {
     @Test
     public void shouldHaveLabelLayer() throws Exception {
         assertThat(mapView.map().layers().get(3)).isInstanceOf(LabelLayer.class);
+    }
+
+    @Test
+    public void shouldSetHttpEngine() throws Exception {
+        VectorTileLayer baseLayer = activity.getMapController().getBaseLayer();
+        OSciMap4TileSource tileSource = ReflectionHelpers.getField(baseLayer, "mTileSource");
+        assertThat(tileSource.getHttpEngine()).isInstanceOf(OkHttpEngine.class);
     }
 
     @Test
