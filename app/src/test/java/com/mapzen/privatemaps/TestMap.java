@@ -1,6 +1,7 @@
 package com.mapzen.privatemaps;
 
 import org.oscim.core.GeoPoint;
+import org.oscim.core.MapPosition;
 import org.oscim.map.Animator;
 import org.oscim.map.Map;
 
@@ -50,6 +51,11 @@ public class TestMap extends Map {
         @Override
         public synchronized void animateTo(GeoPoint geoPoint) {
             TestAnimator.geoPoint = geoPoint;
+        }
+
+        @Override
+        public synchronized void animateTo(long duration, MapPosition mapPosition) {
+            TestAnimator.geoPoint = mapPosition.getGeoPoint();
         }
 
         public static GeoPoint getLastGeoPointAnimatedTo() {

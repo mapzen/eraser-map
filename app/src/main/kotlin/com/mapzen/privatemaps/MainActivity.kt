@@ -20,6 +20,7 @@ import org.oscim.tiling.source.oscimap4.OSciMap4TileSource
 import java.io.InputStream
 
 public class MainActivity : ActionBarActivity() {
+    val findMeIcon = android.R.drawable.star_big_on
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,14 +33,19 @@ public class MainActivity : ActionBarActivity() {
                 .addBuildingLayer()
                 .addLabelLayer()
                 .setTheme("styles/mapzen.xml")
+                .setCurrentLocationDrawable(getResources().getDrawable(findMeIcon))
+
+        centerOnCurrentLocation(mapController);
 
         val findMe = findViewById(R.id.find_me) as ImageButton
-        findMe.setOnClickListener({
-            val location = LocationServices.FusedLocationApi.getLastLocation()
-            if (location != null) {
-                mapController.centerOn(location)
-            }
-        })
+        findMe.setOnClickListener({ centerOnCurrentLocation(mapController) })
+    }
+
+    private fun centerOnCurrentLocation(mapController: MapController) {
+        val location = LocationServices.FusedLocationApi.getLastLocation()
+        if (location != null) {
+            mapController.showCurrentLocation(location).resetMapAndCenterOn(location)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
