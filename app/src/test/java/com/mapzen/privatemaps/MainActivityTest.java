@@ -110,6 +110,21 @@ public class MainActivityTest {
         assertThat(((TestMap) mapView.map()).isUpdated()).isTrue();
     }
 
+    @Test
+    public void onPause_shouldDisconnectLocationServices() throws Exception {
+        activity.onPause();
+        assertThat(LocationServices.FusedLocationApi).isNull();
+        assertThat(shadowLocationManager.getRequestLocationUpdateListeners()).isEmpty();
+    }
+
+    @Test
+    public void onResume_shouldReconnectLocationServices() throws Exception {
+        activity.onPause();
+        activity.onResume();
+        assertThat(LocationServices.FusedLocationApi).isNotNull();
+        assertThat(shadowLocationManager.getRequestLocationUpdateListeners()).isNotEmpty();
+    }
+
     private Location getTestLocation(double lat, double lng) {
         Location location = new Location("test");
         location.setLatitude(lat);

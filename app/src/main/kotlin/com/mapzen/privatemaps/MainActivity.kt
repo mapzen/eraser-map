@@ -18,16 +18,35 @@ public class MainActivity : ActionBarActivity() {
     private val LOCATION_UPDATE_INTERVAL_IN_MS = 1000L
     private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT = 0f
 
+    var locationClient : LostApiClient? = null
     var mapController : MapController? = null
     var mapView : MapView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        LostApiClient.Builder(this).build().connect()
+        initLocationClient()
         initMap()
         initFindMeButton()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        locationClient?.disconnect()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (locationClient?.isConnected() == false) {
+            locationClient?.connect()
+        }
+
         initLocationUpdates()
+    }
+
+    private fun initLocationClient() {
+        locationClient = LostApiClient.Builder(this).build()
+        locationClient?.connect()
     }
 
     private fun initMap() {
