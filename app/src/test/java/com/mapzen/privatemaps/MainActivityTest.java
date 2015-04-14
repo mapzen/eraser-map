@@ -15,7 +15,7 @@ import android.location.Location;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(PrivateMapsTestRunner.class)
-@Config(constants = BuildConfig.class)
+@Config(constants = BuildConfig.class, emulateSdk = 21)
 public class MainActivityTest {
     private MainActivity activity;
 
