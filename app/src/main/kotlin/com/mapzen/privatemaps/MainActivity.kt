@@ -72,8 +72,7 @@ public class MainActivity : ActionBarActivity() {
                 .setSmallestDisplacement(LOCATION_UPDATE_SMALLEST_DISPLACEMENT)
 
         LocationServices.FusedLocationApi.requestLocationUpdates(locationRequest) {
-            location: Location ->  mapController?.showCurrentLocation(location)
-            mapView?.map()?.updateMap(true)
+            location: Location ->  mapController?.showCurrentLocation(location)?.update()
         }
     }
 
