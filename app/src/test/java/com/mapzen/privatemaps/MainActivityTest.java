@@ -7,26 +7,38 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.oscim.android.MapView;
 import org.oscim.layers.marker.ItemizedLayer;
+import org.oscim.layers.marker.MarkerItem;
 import org.oscim.layers.tile.buildings.BuildingLayer;
 import org.oscim.layers.tile.vector.VectorTileLayer;
 import org.oscim.layers.tile.vector.labeling.LabelLayer;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLocationManager;
 
 import android.location.Location;
+import android.location.LocationManager;
 
-import static com.mapzen.privatemaps.TestMap.TestAnimator.getLastGeoPointAnimatedTo;
+import static android.content.Context.LOCATION_SERVICE;
+import static com.mapzen.privatemaps.TestMap.TestAnimator.getLastGeoPoint;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
+import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(PrivateMapsTestRunner.class)
 @Config(constants = BuildConfig.class, emulateSdk = 21)
 public class MainActivityTest {
     private MainActivity activity;
+    private LocationManager locationManager;
+    private ShadowLocationManager shadowLocationManager;
+    private MapView mapView;
 
     @Before
     public void setUp() throws Exception {
         activity = Robolectric.setupActivity(MainActivity.class);
+        locationManager = (LocationManager) activity.getSystemService(LOCATION_SERVICE);
+        shadowLocationManager = shadowOf(locationManager);
+        mapView = (MapView) activity.findViewById(R.id.map);
+        TestMap.TestAnimator.clearLastGeoPoint();
     }
 
     @Test
@@ -46,19 +58,16 @@ public class MainActivityTest {
 
     @Test
     public void shouldHaveBaseMap() throws Exception {
-        MapView mapView = (MapView) activity.findViewById(R.id.map);
         assertThat(mapView.map().layers().get(1)).isInstanceOf(VectorTileLayer.class);
     }
 
     @Test
     public void shouldHaveBuildingLayer() throws Exception {
-        MapView mapView = (MapView) activity.findViewById(R.id.map);
         assertThat(mapView.map().layers().get(2)).isInstanceOf(BuildingLayer.class);
     }
 
     @Test
     public void shouldHaveLabelLayer() throws Exception {
-        MapView mapView = (MapView) activity.findViewById(R.id.map);
         assertThat(mapView.map().layers().get(3)).isInstanceOf(LabelLayer.class);
     }
 
@@ -67,8 +76,8 @@ public class MainActivityTest {
         LocationServices.FusedLocationApi.setMockMode(true);
         LocationServices.FusedLocationApi.setMockLocation(getTestLocation(1.0, 2.0));
         activity.findViewById(R.id.find_me).performClick();
-        assertThat(getLastGeoPointAnimatedTo().getLatitude()).isCloseTo(1.0, within(0.0001));
-        assertThat(getLastGeoPointAnimatedTo().getLongitude()).isEqualTo(2.0, within(0.0001));
+        assertThat(getLastGeoPoint().getLatitude()).isCloseTo(1.0, within(0.0001));
+        assertThat(getLastGeoPoint().getLongitude()).isEqualTo(2.0, within(0.0001));
     }
 
     @Test
@@ -76,8 +85,29 @@ public class MainActivityTest {
         LocationServices.FusedLocationApi.setMockMode(true);
         LocationServices.FusedLocationApi.setMockLocation(getTestLocation(1.0, 2.0));
         activity.findViewById(R.id.find_me).performClick();
-        MapView mapView = (MapView) activity.findViewById(R.id.map);
         assertThat(mapView.map().layers().get(4)).isInstanceOf(ItemizedLayer.class);
+    }
+
+    @Test
+    public void shouldRequestLocationUpdates() throws Exception {
+        assertThat(shadowLocationManager.getRequestLocationUpdateListeners()).isNotEmpty();
+    }
+
+    @Test
+    public void shouldMarkerPositionOnLocationUpdate() throws Exception {
+        LocationServices.FusedLocationApi.setMockMode(true);
+        LocationServices.FusedLocationApi.setMockLocation(getTestLocation(1.0, 2.0));
+        ItemizedLayer itemizedLayer = (ItemizedLayer) mapView.map().layers().get(4);
+        MarkerItem item = itemizedLayer.removeItem(0);
+        assertThat(item.geoPoint.getLatitude()).isEqualTo(1.0);
+        assertThat(item.geoPoint.getLongitude()).isEqualTo(2.0);
+    }
+
+    @Test
+    public void shouldUpdateMapOnLocationUpdate() throws Exception {
+        LocationServices.FusedLocationApi.setMockMode(true);
+        LocationServices.FusedLocationApi.setMockLocation(getTestLocation(1.0, 2.0));
+        assertThat(((TestMap) mapView.map()).isUpdated()).isTrue();
     }
 
     private Location getTestLocation(double lat, double lng) {

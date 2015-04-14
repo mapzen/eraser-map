@@ -7,9 +7,11 @@ import org.oscim.map.Map;
 
 public class TestMap extends Map {
     private Animator animator = new TestAnimator(this);
+    private boolean updated = false;
 
     @Override
     public void updateMap(boolean b) {
+        updated = b;
     }
 
     @Override
@@ -41,6 +43,10 @@ public class TestMap extends Map {
         return animator;
     }
 
+    public boolean isUpdated() {
+        return updated;
+    }
+
     public static class TestAnimator extends Animator {
         private static GeoPoint geoPoint;
 
@@ -58,8 +64,12 @@ public class TestMap extends Map {
             TestAnimator.geoPoint = mapPosition.getGeoPoint();
         }
 
-        public static GeoPoint getLastGeoPointAnimatedTo() {
+        public static GeoPoint getLastGeoPoint() {
             return geoPoint;
+        }
+
+        public static void clearLastGeoPoint() {
+            geoPoint = null;
         }
     }
 }
