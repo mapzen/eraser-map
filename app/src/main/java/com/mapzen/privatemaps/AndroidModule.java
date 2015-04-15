@@ -5,6 +5,7 @@ import com.mapzen.android.lost.api.LostApiClient;
 import com.squareup.okhttp.HttpResponseCache;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 
 import javax.inject.Singleton;
 
@@ -27,7 +28,7 @@ public class AndroidModule {
         return new LostApiClient.Builder(application).build();
     }
 
-    @Provides @Singleton HttpResponseCache provideTileCache() {
+    @Provides @Singleton @Nullable HttpResponseCache provideTileCache() {
         return new TileCacheBuilder(application).build();
     }
 }
