@@ -21,10 +21,10 @@ public class MainActivity : ActionBarActivity() {
     private val LOCATION_UPDATE_INTERVAL_IN_MS = 1000L
     private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT = 0f
 
-    var mapController : MapController? = null
-    var locationClient : LostApiClient? = null
+    var mapController: MapController? = null
+    var locationClient: LostApiClient? = null
     [Inject] set
-    var tileCache : HttpResponseCache? = null
+    var tileCache: HttpResponseCache? = null
     [Inject] set
 
     override fun onCreate(savedInstanceState: Bundle?) {
