@@ -135,6 +135,16 @@ public class MainActivityTest {
         assertThat(shadowLocationManager.getRequestLocationUpdateListeners()).isNotEmpty();
     }
 
+    @Test
+    public void shouldInjectLocationClient() throws Exception {
+        assertThat(activity.getLocationClient()).isNotNull();
+    }
+
+    @Test
+    public void shouldInjectTileCache() throws Exception {
+        assertThat(activity.getTileCache()).isNotNull();
+    }
+
     private Location getTestLocation(double lat, double lng) {
         Location location = new Location("test");
         location.setLatitude(lat);

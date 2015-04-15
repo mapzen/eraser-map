@@ -7,6 +7,8 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 public class PrivateMapsApplication extends Application {
+    public static final String TAG = "PrivateMaps";
+
     @Singleton
     @Component(modules = AndroidModule.class)
     public interface ApplicationComponent {

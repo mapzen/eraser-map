@@ -9,6 +9,7 @@ import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.mapburrito.MapController
+import com.squareup.okhttp.HttpResponseCache
 import org.oscim.android.MapView
 import org.oscim.tiling.source.OkHttpEngine
 import javax.inject.Inject
@@ -22,6 +23,8 @@ public class MainActivity : ActionBarActivity() {
 
     var mapController : MapController? = null
     var locationClient : LostApiClient? = null
+    [Inject] set
+    var tileCache : HttpResponseCache? = null
     [Inject] set
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +50,7 @@ public class MainActivity : ActionBarActivity() {
     private fun initMapController() {
         val mapView = findViewById(R.id.map) as MapView
         mapController = MapController(mapView.map())
-                .setHttpEngine(OkHttpEngine.OkHttpFactory())
+                .setHttpEngine(OkHttpEngine.OkHttpFactory(tileCache))
                 .setTileSource(BASE_TILE_URL)
                 .addBuildingLayer()
                 .addLabelLayer()
