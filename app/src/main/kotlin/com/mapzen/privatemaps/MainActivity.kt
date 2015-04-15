@@ -11,6 +11,7 @@ import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.mapburrito.MapController
 import org.oscim.android.MapView
 import org.oscim.tiling.source.OkHttpEngine
+import javax.inject.Inject
 
 public class MainActivity : ActionBarActivity() {
     private val BASE_TILE_URL = "https://vector.mapzen.com/osm/all"
@@ -19,16 +20,18 @@ public class MainActivity : ActionBarActivity() {
     private val LOCATION_UPDATE_INTERVAL_IN_MS = 1000L
     private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT = 0f
 
-    var locationClient : LostApiClient? = null
     var mapController : MapController? = null
-    var mapView : MapView? = null
+    var locationClient : LostApiClient? = null
+    [Inject] set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initLocationClient()
-        initMap()
+        (getApplication() as PrivateMapsApplication).component().inject(this)
+        locationClient?.connect()
+        initMapController()
         initFindMeButton()
+        centerOnCurrentLocation()
     }
 
     override fun onPause() {
@@ -38,29 +41,18 @@ public class MainActivity : ActionBarActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (locationClient?.isConnected() == false) {
-            locationClient?.connect()
-        }
-
         initLocationUpdates()
     }
 
-    private fun initLocationClient() {
-        locationClient = LostApiClient.Builder(this).build()
-        locationClient?.connect()
-    }
-
-    private fun initMap() {
-        mapView = findViewById(R.id.map) as MapView
-        mapController = MapController(mapView?.map())
+    private fun initMapController() {
+        val mapView = findViewById(R.id.map) as MapView
+        mapController = MapController(mapView.map())
                 .setHttpEngine(OkHttpEngine.OkHttpFactory())
                 .setTileSource(BASE_TILE_URL)
                 .addBuildingLayer()
                 .addLabelLayer()
                 .setTheme(STYLE_PATH)
                 .setCurrentLocationDrawable(getResources().getDrawable(FIND_ME_ICON))
-
-        centerOnCurrentLocation()
     }
 
     private fun initFindMeButton() {
@@ -68,18 +60,22 @@ public class MainActivity : ActionBarActivity() {
     }
 
     private fun initLocationUpdates() {
+        if (locationClient?.isConnected() == false) {
+            locationClient?.connect()
+        }
+
         val locationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
                 .setSmallestDisplacement(LOCATION_UPDATE_SMALLEST_DISPLACEMENT)
 
-        LocationServices.FusedLocationApi.requestLocationUpdates(locationRequest) {
+        LocationServices.FusedLocationApi?.requestLocationUpdates(locationRequest) {
             location: Location ->  mapController?.showCurrentLocation(location)?.update()
         }
     }
 
     private fun centerOnCurrentLocation() {
-        val location = LocationServices.FusedLocationApi.getLastLocation()
+        val location = LocationServices.FusedLocationApi?.getLastLocation()
         if (location != null) {
             mapController?.showCurrentLocation(location)?.resetMapAndCenterOn(location)
         }
