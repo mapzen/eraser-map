@@ -15,7 +15,7 @@ import org.oscim.tiling.source.OkHttpEngine
 import javax.inject.Inject
 
 public class MainActivity : ActionBarActivity() {
-    private val BASE_TILE_URL = "https://vector.mapzen.com/osm/all"
+    private val BASE_TILE_URL = "http://vector.dev.mapzen.com/osm/all"
     private val STYLE_PATH = "styles/mapzen.xml"
     private val FIND_ME_ICON = android.R.drawable.star_big_on
     private val LOCATION_UPDATE_INTERVAL_IN_MS = 1000L
@@ -51,6 +51,7 @@ public class MainActivity : ActionBarActivity() {
         val mapView = findViewById(R.id.map) as MapView
         mapController = MapController(mapView.map())
                 .setHttpEngine(OkHttpEngine.OkHttpFactory(tileCache))
+                .setApiKey(BuildConfig.VECTOR_TILE_API_KEY)
                 .setTileSource(BASE_TILE_URL)
                 .addBuildingLayer()
                 .addLabelLayer()
