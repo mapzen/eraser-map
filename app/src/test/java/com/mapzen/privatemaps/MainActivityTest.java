@@ -15,11 +15,13 @@ import org.oscim.tiling.source.OkHttpEngine;
 import org.oscim.tiling.source.oscimap4.OSciMap4TileSource;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.fakes.RoboMenu;
 import org.robolectric.shadows.ShadowLocationManager;
 import org.robolectric.util.ReflectionHelpers;
 
 import android.location.Location;
 import android.location.LocationManager;
+import android.view.Menu;
 
 import static android.content.Context.LOCATION_SERVICE;
 import static com.mapzen.privatemaps.TestMap.TestAnimator.getLastGeoPoint;
@@ -143,6 +145,14 @@ public class MainActivityTest {
     @Test
     public void shouldInjectTileCache() throws Exception {
         assertThat(activity.getTileCache()).isNotNull();
+    }
+
+    @Test
+    public void shouldInflateOptionsMenu() throws Exception {
+        Menu menu = new RoboMenu();
+        activity.onCreateOptionsMenu(menu);
+        assertThat(menu.findItem(R.id.action_search).getTitle()).isEqualTo("Search");
+        assertThat(menu.findItem(R.id.action_settings).getTitle()).isEqualTo("Settings");
     }
 
     private Location getTestLocation(double lat, double lng) {

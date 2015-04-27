@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.support.v7.app.ActionBarActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ListView
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.mapburrito.MapController
+import com.mapzen.pelias.widget.PeliasSearchView
 import com.squareup.okhttp.HttpResponseCache
 import org.oscim.android.MapView
 import org.oscim.tiling.source.OkHttpEngine
@@ -87,6 +89,12 @@ public class MainActivity : ActionBarActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         getMenuInflater().inflate(R.menu.menu_main, menu)
+        val searchView = menu.findItem(R.id.action_search).getActionView()
+        if (searchView != null) {
+            val listView = findViewById(R.id.auto_complete) as ListView
+            (searchView as PeliasSearchView).setAutoCompleteListView(listView)
+        }
+
         return true
     }
 

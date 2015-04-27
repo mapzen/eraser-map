@@ -19,4 +19,11 @@
         android:layout_marginRight="16dp"
         android:src="@android:drawable/ic_menu_compass" />
 
+    <ListView
+        android:id="@+id/auto_complete"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:visibility="gone" />
+
 </RelativeLayout>
