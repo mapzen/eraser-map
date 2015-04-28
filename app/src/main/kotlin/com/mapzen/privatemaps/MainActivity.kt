@@ -3,6 +3,7 @@ package com.mapzen.privatemaps
 import android.location.Location
 import android.os.Bundle
 import android.support.v7.app.ActionBarActivity
+import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ListView
@@ -10,13 +11,14 @@ import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.mapburrito.MapController
+import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.squareup.okhttp.HttpResponseCache
 import org.oscim.android.MapView
 import org.oscim.tiling.source.OkHttpEngine
 import javax.inject.Inject
 
-public class MainActivity : ActionBarActivity() {
+public class MainActivity : AppCompatActivity() {
     private val BASE_TILE_URL = "http://vector.dev.mapzen.com/osm/all"
     private val STYLE_PATH = "styles/mapzen.xml"
     private val FIND_ME_ICON = android.R.drawable.star_big_on
@@ -90,9 +92,12 @@ public class MainActivity : ActionBarActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         getMenuInflater().inflate(R.menu.menu_main, menu)
         val searchView = menu.findItem(R.id.action_search).getActionView()
+        val listView = findViewById(R.id.auto_complete) as AutoCompleteListView
+        val emptyView = findViewById(android.R.id.empty)
+
         if (searchView != null) {
-            val listView = findViewById(R.id.auto_complete) as ListView
             (searchView as PeliasSearchView).setAutoCompleteListView(listView)
+            listView.setEmptyView(emptyView)
         }
 
         return true

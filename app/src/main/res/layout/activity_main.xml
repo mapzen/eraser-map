@@ -19,11 +19,21 @@
         android:layout_marginRight="16dp"
         android:src="@android:drawable/ic_menu_compass" />
 
-    <ListView
+    <com.mapzen.pelias.widget.AutoCompleteListView
         android:id="@+id/auto_complete"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@android:id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:paddingTop="?attr/actionBarSize"
+        android:text="@string/no_recent_searches"
         android:visibility="gone" />
 
 </RelativeLayout>
