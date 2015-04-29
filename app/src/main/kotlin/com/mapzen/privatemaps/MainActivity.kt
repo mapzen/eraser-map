@@ -11,6 +11,8 @@ import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.mapburrito.MapController
+import com.mapzen.pelias.SavedSearch
+import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.squareup.okhttp.HttpResponseCache
@@ -96,7 +98,9 @@ public class MainActivity : AppCompatActivity() {
         val emptyView = findViewById(android.R.id.empty)
 
         if (searchView != null) {
+            listView.setAdapter(AutoCompleteAdapter(this, android.R.layout.simple_list_item_1))
             (searchView as PeliasSearchView).setAutoCompleteListView(listView)
+            searchView.setSavedSearch(SavedSearch())
             listView.setEmptyView(emptyView)
         }
 
@@ -105,8 +109,15 @@ public class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.getItemId()
-        if (id == R.id.action_settings) {
-            return true
+        when (id) {
+            R.id.action_settings -> return true
+            R.id.action_search -> {
+                val searchView = item.getActionView()
+                if (searchView != null) {
+                    (searchView as PeliasSearchView).loadSavedSearches()
+                }
+                return true;
+            }
         }
 
         return super.onOptionsItemSelected(item)
