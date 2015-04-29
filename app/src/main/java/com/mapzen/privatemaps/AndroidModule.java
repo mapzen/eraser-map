@@ -1,6 +1,7 @@
 package com.mapzen.privatemaps;
 
 import com.mapzen.android.lost.api.LostApiClient;
+import com.mapzen.pelias.SavedSearch;
 
 import com.squareup.okhttp.HttpResponseCache;
 
@@ -30,5 +31,9 @@ public class AndroidModule {
 
     @Provides @Singleton @Nullable HttpResponseCache provideTileCache() {
         return new TileCacheBuilder(application).build();
+    }
+
+    @Provides @Singleton SavedSearch provideSavedSearch() {
+        return new SavedSearch();
     }
 }

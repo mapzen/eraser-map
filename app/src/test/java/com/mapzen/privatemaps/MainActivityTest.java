@@ -148,11 +148,26 @@ public class MainActivityTest {
     }
 
     @Test
-    public void shouldInflateOptionsMenu() throws Exception {
+    public void shouldInjectSavedSearch() throws Exception {
+        assertThat(activity.getSavedSearch()).isNotNull();
+    }
+
+    @Test
+    public void onCreateOptionsMenu_shouldInflateOptionsMenu() throws Exception {
         Menu menu = new RoboMenu();
         activity.onCreateOptionsMenu(menu);
         assertThat(menu.findItem(R.id.action_search).getTitle()).isEqualTo("Search");
+        assertThat(menu.findItem(R.id.action_clear).getTitle()).isEqualTo("Clear History");
         assertThat(menu.findItem(R.id.action_settings).getTitle()).isEqualTo("Settings");
+    }
+
+    @Test
+    public void onOptionsItemSelected_shouldClearSavedSearchesOnActionClear() throws Exception {
+        activity.getSavedSearch().store("query");
+        Menu menu = new RoboMenu();
+        activity.onCreateOptionsMenu(menu);
+        activity.onOptionsItemSelected(menu.findItem(R.id.action_clear));
+        assertThat(activity.getSavedSearch().size()).isEqualTo(0);
     }
 
     private Location getTestLocation(double lat, double lng) {

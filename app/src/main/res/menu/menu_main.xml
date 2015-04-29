@@ -7,6 +7,10 @@
         app:showAsAction="collapseActionView|ifRoom"
         app:actionViewClass="com.mapzen.pelias.widget.PeliasSearchView" />
     <item
+        android:id="@+id/action_clear"
+        android:title="@string/action_clear"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_settings"
         android:title="@string/action_settings"
         app:showAsAction="never" />

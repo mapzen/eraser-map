@@ -2,11 +2,9 @@ package com.mapzen.privatemaps
 
 import android.location.Location
 import android.os.Bundle
-import android.support.v7.app.ActionBarActivity
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ListView
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
@@ -27,11 +25,15 @@ public class MainActivity : AppCompatActivity() {
     private val LOCATION_UPDATE_INTERVAL_IN_MS = 1000L
     private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT = 0f
 
-    var mapController: MapController? = null
     var locationClient: LostApiClient? = null
     [Inject] set
     var tileCache: HttpResponseCache? = null
     [Inject] set
+    var savedSearch: SavedSearch? = null
+    [Inject] set
+
+    var mapController: MapController? = null
+    var autoCompleteAdapter: AutoCompleteAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +41,7 @@ public class MainActivity : AppCompatActivity() {
         (getApplication() as PrivateMapsApplication).component().inject(this)
         locationClient?.connect()
         initMapController()
+        initAutoCompleteAdapter()
         initFindMeButton()
         centerOnCurrentLocation()
     }
@@ -63,6 +66,10 @@ public class MainActivity : AppCompatActivity() {
                 .addLabelLayer()
                 .setTheme(STYLE_PATH)
                 .setCurrentLocationDrawable(getResources().getDrawable(FIND_ME_ICON))
+    }
+
+    private fun initAutoCompleteAdapter() {
+        autoCompleteAdapter = AutoCompleteAdapter(this, android.R.layout.simple_list_item_1)
     }
 
     private fun initFindMeButton() {
@@ -98,9 +105,9 @@ public class MainActivity : AppCompatActivity() {
         val emptyView = findViewById(android.R.id.empty)
 
         if (searchView != null) {
-            listView.setAdapter(AutoCompleteAdapter(this, android.R.layout.simple_list_item_1))
+            listView.setAdapter(autoCompleteAdapter)
             (searchView as PeliasSearchView).setAutoCompleteListView(listView)
-            searchView.setSavedSearch(SavedSearch())
+            searchView.setSavedSearch(savedSearch)
             listView.setEmptyView(emptyView)
         }
 
@@ -111,12 +118,12 @@ public class MainActivity : AppCompatActivity() {
         val id = item.getItemId()
         when (id) {
             R.id.action_settings -> return true
-            R.id.action_search -> {
-                val searchView = item.getActionView()
-                if (searchView != null) {
-                    (searchView as PeliasSearchView).loadSavedSearches()
-                }
-                return true;
+            R.id.action_search -> return true
+            R.id.action_clear -> {
+                savedSearch?.clear()
+                autoCompleteAdapter?.clear()
+                autoCompleteAdapter?.notifyDataSetChanged()
+                return true
             }
         }
 
