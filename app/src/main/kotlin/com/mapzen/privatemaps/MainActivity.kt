@@ -84,7 +84,7 @@ public class MainActivity : AppCompatActivity() {
     }
 
     private fun initAutoCompleteAdapter() {
-        autoCompleteAdapter = AutoCompleteAdapter(this, android.R.layout.simple_list_item_1)
+        autoCompleteAdapter = AutoCompleteAdapter(this, R.layout.auto_complete_list_item)
     }
 
     private fun initFindMeButton() {
