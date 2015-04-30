@@ -2,6 +2,7 @@ package com.mapzen.privatemaps;
 
 import com.mapzen.privatemaps.shadows.ShadowGLMatrix;
 import com.mapzen.privatemaps.shadows.ShadowMapView;
+import com.mapzen.privatemaps.shadows.ShadowPorterDuffColorFilter;
 
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -30,6 +31,7 @@ public class PrivateMapsTestRunner extends RobolectricGradleTestRunner {
                 .newBuilder()
                 .addShadowClass(ShadowMapView.class)
                 .addShadowClass(ShadowGLMatrix.class)
+                .addShadowClass(ShadowPorterDuffColorFilter.class)
                 .build();
     }
 
@@ -42,6 +44,7 @@ public class PrivateMapsTestRunner extends RobolectricGradleTestRunner {
         @Override
         public boolean shouldInstrument(ClassInfo classInfo) {
             return CUSTOM_SHADOW_TARGETS.contains(classInfo.getName())
-                    || super.shouldInstrument(classInfo);        }
+                    || super.shouldInstrument(classInfo);
+        }
     }
 }

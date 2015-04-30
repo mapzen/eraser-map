@@ -2,6 +2,7 @@ package com.mapzen.privatemaps;
 
 import com.mapzen.android.lost.api.LocationServices;
 import com.mapzen.pelias.SavedSearch;
+import com.mapzen.pelias.widget.PeliasSearchView;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import org.oscim.layers.tile.vector.labeling.LabelLayer;
 import org.oscim.tiling.source.OkHttpEngine;
 import org.oscim.tiling.source.oscimap4.OSciMap4TileSource;
 import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.fakes.RoboMenu;
 import org.robolectric.shadows.ShadowLocationManager;
@@ -24,6 +26,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 
 import static android.content.Context.LOCATION_SERVICE;
@@ -39,6 +42,7 @@ public class MainActivityTest {
     private LocationManager locationManager;
     private ShadowLocationManager shadowLocationManager;
     private MapView mapView;
+    private PrivateMapsApplication app;
 
     @Before
     public void setUp() throws Exception {
@@ -46,6 +50,7 @@ public class MainActivityTest {
         locationManager = (LocationManager) activity.getSystemService(LOCATION_SERVICE);
         shadowLocationManager = shadowOf(locationManager);
         mapView = (MapView) activity.findViewById(R.id.map);
+        app = (PrivateMapsApplication) RuntimeEnvironment.application;
         TestMap.TestAnimator.clearLastGeoPoint();
     }
 
@@ -196,6 +201,30 @@ public class MainActivityTest {
 
         activity.onStart();
         assertThat(activity.getSavedSearch().get(0).getTerm()).isEqualTo("query");
+    }
+
+    @Test
+    public void onDestroy_shouldSetCurrentSearchTerm() throws Exception {
+        Menu menu = new RoboMenu();
+        activity.onCreateOptionsMenu(menu);
+        menu.findItem(R.id.action_search).setActionView(new PeliasSearchView(activity));
+        menu.findItem(R.id.action_search).expandActionView();
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setQuery("query", false);
+        activity.onDestroy();
+        assertThat(app.getCurrentSearchTerm()).isEqualTo("query");
+    }
+
+    @Test
+    public void onCreateOptionsMenu_shouldRestoreCurrentSearchTerm() throws Exception {
+        Menu menu = new RoboMenu();
+        activity.onCreateOptionsMenu(menu);
+        menu.findItem(R.id.action_search).setActionView(new PeliasSearchView(activity));
+
+        app.setCurrentSearchTerm("query");
+        activity.onCreateOptionsMenu(menu);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        assertThat(searchView.getQuery()).isEqualTo("query");
     }
 
     private Location getTestLocation(double lat, double lng) {

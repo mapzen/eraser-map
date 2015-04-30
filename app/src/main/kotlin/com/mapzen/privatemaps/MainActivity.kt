@@ -3,6 +3,7 @@ package com.mapzen.privatemaps
 import android.location.Location
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -33,13 +34,16 @@ public class MainActivity : AppCompatActivity() {
     var savedSearch: SavedSearch? = null
     [Inject] set
 
+    var app: PrivateMapsApplication? = null
     var mapController: MapController? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
+    var optionsMenu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        (getApplication() as PrivateMapsApplication).component().inject(this)
+        app = getApplication() as PrivateMapsApplication
+        app?.component()?.inject(this)
         locationClient?.connect()
         initMapController()
         initAutoCompleteAdapter()
@@ -69,6 +73,11 @@ public class MainActivity : AppCompatActivity() {
                 .edit()
                 .putString(SavedSearch.TAG, savedSearch?.serialize())
                 .commit();
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        saveCurrentSearchTerm()
     }
 
     private fun initMapController() {
@@ -115,6 +124,8 @@ public class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         getMenuInflater().inflate(R.menu.menu_main, menu)
+        optionsMenu = menu
+
         val searchView = menu.findItem(R.id.action_search).getActionView()
         val listView = findViewById(R.id.auto_complete) as AutoCompleteListView
         val emptyView = findViewById(android.R.id.empty)
@@ -124,6 +135,7 @@ public class MainActivity : AppCompatActivity() {
             searchView.setAutoCompleteListView(listView)
             searchView.setSavedSearch(savedSearch)
             listView.setEmptyView(emptyView)
+            restoreCurrentSearchTerm()
         }
 
         return true
@@ -143,5 +155,24 @@ public class MainActivity : AppCompatActivity() {
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun saveCurrentSearchTerm() {
+        val menuItem = optionsMenu?.findItem(R.id.action_search)
+        val actionView = menuItem?.getActionView() as PeliasSearchView
+        if (menuItem!!.isActionViewExpanded()) {
+            app?.setCurrentSearchTerm(actionView.getQuery().toString())
+        }
+    }
+
+    private fun restoreCurrentSearchTerm() {
+        val menuItem = optionsMenu?.findItem(R.id.action_search)
+        val actionView = menuItem?.getActionView() as PeliasSearchView
+        val term = (getApplication() as PrivateMapsApplication).getCurrentSearchTerm()
+        if (term != null) {
+            menuItem?.expandActionView()
+            actionView.setQuery(term, false)
+            app?.setCurrentSearchTerm(null)
+        }
     }
 }
