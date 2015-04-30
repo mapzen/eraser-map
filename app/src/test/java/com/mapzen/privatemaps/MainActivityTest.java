@@ -1,6 +1,7 @@
 package com.mapzen.privatemaps;
 
 import com.mapzen.android.lost.api.LocationServices;
+import com.mapzen.pelias.SavedSearch;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,8 +20,10 @@ import org.robolectric.fakes.RoboMenu;
 import org.robolectric.shadows.ShadowLocationManager;
 import org.robolectric.util.ReflectionHelpers;
 
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 
 import static android.content.Context.LOCATION_SERVICE;
@@ -168,6 +171,31 @@ public class MainActivityTest {
         activity.onCreateOptionsMenu(menu);
         activity.onOptionsItemSelected(menu.findItem(R.id.action_clear));
         assertThat(activity.getSavedSearch().size()).isEqualTo(0);
+    }
+
+    @Test
+    public void onStop_shouldPersistSavedSearch() throws Exception {
+        activity.getSavedSearch().store("query");
+        activity.onStop();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        String serialized = prefs.getString(SavedSearch.TAG, null);
+
+        final SavedSearch savedSearch = new SavedSearch();
+        savedSearch.deserialize(serialized);
+        assertThat(savedSearch.get(0).getTerm()).isEqualTo("query");
+    }
+
+    @Test
+    public void onCreate_shouldRestoreSavedSearch() throws Exception {
+        final SavedSearch savedSearch = new SavedSearch();
+        savedSearch.store("query");
+        PreferenceManager.getDefaultSharedPreferences(activity)
+                .edit()
+                .putString(SavedSearch.TAG, savedSearch.serialize())
+                .commit();
+
+        activity.onStart();
+        assertThat(activity.getSavedSearch().get(0).getTerm()).isEqualTo("query");
     }
 
     private Location getTestLocation(double lat, double lng) {

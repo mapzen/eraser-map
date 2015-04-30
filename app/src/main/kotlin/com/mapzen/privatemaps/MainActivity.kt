@@ -2,6 +2,7 @@ package com.mapzen.privatemaps
 
 import android.location.Location
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -46,14 +47,28 @@ public class MainActivity : AppCompatActivity() {
         centerOnCurrentLocation()
     }
 
-    override fun onPause() {
-        super.onPause()
-        locationClient?.disconnect()
+    override fun onStart() {
+        super.onStart()
+        savedSearch?.deserialize(PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(SavedSearch.TAG, null))
     }
 
     override fun onResume() {
         super.onResume()
         initLocationUpdates()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        locationClient?.disconnect()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .edit()
+                .putString(SavedSearch.TAG, savedSearch?.serialize())
+                .commit();
     }
 
     private fun initMapController() {
@@ -104,9 +119,9 @@ public class MainActivity : AppCompatActivity() {
         val listView = findViewById(R.id.auto_complete) as AutoCompleteListView
         val emptyView = findViewById(android.R.id.empty)
 
-        if (searchView != null) {
+        if (searchView is PeliasSearchView) {
             listView.setAdapter(autoCompleteAdapter)
-            (searchView as PeliasSearchView).setAutoCompleteListView(listView)
+            searchView.setAutoCompleteListView(listView)
             searchView.setSavedSearch(savedSearch)
             listView.setEmptyView(emptyView)
         }
