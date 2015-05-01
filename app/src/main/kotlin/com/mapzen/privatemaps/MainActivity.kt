@@ -5,19 +5,26 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.mapburrito.MapController
+import com.mapzen.pelias.Pelias
+import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.SavedSearch
+import com.mapzen.pelias.gson.Result
 import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.squareup.okhttp.HttpResponseCache
 import org.oscim.android.MapView
 import org.oscim.tiling.source.OkHttpEngine
+import retrofit.Callback
+import retrofit.RetrofitError
+import retrofit.client.Response
 import javax.inject.Inject
 
 public class MainActivity : AppCompatActivity() {
@@ -132,8 +139,12 @@ public class MainActivity : AppCompatActivity() {
 
         if (searchView is PeliasSearchView) {
             listView.setAdapter(autoCompleteAdapter)
+            val pelias = Pelias.getPelias();
+            pelias.setLocationProvider(MapLocationProvider(mapController))
             searchView.setAutoCompleteListView(listView)
             searchView.setSavedSearch(savedSearch)
+            searchView.setPelias(Pelias.getPelias())
+            searchView.setCallback(PeliasCallback())
             listView.setEmptyView(emptyView)
             restoreCurrentSearchTerm()
         }
@@ -173,6 +184,28 @@ public class MainActivity : AppCompatActivity() {
             menuItem?.expandActionView()
             actionView.setQuery(term, false)
             app?.setCurrentSearchTerm(null)
+        }
+    }
+
+    class PeliasCallback : Callback<Result> {
+        private val TAG: String = "PeliasCallback";
+
+        override fun success(result: Result?, response: Response?) {
+            Log.d(TAG, result.toString());
+        }
+
+        override fun failure(error: RetrofitError?) {
+            Log.e(TAG, "Error fetching search results: " + error?.getMessage());
+        }
+    }
+
+    class MapLocationProvider(val mapController: MapController?) : PeliasLocationProvider {
+        override fun getLat(): String? {
+            return mapController?.getMap()?.getMapPosition()?.getLatitude().toString()
+        }
+
+        override fun getLon(): String? {
+            return mapController?.getMap()?.getMapPosition()?.getLongitude().toString()
         }
     }
 }
