@@ -18,3 +18,5 @@ allprojects {
     jcenter()
   }
 }
+
+defaultTasks = ['clean', 'assembleDebug', 'testDebug']
