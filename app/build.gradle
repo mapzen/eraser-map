@@ -51,6 +51,7 @@ dependencies {
   compile 'com.google.dagger:dagger:2.0'
   compile 'com.google.dagger:dagger-compiler:2.0'
   compile 'javax.annotation:javax.annotation-api:1.2'
+  compile 'com.android.support:support-v4:22.1.0@aar'
 
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.9.5'

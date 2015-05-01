@@ -4,10 +4,12 @@ import android.location.Location
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.view.MenuItemCompat
+import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
@@ -100,7 +102,7 @@ public class MainActivity : AppCompatActivity() {
     }
 
     private fun initAutoCompleteAdapter() {
-        autoCompleteAdapter = AutoCompleteAdapter(this, R.layout.auto_complete_list_item)
+        autoCompleteAdapter = AutoCompleteAdapter(this, R.layout.list_item_auto_complete)
     }
 
     private fun initFindMeButton() {
@@ -187,15 +189,17 @@ public class MainActivity : AppCompatActivity() {
         }
     }
 
-    class PeliasCallback : Callback<Result> {
+    inner class PeliasCallback : Callback<Result> {
         private val TAG: String = "PeliasCallback";
 
         override fun success(result: Result?, response: Response?) {
-            Log.d(TAG, result.toString());
+            val pager = findViewById(R.id.search_results) as ViewPager
+            pager.setAdapter(SearchResultsAdapter(this@MainActivity, result?.getFeatures()))
+            pager.setVisibility(View.VISIBLE)
         }
 
         override fun failure(error: RetrofitError?) {
-            Log.e(TAG, "Error fetching search results: " + error?.getMessage());
+            Log.e(TAG, "Error fetching search results: " + error?.getMessage())
         }
     }
 
