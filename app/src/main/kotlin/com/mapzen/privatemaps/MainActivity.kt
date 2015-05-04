@@ -17,6 +17,7 @@ import com.mapzen.mapburrito.MapController
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.SavedSearch
+import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteListView
@@ -29,7 +30,7 @@ import retrofit.RetrofitError
 import retrofit.client.Response
 import javax.inject.Inject
 
-public class MainActivity : AppCompatActivity() {
+public class MainActivity : AppCompatActivity(), ViewController {
     private val BASE_TILE_URL = "http://vector.dev.mapzen.com/osm/all"
     private val STYLE_PATH = "styles/mapzen.xml"
     private val FIND_ME_ICON = android.R.drawable.star_big_on
@@ -51,10 +52,12 @@ public class MainActivity : AppCompatActivity() {
     var optionsMenu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        super<AppCompatActivity>.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         app = getApplication() as PrivateMapsApplication
         app?.component()?.inject(this)
+        presenter?.viewController = this
+        presenter?.restoreViewState()
         locationClient?.connect()
         initMapController()
         initAutoCompleteAdapter()
@@ -63,23 +66,23 @@ public class MainActivity : AppCompatActivity() {
     }
 
     override fun onStart() {
-        super.onStart()
+        super<AppCompatActivity>.onStart()
         savedSearch?.deserialize(PreferenceManager.getDefaultSharedPreferences(this)
                 .getString(SavedSearch.TAG, null))
     }
 
     override fun onResume() {
-        super.onResume()
+        super<AppCompatActivity>.onResume()
         initLocationUpdates()
     }
 
     override fun onPause() {
-        super.onPause()
+        super<AppCompatActivity>.onPause()
         locationClient?.disconnect()
     }
 
     override fun onStop() {
-        super.onStop()
+        super<AppCompatActivity>.onStop()
         PreferenceManager.getDefaultSharedPreferences(this)
                 .edit()
                 .putString(SavedSearch.TAG, savedSearch?.serialize())
@@ -87,7 +90,7 @@ public class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        super<AppCompatActivity>.onDestroy()
         saveCurrentSearchTerm()
     }
 
@@ -169,7 +172,7 @@ public class MainActivity : AppCompatActivity() {
             }
         }
 
-        return super.onOptionsItemSelected(item)
+        return super<AppCompatActivity>.onOptionsItemSelected(item)
     }
 
     private fun saveCurrentSearchTerm() {
@@ -195,9 +198,7 @@ public class MainActivity : AppCompatActivity() {
         private val TAG: String = "PeliasCallback";
 
         override fun success(result: Result?, response: Response?) {
-            val pager = findViewById(R.id.search_results) as ViewPager
-            pager.setAdapter(SearchResultsAdapter(this@MainActivity, result?.getFeatures()))
-            pager.setVisibility(View.VISIBLE)
+            presenter?.onSearchResultsAvailable(result)
         }
 
         override fun failure(error: RetrofitError?) {
@@ -213,5 +214,11 @@ public class MainActivity : AppCompatActivity() {
         override fun getLon(): String? {
             return mapController?.getMap()?.getMapPosition()?.getLongitude().toString()
         }
+    }
+
+    override fun showSearchResults(features: List<Feature>) {
+        val pager = findViewById(R.id.search_results) as ViewPager
+        pager.setAdapter(SearchResultsAdapter(this, features))
+        pager.setVisibility(View.VISIBLE)
     }
 }
