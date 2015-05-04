@@ -60,17 +60,37 @@ public class MainPresenterTest {
         assertThat(controller.searchResults).isNull();
     }
 
+    @Test
+    public void onQuerySubmit_shouldShowProgress() throws Exception {
+        presenter.onQuerySubmit();
+        assertThat(controller.isProgressVisible).isTrue();
+    }
+
+    @Test
+    public void onSearchResultsAvailable_shouldHideProgress() throws Exception {
+        controller.showProgress();
+        presenter.onSearchResultsAvailable(new Result());
+        assertThat(controller.isProgressVisible).isFalse();
+    }
+
     private class TestViewController implements ViewController {
         private List<Feature> searchResults;
+        private boolean isProgressVisible;
 
-        @Override
-        public void showSearchResults(@NotNull List<? extends Feature> features) {
+        @Override public void showSearchResults(@NotNull List<? extends Feature> features) {
             searchResults = (List<Feature>) features;
         }
 
-        @Override
-        public void hideSearchResults() {
+        @Override public void hideSearchResults() {
             searchResults = null;
+        }
+
+        @Override public void showProgress() {
+            isProgressVisible = true;
+        }
+
+        @Override public void hideProgress() {
+            isProgressVisible = false;
         }
     }
 }

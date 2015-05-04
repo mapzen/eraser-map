@@ -155,6 +155,7 @@ public class MainActivity : AppCompatActivity(), ViewController {
             searchView.setSavedSearch(savedSearch)
             searchView.setPelias(Pelias.getPelias())
             searchView.setCallback(PeliasCallback())
+            searchView.setOnSubmitListener({ presenter?.onQuerySubmit() })
             listView.setEmptyView(emptyView)
             restoreCurrentSearchTerm()
         }
@@ -242,5 +243,13 @@ public class MainActivity : AppCompatActivity(), ViewController {
     override fun hideSearchResults() {
         val pager = findViewById(R.id.search_results) as ViewPager
         pager.setVisibility(View.GONE)
+    }
+
+    override fun showProgress() {
+        findViewById(R.id.progress).setVisibility(View.VISIBLE)
+    }
+
+    override fun hideProgress() {
+        findViewById(R.id.progress).setVisibility(View.GONE)
     }
 }

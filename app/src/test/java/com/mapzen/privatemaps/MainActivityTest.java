@@ -28,6 +28,7 @@ import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
+import android.view.View;
 
 import static android.content.Context.LOCATION_SERVICE;
 import static com.mapzen.privatemaps.TestMap.TestAnimator.getLastGeoPoint;
@@ -226,6 +227,19 @@ public class MainActivityTest {
         activity.onCreateOptionsMenu(menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         assertThat(searchView.getQuery()).isEqualTo("query");
+    }
+
+    @Test
+    public void showProgress_shouldSetProgressViewVisible() throws Exception {
+        activity.showProgress();
+        assertThat(activity.findViewById(R.id.progress).getVisibility()).isEqualTo(View.VISIBLE);
+    }
+
+    @Test
+    public void hideProgress_shouldSetProgressViewGone() throws Exception {
+        activity.showProgress();
+        activity.hideProgress();
+        assertThat(activity.findViewById(R.id.progress).getVisibility()).isEqualTo(View.GONE);
     }
 
     private Location getTestLocation(double lat, double lng) {

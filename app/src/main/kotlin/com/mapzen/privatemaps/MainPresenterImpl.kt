@@ -11,6 +11,7 @@ public class MainPresenterImpl : MainPresenter {
     override fun onSearchResultsAvailable(result: Result?) {
         this.result = result
         viewController?.showSearchResults(result?.getFeatures())
+        viewController?.hideProgress()
     }
 
     override fun restoreViewState() {
@@ -22,5 +23,9 @@ public class MainPresenterImpl : MainPresenter {
     override fun onCollapseSearchView() {
         result = null;
         viewController?.hideSearchResults()
+    }
+
+    override fun onQuerySubmit() {
+        viewController?.showProgress()
     }
 }
