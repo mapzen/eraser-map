@@ -36,4 +36,8 @@ public class AndroidModule {
     @Provides @Singleton SavedSearch provideSavedSearch() {
         return new SavedSearch();
     }
+
+    @Provides @Singleton MainPresenter provideMainPresenter() {
+        return new MainPresenterImpl();
+    }
 }

@@ -9,8 +9,6 @@ import dagger.Component;
 public class PrivateMapsApplication extends Application {
     public static final String TAG = "PrivateMaps";
 
-    private String currentSearchTerm;
-
     @Singleton
     @Component(modules = AndroidModule.class)
     public interface ApplicationComponent {
@@ -29,13 +27,5 @@ public class PrivateMapsApplication extends Application {
 
     public ApplicationComponent component() {
         return component;
-    }
-
-    public void setCurrentSearchTerm(String currentSearchTerm) {
-        this.currentSearchTerm = currentSearchTerm;
-    }
-
-    public String getCurrentSearchTerm() {
-        return currentSearchTerm;
     }
 }

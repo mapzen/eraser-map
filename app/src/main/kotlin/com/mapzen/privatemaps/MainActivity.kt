@@ -42,6 +42,8 @@ public class MainActivity : AppCompatActivity() {
     [Inject] set
     var savedSearch: SavedSearch? = null
     [Inject] set
+    var presenter: MainPresenter? = null
+    [Inject] set
 
     var app: PrivateMapsApplication? = null
     var mapController: MapController? = null
@@ -173,19 +175,19 @@ public class MainActivity : AppCompatActivity() {
     private fun saveCurrentSearchTerm() {
         val menuItem = optionsMenu?.findItem(R.id.action_search)
         val actionView = menuItem?.getActionView() as PeliasSearchView
-        if (menuItem!!.isActionViewExpanded()) {
-            app?.setCurrentSearchTerm(actionView.getQuery().toString())
+        if (menuItem!!.isActionViewExpanded() && actionView.hasFocus()) {
+            presenter?.currentSearchTerm = actionView.getQuery().toString()
         }
     }
 
     private fun restoreCurrentSearchTerm() {
         val menuItem = optionsMenu?.findItem(R.id.action_search)
         val actionView = menuItem?.getActionView() as PeliasSearchView
-        val term = (getApplication() as PrivateMapsApplication).getCurrentSearchTerm()
+        val term = presenter?.currentSearchTerm
         if (term != null) {
             menuItem?.expandActionView()
             actionView.setQuery(term, false)
-            app?.setCurrentSearchTerm(null)
+            presenter?.currentSearchTerm = null
         }
     }
 

@@ -211,8 +211,9 @@ public class MainActivityTest {
         menu.findItem(R.id.action_search).expandActionView();
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setQuery("query", false);
+        searchView.requestFocus();
         activity.onDestroy();
-        assertThat(app.getCurrentSearchTerm()).isEqualTo("query");
+        assertThat(activity.getPresenter().getCurrentSearchTerm()).isEqualTo("query");
     }
 
     @Test
@@ -221,7 +222,7 @@ public class MainActivityTest {
         activity.onCreateOptionsMenu(menu);
         menu.findItem(R.id.action_search).setActionView(new PeliasSearchView(activity));
 
-        app.setCurrentSearchTerm("query");
+        activity.getPresenter().setCurrentSearchTerm("query");
         activity.onCreateOptionsMenu(menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         assertThat(searchView.getQuery()).isEqualTo("query");
