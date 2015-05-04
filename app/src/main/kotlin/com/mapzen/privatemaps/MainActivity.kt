@@ -178,7 +178,7 @@ public class MainActivity : AppCompatActivity(), ViewController {
     private fun saveCurrentSearchTerm() {
         val menuItem = optionsMenu?.findItem(R.id.action_search)
         val actionView = menuItem?.getActionView() as PeliasSearchView
-        if (menuItem!!.isActionViewExpanded() && actionView.hasFocus()) {
+        if (menuItem!!.isActionViewExpanded()) {
             presenter?.currentSearchTerm = actionView.getQuery().toString()
         }
     }
@@ -190,6 +190,9 @@ public class MainActivity : AppCompatActivity(), ViewController {
         if (term != null) {
             menuItem?.expandActionView()
             actionView.setQuery(term, false)
+            if (findViewById(R.id.search_results).getVisibility() == View.VISIBLE) {
+                actionView.clearFocus()
+            }
             presenter?.currentSearchTerm = null
         }
     }
