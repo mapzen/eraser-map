@@ -8,4 +8,5 @@ public trait MainPresenter {
 
     public fun onSearchResultsAvailable(result: Result?)
     public fun restoreViewState()
+    public fun onCollapseSearchView()
 }

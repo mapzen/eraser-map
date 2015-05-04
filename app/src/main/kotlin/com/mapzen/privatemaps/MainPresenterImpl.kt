@@ -18,4 +18,9 @@ public class MainPresenterImpl : MainPresenter {
             viewController?.showSearchResults(result?.getFeatures())
         }
     }
+
+    override fun onCollapseSearchView() {
+        result = null;
+        viewController?.hideSearchResults()
+    }
 }

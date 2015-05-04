@@ -140,6 +140,9 @@ public class MainActivity : AppCompatActivity(), ViewController {
         getMenuInflater().inflate(R.menu.menu_main, menu)
         optionsMenu = menu
 
+        MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.action_search),
+                SearchOnActionExpandListener())
+
         val searchView = menu.findItem(R.id.action_search).getActionView()
         val listView = findViewById(R.id.auto_complete) as AutoCompleteListView
         val emptyView = findViewById(android.R.id.empty)
@@ -209,6 +212,17 @@ public class MainActivity : AppCompatActivity(), ViewController {
         }
     }
 
+    inner class SearchOnActionExpandListener : MenuItemCompat.OnActionExpandListener {
+        override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+            return true
+        }
+
+        override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+            presenter?.onCollapseSearchView()
+            return true
+        }
+    }
+
     class MapLocationProvider(val mapController: MapController?) : PeliasLocationProvider {
         override fun getLat(): String? {
             return mapController?.getMap()?.getMapPosition()?.getLatitude().toString()
@@ -223,5 +237,10 @@ public class MainActivity : AppCompatActivity(), ViewController {
         val pager = findViewById(R.id.search_results) as ViewPager
         pager.setAdapter(SearchResultsAdapter(this, features))
         pager.setVisibility(View.VISIBLE)
+    }
+
+    override fun hideSearchResults() {
+        val pager = findViewById(R.id.search_results) as ViewPager
+        pager.setVisibility(View.GONE)
     }
 }

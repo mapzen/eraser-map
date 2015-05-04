@@ -34,7 +34,7 @@ public class MainPresenterTest {
         ArrayList<Feature> features = new ArrayList<>();
         result.setFeatures(features);
         presenter.onSearchResultsAvailable(result);
-        assertThat(controller.features).isEqualTo(features);
+        assertThat(controller.searchResults).isEqualTo(features);
     }
 
     @Test
@@ -47,15 +47,30 @@ public class MainPresenterTest {
         TestViewController newController = new TestViewController();
         presenter.setViewController(newController);
         presenter.restoreViewState();
-        assertThat(newController.features).isEqualTo(features);
+        assertThat(newController.searchResults).isEqualTo(features);
+    }
+
+    @Test
+    public void onCollapseSearchView_shouldHideSearchResults() throws Exception {
+        Result result = new Result();
+        ArrayList<Feature> features = new ArrayList<>();
+        result.setFeatures(features);
+        presenter.onSearchResultsAvailable(result);
+        presenter.onCollapseSearchView();
+        assertThat(controller.searchResults).isNull();
     }
 
     private class TestViewController implements ViewController {
-        private List<Feature> features;
+        private List<Feature> searchResults;
 
         @Override
         public void showSearchResults(@NotNull List<? extends Feature> features) {
-            this.features = (List<Feature>) features;
+            searchResults = (List<Feature>) features;
+        }
+
+        @Override
+        public void hideSearchResults() {
+            searchResults = null;
         }
     }
 }
