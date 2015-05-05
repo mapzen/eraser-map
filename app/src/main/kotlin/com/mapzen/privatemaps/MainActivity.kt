@@ -33,8 +33,7 @@ import retrofit.client.Response
 import javax.inject.Inject
 
 public class MainActivity : AppCompatActivity(), ViewController,
-        SearchResultsView.OnSearchResultSelectedListener {
-
+        SearchResultsView.OnSearchResultSelectedListener, PoiLayer.OnPoiClickListener {
     private val BASE_TILE_URL = "http://vector.dev.mapzen.com/osm/all"
     private val STYLE_PATH = "styles/mapzen.xml"
     private val FIND_ME_ICON = android.R.drawable.star_big_on
@@ -120,6 +119,7 @@ public class MainActivity : AppCompatActivity(), ViewController,
         val activeMarker = markerSymbolFactory?.getActiveMarker()
         if (map is Map && defaultMarker is MarkerSymbol && activeMarker is MarkerSymbol) {
             poiLayer = PoiLayer(map, defaultMarker, activeMarker)
+            poiLayer?.onPoiClickListener = this
         }
     }
 
@@ -308,5 +308,10 @@ public class MainActivity : AppCompatActivity(), ViewController,
 
     override fun onSearchResultSelected(position: Int) {
         presenter?.onSearchResultSelected(position)
+    }
+
+    override fun onPoiClick(position: Int) {
+        val pager = findViewById(R.id.search_results) as SearchResultsView
+        pager.setCurrentItem(position)
     }
 }

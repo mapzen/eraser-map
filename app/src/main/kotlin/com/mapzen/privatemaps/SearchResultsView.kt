@@ -28,6 +28,11 @@ public class SearchResultsView(context: Context, attrs: AttributeSet)
                 pager.getCurrentItem() + 1, pager.getAdapter().getCount()))
     }
 
+    public fun setCurrentItem(position: Int) {
+        val pager = findViewById(R.id.pager) as ViewPager
+        pager.setCurrentItem(position)
+    }
+
     public fun getCurrentItem(): Int {
         val pager = findViewById(R.id.pager) as ViewPager
         return pager.getCurrentItem()

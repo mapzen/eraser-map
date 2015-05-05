@@ -7,9 +7,13 @@ import org.oscim.layers.marker.MarkerSymbol
 import org.oscim.map.Map;
 
 public class PoiLayer(val map: Map, val defaultMarker: MarkerSymbol, val activeMarker: MarkerSymbol)
-        : ItemizedLayer<MarkerItem>(map, defaultMarker) {
+        : ItemizedLayer<MarkerItem>(map, defaultMarker), ItemizedLayer.OnItemGestureListener<MarkerItem> {
+
+    public var onPoiClickListener: OnPoiClickListener? = null
+
     init {
         map.layers().add(this)
+        setOnItemGestureListener(this)
     }
 
     public fun addAll(features: List<Feature>) {
@@ -26,5 +30,18 @@ public class PoiLayer(val map: Map, val defaultMarker: MarkerSymbol, val activeM
 
     public fun setActiveItem(position: Int) {
         mItemList.get(position).setMarker(activeMarker)
+    }
+
+    override fun onItemSingleTapUp(index: Int, item: MarkerItem?): Boolean {
+        onPoiClickListener?.onPoiClick(index)
+        return true;
+    }
+
+    override fun onItemLongPress(index: Int, item: MarkerItem?): Boolean {
+        return true;
+    }
+
+    public trait OnPoiClickListener {
+        public fun onPoiClick(position: Int)
     }
 }
