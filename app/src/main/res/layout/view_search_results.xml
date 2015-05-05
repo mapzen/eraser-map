@@ -2,6 +2,15 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:paddingLeft="@dimen/padding_horizontal_default"
+        android:paddingRight="@dimen/padding_horizontal_default"
+        android:paddingTop="@dimen/padding_vertical_default"
+        android:paddingBottom="@dimen/padding_vertical_default" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
