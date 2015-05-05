@@ -241,7 +241,7 @@ public class MainActivity : AppCompatActivity(), ViewController {
     }
 
     override fun hideSearchResults() {
-        val pager = findViewById(R.id.search_results) as ViewPager
+        val pager = findViewById(R.id.search_results) as SearchResultsView
         pager.setVisibility(View.GONE)
     }
 
