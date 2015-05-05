@@ -235,7 +235,7 @@ public class MainActivity : AppCompatActivity(), ViewController {
     }
 
     override fun showSearchResults(features: List<Feature>) {
-        val pager = findViewById(R.id.search_results) as ViewPager
+        val pager = findViewById(R.id.search_results) as SearchResultsView
         pager.setAdapter(SearchResultsAdapter(this, features))
         pager.setVisibility(View.VISIBLE)
     }
