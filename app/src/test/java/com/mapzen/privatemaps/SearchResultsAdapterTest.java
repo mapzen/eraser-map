@@ -77,6 +77,10 @@ public class SearchResultsAdapterTest {
     }
 
     public static Feature getTestFeature() {
+        return getTestFeature(0.0, 0.0);
+    }
+
+    public static Feature getTestFeature(double lat, double lon) {
         Feature feature = new Feature();
         Properties properties = new Properties();
         properties.setText("Text");
@@ -86,8 +90,8 @@ public class SearchResultsAdapterTest {
         feature.setProperties(properties);
         Geometry geometry = new Geometry();
         List<Double> coordinates = new ArrayList<Double>();
-        coordinates.add(0.0);
-        coordinates.add(0.0);
+        coordinates.add(lon);
+        coordinates.add(lat);
         geometry.setCoordinates(coordinates);
         feature.setGeometry(geometry);
         return feature;

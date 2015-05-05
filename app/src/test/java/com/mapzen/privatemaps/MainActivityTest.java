@@ -34,6 +34,7 @@ import android.view.View;
 import java.util.ArrayList;
 
 import static android.content.Context.LOCATION_SERVICE;
+import static com.mapzen.privatemaps.TestMap.TestAnimator;
 import static com.mapzen.privatemaps.TestMap.TestAnimator.getLastGeoPoint;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
@@ -55,7 +56,7 @@ public class MainActivityTest {
         shadowLocationManager = shadowOf(locationManager);
         mapView = (MapView) activity.findViewById(R.id.map);
         app = (PrivateMapsApplication) RuntimeEnvironment.application;
-        TestMap.TestAnimator.clearLastGeoPoint();
+        TestAnimator.clearLastGeoPoint();
     }
 
     @Test
@@ -264,6 +265,17 @@ public class MainActivityTest {
         activity.showSearchResults(features);
         activity.hideSearchResults();
         assertThat(activity.getPoiLayer().size()).isEqualTo(0);
+    }
+
+    @Test
+    public void showSearchResults_shouldCenterOnCurrentFeature() throws Exception {
+        Feature feature = SearchResultsAdapterTest.getTestFeature(1.0, 2.0);
+        ArrayList<Feature> features = new ArrayList<>();
+        features.add(feature);
+        activity.showSearchResults(features);
+        Robolectric.flushForegroundScheduler();
+        assertThat(TestAnimator.getLastGeoPoint().getLatitude()).isCloseTo(1.0, within(0.0001));
+        assertThat(TestAnimator.getLastGeoPoint().getLongitude()).isEqualTo(2.0, within(0.0001));
     }
 
     private Location getTestLocation(double lat, double lng) {

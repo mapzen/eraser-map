@@ -2,9 +2,9 @@ package com.mapzen.privatemaps
 
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
 import android.preference.PreferenceManager
 import android.support.v4.view.MenuItemCompat
-import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
@@ -28,7 +28,6 @@ import org.oscim.android.canvas.AndroidGraphics
 import org.oscim.layers.marker.ItemizedLayer
 import org.oscim.layers.marker.MarkerItem
 import org.oscim.layers.marker.MarkerSymbol
-import org.oscim.map.Map;
 import org.oscim.tiling.source.OkHttpEngine
 import retrofit.Callback
 import retrofit.RetrofitError
@@ -66,10 +65,10 @@ public class MainActivity : AppCompatActivity(), ViewController {
         locationClient?.connect()
         initMapController()
         initPoiLayer()
-        presenter?.restoreViewState()
         initAutoCompleteAdapter()
         initFindMeButton()
         centerOnCurrentLocation()
+        presenter?.restoreViewState()
     }
 
     override fun onStart() {
@@ -265,8 +264,19 @@ public class MainActivity : AppCompatActivity(), ViewController {
         for (feature in features) {
             poiLayer?.addItem(SimpleFeature.fromFeature(feature).getMarker())
         }
+        centerOnCurrentFeature(features)
+    }
 
-        mapController?.getMap()?.updateMap(true)
+    private fun centerOnCurrentFeature(features: List<Feature>) {
+        Handler().postDelayed(Runnable {
+            val pager = findViewById(R.id.search_results) as SearchResultsView
+            val current = SimpleFeature.fromFeature(features.get(pager.getCurrentItem()));
+            val location = Location("map");
+            location.setLatitude(current.getLat())
+            location.setLongitude(current.getLon())
+            mapController?.resetMapAndCenterOn(location)
+            mapController?.getMap()?.updateMap(true)
+        }, 100);
     }
 
     override fun hideSearchResults() {

@@ -26,6 +26,11 @@ public class SearchResultsView(context: Context, attrs: AttributeSet)
                 pager.getCurrentItem() + 1, pager.getAdapter().getCount()))
     }
 
+    public fun getCurrentItem(): Int {
+        val pager = findViewById(R.id.pager) as ViewPager
+        return pager.getCurrentItem()
+    }
+
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
     }
 

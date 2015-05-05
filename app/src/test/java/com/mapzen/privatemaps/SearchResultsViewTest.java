@@ -63,6 +63,15 @@ public class SearchResultsViewTest {
         assertThat(indicator.getText()).isEqualTo("2 of 3 results");
     }
 
+    @Test
+    public void getCurrentItem_shouldReturnPagerCurrentItem() throws Exception {
+        PagerAdapter adapter = new TestPagerAdapter();
+        ViewPager pager = (ViewPager) searchResultsView.findViewById(R.id.pager);
+        searchResultsView.setAdapter(adapter);
+        pager.setCurrentItem(2);
+        assertThat(searchResultsView.getCurrentItem()).isEqualTo(2);
+    }
+
     private class TestPagerAdapter extends PagerAdapter {
         @Override public int getCount() {
             return 3;
