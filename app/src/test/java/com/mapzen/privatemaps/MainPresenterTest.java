@@ -81,6 +81,9 @@ public class MainPresenterTest {
             searchResults = (List<Feature>) features;
         }
 
+        @Override public void centerOnCurrentFeature(@NotNull List<? extends Feature> features) {
+        }
+
         @Override public void hideSearchResults() {
             searchResults = null;
         }

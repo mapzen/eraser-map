@@ -83,10 +83,10 @@ public class SimpleFeature implements Parcelable {
     }
 
     public MarkerItem getMarker() {
-        GeoPoint geoPoint = new GeoPoint(getLat(), getLon());
-        MarkerItem markerItem = new MarkerItem(this, getProperty(TEXT),
-                "Current Location", geoPoint);
-        return markerItem;
+        return new MarkerItem(getProperty(ID),
+                getTitle(),
+                getAddress(),
+                new GeoPoint(getLat(), getLon()));
     }
 
     public GeoPoint getGeoPoint() {

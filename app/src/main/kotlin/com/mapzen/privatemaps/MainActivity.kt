@@ -277,9 +277,24 @@ public class MainActivity : AppCompatActivity(), ViewController,
             val location = Location("map");
             location.setLatitude(current.getLat())
             location.setLongitude(current.getLon())
+            resetAllMarkerSymbols(features)
+            setActiveMarkerSymbol(current)
             mapController?.resetMapAndCenterOn(location)
             mapController?.getMap()?.updateMap(true)
         }, 100);
+    }
+
+    private fun resetAllMarkerSymbols(features: List<Feature>) {
+        for (feature in features) {
+            val simpleFeature = SimpleFeature.fromFeature(feature);
+            poiLayer?.getByUid(simpleFeature.getProperty(SimpleFeature.ID))
+                    ?.setMarker(getDefaultMarkerSymbol())
+        }
+    }
+
+    private fun setActiveMarkerSymbol(current: SimpleFeature) {
+        poiLayer?.getByUid(current.getProperty(SimpleFeature.ID))
+                ?.setMarker(getActiveMarkerSymbol())
     }
 
     override fun hideSearchResults() {
@@ -306,6 +321,11 @@ public class MainActivity : AppCompatActivity(), ViewController,
 
     private fun getDefaultMarkerSymbol(): MarkerSymbol {
         return AndroidGraphics.makeMarker(getResources().getDrawable(R.drawable.ic_pin),
+                MarkerItem.HotspotPlace.BOTTOM_CENTER);
+    }
+
+    private fun getActiveMarkerSymbol(): MarkerSymbol {
+        return AndroidGraphics.makeMarker(getResources().getDrawable(R.drawable.ic_pin_active),
                 MarkerItem.HotspotPlace.BOTTOM_CENTER);
     }
 
