@@ -2,6 +2,7 @@ package com.mapzen.privatemaps;
 
 import com.mapzen.android.lost.api.LocationServices;
 import com.mapzen.pelias.SavedSearch;
+import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.widget.PeliasSearchView;
 
 import org.junit.Before;
@@ -29,6 +30,8 @@ import android.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.View;
+
+import java.util.ArrayList;
 
 import static android.content.Context.LOCATION_SERVICE;
 import static com.mapzen.privatemaps.TestMap.TestAnimator.getLastGeoPoint;
@@ -115,10 +118,10 @@ public class MainActivityTest {
     }
 
     @Test
-    public void shouldMarkerPositionOnLocationUpdate() throws Exception {
+    public void shouldSetMarkerPositionOnLocationUpdate() throws Exception {
         LocationServices.FusedLocationApi.setMockMode(true);
         LocationServices.FusedLocationApi.setMockLocation(getTestLocation(1.0, 2.0));
-        ItemizedLayer itemizedLayer = (ItemizedLayer) mapView.map().layers().get(4);
+        ItemizedLayer itemizedLayer = (ItemizedLayer) mapView.map().layers().get(5);
         MarkerItem item = itemizedLayer.removeItem(0);
         assertThat(item.geoPoint.getLatitude()).isEqualTo(1.0);
         assertThat(item.geoPoint.getLongitude()).isEqualTo(2.0);
@@ -240,6 +243,27 @@ public class MainActivityTest {
         activity.showProgress();
         activity.hideProgress();
         assertThat(activity.findViewById(R.id.progress).getVisibility()).isEqualTo(View.GONE);
+    }
+
+    @Test
+    public void showSearchResults_shouldAddFeaturesToPoiLayer() throws Exception {
+        ArrayList<Feature> features = new ArrayList<>();
+        features.add(SearchResultsAdapterTest.getTestFeature());
+        features.add(SearchResultsAdapterTest.getTestFeature());
+        features.add(SearchResultsAdapterTest.getTestFeature());
+        activity.showSearchResults(features);
+        assertThat(activity.getPoiLayer().size()).isEqualTo(3);
+    }
+
+    @Test
+    public void hideSearchResults_shouldClearPoiLayer() throws Exception {
+        ArrayList<Feature> features = new ArrayList<>();
+        features.add(SearchResultsAdapterTest.getTestFeature());
+        features.add(SearchResultsAdapterTest.getTestFeature());
+        features.add(SearchResultsAdapterTest.getTestFeature());
+        activity.showSearchResults(features);
+        activity.hideSearchResults();
+        assertThat(activity.getPoiLayer().size()).isEqualTo(0);
     }
 
     private Location getTestLocation(double lat, double lng) {

@@ -24,6 +24,11 @@ import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.squareup.okhttp.HttpResponseCache
 import org.oscim.android.MapView
+import org.oscim.android.canvas.AndroidGraphics
+import org.oscim.layers.marker.ItemizedLayer
+import org.oscim.layers.marker.MarkerItem
+import org.oscim.layers.marker.MarkerSymbol
+import org.oscim.map.Map;
 import org.oscim.tiling.source.OkHttpEngine
 import retrofit.Callback
 import retrofit.RetrofitError
@@ -50,6 +55,7 @@ public class MainActivity : AppCompatActivity(), ViewController {
     var mapController: MapController? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
     var optionsMenu: Menu? = null
+    var poiLayer: ItemizedLayer<MarkerItem>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super<AppCompatActivity>.onCreate(savedInstanceState)
@@ -57,9 +63,10 @@ public class MainActivity : AppCompatActivity(), ViewController {
         app = getApplication() as PrivateMapsApplication
         app?.component()?.inject(this)
         presenter?.viewController = this
-        presenter?.restoreViewState()
         locationClient?.connect()
         initMapController()
+        initPoiLayer()
+        presenter?.restoreViewState()
         initAutoCompleteAdapter()
         initFindMeButton()
         centerOnCurrentLocation()
@@ -104,6 +111,14 @@ public class MainActivity : AppCompatActivity(), ViewController {
                 .addLabelLayer()
                 .setTheme(STYLE_PATH)
                 .setCurrentLocationDrawable(getResources().getDrawable(FIND_ME_ICON))
+    }
+
+    private fun initPoiLayer() {
+        val map = mapController?.getMap()
+        if (map != null) {
+            poiLayer = ItemizedLayer<MarkerItem>(map, getDefaultMarkerSymbol())
+            map.layers().add(poiLayer)
+        }
     }
 
     private fun initAutoCompleteAdapter() {
@@ -235,14 +250,37 @@ public class MainActivity : AppCompatActivity(), ViewController {
     }
 
     override fun showSearchResults(features: List<Feature>) {
+        showSearchResultsPager(features)
+        addSearchResultsToMap(features)
+    }
+
+    private fun showSearchResultsPager(features: List<Feature>) {
         val pager = findViewById(R.id.search_results) as SearchResultsView
         pager.setAdapter(SearchResultsAdapter(this, features))
         pager.setVisibility(View.VISIBLE)
     }
 
+    private fun addSearchResultsToMap(features: List<Feature>) {
+        poiLayer?.removeAllItems()
+        for (feature in features) {
+            poiLayer?.addItem(SimpleFeature.fromFeature(feature).getMarker())
+        }
+
+        mapController?.getMap()?.updateMap(true)
+    }
+
     override fun hideSearchResults() {
-        val pager = findViewById(R.id.search_results) as SearchResultsView
-        pager.setVisibility(View.GONE)
+        hideSearchResultsPager()
+        removeSearchResultsFromMap()
+    }
+
+    private fun hideSearchResultsPager() {
+        (findViewById(R.id.search_results) as SearchResultsView).setVisibility(View.GONE)
+    }
+
+    private fun removeSearchResultsFromMap() {
+        poiLayer?.removeAllItems()
+        mapController?.getMap()?.updateMap(true)
     }
 
     override fun showProgress() {
@@ -251,5 +289,10 @@ public class MainActivity : AppCompatActivity(), ViewController {
 
     override fun hideProgress() {
         findViewById(R.id.progress).setVisibility(View.GONE)
+    }
+
+    private fun getDefaultMarkerSymbol(): MarkerSymbol {
+        return AndroidGraphics.makeMarker(getResources().getDrawable(R.drawable.ic_pin),
+                MarkerItem.HotspotPlace.BOTTOM_CENTER);
     }
 }
