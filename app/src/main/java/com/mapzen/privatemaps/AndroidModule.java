@@ -40,4 +40,8 @@ public class AndroidModule {
     @Provides @Singleton MainPresenter provideMainPresenter() {
         return new MainPresenterImpl();
     }
+
+    @Provides @Singleton MarkerSymbolFactory provideMarkerSymbolFactory() {
+        return new MarkerSymbolFactory(application);
+    }
 }

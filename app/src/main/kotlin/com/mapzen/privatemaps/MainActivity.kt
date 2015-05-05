@@ -24,10 +24,8 @@ import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.squareup.okhttp.HttpResponseCache
 import org.oscim.android.MapView
-import org.oscim.android.canvas.AndroidGraphics
-import org.oscim.layers.marker.ItemizedLayer
-import org.oscim.layers.marker.MarkerItem
 import org.oscim.layers.marker.MarkerSymbol
+import org.oscim.map.Map
 import org.oscim.tiling.source.OkHttpEngine
 import retrofit.Callback
 import retrofit.RetrofitError
@@ -51,12 +49,14 @@ public class MainActivity : AppCompatActivity(), ViewController,
     [Inject] set
     var presenter: MainPresenter? = null
     [Inject] set
+    var markerSymbolFactory: MarkerSymbolFactory? = null
+    [Inject] set
 
     var app: PrivateMapsApplication? = null
     var mapController: MapController? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
     var optionsMenu: Menu? = null
-    var poiLayer: ItemizedLayer<MarkerItem>? = null
+    var poiLayer: PoiLayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super<AppCompatActivity>.onCreate(savedInstanceState)
@@ -116,9 +116,10 @@ public class MainActivity : AppCompatActivity(), ViewController,
 
     private fun initPoiLayer() {
         val map = mapController?.getMap()
-        if (map != null) {
-            poiLayer = ItemizedLayer<MarkerItem>(map, getDefaultMarkerSymbol())
-            map.layers().add(poiLayer)
+        val defaultMarker = markerSymbolFactory?.getDefaultMarker()
+        val activeMarker = markerSymbolFactory?.getActiveMarker()
+        if (map is Map && defaultMarker is MarkerSymbol && activeMarker is MarkerSymbol) {
+            poiLayer = PoiLayer(map, defaultMarker, activeMarker)
         }
     }
 
@@ -264,37 +265,23 @@ public class MainActivity : AppCompatActivity(), ViewController,
 
     private fun addSearchResultsToMap(features: List<Feature>) {
         poiLayer?.removeAllItems()
-        for (feature in features) {
-            poiLayer?.addItem(SimpleFeature.fromFeature(feature).getMarker())
-        }
+        poiLayer?.addAll(features)
         centerOnCurrentFeature(features)
     }
 
     override fun centerOnCurrentFeature(features: List<Feature>) {
         Handler().postDelayed(Runnable {
             val pager = findViewById(R.id.search_results) as SearchResultsView
-            val current = SimpleFeature.fromFeature(features.get(pager.getCurrentItem()));
+            val position = pager.getCurrentItem();
+            val feature = SimpleFeature.fromFeature(features.get(position));
             val location = Location("map");
-            location.setLatitude(current.getLat())
-            location.setLongitude(current.getLon())
-            resetAllMarkerSymbols(features)
-            setActiveMarkerSymbol(current)
+            location.setLatitude(feature.getLat())
+            location.setLongitude(feature.getLon())
+            poiLayer?.resetAllItems()
+            poiLayer?.setActiveItem(position)
             mapController?.resetMapAndCenterOn(location)
             mapController?.getMap()?.updateMap(true)
         }, 100);
-    }
-
-    private fun resetAllMarkerSymbols(features: List<Feature>) {
-        for (feature in features) {
-            val simpleFeature = SimpleFeature.fromFeature(feature);
-            poiLayer?.getByUid(simpleFeature.getProperty(SimpleFeature.ID))
-                    ?.setMarker(getDefaultMarkerSymbol())
-        }
-    }
-
-    private fun setActiveMarkerSymbol(current: SimpleFeature) {
-        poiLayer?.getByUid(current.getProperty(SimpleFeature.ID))
-                ?.setMarker(getActiveMarkerSymbol())
     }
 
     override fun hideSearchResults() {
@@ -317,16 +304,6 @@ public class MainActivity : AppCompatActivity(), ViewController,
 
     override fun hideProgress() {
         findViewById(R.id.progress).setVisibility(View.GONE)
-    }
-
-    private fun getDefaultMarkerSymbol(): MarkerSymbol {
-        return AndroidGraphics.makeMarker(getResources().getDrawable(R.drawable.ic_pin),
-                MarkerItem.HotspotPlace.BOTTOM_CENTER);
-    }
-
-    private fun getActiveMarkerSymbol(): MarkerSymbol {
-        return AndroidGraphics.makeMarker(getResources().getDrawable(R.drawable.ic_pin_active),
-                MarkerItem.HotspotPlace.BOTTOM_CENTER);
     }
 
     override fun onSearchResultSelected(position: Int) {
