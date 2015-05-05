@@ -34,7 +34,9 @@ import retrofit.RetrofitError
 import retrofit.client.Response
 import javax.inject.Inject
 
-public class MainActivity : AppCompatActivity(), ViewController {
+public class MainActivity : AppCompatActivity(), ViewController,
+        SearchResultsView.OnSearchResultSelectedListener {
+
     private val BASE_TILE_URL = "http://vector.dev.mapzen.com/osm/all"
     private val STYLE_PATH = "styles/mapzen.xml"
     private val FIND_ME_ICON = android.R.drawable.star_big_on
@@ -257,6 +259,7 @@ public class MainActivity : AppCompatActivity(), ViewController {
         val pager = findViewById(R.id.search_results) as SearchResultsView
         pager.setAdapter(SearchResultsAdapter(this, features))
         pager.setVisibility(View.VISIBLE)
+        pager.onSearchResultsSelectedListener = this
     }
 
     private fun addSearchResultsToMap(features: List<Feature>) {
@@ -267,7 +270,7 @@ public class MainActivity : AppCompatActivity(), ViewController {
         centerOnCurrentFeature(features)
     }
 
-    private fun centerOnCurrentFeature(features: List<Feature>) {
+    override fun centerOnCurrentFeature(features: List<Feature>) {
         Handler().postDelayed(Runnable {
             val pager = findViewById(R.id.search_results) as SearchResultsView
             val current = SimpleFeature.fromFeature(features.get(pager.getCurrentItem()));
@@ -304,5 +307,9 @@ public class MainActivity : AppCompatActivity(), ViewController {
     private fun getDefaultMarkerSymbol(): MarkerSymbol {
         return AndroidGraphics.makeMarker(getResources().getDrawable(R.drawable.ic_pin),
                 MarkerItem.HotspotPlace.BOTTOM_CENTER);
+    }
+
+    override fun onSearchResultSelected(position: Int) {
+        presenter?.onSearchResultSelected(position)
     }
 }

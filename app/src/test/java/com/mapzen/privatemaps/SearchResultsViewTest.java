@@ -1,5 +1,7 @@
 package com.mapzen.privatemaps;
 
+import com.mapzen.pelias.gson.Feature;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +11,8 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
@@ -72,6 +76,22 @@ public class SearchResultsViewTest {
         assertThat(searchResultsView.getCurrentItem()).isEqualTo(2);
     }
 
+    @Test
+    public void onPageSelected_shouldNotifyOnSearchResultSelectedListener() throws Exception {
+        final ArrayList<Feature> features = new ArrayList<>();
+        final Feature feature = SearchResultsAdapterTest.getTestFeature();
+        features.add(feature);
+        features.add(feature);
+        features.add(feature);
+
+        final SearchResultsAdapter adapter = new SearchResultsAdapter(application, features);
+        final TestSelectedListener listener = new TestSelectedListener();
+        searchResultsView.setAdapter(adapter);
+        searchResultsView.setOnSearchResultsSelectedListener(listener);
+        searchResultsView.onPageSelected(2);
+        assertThat(listener.position).isEqualTo(2);
+    }
+
     private class TestPagerAdapter extends PagerAdapter {
         @Override public int getCount() {
             return 3;
@@ -79,6 +99,14 @@ public class SearchResultsViewTest {
 
         @Override public boolean isViewFromObject(View view, Object object) {
             return false;
+        }
+    }
+
+    private class TestSelectedListener implements SearchResultsView.OnSearchResultSelectedListener {
+        private int position;
+
+        @Override public void onSearchResultSelected(int position) {
+            this.position = position;
         }
     }
 }

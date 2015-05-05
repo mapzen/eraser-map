@@ -28,4 +28,10 @@ public class MainPresenterImpl : MainPresenter {
     override fun onQuerySubmit() {
         viewController?.showProgress()
     }
+
+    override fun onSearchResultSelected(position: Int) {
+        if (result != null) {
+            viewController?.centerOnCurrentFeature(result?.getFeatures())
+        }
+    }
 }

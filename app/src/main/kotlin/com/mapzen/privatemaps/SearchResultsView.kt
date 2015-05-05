@@ -11,6 +11,8 @@ import android.widget.TextView
 public class SearchResultsView(context: Context, attrs: AttributeSet)
         : LinearLayout(context, attrs), ViewPager.OnPageChangeListener {
 
+    public var onSearchResultsSelectedListener: OnSearchResultSelectedListener? = null
+
     init {
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         inflater.inflate(R.layout.view_search_results, this, true)
@@ -39,8 +41,14 @@ public class SearchResultsView(context: Context, attrs: AttributeSet)
         val indicator = findViewById(R.id.indicator) as TextView
         indicator.setText(getResources().getString(R.string.search_results_indicator,
                 position + 1, pager.getAdapter().getCount()))
+
+        onSearchResultsSelectedListener?.onSearchResultSelected(position)
     }
 
     override fun onPageScrollStateChanged(state: Int) {
+    }
+
+    public trait OnSearchResultSelectedListener {
+        public fun onSearchResultSelected(position: Int)
     }
 }
