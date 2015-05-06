@@ -73,9 +73,24 @@ public class MainPresenterTest {
         assertThat(controller.isProgressVisible).isFalse();
     }
 
+    @Test
+    public void onExpandSearchView_shouldHideOverflowMenu() throws Exception {
+        controller.isOverflowVisible = true;
+        presenter.onExpandSearchView();
+        assertThat(controller.isOverflowVisible).isFalse();
+    }
+
+    @Test
+    public void onCollapseSearchView_shouldShowOverflowMenu() throws Exception {
+        controller.isOverflowVisible = false;
+        presenter.onCollapseSearchView();
+        assertThat(controller.isOverflowVisible).isTrue();
+    }
+
     private class TestViewController implements ViewController {
         private List<Feature> searchResults;
         private boolean isProgressVisible;
+        private boolean isOverflowVisible;
 
         @Override public void showSearchResults(@NotNull List<? extends Feature> features) {
             searchResults = (List<Feature>) features;
@@ -94,6 +109,14 @@ public class MainPresenterTest {
 
         @Override public void hideProgress() {
             isProgressVisible = false;
+        }
+
+        @Override public void showOverflowMenu() {
+            isOverflowVisible = true;
+        }
+
+        @Override public void hideOverflowMenu() {
+            isOverflowVisible = false;
         }
     }
 }

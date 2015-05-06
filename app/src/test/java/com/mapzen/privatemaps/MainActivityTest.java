@@ -278,10 +278,44 @@ public class MainActivityTest {
         assertThat(TestAnimator.getLastGeoPoint().getLongitude()).isEqualTo(2.0, within(0.0001));
     }
 
+    @Test
+    public void hideOverflowMenu_shouldHideOverflowGroup() throws Exception {
+        final RoboMenuWithGroup menu = new RoboMenuWithGroup(0, true);
+        activity.onCreateOptionsMenu(menu);
+        activity.hideOverflowMenu();
+        assertThat(menu.group).isEqualTo(R.id.menu_overflow);
+        assertThat(menu.visible).isEqualTo(false);
+    }
+
+    @Test
+    public void showOverflowMenu_shouldShowOverflowGroup() throws Exception {
+        final RoboMenuWithGroup menu = new RoboMenuWithGroup(0, false);
+        activity.onCreateOptionsMenu(menu);
+        activity.showOverflowMenu();
+        assertThat(menu.group).isEqualTo(R.id.menu_overflow);
+        assertThat(menu.visible).isEqualTo(true);
+    }
+
     private Location getTestLocation(double lat, double lng) {
         Location location = new Location("test");
         location.setLatitude(lat);
         location.setLongitude(lng);
         return location;
+    }
+
+    private class RoboMenuWithGroup extends RoboMenu {
+        private int group;
+        private boolean visible;
+
+        private RoboMenuWithGroup(int group, boolean visible) {
+            this.group = group;
+            this.visible = visible;
+        }
+
+        @Override
+        public void setGroupVisible(int group, boolean visible) {
+            this.group = group;
+            this.visible = visible;
+        }
     }
 }

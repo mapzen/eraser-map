@@ -232,6 +232,7 @@ public class MainActivity : AppCompatActivity(), ViewController,
 
     inner class SearchOnActionExpandListener : MenuItemCompat.OnActionExpandListener {
         override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+            presenter?.onExpandSearchView()
             return true
         }
 
@@ -298,20 +299,16 @@ public class MainActivity : AppCompatActivity(), ViewController,
         mapController?.getMap()?.updateMap(true)
     }
 
-    override fun showProgress() {
-        findViewById(R.id.progress).setVisibility(View.VISIBLE)
-    }
+    override fun showProgress() = findViewById(R.id.progress).setVisibility(View.VISIBLE)
 
-    override fun hideProgress() {
-        findViewById(R.id.progress).setVisibility(View.GONE)
-    }
+    override fun hideProgress() = findViewById(R.id.progress).setVisibility(View.GONE)
 
-    override fun onSearchResultSelected(position: Int) {
-        presenter?.onSearchResultSelected(position)
-    }
+    override fun showOverflowMenu() = optionsMenu?.setGroupVisible(R.id.menu_overflow, true)
 
-    override fun onPoiClick(position: Int) {
-        val pager = findViewById(R.id.search_results) as SearchResultsView
-        pager.setCurrentItem(position)
-    }
+    override fun hideOverflowMenu() = optionsMenu?.setGroupVisible(R.id.menu_overflow, false)
+
+    override fun onSearchResultSelected(position: Int) = presenter?.onSearchResultSelected(position)
+
+    override fun onPoiClick(position: Int) =
+            (findViewById(R.id.search_results) as SearchResultsView).setCurrentItem(position)
 }

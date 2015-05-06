@@ -8,4 +8,6 @@ public trait ViewController {
     public fun hideSearchResults()
     public fun showProgress()
     public fun hideProgress()
+    public fun showOverflowMenu()
+    public fun hideOverflowMenu()
 }

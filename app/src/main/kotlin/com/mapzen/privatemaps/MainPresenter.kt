@@ -9,6 +9,7 @@ public trait MainPresenter {
     public fun onSearchResultsAvailable(result: Result?)
     public fun onSearchResultSelected(position: Int)
     public fun restoreViewState()
+    public fun onExpandSearchView()
     public fun onCollapseSearchView()
     public fun onQuerySubmit()
 }

@@ -20,9 +20,14 @@ public class MainPresenterImpl : MainPresenter {
         }
     }
 
+    override fun onExpandSearchView() {
+        viewController?.hideOverflowMenu()
+    }
+
     override fun onCollapseSearchView() {
         result = null;
         viewController?.hideSearchResults()
+        viewController?.showOverflowMenu()
     }
 
     override fun onQuerySubmit() {
