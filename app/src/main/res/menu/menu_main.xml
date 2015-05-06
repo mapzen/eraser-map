@@ -8,6 +8,13 @@
         app:showAsAction="collapseActionView|ifRoom"
         app:actionViewClass="com.mapzen.pelias.widget.PeliasSearchView" />
 
+    <item
+        android:id="@+id/action_view_all"
+        android:title="@string/action_view_all"
+        android:icon="@drawable/ic_action_view_all"
+        android:visible="false"
+        app:showAsAction="always" />
+
     <group android:id="@+id/menu_overflow">
         <item
             android:id="@+id/action_clear"

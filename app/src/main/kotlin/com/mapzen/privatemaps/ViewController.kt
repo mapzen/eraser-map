@@ -10,4 +10,6 @@ public trait ViewController {
     public fun hideProgress()
     public fun showOverflowMenu()
     public fun hideOverflowMenu()
+    public fun showActionViewAll()
+    public fun hideActionViewAll()
 }

@@ -87,10 +87,25 @@ public class MainPresenterTest {
         assertThat(controller.isOverflowVisible).isTrue();
     }
 
+    @Test
+    public void onSearchResultsAvailable_shouldShowActionViewAll() throws Exception {
+        controller.isViewAllVisible = false;
+        presenter.onSearchResultsAvailable(new Result());
+        assertThat(controller.isViewAllVisible).isTrue();
+    }
+
+    @Test
+    public void onCollapseSearchView_shouldHideActionViewAll() throws Exception {
+        controller.isViewAllVisible = true;
+        presenter.onCollapseSearchView();
+        assertThat(controller.isViewAllVisible).isFalse();
+    }
+
     private class TestViewController implements ViewController {
         private List<Feature> searchResults;
         private boolean isProgressVisible;
         private boolean isOverflowVisible;
+        private boolean isViewAllVisible;
 
         @Override public void showSearchResults(@NotNull List<? extends Feature> features) {
             searchResults = (List<Feature>) features;
@@ -117,6 +132,14 @@ public class MainPresenterTest {
 
         @Override public void hideOverflowMenu() {
             isOverflowVisible = false;
+        }
+
+        @Override public void showActionViewAll() {
+            isViewAllVisible = true;
+        }
+
+        @Override public void hideActionViewAll() {
+            isViewAllVisible = false;
         }
     }
 }

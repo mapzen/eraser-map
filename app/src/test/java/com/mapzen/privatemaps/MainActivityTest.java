@@ -279,6 +279,15 @@ public class MainActivityTest {
     }
 
     @Test
+    public void showOverflowMenu_shouldShowOverflowGroup() throws Exception {
+        final RoboMenuWithGroup menu = new RoboMenuWithGroup(0, false);
+        activity.onCreateOptionsMenu(menu);
+        activity.showOverflowMenu();
+        assertThat(menu.group).isEqualTo(R.id.menu_overflow);
+        assertThat(menu.visible).isEqualTo(true);
+    }
+
+    @Test
     public void hideOverflowMenu_shouldHideOverflowGroup() throws Exception {
         final RoboMenuWithGroup menu = new RoboMenuWithGroup(0, true);
         activity.onCreateOptionsMenu(menu);
@@ -288,12 +297,21 @@ public class MainActivityTest {
     }
 
     @Test
-    public void showOverflowMenu_shouldShowOverflowGroup() throws Exception {
-        final RoboMenuWithGroup menu = new RoboMenuWithGroup(0, false);
+    public void showActionViewAll_shouldSetMenuItemVisible() throws Exception {
+        final RoboMenu menu = new RoboMenu();
         activity.onCreateOptionsMenu(menu);
-        activity.showOverflowMenu();
-        assertThat(menu.group).isEqualTo(R.id.menu_overflow);
-        assertThat(menu.visible).isEqualTo(true);
+        menu.findItem(R.id.action_view_all).setVisible(false);
+        activity.showActionViewAll();
+        assertThat(menu.findItem(R.id.action_view_all).isVisible()).isTrue();
+    }
+
+    @Test
+    public void hideActionViewAll_shouldSetMenuItemNotVisible() throws Exception {
+        final RoboMenu menu = new RoboMenu();
+        activity.onCreateOptionsMenu(menu);
+        menu.findItem(R.id.action_view_all).setVisible(true);
+        activity.hideActionViewAll();
+        assertThat(menu.findItem(R.id.action_view_all).isVisible()).isFalse();
     }
 
     private Location getTestLocation(double lat, double lng) {

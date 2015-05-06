@@ -6,17 +6,18 @@ public class MainPresenterImpl : MainPresenter {
     override var viewController: ViewController? = null
     override var currentSearchTerm: String? = null
 
-    private var result: Result? = null
+    private var searchResults: Result? = null
 
-    override fun onSearchResultsAvailable(result: Result?) {
-        this.result = result
-        viewController?.showSearchResults(result?.getFeatures())
+    override fun onSearchResultsAvailable(searchResults: Result?) {
+        this.searchResults = searchResults
+        viewController?.showSearchResults(searchResults?.getFeatures())
         viewController?.hideProgress()
+        viewController?.showActionViewAll()
     }
 
     override fun restoreViewState() {
-        if (result != null) {
-            viewController?.showSearchResults(result?.getFeatures())
+        if (searchResults != null) {
+            viewController?.showSearchResults(searchResults?.getFeatures())
         }
     }
 
@@ -25,9 +26,10 @@ public class MainPresenterImpl : MainPresenter {
     }
 
     override fun onCollapseSearchView() {
-        result = null;
+        searchResults = null;
         viewController?.hideSearchResults()
         viewController?.showOverflowMenu()
+        viewController?.hideActionViewAll()
     }
 
     override fun onQuerySubmit() {
@@ -35,8 +37,8 @@ public class MainPresenterImpl : MainPresenter {
     }
 
     override fun onSearchResultSelected(position: Int) {
-        if (result != null) {
-            viewController?.centerOnCurrentFeature(result?.getFeatures())
+        if (searchResults != null) {
+            viewController?.centerOnCurrentFeature(searchResults?.getFeatures())
         }
     }
 }

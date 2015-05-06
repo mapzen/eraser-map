@@ -213,6 +213,7 @@ public class MainActivity : AppCompatActivity(), ViewController,
             actionView.setQuery(term, false)
             if (findViewById(R.id.search_results).getVisibility() == View.VISIBLE) {
                 actionView.clearFocus()
+                showActionViewAll()
             }
             presenter?.currentSearchTerm = null
         }
@@ -311,4 +312,12 @@ public class MainActivity : AppCompatActivity(), ViewController,
 
     override fun onPoiClick(position: Int) =
             (findViewById(R.id.search_results) as SearchResultsView).setCurrentItem(position)
+
+    override fun showActionViewAll() {
+        optionsMenu?.findItem(R.id.action_view_all)?.setVisible(true)
+    }
+
+    override fun hideActionViewAll() {
+        optionsMenu?.findItem(R.id.action_view_all)?.setVisible(false)
+    }
 }
