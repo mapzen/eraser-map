@@ -12,7 +12,10 @@ public class MainPresenterImpl : MainPresenter {
         this.searchResults = searchResults
         viewController?.showSearchResults(searchResults?.getFeatures())
         viewController?.hideProgress()
-        viewController?.showActionViewAll()
+        val featureCount = searchResults?.getFeatures()?.size()
+        if (featureCount != null && featureCount > 1) {
+            viewController?.showActionViewAll()
+        }
     }
 
     override fun restoreViewState() {

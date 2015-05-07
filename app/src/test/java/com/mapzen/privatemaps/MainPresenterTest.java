@@ -90,7 +90,13 @@ public class MainPresenterTest {
     @Test
     public void onSearchResultsAvailable_shouldShowActionViewAll() throws Exception {
         controller.isViewAllVisible = false;
-        presenter.onSearchResultsAvailable(new Result());
+        Result result = new Result();
+        ArrayList<Feature> features = new ArrayList<>();
+        features.add(new Feature());
+        features.add(new Feature());
+        features.add(new Feature());
+        result.setFeatures(features);
+        presenter.onSearchResultsAvailable(result);
         assertThat(controller.isViewAllVisible).isTrue();
     }
 
