@@ -18,6 +18,7 @@ import com.mapzen.mapburrito.MapController
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.SavedSearch
+import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.pelias.widget.AutoCompleteAdapter

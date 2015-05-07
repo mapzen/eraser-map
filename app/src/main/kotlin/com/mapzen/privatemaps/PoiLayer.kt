@@ -1,6 +1,8 @@
 package com.mapzen.privatemaps
 
+import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
+import org.oscim.core.GeoPoint
 import org.oscim.layers.marker.ItemizedLayer
 import org.oscim.layers.marker.MarkerItem
 import org.oscim.layers.marker.MarkerSymbol
@@ -18,7 +20,11 @@ public class PoiLayer(val map: Map, val defaultMarker: MarkerSymbol, val activeM
 
     public fun addAll(features: List<Feature>) {
         for (feature in features) {
-            addItem(SimpleFeature.fromFeature(feature).getMarker())
+            val simpleFeature = SimpleFeature.fromFeature(feature)
+            addItem(MarkerItem(simpleFeature.getProperty(SimpleFeature.ID),
+                    simpleFeature.getTitle(),
+                    simpleFeature.getAddress(),
+                    GeoPoint(simpleFeature.getLat(), simpleFeature.getLon())))
         }
     }
 
