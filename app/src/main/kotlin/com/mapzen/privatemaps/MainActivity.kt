@@ -131,6 +131,8 @@ public class MainActivity : AppCompatActivity(), ViewController,
 
     private fun initAutoCompleteAdapter() {
         autoCompleteAdapter = AutoCompleteAdapter(this, R.layout.list_item_auto_complete)
+        autoCompleteAdapter?.setRecentSearchIconResourceId(R.drawable.ic_recent)
+        autoCompleteAdapter?.setAutoCompleteIconResourceId(R.drawable.ic_pin_outline)
     }
 
     private fun initFindMeButton() {
