@@ -1,5 +1,6 @@
 package com.mapzen.privatemaps;
 
+import com.mapzen.pelias.SimpleFeature;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.gson.Geometry;
 import com.mapzen.pelias.gson.Properties;
