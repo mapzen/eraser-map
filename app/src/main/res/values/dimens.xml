@@ -1,6 +1,7 @@
 <resources>
     <dimen name="padding_horizontal_default">16dp</dimen>
-    <dimen name="padding_vertical_default">4dp</dimen>
+    <dimen name="padding_vertical_default">8dp</dimen>
+    <dimen name="padding_vertical_small">4dp</dimen>
 
     <dimen name="font_big">28sp</dimen>
     <dimen name="font_small">15sp</dimen>

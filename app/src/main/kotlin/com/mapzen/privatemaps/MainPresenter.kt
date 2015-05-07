@@ -12,4 +12,5 @@ public trait MainPresenter {
     public fun onExpandSearchView()
     public fun onCollapseSearchView()
     public fun onQuerySubmit()
+    public fun onViewAllSearchResults()
 }

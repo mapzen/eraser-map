@@ -41,4 +41,8 @@ public class MainPresenterImpl : MainPresenter {
             viewController?.centerOnCurrentFeature(searchResults?.getFeatures())
         }
     }
+
+    override fun onViewAllSearchResults() {
+        viewController?.showAllSearchResults(searchResults?.getFeatures())
+    }
 }

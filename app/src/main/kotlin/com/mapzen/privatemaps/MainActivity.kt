@@ -1,5 +1,6 @@
 package com.mapzen.privatemaps
 
+import android.content.Intent
 import android.location.Location
 import android.os.Bundle
 import android.os.Handler
@@ -30,15 +31,18 @@ import org.oscim.tiling.source.OkHttpEngine
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
+import java.util.ArrayList
 import javax.inject.Inject
 
 public class MainActivity : AppCompatActivity(), ViewController,
         SearchResultsView.OnSearchResultSelectedListener, PoiLayer.OnPoiClickListener {
-    private val BASE_TILE_URL = "http://vector.dev.mapzen.com/osm/all"
-    private val STYLE_PATH = "styles/mapzen.xml"
-    private val FIND_ME_ICON = android.R.drawable.star_big_on
-    private val LOCATION_UPDATE_INTERVAL_IN_MS = 1000L
-    private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT = 0f
+    private val BASE_TILE_URL: String = "http://vector.dev.mapzen.com/osm/all"
+    private val STYLE_PATH: String = "styles/mapzen.xml"
+    private val FIND_ME_ICON: Int = android.R.drawable.star_big_on
+    private val LOCATION_UPDATE_INTERVAL_IN_MS: Long = 1000L
+    private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT: Float = 0f
+
+    public val requestCodeSearchResults: Int = 0x01;
 
     var locationClient: LostApiClient? = null
     [Inject] set
@@ -183,17 +187,49 @@ public class MainActivity : AppCompatActivity(), ViewController,
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.getItemId()
         when (id) {
-            R.id.action_settings -> return true
-            R.id.action_search -> return true
-            R.id.action_clear -> {
-                savedSearch?.clear()
-                autoCompleteAdapter?.clear()
-                autoCompleteAdapter?.notifyDataSetChanged()
-                return true
-            }
+            R.id.action_settings -> { onActionSettings(); return true }
+            R.id.action_search -> { onActionSearch(); return true }
+            R.id.action_clear -> { onActionClear(); return true }
+            R.id.action_view_all -> { onActionViewAll(); return true }
         }
 
         return super<AppCompatActivity>.onOptionsItemSelected(item)
+    }
+
+    private fun onActionSettings() {
+    }
+
+    private fun onActionSearch() {
+    }
+
+    private fun onActionClear() {
+        savedSearch?.clear()
+        autoCompleteAdapter?.clear()
+        autoCompleteAdapter?.notifyDataSetChanged()
+    }
+
+    private fun onActionViewAll() {
+        presenter?.onViewAllSearchResults()
+    }
+
+    override fun showAllSearchResults(features: List<Feature>) {
+        val simpleFeatures: ArrayList<SimpleFeature> = ArrayList()
+        for (feature in features) {
+            simpleFeatures.add(SimpleFeature.fromFeature(feature))
+        }
+
+        val menuItem = optionsMenu?.findItem(R.id.action_search)
+        val actionView = menuItem?.getActionView() as PeliasSearchView
+        val intent = Intent(this, javaClass<SearchResultsListActivity>())
+        intent.putParcelableArrayListExtra("features", simpleFeatures)
+        intent.putExtra("query", actionView.getQuery().toString())
+        startActivityForResult(intent, requestCodeSearchResults)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode > 0) {
+            (findViewById(R.id.search_results) as SearchResultsView).setCurrentItem(resultCode - 1)
+        }
     }
 
     private fun saveCurrentSearchTerm() {

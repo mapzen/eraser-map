@@ -141,5 +141,8 @@ public class MainPresenterTest {
         @Override public void hideActionViewAll() {
             isViewAllVisible = false;
         }
+
+        @Override public void showAllSearchResults(@NotNull List<? extends Feature> features) {
+        }
     }
 }

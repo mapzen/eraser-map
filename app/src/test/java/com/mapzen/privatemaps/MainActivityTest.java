@@ -314,6 +314,15 @@ public class MainActivityTest {
         assertThat(menu.findItem(R.id.action_view_all).isVisible()).isFalse();
     }
 
+    @Test
+    public void showAllSearchResults_shouldStartSearchResultsActivityForResult() throws Exception {
+        activity.showAllSearchResults(new ArrayList<Feature>());
+        assertThat(shadowOf(activity).peekNextStartedActivityForResult().intent.getComponent()
+                .getClassName()).isEqualTo(SearchResultsListActivity.class.getName());
+        assertThat(shadowOf(activity).peekNextStartedActivityForResult().requestCode)
+                .isEqualTo(activity.getRequestCodeSearchResults());
+    }
+
     private Location getTestLocation(double lat, double lng) {
         Location location = new Location("test");
         location.setLatitude(lat);
