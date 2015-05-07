@@ -5,6 +5,7 @@ import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 
@@ -26,6 +27,12 @@ public class SearchResultsView(context: Context, attrs: AttributeSet)
         pager.setOnPageChangeListener(this)
         indicator.setText(getResources().getString(R.string.search_results_indicator,
                 pager.getCurrentItem() + 1, pager.getAdapter().getCount()))
+
+        if (adapter.getCount() > 1) {
+            indicator.setVisibility(View.VISIBLE)
+        } else {
+            indicator.setVisibility(View.GONE)
+        }
     }
 
     public fun setCurrentItem(position: Int) {
