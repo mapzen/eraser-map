@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
@@ -264,7 +265,10 @@ public class MainActivity : AppCompatActivity(), ViewController,
         }
 
         override fun failure(error: RetrofitError?) {
+            hideProgress()
             Log.e(TAG, "Error fetching search results: " + error?.getMessage())
+            Toast.makeText(this@MainActivity, "Error fetching search results",
+                    Toast.LENGTH_LONG).show()
         }
     }
 
@@ -312,7 +316,7 @@ public class MainActivity : AppCompatActivity(), ViewController,
         Handler().postDelayed(Runnable {
             val pager = findViewById(R.id.search_results) as SearchResultsView
             val position = pager.getCurrentItem();
-            val feature = SimpleFeature.fromFeature(features.get(position));
+            val feature = SimpleFeature.fromFeature(features.get(position))
             val location = Location("map");
             location.setLatitude(feature.getLat())
             location.setLongitude(feature.getLon())
@@ -320,7 +324,7 @@ public class MainActivity : AppCompatActivity(), ViewController,
             poiLayer?.setActiveItem(position)
             mapController?.resetMapAndCenterOn(location)
             mapController?.getMap()?.updateMap(true)
-        }, 100);
+        }, 100)
     }
 
     override fun hideSearchResults() {
