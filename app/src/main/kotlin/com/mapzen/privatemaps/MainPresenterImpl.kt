@@ -15,6 +15,8 @@ public class MainPresenterImpl : MainPresenter {
         val featureCount = searchResults?.getFeatures()?.size()
         if (featureCount != null && featureCount > 1) {
             viewController?.showActionViewAll()
+        } else {
+            viewController?.hideActionViewAll()
         }
     }
 
