@@ -170,7 +170,7 @@ public class MainActivityTest {
         Menu menu = new RoboMenu();
         activity.onCreateOptionsMenu(menu);
         assertThat(menu.findItem(R.id.action_search).getTitle()).isEqualTo("Search");
-        assertThat(menu.findItem(R.id.action_clear).getTitle()).isEqualTo("Clear History");
+        assertThat(menu.findItem(R.id.action_clear).getTitle()).isEqualTo("Erase History");
         assertThat(menu.findItem(R.id.action_settings).getTitle()).isEqualTo("Settings");
     }
 
