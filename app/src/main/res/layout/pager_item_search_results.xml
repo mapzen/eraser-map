@@ -7,10 +7,23 @@
     android:paddingRight="@dimen/padding_horizontal_default"
     android:gravity="center_vertical">
 
+    <ImageButton
+        android:id="@+id/start_route"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="@android:color/transparent"
+        android:paddingBottom="8dp"
+        android:paddingLeft="8dp"
+        android:src="@drawable/ic_route_start" />
+
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/start_route"
         android:ellipsize="end"
         android:maxLines="1"
         android:singleLine="true"
@@ -20,6 +33,8 @@
         android:id="@+id/address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/start_route"
         android:layout_below="@id/title"
         android:ellipsize="end"
         android:maxLines="1"
