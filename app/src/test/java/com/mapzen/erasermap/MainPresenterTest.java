@@ -150,5 +150,11 @@ public class MainPresenterTest {
 
         @Override public void showAllSearchResults(@NotNull List<? extends Feature> features) {
         }
+
+        @Override public void collapseSearchView() {
+        }
+
+        @Override public void showRoutePreview(@NotNull Feature feature) {
+        }
     }
 }
