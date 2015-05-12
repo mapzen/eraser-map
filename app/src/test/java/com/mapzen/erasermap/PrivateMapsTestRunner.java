@@ -1,8 +1,8 @@
-package com.mapzen.privatemaps;
+package com.mapzen.erasermap;
 
-import com.mapzen.privatemaps.shadows.ShadowGLMatrix;
-import com.mapzen.privatemaps.shadows.ShadowMapView;
-import com.mapzen.privatemaps.shadows.ShadowPorterDuffColorFilter;
+import com.mapzen.erasermap.shadows.ShadowGLMatrix;
+import com.mapzen.erasermap.shadows.ShadowMapView;
+import com.mapzen.erasermap.shadows.ShadowPorterDuffColorFilter;
 
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricGradleTestRunner;

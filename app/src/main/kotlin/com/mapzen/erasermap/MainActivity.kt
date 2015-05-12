@@ -1,4 +1,4 @@
-package com.mapzen.privatemaps
+package com.mapzen.erasermap
 
 import android.content.Intent
 import android.location.Location

@@ -33,7 +33,7 @@
             android:layout_centerInParent="true" />
     </RelativeLayout>
 
-    <com.mapzen.privatemaps.SearchResultsView
+    <com.mapzen.erasermap.SearchResultsView
         android:id="@+id/search_results"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

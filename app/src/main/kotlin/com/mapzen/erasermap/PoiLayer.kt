@@ -1,4 +1,4 @@
-package com.mapzen.privatemaps
+package com.mapzen.erasermap
 
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature

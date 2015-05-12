@@ -1,4 +1,4 @@
-package com.mapzen.privatemaps;
+package com.mapzen.erasermap;
 
 import com.mapzen.android.lost.api.LocationServices;
 import com.mapzen.pelias.SavedSearch;
@@ -34,8 +34,8 @@ import android.view.View;
 import java.util.ArrayList;
 
 import static android.content.Context.LOCATION_SERVICE;
-import static com.mapzen.privatemaps.TestMap.TestAnimator;
-import static com.mapzen.privatemaps.TestMap.TestAnimator.getLastGeoPoint;
+import static com.mapzen.erasermap.TestMap.TestAnimator.clearLastGeoPoint;
+import static com.mapzen.erasermap.TestMap.TestAnimator.getLastGeoPoint;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.robolectric.Shadows.shadowOf;
@@ -56,7 +56,7 @@ public class MainActivityTest {
         shadowLocationManager = shadowOf(locationManager);
         mapView = (MapView) activity.findViewById(R.id.map);
         app = (PrivateMapsApplication) RuntimeEnvironment.application;
-        TestAnimator.clearLastGeoPoint();
+        clearLastGeoPoint();
     }
 
     @Test
@@ -66,7 +66,7 @@ public class MainActivityTest {
 
     @Test
     public void shouldReturnAppName() throws Exception {
-        assertThat(activity.getString(R.string.app_name)).isEqualTo("Private Maps");
+        assertThat(activity.getString(R.string.app_name)).isEqualTo("Eraser Map");
     }
 
     @Test
@@ -274,8 +274,8 @@ public class MainActivityTest {
         features.add(feature);
         activity.showSearchResults(features);
         Robolectric.flushForegroundScheduler();
-        assertThat(TestAnimator.getLastGeoPoint().getLatitude()).isCloseTo(1.0, within(0.0001));
-        assertThat(TestAnimator.getLastGeoPoint().getLongitude()).isEqualTo(2.0, within(0.0001));
+        assertThat(getLastGeoPoint().getLatitude()).isCloseTo(1.0, within(0.0001));
+        assertThat(getLastGeoPoint().getLongitude()).isEqualTo(2.0, within(0.0001));
     }
 
     @Test

@@ -1,4 +1,4 @@
-package com.mapzen.privatemaps;
+package com.mapzen.erasermap;
 
 import java.lang.annotation.Retention;
 

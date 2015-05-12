@@ -9,7 +9,7 @@ android {
   buildToolsVersion "21.1.2"
 
   defaultConfig {
-    applicationId "com.mapzen.privatemaps"
+    applicationId "com.mapzen.erasermap"
     minSdkVersion 15
     targetSdkVersion 21
     versionCode 2

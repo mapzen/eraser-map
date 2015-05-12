@@ -1,4 +1,4 @@
-package com.mapzen.privatemaps;
+package com.mapzen.erasermap;
 
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.pelias.SavedSearch;

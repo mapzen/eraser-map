@@ -1,4 +1,4 @@
-package com.mapzen.privatemaps.shadows;
+package com.mapzen.erasermap.shadows;
 
 import org.robolectric.annotation.Implements;
 

@@ -1,4 +1,4 @@
-package com.mapzen.privatemaps
+package com.mapzen.erasermap
 
 import android.content.Context
 import org.oscim.android.canvas.AndroidGraphics

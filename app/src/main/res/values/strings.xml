@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Private Maps</string>
+    <string name="app_name">Eraser Map</string>
     <string name="action_search">Search</string>
     <string name="action_clear">Erase History</string>
     <string name="action_settings">Settings</string>
