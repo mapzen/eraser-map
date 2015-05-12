@@ -4,6 +4,7 @@ import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.pelias.SavedSearch;
 
 import com.squareup.okhttp.HttpResponseCache;
+import com.squareup.otto.Bus;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -43,5 +44,9 @@ public class AndroidModule {
 
     @Provides @Singleton MarkerSymbolFactory provideMarkerSymbolFactory() {
         return new MarkerSymbolFactory(application);
+    }
+
+    @Provides @Singleton Bus provideBus() {
+        return new Bus();
     }
 }

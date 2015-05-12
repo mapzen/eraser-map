@@ -5,6 +5,8 @@ import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.gson.Geometry;
 import com.mapzen.pelias.gson.Properties;
 
+import com.squareup.otto.Subscribe;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +15,7 @@ import org.robolectric.annotation.Config;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -77,6 +80,17 @@ public class SearchResultsAdapterTest {
         assertThat(container.getChildCount()).isEqualTo(0);
     }
 
+    @Test
+    public void onClick_shouldPostRoutePreviewEvent() throws Exception {
+        View view = (View) adapter.instantiateItem(new FrameLayout(application), 0);
+        ImageButton start = (ImageButton) view.findViewById(R.id.preview);
+        RoutePreviewSubscriber subscriber = new RoutePreviewSubscriber();
+        adapter.getBus().register(subscriber);
+        start.performClick();
+        assertThat(subscriber.event.getFeature().getProperties().getText())
+                .isEqualTo(getTestFeature().getProperties().getText());
+    }
+
     public static Feature getTestFeature() {
         return getTestFeature(0.0, 0.0);
     }
@@ -90,11 +104,20 @@ public class SearchResultsAdapterTest {
         properties.setAdmin1Abbr("Admin1 Abbr");
         feature.setProperties(properties);
         Geometry geometry = new Geometry();
-        List<Double> coordinates = new ArrayList<Double>();
+        List<Double> coordinates = new ArrayList<>();
         coordinates.add(lon);
         coordinates.add(lat);
         geometry.setCoordinates(coordinates);
         feature.setGeometry(geometry);
         return feature;
+    }
+
+    public static class RoutePreviewSubscriber {
+        private RoutePreviewEvent event;
+
+        @Subscribe
+        public void onRoutePreviewEvent(RoutePreviewEvent event) {
+            this.event = event;
+        }
     }
 }

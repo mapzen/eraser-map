@@ -13,6 +13,7 @@ public class PrivateMapsApplication extends Application {
     @Component(modules = AndroidModule.class)
     public interface ApplicationComponent {
         void inject(MainActivity mainActivity);
+        void inject(SearchResultsAdapter searchResultsAdapter);
     }
 
     private ApplicationComponent component;
