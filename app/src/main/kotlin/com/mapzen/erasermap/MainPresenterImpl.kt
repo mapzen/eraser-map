@@ -1,10 +1,16 @@
 package com.mapzen.erasermap
 
 import com.mapzen.pelias.gson.Result
+import com.squareup.otto.Bus
+import com.squareup.otto.Subscribe
 
-public class MainPresenterImpl : MainPresenter {
+public class MainPresenterImpl() : MainPresenter {
     override var viewController: ViewController? = null
     override var currentSearchTerm: String? = null
+    override var bus: Bus? = null
+    set(bus) {
+        bus?.register(this)
+    }
 
     private var searchResults: Result? = null
 
@@ -49,5 +55,10 @@ public class MainPresenterImpl : MainPresenter {
 
     override fun onViewAllSearchResults() {
         viewController?.showAllSearchResults(searchResults?.getFeatures())
+    }
+
+    [Subscribe] public fun onRoutePreviewEvent(event: RoutePreviewEvent) {
+        viewController?.collapseSearchView()
+        viewController?.showRoutePreview(event.feature)
     }
 }

@@ -13,4 +13,6 @@ public trait ViewController {
     public fun hideOverflowMenu()
     public fun showActionViewAll()
     public fun hideActionViewAll()
+    public fun collapseSearchView()
+    public fun showRoutePreview(feature: Feature)
 }

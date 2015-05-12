@@ -26,6 +26,7 @@ import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.squareup.okhttp.HttpResponseCache
+import com.squareup.otto.Bus
 import org.oscim.android.MapView
 import org.oscim.layers.marker.MarkerSymbol
 import org.oscim.map.Map
@@ -56,6 +57,8 @@ public class MainActivity : AppCompatActivity(), ViewController,
     [Inject] set
     var markerSymbolFactory: MarkerSymbolFactory? = null
     [Inject] set
+    var bus: Bus? = null
+    [Inject] set
 
     var app: PrivateMapsApplication? = null
     var mapController: MapController? = null
@@ -69,6 +72,7 @@ public class MainActivity : AppCompatActivity(), ViewController,
         app = getApplication() as PrivateMapsApplication
         app?.component()?.inject(this)
         presenter?.viewController = this
+        presenter?.bus = bus;
         locationClient?.connect()
         initMapController()
         initPoiLayer()
@@ -362,5 +366,14 @@ public class MainActivity : AppCompatActivity(), ViewController,
 
     override fun hideActionViewAll() {
         optionsMenu?.findItem(R.id.action_view_all)?.setVisible(false)
+    }
+
+    override fun collapseSearchView() {
+        optionsMenu?.findItem(R.id.action_search)?.collapseActionView()
+    }
+
+    override fun showRoutePreview(feature: Feature) {
+        Toast.makeText(this, "Begin Route Preview:\n" + feature.getProperties().getText(),
+                Toast.LENGTH_LONG).show();
     }
 }
