@@ -2,8 +2,6 @@ package com.mapzen.erasermap;
 
 import com.mapzen.pelias.SimpleFeature;
 import com.mapzen.pelias.gson.Feature;
-import com.mapzen.pelias.gson.Geometry;
-import com.mapzen.pelias.gson.Properties;
 
 import com.squareup.otto.Subscribe;
 
@@ -19,8 +17,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import static com.mapzen.erasermap.TestHelper.getTestFeature;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
@@ -89,27 +87,6 @@ public class SearchResultsAdapterTest {
         start.performClick();
         assertThat(subscriber.event.getFeature().getProperties().getText())
                 .isEqualTo(getTestFeature().getProperties().getText());
-    }
-
-    public static Feature getTestFeature() {
-        return getTestFeature(0.0, 0.0);
-    }
-
-    public static Feature getTestFeature(double lat, double lon) {
-        Feature feature = new Feature();
-        Properties properties = new Properties();
-        properties.setText("Text");
-        properties.setLocality("Locality");
-        properties.setLocalAdmin("Local Admin");
-        properties.setAdmin1Abbr("Admin1 Abbr");
-        feature.setProperties(properties);
-        Geometry geometry = new Geometry();
-        List<Double> coordinates = new ArrayList<>();
-        coordinates.add(lon);
-        coordinates.add(lat);
-        geometry.setCoordinates(coordinates);
-        feature.setGeometry(geometry);
-        return feature;
     }
 
     public static class RoutePreviewSubscriber {

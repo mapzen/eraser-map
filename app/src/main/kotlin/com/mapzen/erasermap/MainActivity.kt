@@ -15,6 +15,7 @@ import android.widget.Toast
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
+import com.mapzen.erasermap.route.RoutePreviewView
 import com.mapzen.mapburrito.MapController
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.PeliasLocationProvider
@@ -109,6 +110,7 @@ public class MainActivity : AppCompatActivity(), ViewController,
     override fun onDestroy() {
         super<AppCompatActivity>.onDestroy()
         saveCurrentSearchTerm()
+        bus?.unregister(presenter)
     }
 
     private fun initMapController() {
@@ -373,7 +375,9 @@ public class MainActivity : AppCompatActivity(), ViewController,
     }
 
     override fun showRoutePreview(feature: Feature) {
-        Toast.makeText(this, "Begin Route Preview:\n" + feature.getProperties().getText(),
-                Toast.LENGTH_LONG).show();
+        getSupportActionBar()?.hide()
+        findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
+        (findViewById(R.id.route_preview) as RoutePreviewView).destination =
+                SimpleFeature.fromFeature(feature);
     }
 }

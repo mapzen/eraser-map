@@ -17,7 +17,6 @@ import org.oscim.layers.tile.vector.labeling.LabelLayer;
 import org.oscim.tiling.source.OkHttpEngine;
 import org.oscim.tiling.source.oscimap4.OSciMap4TileSource;
 import org.robolectric.Robolectric;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.fakes.RoboMenu;
 import org.robolectric.shadows.ShadowLocationManager;
@@ -29,11 +28,13 @@ import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
-import android.view.View;
 
 import java.util.ArrayList;
 
 import static android.content.Context.LOCATION_SERVICE;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static com.mapzen.erasermap.TestHelper.getTestFeature;
 import static com.mapzen.erasermap.TestMap.TestAnimator.clearLastGeoPoint;
 import static com.mapzen.erasermap.TestMap.TestAnimator.getLastGeoPoint;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +48,6 @@ public class MainActivityTest {
     private LocationManager locationManager;
     private ShadowLocationManager shadowLocationManager;
     private MapView mapView;
-    private PrivateMapsApplication app;
 
     @Before
     public void setUp() throws Exception {
@@ -55,7 +55,6 @@ public class MainActivityTest {
         locationManager = (LocationManager) activity.getSystemService(LOCATION_SERVICE);
         shadowLocationManager = shadowOf(locationManager);
         mapView = (MapView) activity.findViewById(R.id.map);
-        app = (PrivateMapsApplication) RuntimeEnvironment.application;
         clearLastGeoPoint();
     }
 
@@ -236,22 +235,22 @@ public class MainActivityTest {
     @Test
     public void showProgress_shouldSetProgressViewVisible() throws Exception {
         activity.showProgress();
-        assertThat(activity.findViewById(R.id.progress).getVisibility()).isEqualTo(View.VISIBLE);
+        assertThat(activity.findViewById(R.id.progress).getVisibility()).isEqualTo(VISIBLE);
     }
 
     @Test
     public void hideProgress_shouldSetProgressViewGone() throws Exception {
         activity.showProgress();
         activity.hideProgress();
-        assertThat(activity.findViewById(R.id.progress).getVisibility()).isEqualTo(View.GONE);
+        assertThat(activity.findViewById(R.id.progress).getVisibility()).isEqualTo(GONE);
     }
 
     @Test
     public void showSearchResults_shouldAddFeaturesToPoiLayer() throws Exception {
         ArrayList<Feature> features = new ArrayList<>();
-        features.add(SearchResultsAdapterTest.getTestFeature());
-        features.add(SearchResultsAdapterTest.getTestFeature());
-        features.add(SearchResultsAdapterTest.getTestFeature());
+        features.add(getTestFeature());
+        features.add(getTestFeature());
+        features.add(getTestFeature());
         activity.showSearchResults(features);
         assertThat(activity.getPoiLayer().size()).isEqualTo(3);
     }
@@ -259,9 +258,9 @@ public class MainActivityTest {
     @Test
     public void hideSearchResults_shouldClearPoiLayer() throws Exception {
         ArrayList<Feature> features = new ArrayList<>();
-        features.add(SearchResultsAdapterTest.getTestFeature());
-        features.add(SearchResultsAdapterTest.getTestFeature());
-        features.add(SearchResultsAdapterTest.getTestFeature());
+        features.add(getTestFeature());
+        features.add(getTestFeature());
+        features.add(getTestFeature());
         activity.showSearchResults(features);
         activity.hideSearchResults();
         assertThat(activity.getPoiLayer().size()).isEqualTo(0);
@@ -269,7 +268,7 @@ public class MainActivityTest {
 
     @Test
     public void showSearchResults_shouldCenterOnCurrentFeature() throws Exception {
-        Feature feature = SearchResultsAdapterTest.getTestFeature(1.0, 2.0);
+        Feature feature = getTestFeature(1.0, 2.0);
         ArrayList<Feature> features = new ArrayList<>();
         features.add(feature);
         activity.showSearchResults(features);
@@ -321,6 +320,20 @@ public class MainActivityTest {
                 .getClassName()).isEqualTo(SearchResultsListActivity.class.getName());
         assertThat(shadowOf(activity).peekNextStartedActivityForResult().requestCode)
                 .isEqualTo(activity.getRequestCodeSearchResults());
+    }
+
+    @Test
+    public void showRoutePreview_shouldHideActionBar() throws Exception {
+        activity.getSupportActionBar().show();
+        activity.showRoutePreview(getTestFeature());
+        assertThat(activity.getSupportActionBar().isShowing()).isFalse();
+    }
+
+    @Test
+    public void showRoutePreview_shouldShowRoutePreviewView() throws Exception {
+        activity.findViewById(R.id.route_preview).setVisibility(GONE);
+        activity.showRoutePreview(getTestFeature());
+        assertThat(activity.findViewById(R.id.route_preview).getVisibility()).isEqualTo(VISIBLE);
     }
 
     private Location getTestLocation(double lat, double lng) {

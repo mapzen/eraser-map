@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import static com.mapzen.erasermap.TestHelper.getTestFeature;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
@@ -79,7 +80,7 @@ public class SearchResultsViewTest {
     @Test
     public void onPageSelected_shouldNotifyOnSearchResultSelectedListener() throws Exception {
         final ArrayList<Feature> features = new ArrayList<>();
-        final Feature feature = SearchResultsAdapterTest.getTestFeature();
+        final Feature feature = getTestFeature();
         features.add(feature);
         features.add(feature);
         features.add(feature);
