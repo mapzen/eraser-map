@@ -85,7 +85,7 @@ public class SearchResultsAdapterTest {
         RoutePreviewSubscriber subscriber = new RoutePreviewSubscriber();
         adapter.getBus().register(subscriber);
         start.performClick();
-        assertThat(subscriber.event.getFeature().getProperties().getText())
+        assertThat(subscriber.event.getDestination().getProperties().getText())
                 .isEqualTo(getTestFeature().getProperties().getText());
     }
 

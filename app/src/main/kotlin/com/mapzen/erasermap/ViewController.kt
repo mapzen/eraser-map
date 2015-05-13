@@ -15,4 +15,6 @@ public trait ViewController {
     public fun hideActionViewAll()
     public fun collapseSearchView()
     public fun showRoutePreview(feature: Feature)
+    public fun hideRoutePreview()
+    public fun shutDown()
 }

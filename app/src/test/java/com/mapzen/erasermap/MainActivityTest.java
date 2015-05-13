@@ -336,6 +336,20 @@ public class MainActivityTest {
         assertThat(activity.findViewById(R.id.route_preview).getVisibility()).isEqualTo(VISIBLE);
     }
 
+    @Test
+    public void hideRoutePreview_shouldShowActionBar() throws Exception {
+        activity.getSupportActionBar().hide();
+        activity.hideRoutePreview();
+        assertThat(activity.getSupportActionBar().isShowing()).isTrue();
+    }
+
+    @Test
+    public void hideRoutePreview_shouldHideRoutePreviewView() throws Exception {
+        activity.findViewById(R.id.route_preview).setVisibility(VISIBLE);
+        activity.hideRoutePreview();
+        assertThat(activity.findViewById(R.id.route_preview).getVisibility()).isEqualTo(GONE);
+    }
+
     private Location getTestLocation(double lat, double lng) {
         Location location = new Location("test");
         location.setLatitude(lat);

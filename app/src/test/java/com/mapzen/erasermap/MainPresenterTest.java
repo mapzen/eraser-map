@@ -13,7 +13,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MainPresenterTest {
-    private MainPresenter presenter;
+    private MainPresenterImpl presenter;
     private TestViewController controller;
 
     @Before
@@ -107,11 +107,35 @@ public class MainPresenterTest {
         assertThat(controller.isViewAllVisible).isFalse();
     }
 
+    @Test
+    public void onRoutePreviewEvent_shouldCollapseSearchView() throws Exception {
+        controller.isSearchVisible = true;
+        presenter.onRoutePreviewEvent(new RoutePreviewEvent(TestHelper.getTestFeature()));
+        assertThat(controller.isSearchVisible).isFalse();
+    }
+
+    @Test
+    public void onRoutePreviewEvent_shouldShowRoutePreview() throws Exception {
+        controller.isRoutePreviewVisible = false;
+        presenter.onRoutePreviewEvent(new RoutePreviewEvent(TestHelper.getTestFeature()));
+        assertThat(controller.isRoutePreviewVisible).isTrue();
+    }
+
+    @Test
+    public void onBackPressed_shouldHideRoutePreview() throws Exception {
+        presenter.onRoutePreviewEvent(new RoutePreviewEvent(TestHelper.getTestFeature()));
+        presenter.onBackPressed();
+        assertThat(controller.isRoutePreviewVisible).isFalse();
+
+    }
+
     private class TestViewController implements ViewController {
         private List<Feature> searchResults;
         private boolean isProgressVisible;
         private boolean isOverflowVisible;
         private boolean isViewAllVisible;
+        private boolean isSearchVisible;
+        private boolean isRoutePreviewVisible;
 
         @Override public void showSearchResults(@NotNull List<? extends Feature> features) {
             searchResults = (List<Feature>) features;
@@ -152,9 +176,18 @@ public class MainPresenterTest {
         }
 
         @Override public void collapseSearchView() {
+            isSearchVisible = false;
         }
 
         @Override public void showRoutePreview(@NotNull Feature feature) {
+            isRoutePreviewVisible = true;
+        }
+
+        @Override public void hideRoutePreview() {
+            isRoutePreviewVisible = false;
+        }
+
+        @Override public void shutDown() {
         }
     }
 }

@@ -380,4 +380,17 @@ public class MainActivity : AppCompatActivity(), ViewController,
         (findViewById(R.id.route_preview) as RoutePreviewView).destination =
                 SimpleFeature.fromFeature(feature);
     }
+
+    override fun hideRoutePreview() {
+        getSupportActionBar()?.show()
+        findViewById(R.id.route_preview).setVisibility(View.GONE)
+    }
+
+    override fun onBackPressed() {
+        presenter?.onBackPressed()
+    }
+
+    override fun shutDown() {
+        finish()
+    }
 }
