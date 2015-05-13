@@ -14,12 +14,12 @@ public class TileCacheBuilder(val context: Context) {
         val externalCacheDir = context.getExternalCacheDir()
         if (externalCacheDir != null) {
             try {
-                return HttpResponseCache(File(externalCacheDir, CACHE_DIR), CACHE_SIZE);
+                return HttpResponseCache(File(externalCacheDir, CACHE_DIR), CACHE_SIZE)
             } catch (e: IOException) {
-                Log.e(PrivateMapsApplication.TAG, "Unable to create tile cache", e);
+                Log.e(PrivateMapsApplication.TAG, "Unable to create tile cache", e)
             }
         }
 
-        return null;
+        return null
     }
 }
