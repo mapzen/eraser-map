@@ -28,8 +28,10 @@ public class MainPresenterImpl() : MainPresenter {
         }
     }
 
-    override fun restoreViewState() {
-        if (searchResults != null) {
+    override fun onRestoreViewState() {
+        if (destination != null) {
+            viewController?.showRoutePreview(destination!!);
+        } else if (searchResults != null) {
             viewController?.showSearchResults(searchResults?.getFeatures())
         }
     }

@@ -80,7 +80,7 @@ public class MainActivity : AppCompatActivity(), ViewController,
         initAutoCompleteAdapter()
         initFindMeButton()
         centerOnCurrentLocation()
-        presenter?.restoreViewState()
+        presenter?.onRestoreViewState()
     }
 
     override fun onStart() {

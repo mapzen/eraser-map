@@ -10,6 +10,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mapzen.erasermap.TestHelper.getTestFeature;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MainPresenterTest {
@@ -38,7 +39,7 @@ public class MainPresenterTest {
     }
 
     @Test
-    public void restoreViewState_shouldRestorePreviousSearchResults() throws Exception {
+    public void onRestoreViewState_shouldRestorePreviousSearchResults() throws Exception {
         Result result = new Result();
         ArrayList<Feature> features = new ArrayList<>();
         result.setFeatures(features);
@@ -46,8 +47,17 @@ public class MainPresenterTest {
 
         TestViewController newController = new TestViewController();
         presenter.setViewController(newController);
-        presenter.restoreViewState();
+        presenter.onRestoreViewState();
         assertThat(newController.searchResults).isEqualTo(features);
+    }
+
+    @Test
+    public void onRestoreViewState_shouldRestoreRoutePreview() throws Exception {
+        presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
+        TestViewController newController = new TestViewController();
+        presenter.setViewController(newController);
+        presenter.onRestoreViewState();
+        assertThat(newController.isRoutePreviewVisible).isTrue();
     }
 
     @Test
@@ -110,20 +120,20 @@ public class MainPresenterTest {
     @Test
     public void onRoutePreviewEvent_shouldCollapseSearchView() throws Exception {
         controller.isSearchVisible = true;
-        presenter.onRoutePreviewEvent(new RoutePreviewEvent(TestHelper.getTestFeature()));
+        presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
         assertThat(controller.isSearchVisible).isFalse();
     }
 
     @Test
     public void onRoutePreviewEvent_shouldShowRoutePreview() throws Exception {
         controller.isRoutePreviewVisible = false;
-        presenter.onRoutePreviewEvent(new RoutePreviewEvent(TestHelper.getTestFeature()));
+        presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
         assertThat(controller.isRoutePreviewVisible).isTrue();
     }
 
     @Test
     public void onBackPressed_shouldHideRoutePreview() throws Exception {
-        presenter.onRoutePreviewEvent(new RoutePreviewEvent(TestHelper.getTestFeature()));
+        presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
         presenter.onBackPressed();
         assertThat(controller.isRoutePreviewVisible).isFalse();
 
