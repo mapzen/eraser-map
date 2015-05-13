@@ -1,9 +1,4 @@
-package com.mapzen.erasermap.route;
-
-import com.mapzen.erasermap.BuildConfig;
-import com.mapzen.erasermap.PrivateMapsTestRunner;
-import com.mapzen.erasermap.R;
-import com.mapzen.erasermap.TestHelper;
+package com.mapzen.erasermap;
 
 import org.junit.Before;
 import org.junit.Test;
