@@ -1,5 +1,7 @@
-package com.mapzen.erasermap
+package com.mapzen.erasermap.presenter
 
+import com.mapzen.erasermap.model.RoutePreviewEvent
+import com.mapzen.erasermap.view.ViewController
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.squareup.otto.Bus

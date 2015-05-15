@@ -33,7 +33,7 @@
             android:layout_centerInParent="true" />
     </RelativeLayout>
 
-    <com.mapzen.erasermap.SearchResultsView
+    <com.mapzen.erasermap.view.SearchResultsView
         android:id="@+id/search_results"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
         android:text="@string/no_recent_searches"
         android:visibility="gone" />
 
-    <com.mapzen.erasermap.RoutePreviewView
+    <com.mapzen.erasermap.view.RoutePreviewView
         android:id="@+id/route_preview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -1,4 +1,9 @@
-package com.mapzen.erasermap;
+package com.mapzen.erasermap.view;
+
+import com.mapzen.erasermap.BuildConfig;
+import com.mapzen.erasermap.PrivateMapsTestRunner;
+import com.mapzen.erasermap.R;
+import com.mapzen.erasermap.dummy.TestHelper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,7 +12,7 @@ import org.robolectric.annotation.Config;
 
 import android.widget.TextView;
 
-import static com.mapzen.erasermap.TestHelper.getTestSimpleFeature;
+import static com.mapzen.erasermap.dummy.TestHelper.getTestSimpleFeature;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 

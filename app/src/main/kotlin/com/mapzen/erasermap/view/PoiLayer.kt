@@ -1,4 +1,4 @@
-package com.mapzen.erasermap
+package com.mapzen.erasermap.view
 
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
@@ -6,7 +6,7 @@ import org.oscim.core.GeoPoint
 import org.oscim.layers.marker.ItemizedLayer
 import org.oscim.layers.marker.MarkerItem
 import org.oscim.layers.marker.MarkerSymbol
-import org.oscim.map.Map;
+import org.oscim.map.Map
 
 public class PoiLayer(val map: Map, val defaultMarker: MarkerSymbol, val activeMarker: MarkerSymbol)
         : ItemizedLayer<MarkerItem>(map, defaultMarker), ItemizedLayer.OnItemGestureListener<MarkerItem> {

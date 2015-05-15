@@ -1,5 +1,7 @@
-package com.mapzen.erasermap;
+package com.mapzen.erasermap.presenter;
 
+import com.mapzen.erasermap.model.RoutePreviewEvent;
+import com.mapzen.erasermap.view.ViewController;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.gson.Result;
 
@@ -10,7 +12,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mapzen.erasermap.TestHelper.getTestFeature;
+import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MainPresenterTest {

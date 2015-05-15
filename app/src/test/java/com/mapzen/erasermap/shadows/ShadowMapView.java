@@ -1,6 +1,6 @@
 package com.mapzen.erasermap.shadows;
 
-import com.mapzen.erasermap.TestMap;
+import com.mapzen.erasermap.dummy.TestMap;
 
 import org.oscim.android.AndroidAssets;
 import org.oscim.android.MapView;

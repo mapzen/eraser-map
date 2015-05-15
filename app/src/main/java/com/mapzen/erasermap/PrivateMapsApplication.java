@@ -1,5 +1,8 @@
 package com.mapzen.erasermap;
 
+import com.mapzen.erasermap.view.MainActivity;
+import com.mapzen.erasermap.view.SearchResultsAdapter;
+
 import android.app.Application;
 
 import javax.inject.Singleton;

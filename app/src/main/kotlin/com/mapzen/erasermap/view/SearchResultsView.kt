@@ -1,4 +1,4 @@
-package com.mapzen.erasermap
+package com.mapzen.erasermap.view
 
 import android.content.Context
 import android.support.v4.view.PagerAdapter
@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.mapzen.erasermap.R
 
 public class SearchResultsView(context: Context, attrs: AttributeSet)
         : LinearLayout(context, attrs), ViewPager.OnPageChangeListener {

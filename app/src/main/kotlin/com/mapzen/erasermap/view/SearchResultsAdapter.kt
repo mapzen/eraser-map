@@ -1,12 +1,14 @@
-package com.mapzen.erasermap
+package com.mapzen.erasermap.view
 
 import android.content.Context
 import android.support.v4.view.PagerAdapter
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import com.mapzen.erasermap.PrivateMapsApplication
+import com.mapzen.erasermap.R
+import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.squareup.otto.Bus

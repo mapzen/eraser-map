@@ -1,4 +1,4 @@
-package com.mapzen.erasermap;
+package com.mapzen.erasermap.dummy;
 
 import org.oscim.core.GeoPoint;
 import org.oscim.core.MapPosition;

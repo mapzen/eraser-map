@@ -1,4 +1,4 @@
-package com.mapzen.erasermap
+package com.mapzen.erasermap.view
 
 import android.content.Intent
 import android.location.Location
@@ -12,9 +12,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import com.mapzen.erasermap.R
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
+import com.mapzen.erasermap.BuildConfig
+import com.mapzen.erasermap.PrivateMapsApplication
+import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.mapburrito.MapController
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.PeliasLocationProvider

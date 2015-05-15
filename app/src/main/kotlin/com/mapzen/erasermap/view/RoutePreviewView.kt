@@ -1,10 +1,11 @@
-package com.mapzen.erasermap
+package com.mapzen.erasermap.view
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.RelativeLayout
 import android.widget.TextView
+import com.mapzen.erasermap.R
 import com.mapzen.pelias.SimpleFeature
 
 public class RoutePreviewView : RelativeLayout {

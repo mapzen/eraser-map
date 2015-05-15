@@ -1,7 +1,8 @@
-package com.mapzen.erasermap
+package com.mapzen.erasermap.model
 
 import android.content.Context
 import android.util.Log
+import com.mapzen.erasermap.PrivateMapsApplication
 import com.squareup.okhttp.HttpResponseCache
 import java.io.File
 import java.io.IOException

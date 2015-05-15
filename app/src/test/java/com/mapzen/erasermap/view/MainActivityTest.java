@@ -1,6 +1,10 @@
-package com.mapzen.erasermap;
+package com.mapzen.erasermap.view;
 
 import com.mapzen.android.lost.api.LocationServices;
+import com.mapzen.erasermap.BuildConfig;
+import com.mapzen.erasermap.PrivateMapsTestRunner;
+import com.mapzen.erasermap.R;
+import com.mapzen.erasermap.dummy.TestMap;
 import com.mapzen.pelias.SavedSearch;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.widget.PeliasSearchView;
@@ -34,9 +38,9 @@ import java.util.ArrayList;
 import static android.content.Context.LOCATION_SERVICE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static com.mapzen.erasermap.TestHelper.getTestFeature;
-import static com.mapzen.erasermap.TestMap.TestAnimator.clearLastGeoPoint;
-import static com.mapzen.erasermap.TestMap.TestAnimator.getLastGeoPoint;
+import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
+import static com.mapzen.erasermap.dummy.TestMap.TestAnimator.clearLastGeoPoint;
+import static com.mapzen.erasermap.dummy.TestMap.TestAnimator.getLastGeoPoint;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.robolectric.Shadows.shadowOf;

@@ -1,4 +1,4 @@
-package com.mapzen.erasermap;
+package com.mapzen.erasermap.dummy;
 
 import com.mapzen.pelias.SimpleFeature;
 import com.mapzen.pelias.gson.Feature;

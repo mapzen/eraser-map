@@ -1,6 +1,7 @@
-package com.mapzen.erasermap
+package com.mapzen.erasermap.view
 
 import android.content.Context
+import com.mapzen.erasermap.R
 import org.oscim.android.canvas.AndroidGraphics
 import org.oscim.layers.marker.MarkerItem
 import org.oscim.layers.marker.MarkerSymbol

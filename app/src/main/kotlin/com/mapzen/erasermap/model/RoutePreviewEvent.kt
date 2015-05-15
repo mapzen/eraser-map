@@ -1,4 +1,4 @@
-package com.mapzen.erasermap
+package com.mapzen.erasermap.model
 
 import com.mapzen.pelias.gson.Feature
 

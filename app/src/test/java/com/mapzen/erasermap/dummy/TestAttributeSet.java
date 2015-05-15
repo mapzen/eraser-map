@@ -1,4 +1,4 @@
-package com.mapzen.erasermap;
+package com.mapzen.erasermap.dummy;
 
 import org.jetbrains.annotations.NotNull;
 
