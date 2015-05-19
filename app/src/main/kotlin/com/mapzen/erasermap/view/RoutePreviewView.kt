@@ -7,6 +7,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.mapzen.erasermap.R
 import com.mapzen.pelias.SimpleFeature
+import com.mapzen.valhalla.Route
 
 public class RoutePreviewView : RelativeLayout {
     public var destination: SimpleFeature? = null
@@ -15,6 +16,11 @@ public class RoutePreviewView : RelativeLayout {
                 + destination?.getTitle())
     }
 
+    public var route: Route? = null
+        set (route) {
+            (findViewById(R.id.destination) as TextView).setText(route?.getRawRoute().toString())
+        }
+o
     public constructor(context: Context) : super(context) {
         init()
     }

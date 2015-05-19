@@ -12,12 +12,12 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import com.mapzen.erasermap.R
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.PrivateMapsApplication
+import com.mapzen.erasermap.R
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.mapburrito.MapController
 import com.mapzen.pelias.Pelias
@@ -29,6 +29,8 @@ import com.mapzen.pelias.gson.Result
 import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
+import com.mapzen.valhalla.Route
+import com.mapzen.valhalla.Router
 import com.squareup.okhttp.HttpResponseCache
 import com.squareup.otto.Bus
 import org.oscim.android.MapView
@@ -378,10 +380,30 @@ public class MainActivity : AppCompatActivity(), ViewController,
     }
 
     override fun showRoutePreview(feature: Feature) {
-        getSupportActionBar()?.hide()
-        findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
-        (findViewById(R.id.route_preview) as RoutePreviewView).destination =
-                SimpleFeature.fromFeature(feature);
+        val simpleFeature = SimpleFeature.fromFeature(feature)
+        val location = LocationServices.FusedLocationApi?.getLastLocation();
+        if (location is Location) {
+            val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
+            val dest: DoubleArray = doubleArray(simpleFeature.getLat(), simpleFeature.getLon())
+            val router = Router.getRouter().setLocation(start).setLocation(dest)
+                    .setCallback(object: Router.Callback {
+                override fun success(route: Route?) {
+                    runOnUiThread({
+                        getSupportActionBar()?.hide()
+                        findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
+                        (findViewById(R.id.route_preview) as RoutePreviewView).destination =
+                                SimpleFeature.fromFeature(feature);
+                        (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
+                    })
+                }
+
+                override fun failure(statusCode: Int) {
+                    Toast.makeText(this@MainActivity, "No route found", Toast.LENGTH_LONG).show()
+                }
+            })
+
+            router.fetch()
+        }
     }
 
     override fun hideRoutePreview() {
