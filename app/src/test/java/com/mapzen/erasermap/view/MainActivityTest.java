@@ -8,7 +8,9 @@ import com.mapzen.erasermap.dummy.TestMap;
 import com.mapzen.pelias.SavedSearch;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.widget.PeliasSearchView;
+import com.mapzen.valhalla.Route;
 
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -330,6 +332,8 @@ public class MainActivityTest {
     public void showRoutePreview_shouldHideActionBar() throws Exception {
         activity.getSupportActionBar().show();
         activity.showRoutePreview(getTestFeature());
+        activity.success(new Route(new JSONObject()));
+        Robolectric.flushForegroundScheduler();
         assertThat(activity.getSupportActionBar().isShowing()).isFalse();
     }
 
@@ -337,6 +341,8 @@ public class MainActivityTest {
     public void showRoutePreview_shouldShowRoutePreviewView() throws Exception {
         activity.findViewById(R.id.route_preview).setVisibility(GONE);
         activity.showRoutePreview(getTestFeature());
+        activity.success(new Route(new JSONObject()));
+        Robolectric.flushForegroundScheduler();
         assertThat(activity.findViewById(R.id.route_preview).getVisibility()).isEqualTo(VISIBLE);
     }
 
