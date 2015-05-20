@@ -20,7 +20,7 @@ public class RoutePreviewView : RelativeLayout {
         set (route) {
             (findViewById(R.id.destination) as TextView).setText(route?.getRawRoute().toString())
         }
-o
+
     public constructor(context: Context) : super(context) {
         init()
     }
