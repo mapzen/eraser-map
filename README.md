@@ -3,9 +3,9 @@ Privacy-focused mapping application for Android
 
 ## Install dependencies
 Run the following scripts (in this order) to deploy library project dependencies to your local Maven repository.
-1. install-vtm.sh
-2. install-map-burrito.sh
-3. install-pelias-sdk.sh
+* `install-vtm.sh`
+* `install-map-burrito.sh`
+* `install-pelias-sdk.sh`
 
 
 ## Importing project into Android Studio
