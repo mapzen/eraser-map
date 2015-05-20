@@ -44,7 +44,8 @@ import java.util.ArrayList
 import javax.inject.Inject
 
 public class MainActivity : AppCompatActivity(), ViewController,
-        SearchResultsView.OnSearchResultSelectedListener, PoiLayer.OnPoiClickListener {
+        SearchResultsView.OnSearchResultSelectedListener, PoiLayer.OnPoiClickListener,
+        Router.Callback {
     private val BASE_TILE_URL: String = "http://vector.dev.mapzen.com/osm/all"
     private val STYLE_PATH: String = "styles/mapzen.xml"
     private val FIND_ME_ICON: Int = android.R.drawable.star_big_on
@@ -71,6 +72,7 @@ public class MainActivity : AppCompatActivity(), ViewController,
     var autoCompleteAdapter: AutoCompleteAdapter? = null
     var optionsMenu: Menu? = null
     var poiLayer: PoiLayer? = null
+    var destination: Feature? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super<AppCompatActivity>.onCreate(savedInstanceState)
@@ -380,30 +382,28 @@ public class MainActivity : AppCompatActivity(), ViewController,
     }
 
     override fun showRoutePreview(feature: Feature) {
+        this.destination = feature
         val simpleFeature = SimpleFeature.fromFeature(feature)
         val location = LocationServices.FusedLocationApi?.getLastLocation();
         if (location is Location) {
             val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
             val dest: DoubleArray = doubleArray(simpleFeature.getLat(), simpleFeature.getLon())
-            val router = Router.getRouter().setLocation(start).setLocation(dest)
-                    .setCallback(object: Router.Callback {
-                override fun success(route: Route?) {
-                    runOnUiThread({
-                        getSupportActionBar()?.hide()
-                        findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
-                        (findViewById(R.id.route_preview) as RoutePreviewView).destination =
-                                SimpleFeature.fromFeature(feature);
-                        (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
-                    })
-                }
-
-                override fun failure(statusCode: Int) {
-                    Toast.makeText(this@MainActivity, "No route found", Toast.LENGTH_LONG).show()
-                }
-            })
-
-            router.fetch()
+            Router.getRouter().setLocation(start).setLocation(dest).setCallback(this).fetch()
         }
+    }
+
+    override fun success(route: Route?) {
+        runOnUiThread({
+            getSupportActionBar()?.hide()
+            findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
+            (findViewById(R.id.route_preview) as RoutePreviewView).destination =
+                    SimpleFeature.fromFeature(destination);
+            (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
+        })
+    }
+
+    override fun failure(statusCode: Int) {
+        Toast.makeText(this@MainActivity, "No route found", Toast.LENGTH_LONG).show()
     }
 
     override fun hideRoutePreview() {

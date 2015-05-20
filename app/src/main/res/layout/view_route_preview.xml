@@ -2,11 +2,26 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <!-- TODO: Replace placeholder view with the real preview header (start, destination, reverse direction, route mode, etc. -->
+
     <TextView
         android:id="@+id/destination"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
+        android:paddingLeft="@dimen/padding_horizontal_default"
+        android:paddingRight="@dimen/padding_horizontal_default"
+        android:paddingTop="@dimen/padding_vertical_small" />
+
+    <TextView
+        android:id="@+id/route"
+        android:layout_below="@id/destination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:ellipsize="end"
+        android:maxLines="6"
         android:paddingLeft="@dimen/padding_horizontal_default"
         android:paddingRight="@dimen/padding_horizontal_default"
         android:paddingTop="@dimen/padding_vertical_small" />

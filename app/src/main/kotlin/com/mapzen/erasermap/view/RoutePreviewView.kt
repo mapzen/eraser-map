@@ -18,7 +18,7 @@ public class RoutePreviewView : RelativeLayout {
 
     public var route: Route? = null
         set (route) {
-            (findViewById(R.id.destination) as TextView).setText(route?.getRawRoute().toString())
+            (findViewById(R.id.route) as TextView).setText(route?.getRawRoute().toString())
         }
 
     public constructor(context: Context) : super(context) {
