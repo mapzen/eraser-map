@@ -1,28 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:layout_gravity="fill_horizontal"
+    android:background="@android:color/transparent">
 
     <!-- TODO: Replace placeholder view with the real preview header (start, destination, reverse direction, route mode, etc. -->
+    <include layout="@layout/route_header" />
 
-    <TextView
-        android:id="@+id/destination"
+    <LinearLayout
+        android:id="@+id/options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:paddingLeft="@dimen/padding_horizontal_default"
-        android:paddingRight="@dimen/padding_horizontal_default"
-        android:paddingTop="@dimen/padding_vertical_small" />
+        android:layout_below="@id/top_row"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:background="@color/transparent_white"
+        android:divider="@color/dark_gray">
 
-    <TextView
-        android:id="@+id/route"
-        android:layout_below="@id/destination"
-        android:layout_width="match_parent"
+        <include layout="@layout/list_header_divider"
+            android:id="@+id/location_divider"
+            android:layout_below="@id/top_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp" />
+
+        <RadioGroup
+            android:id="@+id/routing_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:orientation="horizontal">
+            <RadioButton
+                android:id="@+id/by_car"
+                android:checked="true"
+                android:button="@drawable/radio_button_car"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <RadioButton
+                android:id="@+id/by_bike"
+                android:button="@drawable/radio_button_bike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <RadioButton
+                android:id="@+id/by_foot"
+                android:button="@drawable/radio_button_walk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RadioGroup>
+    </LinearLayout>
+
+
+    <ImageButton
+        android:id="@+id/routing_circle"
+        android:src="@drawable/ic_start_car_normal"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:ellipsize="end"
-        android:maxLines="6"
-        android:paddingLeft="@dimen/padding_horizontal_default"
-        android:paddingRight="@dimen/padding_horizontal_default"
-        android:paddingTop="@dimen/padding_vertical_small" />
-</merge>
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent"
+        android:paddingBottom="@dimen/padding_vertical_default"/>
+</RelativeLayout>

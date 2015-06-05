@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/top_row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:paddingLeft="8dp"
+    android:paddingTop="@dimen/padding_horizontal_default"
+    android:background="@color/transparent_white">
+
+    <ImageButton
+        android:id="@+id/route_reverse"
+        android:paddingRight="4dp"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_switch"
+        android:background="@android:color/transparent"
+        android:contentDescription="reverse" />
+
+    <LinearLayout
+        android:id="@+id/places"
+        android:layout_weight="3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/start_location_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/from_text"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/dark_gray"
+                android:textSize="@dimen/font_small"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="From: "
+                android:fontFamily="sans-serif-condensed" />
+
+            <ImageView
+                android:id="@+id/starting_location_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="4dp"
+                android:src="@drawable/ic_locate" />
+
+            <TextView
+                android:id="@+id/starting_point"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/brown"
+                android:textSize="@dimen/font_medium"
+                android:padding="@dimen/padding_horizontal_default"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="1dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/border"
+            android:layout_width="wrap_content"
+            android:layout_marginRight="@dimen/padding_horizontal_default"
+            android:layout_height="1dp"
+            android:background="@color/transparent_light_gray" />
+
+        <LinearLayout
+            android:id="@+id/destination_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/to_text"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/dark_gray"
+                android:textSize="@dimen/font_small"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="To: "
+                android:fontFamily="sans-serif-condensed" />
+
+            <ImageView
+                android:id="@+id/destination_location_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="4dp"
+                android:src="@drawable/ic_pin_outline"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/destination"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/brown"
+                android:textSize="@dimen/font_medium"
+                android:padding="@dimen/padding_horizontal_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

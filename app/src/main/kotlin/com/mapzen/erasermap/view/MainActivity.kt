@@ -11,6 +11,8 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageButton
+import android.widget.RadioButton
 import android.widget.Toast
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
@@ -29,17 +31,26 @@ import com.mapzen.pelias.gson.Result
 import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
-import com.mapzen.valhalla.Route
-import com.mapzen.valhalla.Router
+import com.mapzen.osrm.Route
+import com.mapzen.osrm.Router
 import com.squareup.okhttp.HttpResponseCache
 import com.squareup.otto.Bus
 import org.oscim.android.MapView
+import org.oscim.android.canvas.AndroidGraphics
+import org.oscim.backend.canvas.Color
+import org.oscim.core.BoundingBox
+import org.oscim.core.GeoPoint
+import org.oscim.core.MapPosition
+import org.oscim.layers.PathLayer
+import org.oscim.layers.marker.ItemizedLayer
+import org.oscim.layers.marker.MarkerItem
 import org.oscim.layers.marker.MarkerSymbol
 import org.oscim.map.Map
 import org.oscim.tiling.source.OkHttpEngine
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
+import util.DouglasPeuckerReducer
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -73,6 +84,8 @@ public class MainActivity : AppCompatActivity(), ViewController,
     var optionsMenu: Menu? = null
     var poiLayer: PoiLayer? = null
     var destination: Feature? = null
+    var path: PathLayer? = null;
+    var markers: ItemizedLayer<MarkerItem>? = null;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super<AppCompatActivity>.onCreate(savedInstanceState)
@@ -392,14 +405,76 @@ public class MainActivity : AppCompatActivity(), ViewController,
         }
     }
 
+
     override fun success(route: Route?) {
+        Log.d("adf",route!!.getRawRoute().toString());
         runOnUiThread({
             getSupportActionBar()?.hide()
             findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
             (findViewById(R.id.route_preview) as RoutePreviewView).destination =
                     SimpleFeature.fromFeature(destination);
             (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
+            displayRoute(route)
+
         })
+        updateRoutePreview(destination)
+    }
+
+    fun displayRoute(route: Route?) {
+
+        mapController!!.getMap().layers().remove(path)
+        mapController!!.getMap().layers().remove(markers)
+        path = PathLayer(mapController!!.getMap(), Color.DKGRAY, 8f)
+        markers = ItemizedLayer(mapController!!.getMap(), ArrayList<MarkerItem>(), AndroidGraphics.makeMarker(this.getResources().getDrawable(R.drawable.ic_pin), MarkerItem.HotspotPlace.BOTTOM_CENTER), null)
+
+        var points: List<Location> = route!!.getGeometry()
+        val time = System.currentTimeMillis()
+      //  Log.d("RoutePreviewFragment::success Geometry points before: " + points.size())
+        if (points.size() > 100) {
+            points =  DouglasPeuckerReducer.reduceWithTolerance(points, 100.0)
+        }
+     //   Log.d("Timing: " + (System.currentTimeMillis() - time).toString())
+       // Log.d("RoutePreviewFragment::success Geometry points after: " + points.size())
+        path!!.clearPath()
+        var minlat = Integer.MAX_VALUE.toDouble()
+        var minlon = Integer.MAX_VALUE.toDouble()
+        var maxlat = Integer.MIN_VALUE.toDouble()
+        var maxlon = Integer.MIN_VALUE.toDouble()
+        for (loc in points) {
+            maxlat = Math.max(maxlat, loc.getLatitude())
+            maxlon = Math.max(maxlon, loc.getLongitude())
+            minlat = Math.min(minlat, loc.getLatitude())
+            minlon = Math.min(minlon, loc.getLongitude())
+            path!!.addPoint(GeoPoint(loc.getLatitude(), loc.getLongitude()))
+        }
+
+        val bbox = BoundingBox(minlat, minlon, maxlat, maxlon)
+        val w = mapController!!.getMap().getWidth()
+        val h = mapController!!.getMap().getHeight()
+        val position = MapPosition()
+        position.setByBoundingBox(bbox, w, h)
+
+        position.setScale(position.getZoomScale() * 0.85)
+
+        mapController!!.getMap().setMapPosition(position)
+
+        if (!mapController!!.getMap().layers().contains(path)) {
+            mapController!!.getMap().layers().add(path)
+        }
+
+        if (!mapController!!.getMap().layers().contains(markers)) {
+            mapController!!.getMap().layers().add(markers)
+        }
+        markers!!.removeAllItems()
+        markers!!.addItem(getMarkerItem(R.drawable.ic_pin_active, points.get(0), MarkerItem.HotspotPlace.CENTER))
+        markers!!.addItem(getMarkerItem(R.drawable.ic_pin, points.get(points.size() - 1), MarkerItem.HotspotPlace.BOTTOM_CENTER))
+
+    }
+
+    private fun getMarkerItem(icon: Int, loc: Location, place: MarkerItem.HotspotPlace): MarkerItem {
+        val markerItem = MarkerItem("Generic Marker", "Generic Description", GeoPoint(loc.getLatitude(), loc.getLongitude()))
+        markerItem.setMarker(MarkerSymbol(AndroidGraphics.drawableToBitmap(app!!.getResources().getDrawable(icon)), place))
+        return markerItem
     }
 
     override fun failure(statusCode: Int) {
@@ -410,6 +485,46 @@ public class MainActivity : AppCompatActivity(), ViewController,
         getSupportActionBar()?.show()
         findViewById(R.id.route_preview).setVisibility(View.GONE)
     }
+
+
+    fun updateRoutePreview(destination : Feature?) {
+       val dest = SimpleFeature.fromFeature(destination)
+            (findViewById(R.id.by_car) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
+                if (b) {
+                    val location = LocationServices.FusedLocationApi?.getLastLocation();
+                    if (location is Location) {
+                        val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
+                        val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
+                        Router.getRouter().setDriving().setLocation(start).setLocation(dest).setCallback(this).fetch();
+                    }
+                    (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_car_normal)
+                }
+            }
+            (findViewById(R.id.by_foot) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
+                if (b) {
+                    val location = LocationServices.FusedLocationApi?.getLastLocation();
+                    if (location is Location) {
+                        val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
+                        val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
+                        Router.getRouter().setWalking().setLocation(start).setLocation(dest).setCallback(this).fetch();
+                    }
+                    (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_walk_normal)
+                }
+            }
+            (findViewById(R.id.by_bike) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
+                if (b) {
+                    val location = LocationServices.FusedLocationApi?.getLastLocation();
+                    if (location is Location) {
+                        val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
+                        val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
+                        Router.getRouter().setBiking().setLocation(start).setLocation(dest).setCallback(this).fetch()
+                    }
+                    (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_bike_normal)
+                }
+            }
+
+    }
+
 
     override fun onBackPressed() {
         presenter?.onBackPressed()
