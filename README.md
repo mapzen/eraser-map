@@ -1,12 +1,11 @@
 # Eraser Map
 Privacy-focused mapping application for Android
 
-## Install dependencies
-Run the following scripts (in this order) to deploy library project dependencies to your local Maven repository.
-* `install-vtm.sh`
-* `install-map-burrito.sh`
-* `install-pelias-sdk.sh`
-
+## Install VTM dependency
+Run the following script to deploy VTM dependencies to your local Maven repository.
+```bash
+$ scripts/install-vtm.sh
+```
 
 ## Importing project into Android Studio
 1. Clone https://github.com/mapzen/eraser-map.git
