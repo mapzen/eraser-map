@@ -2,8 +2,6 @@ dependencies:
   pre:
     - echo y | android update sdk --all --no-ui --force --filter "extra-android-m2repository"
     - scripts/install-vtm.sh
-    - scripts/install-map-burrito.sh
-    - scripts/install-pelias-sdk.sh
 
 test:
   override:
