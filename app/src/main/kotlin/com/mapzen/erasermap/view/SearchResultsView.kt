@@ -61,7 +61,7 @@ public class SearchResultsView(context: Context, attrs: AttributeSet)
     override fun onPageScrollStateChanged(state: Int) {
     }
 
-    public trait OnSearchResultSelectedListener {
+    public interface OnSearchResultSelectedListener {
         public fun onSearchResultSelected(position: Int)
     }
 }

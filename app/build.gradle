@@ -50,7 +50,7 @@ repositories {
 
 dependencies {
   compile 'com.android.support:appcompat-v7:22.1.0'
-  compile 'org.jetbrains.kotlin:kotlin-stdlib:0.11.91'
+  compile 'org.jetbrains.kotlin:kotlin-stdlib:0.12.213'
   compile 'org.oscim:vtm:0.5.9-SNAPSHOT'
   compile 'org.oscim:vtm-android:0.5.9-SNAPSHOT@aar'
   compile 'com.mapzen.android:map-burrito:0.1-SNAPSHOT@aar'

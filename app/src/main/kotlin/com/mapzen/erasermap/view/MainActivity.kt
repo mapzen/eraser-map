@@ -55,17 +55,17 @@ public class MainActivity : AppCompatActivity(), ViewController,
     public val requestCodeSearchResults: Int = 0x01;
 
     var locationClient: LostApiClient? = null
-    [Inject] set
+    @Inject set
     var tileCache: HttpResponseCache? = null
-    [Inject] set
+    @Inject set
     var savedSearch: SavedSearch? = null
-    [Inject] set
+    @Inject set
     var presenter: MainPresenter? = null
-    [Inject] set
+    @Inject set
     var markerSymbolFactory: MarkerSymbolFactory? = null
-    [Inject] set
+    @Inject set
     var bus: Bus? = null
-    [Inject] set
+    @Inject set
 
     var app: PrivateMapsApplication? = null
     var mapController: MapController? = null
@@ -386,8 +386,8 @@ public class MainActivity : AppCompatActivity(), ViewController,
         val simpleFeature = SimpleFeature.fromFeature(feature)
         val location = LocationServices.FusedLocationApi?.getLastLocation();
         if (location is Location) {
-            val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
-            val dest: DoubleArray = doubleArray(simpleFeature.getLat(), simpleFeature.getLon())
+            val start: DoubleArray = doubleArrayOf(location.getLatitude(), location.getLongitude())
+            val dest: DoubleArray = doubleArrayOf(simpleFeature.getLat(), simpleFeature.getLon())
             Router.getRouter().setLocation(start).setLocation(dest).setCallback(this).fetch()
         }
     }

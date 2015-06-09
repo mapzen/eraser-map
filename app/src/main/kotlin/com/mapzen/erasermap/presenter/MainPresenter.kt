@@ -4,7 +4,7 @@ import com.mapzen.erasermap.view.ViewController
 import com.mapzen.pelias.gson.Result
 import com.squareup.otto.Bus
 
-public trait MainPresenter {
+public interface MainPresenter {
     public var currentSearchTerm: String?
     public var viewController: ViewController?
     public var bus: Bus?
