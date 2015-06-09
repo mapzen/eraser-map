@@ -2,7 +2,7 @@ package com.mapzen.erasermap.view
 
 import com.mapzen.pelias.gson.Feature
 
-public trait ViewController {
+public interface ViewController {
     public fun showSearchResults(features: List<Feature>)
     public fun centerOnCurrentFeature(features: List<Feature>)
     public fun showAllSearchResults(features: List<Feature>)
