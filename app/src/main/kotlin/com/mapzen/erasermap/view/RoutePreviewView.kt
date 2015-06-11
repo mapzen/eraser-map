@@ -9,8 +9,8 @@ import android.widget.*
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.erasermap.R
 import com.mapzen.pelias.SimpleFeature
-import com.mapzen.osrm.Route
-import com.mapzen.osrm.Router
+import com.mapzen.valhalla.Route
+import com.mapzen.valhalla.Router
 
 
 public class RoutePreviewView : RelativeLayout {

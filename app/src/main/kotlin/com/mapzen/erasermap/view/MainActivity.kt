@@ -31,9 +31,10 @@ import com.mapzen.pelias.gson.Result
 import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
-import com.mapzen.osrm.Route
-import com.mapzen.osrm.Router
-import com.squareup.okhttp.HttpResponseCache
+import com.mapzen.valhalla.Route
+import com.mapzen.valhalla.Router
+import com.squareup.okhttp.Cache
+import com.squareup.okhttp.OkHttpClient
 import com.squareup.otto.Bus
 import org.oscim.android.MapView
 import org.oscim.android.canvas.AndroidGraphics
@@ -46,17 +47,19 @@ import org.oscim.layers.marker.ItemizedLayer
 import org.oscim.layers.marker.MarkerItem
 import org.oscim.layers.marker.MarkerSymbol
 import org.oscim.map.Map
+import org.oscim.tiling.source.HttpEngine
 import org.oscim.tiling.source.OkHttpEngine
+import org.oscim.tiling.source.UrlTileSource
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
 import util.DouglasPeuckerReducer
+import util.HttpCacheFactory
 import java.util.ArrayList
 import javax.inject.Inject
 
-public class MainActivity : AppCompatActivity(), ViewController,
-        SearchResultsView.OnSearchResultSelectedListener, PoiLayer.OnPoiClickListener,
-        Router.Callback {
+public class MainActivity : AppCompatActivity(), ViewController, Router.Callback,
+        SearchResultsView.OnSearchResultSelectedListener, PoiLayer.OnPoiClickListener {
     private val BASE_TILE_URL: String = "http://vector.dev.mapzen.com/osm/all"
     private val STYLE_PATH: String = "styles/mapzen.xml"
     private val FIND_ME_ICON: Int = android.R.drawable.star_big_on
@@ -68,6 +71,8 @@ public class MainActivity : AppCompatActivity(), ViewController,
     var locationClient: LostApiClient? = null
     @Inject set
     var tileCache: HttpResponseCache? = null
+    @Inject set
+    var tileCache: Cache? = null
     @Inject set
     var savedSearch: SavedSearch? = null
     @Inject set
@@ -136,7 +141,7 @@ public class MainActivity : AppCompatActivity(), ViewController,
     private fun initMapController() {
         val mapView = findViewById(R.id.map) as MapView
         mapController = MapController(mapView.map())
-                .setHttpEngine(OkHttpEngine.OkHttpFactory(tileCache))
+                .setHttpEngine(HttpCacheFactory(tileCache))
                 .setApiKey(BuildConfig.VECTOR_TILE_API_KEY)
                 .setTileSource(BASE_TILE_URL)
                 .addBuildingLayer()
@@ -186,7 +191,6 @@ public class MainActivity : AppCompatActivity(), ViewController,
             mapController?.showCurrentLocation(location)?.resetMapAndCenterOn(location)
         }
     }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         getMenuInflater().inflate(R.menu.menu_main, menu)
         optionsMenu = menu
@@ -399,15 +403,16 @@ public class MainActivity : AppCompatActivity(), ViewController,
         val simpleFeature = SimpleFeature.fromFeature(feature)
         val location = LocationServices.FusedLocationApi?.getLastLocation();
         if (location is Location) {
-            val start: DoubleArray = doubleArrayOf(location.getLatitude(), location.getLongitude())
-            val dest: DoubleArray = doubleArrayOf(simpleFeature.getLat(), simpleFeature.getLon())
-            Router.getRouter().setLocation(start).setLocation(dest).setCallback(this).fetch()
+            val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
+            val dest: DoubleArray = doubleArray(simpleFeature.getLat(), simpleFeature.getLon())
+                Router().setLocation(start).setLocation(dest).setCallback(this).fetch()
         }
     }
 
 
-    override fun success(route: Route?) {
-        Log.d("adf",route!!.getRawRoute().toString());
+
+     override fun success(route: Route? ) {
+        Log.d("adf",route!!.rawRoute.toString());
         runOnUiThread({
             getSupportActionBar()?.hide()
             findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
@@ -495,7 +500,7 @@ public class MainActivity : AppCompatActivity(), ViewController,
                     if (location is Location) {
                         val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
                         val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
-                        Router.getRouter().setDriving().setLocation(start).setLocation(dest).setCallback(this).fetch();
+                        Router().setDriving().setLocation(start).setCallback(this).setLocation(dest).fetch();
                     }
                     (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_car_normal)
                 }
@@ -506,7 +511,7 @@ public class MainActivity : AppCompatActivity(), ViewController,
                     if (location is Location) {
                         val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
                         val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
-                        Router.getRouter().setWalking().setLocation(start).setLocation(dest).setCallback(this).fetch();
+                        Router().setWalking().setLocation(start).setLocation(dest).setCallback(this).fetch();
                     }
                     (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_walk_normal)
                 }
@@ -517,7 +522,7 @@ public class MainActivity : AppCompatActivity(), ViewController,
                     if (location is Location) {
                         val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
                         val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
-                        Router.getRouter().setBiking().setLocation(start).setLocation(dest).setCallback(this).fetch()
+                        Router().setBiking().setLocation(start).setLocation(dest).setCallback(this).fetch()
                     }
                     (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_bike_normal)
                 }
@@ -533,4 +538,5 @@ public class MainActivity : AppCompatActivity(), ViewController,
     override fun shutDown() {
         finish()
     }
+
 }

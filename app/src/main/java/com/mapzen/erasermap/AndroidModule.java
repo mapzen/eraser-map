@@ -7,7 +7,7 @@ import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.erasermap.view.MarkerSymbolFactory;
 import com.mapzen.pelias.SavedSearch;
 
-import com.squareup.okhttp.HttpResponseCache;
+import com.squareup.okhttp.Cache;
 import com.squareup.otto.Bus;
 
 import android.content.Context;
@@ -34,7 +34,7 @@ public class AndroidModule {
         return new LostApiClient.Builder(application).build();
     }
 
-    @Provides @Singleton @Nullable HttpResponseCache provideTileCache() {
+    @Provides @Singleton @Nullable Cache provideTileCache() {
         return new TileCacheBuilder(application).build();
     }
 
