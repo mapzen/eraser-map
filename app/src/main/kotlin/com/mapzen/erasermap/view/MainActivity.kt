@@ -435,12 +435,12 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
 
         var points: List<Location> = route!!.getGeometry()
         val time = System.currentTimeMillis()
-        Log.d("RoutePreviewFragment::success Geometry points before: " + points.size())
+      //  Log.d("RoutePreviewFragment::success Geometry points before: " + points.size())
         if (points.size() > 100) {
             points =  DouglasPeuckerReducer.reduceWithTolerance(points, 100.0)
         }
-        Log.d("Timing: " + (System.currentTimeMillis() - time).toString())
-        Log.d("RoutePreviewFragment::success Geometry points after: " + points.size())
+//
+//      Log.d("RoutePreviewFragment::success Geometry points after: " + points.size())
         path!!.clearPath()
         var minlat = Integer.MAX_VALUE.toDouble()
         var minlon = Integer.MAX_VALUE.toDouble()
@@ -533,7 +533,12 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
 
 
     override fun onBackPressed() {
+        if((findViewById(R.id.route_preview)).getVisibility() == View.VISIBLE) {
+            mapController!!.getMap().layers().remove(path)
+            mapController!!.getMap().layers().remove(markers)
+        }
         presenter?.onBackPressed()
+        centerOnCurrentLocation()
     }
 
     override fun shutDown() {
