@@ -399,13 +399,14 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
     override fun showRoutePreview(feature: Feature) {
+        Log.d("API KEY", BuildConfig.VALHALLA_API_KEY);
         this.destination = feature
         val simpleFeature = SimpleFeature.fromFeature(feature)
         val location = LocationServices.FusedLocationApi?.getLastLocation();
         if (location is Location) {
             val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
             val dest: DoubleArray = doubleArray(simpleFeature.getLat(), simpleFeature.getLon())
-                Router().setLocation(start).setLocation(dest).setCallback(this).fetch()
+                Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setLocation(start).setLocation(dest).setCallback(this).fetch()
         }
     }
 
@@ -434,12 +435,12 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
 
         var points: List<Location> = route!!.getGeometry()
         val time = System.currentTimeMillis()
-      //  Log.d("RoutePreviewFragment::success Geometry points before: " + points.size())
+        Log.d("RoutePreviewFragment::success Geometry points before: " + points.size())
         if (points.size() > 100) {
             points =  DouglasPeuckerReducer.reduceWithTolerance(points, 100.0)
         }
-     //   Log.d("Timing: " + (System.currentTimeMillis() - time).toString())
-       // Log.d("RoutePreviewFragment::success Geometry points after: " + points.size())
+        Log.d("Timing: " + (System.currentTimeMillis() - time).toString())
+        Log.d("RoutePreviewFragment::success Geometry points after: " + points.size())
         path!!.clearPath()
         var minlat = Integer.MAX_VALUE.toDouble()
         var minlon = Integer.MAX_VALUE.toDouble()
@@ -500,7 +501,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
                     if (location is Location) {
                         val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
                         val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
-                        Router().setDriving().setLocation(start).setCallback(this).setLocation(dest).fetch();
+                        Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setDriving().setLocation(start).setCallback(this).setLocation(dest).fetch();
                     }
                     (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_car_normal)
                 }
@@ -511,7 +512,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
                     if (location is Location) {
                         val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
                         val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
-                        Router().setWalking().setLocation(start).setLocation(dest).setCallback(this).fetch();
+                        Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setWalking().setLocation(start).setLocation(dest).setCallback(this).fetch();
                     }
                     (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_walk_normal)
                 }
@@ -522,7 +523,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
                     if (location is Location) {
                         val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
                         val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
-                        Router().setBiking().setLocation(start).setLocation(dest).setCallback(this).fetch()
+                        Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setBiking().setLocation(start).setLocation(dest).setCallback(this).fetch()
                     }
                     (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_bike_normal)
                 }
