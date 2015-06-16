@@ -9,7 +9,6 @@ import org.oscim.tiling.source.UrlTileSource
 public class HttpCacheFactory : HttpEngine.Factory {
     private val mClient = OkHttpClient()
 
-
     public constructor(responseCache: Cache?) {
         this.mClient.setCache(responseCache)
     }

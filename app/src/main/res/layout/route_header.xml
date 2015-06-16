@@ -40,7 +40,7 @@
                 android:textSize="@dimen/font_small"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:text="From: "
+                android:text="@string/from_text"
                 android:fontFamily="sans-serif-condensed" />
 
             <ImageView
@@ -85,7 +85,7 @@
                 android:textSize="@dimen/font_small"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:text="To: "
+                android:text="@string/to_text"
                 android:fontFamily="sans-serif-condensed" />
 
             <ImageView

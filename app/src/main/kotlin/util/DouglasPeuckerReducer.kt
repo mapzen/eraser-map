@@ -1,9 +1,7 @@
 package util
 
 import java.util.ArrayList
-
 import android.location.Location
-
 /**
  * Reduces the number of points in a shape using the Douglas-Peucker algorithm.
  * From:
@@ -13,6 +11,7 @@ import android.location.Location
  * @author M.Kergall
  * *
  * * Modified by baldur@mapzen.com
+ * * Converted to kotlin by peter.jasko@mapzen.com
  */
 public object DouglasPeuckerReducer {
 

@@ -15,9 +15,9 @@ import com.mapzen.valhalla.Router
 
 public class RoutePreviewView : RelativeLayout {
     public var destination: SimpleFeature? = null
-    set (destination) {
-        (findViewById(R.id.destination) as TextView).setText(destination?.getTitle())
-    }
+        set (destination) {
+            (findViewById(R.id.destination) as TextView).setText(destination?.getTitle())
+        }
 
     public var route: Route? = null
         set (route) {
@@ -33,17 +33,12 @@ public class RoutePreviewView : RelativeLayout {
     }
 
     public constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
-            : super(context, attrs, defStyleAttr) {
+    : super(context, attrs, defStyleAttr) {
         init()
     }
 
     private fun init() {
         (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_preview, this, true)
-
-
-        }
-
-
-
+    }
 }

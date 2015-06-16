@@ -70,8 +70,6 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
 
     var locationClient: LostApiClient? = null
     @Inject set
-    var tileCache: HttpResponseCache? = null
-    @Inject set
     var tileCache: Cache? = null
     @Inject set
     var savedSearch: SavedSearch? = null
@@ -181,7 +179,8 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
                 .setSmallestDisplacement(LOCATION_UPDATE_SMALLEST_DISPLACEMENT)
 
         LocationServices.FusedLocationApi?.requestLocationUpdates(locationRequest) {
-            location: Location ->  mapController?.showCurrentLocation(location)?.update()
+            location: Location ->
+            mapController?.showCurrentLocation(location)?.update()
         }
     }
 
@@ -191,6 +190,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
             mapController?.showCurrentLocation(location)?.resetMapAndCenterOn(location)
         }
     }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         getMenuInflater().inflate(R.menu.menu_main, menu)
         optionsMenu = menu
@@ -221,10 +221,18 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.getItemId()
         when (id) {
-            R.id.action_settings -> { onActionSettings(); return true }
-            R.id.action_search -> { onActionSearch(); return true }
-            R.id.action_clear -> { onActionClear(); return true }
-            R.id.action_view_all -> { onActionViewAll(); return true }
+            R.id.action_settings -> {
+                onActionSettings(); return true
+            }
+            R.id.action_search -> {
+                onActionSearch(); return true
+            }
+            R.id.action_clear -> {
+                onActionClear(); return true
+            }
+            R.id.action_view_all -> {
+                onActionViewAll(); return true
+            }
         }
 
         return super<AppCompatActivity>.onOptionsItemSelected(item)
@@ -399,21 +407,17 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
     override fun showRoutePreview(feature: Feature) {
-        Log.d("API KEY", BuildConfig.VALHALLA_API_KEY);
         this.destination = feature
         val simpleFeature = SimpleFeature.fromFeature(feature)
         val location = LocationServices.FusedLocationApi?.getLastLocation();
         if (location is Location) {
             val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
             val dest: DoubleArray = doubleArray(simpleFeature.getLat(), simpleFeature.getLon())
-                Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setLocation(start).setLocation(dest).setCallback(this).fetch()
+            getInititializedRouter().setLocation(start).setLocation(dest).setCallback(this).fetch()
         }
     }
 
-
-
-     override fun success(route: Route? ) {
-        Log.d("adf",route!!.rawRoute.toString());
+    override fun success(route: Route?) {
         runOnUiThread({
             getSupportActionBar()?.hide()
             findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
@@ -427,53 +431,53 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
     fun displayRoute(route: Route?) {
+        try {
+            mapController!!.getMap().layers().remove(path)
+            mapController!!.getMap().layers().remove(markers)
+            path = PathLayer(mapController!!.getMap(), Color.DKGRAY, 8f)
+            markers = ItemizedLayer(mapController!!.getMap(), ArrayList<MarkerItem>(), AndroidGraphics.makeMarker(this.getResources().getDrawable(R.drawable.ic_pin), MarkerItem.HotspotPlace.BOTTOM_CENTER), null)
 
-        mapController!!.getMap().layers().remove(path)
-        mapController!!.getMap().layers().remove(markers)
-        path = PathLayer(mapController!!.getMap(), Color.DKGRAY, 8f)
-        markers = ItemizedLayer(mapController!!.getMap(), ArrayList<MarkerItem>(), AndroidGraphics.makeMarker(this.getResources().getDrawable(R.drawable.ic_pin), MarkerItem.HotspotPlace.BOTTOM_CENTER), null)
+            var points: List<Location> = route!!.getGeometry()
+            val time = System.currentTimeMillis()
+            if (points.size() > 100) {
+                points = DouglasPeuckerReducer.reduceWithTolerance(points, 100.0)
+            }
+            path!!.clearPath()
+            var minlat = Integer.MAX_VALUE.toDouble()
+            var minlon = Integer.MAX_VALUE.toDouble()
+            var maxlat = Integer.MIN_VALUE.toDouble()
+            var maxlon = Integer.MIN_VALUE.toDouble()
+            for (loc in points) {
+                maxlat = Math.max(maxlat, loc.getLatitude())
+                maxlon = Math.max(maxlon, loc.getLongitude())
+                minlat = Math.min(minlat, loc.getLatitude())
+                minlon = Math.min(minlon, loc.getLongitude())
+                path!!.addPoint(GeoPoint(loc.getLatitude(), loc.getLongitude()))
+            }
 
-        var points: List<Location> = route!!.getGeometry()
-        val time = System.currentTimeMillis()
-      //  Log.d("RoutePreviewFragment::success Geometry points before: " + points.size())
-        if (points.size() > 100) {
-            points =  DouglasPeuckerReducer.reduceWithTolerance(points, 100.0)
+            val bbox = BoundingBox(minlat, minlon, maxlat, maxlon)
+            val w = mapController!!.getMap().getWidth()
+            val h = mapController!!.getMap().getHeight()
+            val position = MapPosition()
+            position.setByBoundingBox(bbox, w, h)
+
+            position.setScale(position.getZoomScale() * 0.85)
+
+            mapController!!.getMap().setMapPosition(position)
+
+            if (!mapController!!.getMap().layers().contains(path)) {
+                mapController!!.getMap().layers().add(path)
+            }
+
+            if (!mapController!!.getMap().layers().contains(markers)) {
+                mapController!!.getMap().layers().add(markers)
+            }
+            markers!!.removeAllItems()
+            markers!!.addItem(getMarkerItem(R.drawable.ic_a, points.get(0), MarkerItem.HotspotPlace.CENTER))
+            markers!!.addItem(getMarkerItem(R.drawable.ic_pin_active, points.get(points.size() - 1), MarkerItem.HotspotPlace.BOTTOM_CENTER))
+        } catch (e: Exception) {
+            Toast.makeText(this@MainActivity, "No route found", Toast.LENGTH_LONG).show()
         }
-//
-//      Log.d("RoutePreviewFragment::success Geometry points after: " + points.size())
-        path!!.clearPath()
-        var minlat = Integer.MAX_VALUE.toDouble()
-        var minlon = Integer.MAX_VALUE.toDouble()
-        var maxlat = Integer.MIN_VALUE.toDouble()
-        var maxlon = Integer.MIN_VALUE.toDouble()
-        for (loc in points) {
-            maxlat = Math.max(maxlat, loc.getLatitude())
-            maxlon = Math.max(maxlon, loc.getLongitude())
-            minlat = Math.min(minlat, loc.getLatitude())
-            minlon = Math.min(minlon, loc.getLongitude())
-            path!!.addPoint(GeoPoint(loc.getLatitude(), loc.getLongitude()))
-        }
-
-        val bbox = BoundingBox(minlat, minlon, maxlat, maxlon)
-        val w = mapController!!.getMap().getWidth()
-        val h = mapController!!.getMap().getHeight()
-        val position = MapPosition()
-        position.setByBoundingBox(bbox, w, h)
-
-        position.setScale(position.getZoomScale() * 0.85)
-
-        mapController!!.getMap().setMapPosition(position)
-
-        if (!mapController!!.getMap().layers().contains(path)) {
-            mapController!!.getMap().layers().add(path)
-        }
-
-        if (!mapController!!.getMap().layers().contains(markers)) {
-            mapController!!.getMap().layers().add(markers)
-        }
-        markers!!.removeAllItems()
-        markers!!.addItem(getMarkerItem(R.drawable.ic_pin_active, points.get(0), MarkerItem.HotspotPlace.CENTER))
-        markers!!.addItem(getMarkerItem(R.drawable.ic_pin, points.get(points.size() - 1), MarkerItem.HotspotPlace.BOTTOM_CENTER))
 
     }
 
@@ -493,47 +497,46 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
 
-    fun updateRoutePreview(destination : Feature?) {
-       val dest = SimpleFeature.fromFeature(destination)
-            (findViewById(R.id.by_car) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
-                if (b) {
-                    val location = LocationServices.FusedLocationApi?.getLastLocation();
-                    if (location is Location) {
-                        val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
-                        val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
-                        Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setDriving().setLocation(start).setCallback(this).setLocation(dest).fetch();
-                    }
-                    (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_car_normal)
+    fun updateRoutePreview(destination: Feature?) {
+        val dest = SimpleFeature.fromFeature(destination)
+        (findViewById(R.id.by_car) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
+            if (b) {
+                val location = LocationServices.FusedLocationApi?.getLastLocation();
+                if (location is Location) {
+                    val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
+                    val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
+                    getInititializedRouter().setDriving().setLocation(start).setCallback(this).setLocation(dest).fetch();
                 }
+                (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_car_normal)
             }
-            (findViewById(R.id.by_foot) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
-                if (b) {
-                    val location = LocationServices.FusedLocationApi?.getLastLocation();
-                    if (location is Location) {
-                        val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
-                        val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
-                        Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setWalking().setLocation(start).setLocation(dest).setCallback(this).fetch();
-                    }
-                    (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_walk_normal)
+        }
+        (findViewById(R.id.by_foot) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
+            if (b) {
+                val location = LocationServices.FusedLocationApi?.getLastLocation();
+                if (location is Location) {
+                    val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
+                    val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
+                    getInititializedRouter().setWalking().setLocation(start).setLocation(dest).setCallback(this).fetch();
                 }
+                (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_walk_normal)
             }
-            (findViewById(R.id.by_bike) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
-                if (b) {
-                    val location = LocationServices.FusedLocationApi?.getLastLocation();
-                    if (location is Location) {
-                        val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
-                        val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
-                        Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setBiking().setLocation(start).setLocation(dest).setCallback(this).fetch()
-                    }
-                    (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_bike_normal)
+        }
+        (findViewById(R.id.by_bike) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
+            if (b) {
+                val location = LocationServices.FusedLocationApi?.getLastLocation();
+                if (location is Location) {
+                    val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
+                    val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
+                    getInititializedRouter().setBiking().setLocation(start).setLocation(dest).setCallback(this).fetch()
                 }
+                (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_bike_normal)
             }
-
+        }
     }
 
 
     override fun onBackPressed() {
-        if((findViewById(R.id.route_preview)).getVisibility() == View.VISIBLE) {
+        if ((findViewById(R.id.route_preview)).getVisibility() == View.VISIBLE) {
             mapController!!.getMap().layers().remove(path)
             mapController!!.getMap().layers().remove(markers)
         }
@@ -544,5 +547,10 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     override fun shutDown() {
         finish()
     }
+
+    private fun getInititializedRouter(): Router {
+        return Router().setApiKey(BuildConfig.VALHALLA_API_KEY);
+    }
+
 
 }
