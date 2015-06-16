@@ -411,8 +411,8 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         val simpleFeature = SimpleFeature.fromFeature(feature)
         val location = LocationServices.FusedLocationApi?.getLastLocation();
         if (location is Location) {
-            val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
-            val dest: DoubleArray = doubleArray(simpleFeature.getLat(), simpleFeature.getLon())
+            val start: DoubleArray = doubleArrayOf(location.getLatitude(), location.getLongitude())
+            val dest: DoubleArray = doubleArrayOf(simpleFeature.getLat(), simpleFeature.getLon())
             getInititializedRouter().setLocation(start).setLocation(dest).setCallback(this).fetch()
         }
     }
@@ -503,8 +503,8 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
             if (b) {
                 val location = LocationServices.FusedLocationApi?.getLastLocation();
                 if (location is Location) {
-                    val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
-                    val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
+                    val start: DoubleArray = doubleArrayOf(location.getLatitude(), location.getLongitude())
+                    val dest: DoubleArray = doubleArrayOf(dest.getLat(), dest.getLon())
                     getInititializedRouter().setDriving().setLocation(start).setCallback(this).setLocation(dest).fetch();
                 }
                 (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_car_normal)
@@ -514,8 +514,8 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
             if (b) {
                 val location = LocationServices.FusedLocationApi?.getLastLocation();
                 if (location is Location) {
-                    val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
-                    val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
+                    val start: DoubleArray = doubleArrayOf(location.getLatitude(), location.getLongitude())
+                    val dest: DoubleArray = doubleArrayOf(dest.getLat(), dest.getLon())
                     getInititializedRouter().setWalking().setLocation(start).setLocation(dest).setCallback(this).fetch();
                 }
                 (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_walk_normal)
@@ -525,8 +525,8 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
             if (b) {
                 val location = LocationServices.FusedLocationApi?.getLastLocation();
                 if (location is Location) {
-                    val start: DoubleArray = doubleArray(location.getLatitude(), location.getLongitude())
-                    val dest: DoubleArray = doubleArray(dest.getLat(), dest.getLon())
+                    val start: DoubleArray = doubleArrayOf(location.getLatitude(), location.getLongitude())
+                    val dest: DoubleArray = doubleArrayOf(dest.getLat(), dest.getLon())
                     getInititializedRouter().setBiking().setLocation(start).setLocation(dest).setCallback(this).fetch()
                 }
                 (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_bike_normal)
