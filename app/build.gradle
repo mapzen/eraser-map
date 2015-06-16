@@ -21,7 +21,6 @@ android {
     debug {
       buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY_DEBUG
       buildConfigField "String", "VALHALLA_API_KEY", VALHALLA_API_KEY
-
     }
     release {
       buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY_RELEASE

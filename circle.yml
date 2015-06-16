@@ -1,3 +1,15 @@
+machine:
+  ruby:
+    version: jruby-1.7.12
+  pre:
+    - curl -O http://apache.osuosl.org/maven/maven-3/3.1.1/binaries/apache-maven-3.1.1-bin.tar.gz && tar xvf apache-maven-3.1.1-bin.tar.gz -C ~/.m2
+  environment:
+    PATH: $HOME/.m2/apache-maven-3.1.1/bin:$PATH
+    M2_HOME: $HOME/.m2/apache-maven-3.1.1/
+    M2: $HOME/.m2/apache-maven-3.1.1/bin/
+    ANDROID_HOME: /usr/local/android-sdk-linux
+
+
 dependencies:
   pre:
     - echo y | android update sdk --all --no-ui --force --filter "extra-android-m2repository"
@@ -6,3 +18,15 @@ dependencies:
 test:
   override:
     - ./gradlew
+
+deployment:
+  all:
+    branch: /^(?!master).*$/
+    commands:
+      - s3cmd put app/build/outputs/apk/app-debug.apk s3://android.mapzen.com/development/$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM.apk
+      - scripts/upload-release.sh
+  master:
+    branch: master
+    commands:
+      - s3cmd put app/build/outputs/apk/app-debug.apk s3://android.mapzen.com/latest.apk
+      - s3cmd put app/build/outputs/apk/app-debug.apk s3://android.mapzen.com/snapshots/master-$CIRCLE_BUILD_NUM.apk
