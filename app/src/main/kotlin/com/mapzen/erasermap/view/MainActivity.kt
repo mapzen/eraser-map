@@ -18,11 +18,9 @@ import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.erasermap.BuildConfig
-import com.mapzen.erasermap.HttpCacheFactory
 import com.mapzen.erasermap.PrivateMapsApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.presenter.MainPresenter
-import com.mapzen.erasermap.util.DouglasPeuckerReducer
 import com.mapzen.mapburrito.MapController
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.PeliasLocationProvider
@@ -55,6 +53,8 @@ import org.oscim.tiling.source.UrlTileSource
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
+import com.mapzen.erasermap.util.DouglasPeuckerReducer
+import com.mapzen.erasermap.util.HttpCacheFactory
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -69,17 +69,17 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     public val requestCodeSearchResults: Int = 0x01
 
     var locationClient: LostApiClient? = null
-        @Inject set
+    @Inject set
     var tileCache: Cache? = null
-        @Inject set
+    @Inject set
     var savedSearch: SavedSearch? = null
-        @Inject set
+    @Inject set
     var presenter: MainPresenter? = null
-        @Inject set
+    @Inject set
     var markerSymbolFactory: MarkerSymbolFactory? = null
-        @Inject set
+    @Inject set
     var bus: Bus? = null
-        @Inject set
+    @Inject set
 
     var app: PrivateMapsApplication? = null
     var mapController: MapController? = null
@@ -179,7 +179,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
                 .setSmallestDisplacement(LOCATION_UPDATE_SMALLEST_DISPLACEMENT)
 
         LocationServices.FusedLocationApi?.requestLocationUpdates(locationRequest) {
-            location: Location -> mapController?.showCurrentLocation(location)?.update()
+            location: Location ->mapController?.showCurrentLocation(location)?.update()
         }
     }
 
@@ -463,13 +463,13 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
 
             position.setScale(position.getZoomScale() * 0.85)
 
-            mapController?.getMap()?.setMapPosition(position)
+            mapController!!.getMap().setMapPosition(position)
 
-            if (mapController?.getMap()?.layers()?.contains(path) as Boolean) {
+            if (!((mapController?.getMap()?.layers()?.contains(path)) as Boolean)) {
                 mapController?.getMap()?.layers()?.add(path)
             }
 
-            if (mapController?.getMap()?.layers()?.contains(markers) as Boolean) {
+            if (!((mapController?.getMap()?.layers()?.contains(markers)) as Boolean)) {
                 mapController?.getMap()?.layers()?.add(markers)
             }
             markers?.removeAllItems()
@@ -533,7 +533,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
             }
         }
     }
-
+    
     override fun onBackPressed() {
         if ((findViewById(R.id.route_preview)).getVisibility() == View.VISIBLE) {
             mapController?.getMap()?.layers()?.remove(path)
@@ -550,6 +550,4 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     private fun getInitializedRouter(): Router {
         return Router().setApiKey(BuildConfig.VALHALLA_API_KEY);
     }
-
-
 }
