@@ -68,6 +68,8 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
 
     public val requestCodeSearchResults: Int = 0x01
 
+    private var reverse = false;
+    private var route: Route? = null;
     var locationClient: LostApiClient? = null
     @Inject set
     var tileCache: Cache? = null
@@ -102,6 +104,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         initPoiLayer()
         initAutoCompleteAdapter()
         initFindMeButton()
+        initreverseButton()
         centerOnCurrentLocation()
         presenter?.onRestoreViewState()
     }
@@ -417,6 +420,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
     override fun success(route: Route?) {
+        this.route = route;
         runOnUiThread({
             getSupportActionBar()?.hide()
             findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
@@ -534,6 +538,41 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         }
     }
 
+    private fun reverse() {
+        reverse = !reverse;
+        (findViewById(R.id.route_preview) as RoutePreviewView).reverse = this.reverse
+        val simpleFeature = SimpleFeature.fromFeature(destination)
+        val location = LocationServices.FusedLocationApi?.getLastLocation();
+        if(reverse) {
+            if (location is Location) {
+                val start: DoubleArray = doubleArrayOf(simpleFeature.getLat(), simpleFeature.getLon())
+                val dest: DoubleArray = doubleArrayOf(location.getLatitude(), location.getLongitude())
+                getInitializedRouter().setLocation(start).setLocation(dest).setCallback(this).fetch()
+            }
+        } else {
+            if (location is Location) {
+                val start: DoubleArray = doubleArrayOf(location.getLatitude(), location.getLongitude())
+                val dest: DoubleArray = doubleArrayOf(simpleFeature.getLat(), simpleFeature.getLon())
+                getInitializedRouter().setLocation(start).setLocation(dest).setCallback(this).fetch()
+            }
+        }
+    }
+
+    private fun initreverseButton() {
+        (findViewById(R.id.route_reverse) as ImageButton).setOnClickListener({ reverse()})
+
+        (findViewById(R.id.routing_circle) as ImageButton).setOnClickListener ({
+            val instructionStrings = ArrayList<String>()
+            for(instruction in route!!.getRouteInstructions() ) {
+                instructionStrings.add(instruction.getHumanTurnInstruction())
+            }
+            val intent = Intent(this, javaClass<InstructionListActivity>())
+            intent.putExtra("instructions", instructionStrings)
+            startActivityForResult(intent, requestCodeSearchResults)
+        })
+
+    }
+
     override fun onBackPressed() {
         if ((findViewById(R.id.route_preview)).getVisibility() == View.VISIBLE) {
             mapController?.getMap()?.layers()?.remove(path)
@@ -551,3 +590,4 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         return Router().setApiKey(BuildConfig.VALHALLA_API_KEY);
     }
 }
+

@@ -15,14 +15,23 @@ import com.mapzen.valhalla.Router
 
 
 public class RoutePreviewView : RelativeLayout {
+    public var reverse : Boolean = false
     public var destination: SimpleFeature? = null
         set (destination) {
-            (findViewById(R.id.destination) as TextView).setText(destination?.getTitle())
+            if(reverse) {
+                (findViewById(R.id.starting_point) as TextView).setText(destination?.getTitle())
+            } else {
+                (findViewById(R.id.destination) as TextView).setText(destination?.getTitle())
+            }
         }
 
     public var route: Route? = null
         set (route) {
-            (findViewById(R.id.starting_point) as TextView).setText(R.string.current_location)
+            if(reverse) {
+                (findViewById(R.id.destination) as TextView).setText(R.string.current_location)
+            } else {
+                (findViewById(R.id.starting_point) as TextView).setText(R.string.current_location)
+            }
         }
 
     public constructor(context: Context) : super(context) {
