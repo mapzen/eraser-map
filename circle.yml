@@ -14,6 +14,9 @@ dependencies:
   pre:
     - echo y | android update sdk --all --no-ui --force --filter "extra-android-m2repository"
     - scripts/install-vtm.sh
+    - sudo apt-get update; sudo apt-get install s3cmd
+    - printf "[default]\naccess_key = $S3_ACCESS_KEY\n secret_key = $S3_SECRET_KEY" > ~/.s3cfg
+    - git clone https://github.com/mapzen/apk-s3-lister.git; cd apk-s3-lister; ./upload.sh
 
 test:
   override:

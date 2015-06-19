@@ -533,7 +533,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
             }
         }
     }
-    
+
     override fun onBackPressed() {
         if ((findViewById(R.id.route_preview)).getVisibility() == View.VISIBLE) {
             mapController?.getMap()?.layers()?.remove(path)
