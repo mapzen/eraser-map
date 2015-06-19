@@ -4,6 +4,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 def VECTOR_TILE_API_KEY_DEBUG = hasProperty('vectorTileApiKeyDebugProp') ? '"' + vectorTileApiKeyDebugProp + '"' : "null";
 def VECTOR_TILE_API_KEY_RELEASE = hasProperty('vectorTileApiKeyReleaseProp') ? '"' + vectorTileApiKeyReleaseProp + '"' : "null";
+def VALHALLA_API_KEY = hasProperty('valhallaApiKey') ? '"' + valhallaApiKey + '"' : "null";
 
 android {
   compileSdkVersion 22
@@ -19,9 +20,11 @@ android {
   buildTypes {
     debug {
       buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY_DEBUG
+      buildConfigField "String", "VALHALLA_API_KEY", VALHALLA_API_KEY
     }
     release {
       buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY_RELEASE
+      buildConfigField "String", "VALHALLA_API_KEY", VALHALLA_API_KEY
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
@@ -64,7 +67,7 @@ dependencies {
   compile 'javax.annotation:javax.annotation-api:1.2'
   compile 'com.android.support:support-v4:22.1.0@aar'
   compile 'com.squareup:otto:1.3.7'
-  compile ('com.mapzen:on-the-road:0.7-SNAPSHOT') {
+  compile ('com.mapzen:on-the-road:0.8-SNAPSHOT') {
     exclude group: 'org.apache.commons', module: 'commons-io'
   }
 

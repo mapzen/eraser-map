@@ -5,10 +5,12 @@ import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
 import com.mapzen.erasermap.dummy.TestMap;
+import com.mapzen.erasermap.model.RoutePreviewEvent;
 import com.mapzen.pelias.SavedSearch;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.widget.PeliasSearchView;
 import com.mapzen.valhalla.Route;
+import com.mapzen.valhalla.Router;
 
 import org.json.JSONObject;
 import org.junit.Before;
@@ -36,10 +38,10 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 
 import java.util.ArrayList;
-
 import static android.content.Context.LOCATION_SERVICE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
 import static com.mapzen.erasermap.dummy.TestMap.TestAnimator.clearLastGeoPoint;
 import static com.mapzen.erasermap.dummy.TestMap.TestAnimator.getLastGeoPoint;
@@ -358,6 +360,40 @@ public class MainActivityTest {
         activity.findViewById(R.id.route_preview).setVisibility(VISIBLE);
         activity.hideRoutePreview();
         assertThat(activity.findViewById(R.id.route_preview).getVisibility()).isEqualTo(GONE);
+    }
+
+    @Test
+    public void onSuccess_shouldShowDrawnRoute() throws Exception {
+        activity.showRoutePreview(getTestFeature());
+        activity.success(new Route(getFixture("valhalla_route")));
+        assertThat(activity.getMapController().getMap().layers().contains(activity.getPath())).isTrue();
+    }
+
+
+    @Test
+    public void onBack_shouldHideDrawnRoute() throws Exception {
+        activity.showRoutePreview(getTestFeature());
+        activity.success(new Route(getFixture("valhalla_route")));
+        assertThat(activity.getMapController().getMap().layers().contains(activity.getPath())).isTrue();
+        activity.onBackPressed();
+        assertThat(activity.getMapController().getMap().layers().contains(activity.getPath())).isFalse();
+    }
+
+    @Test
+    public void success_shouldAddMarkerLayer() throws Exception {
+        activity.showRoutePreview(getTestFeature());
+        activity.success(new Route(getFixture("valhalla_route")));
+        assertThat(activity.getMapController().getMap().layers().contains(activity.getMarkers())).isTrue();
+    }
+
+    @Test
+    public void success_shouldClearMarkerLayer() throws Exception {
+        activity.showRoutePreview(getTestFeature());
+        activity.success(new Route(getFixture("valhalla_route")));
+        assertThat(activity.getMapController().getMap().layers().contains(activity.getMarkers())).isTrue();
+        activity.onBackPressed();
+        assertThat(activity.getMapController().getMap().layers().contains(activity.getMarkers())).isFalse();
+
     }
 
     private Location getTestLocation(double lat, double lng) {

@@ -1,24 +1,28 @@
 package com.mapzen.erasermap.view
 
 import android.content.Context
+import android.location.Location
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.RelativeLayout
 import android.widget.TextView
+import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.erasermap.R
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.valhalla.Route
+import com.mapzen.valhalla.Router
+
 
 public class RoutePreviewView : RelativeLayout {
     public var destination: SimpleFeature? = null
-    set (destination) {
-        (findViewById(R.id.destination) as TextView).setText("Route from current location to "
-                + destination?.getTitle())
-    }
+        set (destination) {
+            (findViewById(R.id.destination) as TextView).setText(destination?.getTitle())
+        }
 
     public var route: Route? = null
         set (route) {
-            (findViewById(R.id.route) as TextView).setText(route?.getRawRoute().toString())
+            (findViewById(R.id.starting_point) as TextView).setText(R.string.current_location)
         }
 
     public constructor(context: Context) : super(context) {
@@ -30,7 +34,7 @@ public class RoutePreviewView : RelativeLayout {
     }
 
     public constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
-            : super(context, attrs, defStyleAttr) {
+    : super(context, attrs, defStyleAttr) {
         init()
     }
 

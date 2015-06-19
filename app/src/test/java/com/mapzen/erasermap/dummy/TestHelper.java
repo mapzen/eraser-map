@@ -1,12 +1,18 @@
 package com.mapzen.erasermap.dummy;
 
+import com.google.common.io.Files;
 import com.mapzen.pelias.SimpleFeature;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.gson.Geometry;
 import com.mapzen.pelias.gson.Properties;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.System.getProperty;
 
 public class TestHelper {
     public static final String TEST_TEXT = "Text";
@@ -41,5 +47,13 @@ public class TestHelper {
 
     public static SimpleFeature getTestSimpleFeature(double lat, double lon) {
         return SimpleFeature.fromFeature(getTestFeature(lat, lon));
+    }
+
+    public static String getFixture(String name) throws IOException {
+        String fileName = getProperty("user.dir");
+        File file = new File(fileName + "/src/test/java/fixtures/" + name + ".route");
+        String content;
+        content = Files.toString(file, Charset.defaultCharset());
+        return content;
     }
 }

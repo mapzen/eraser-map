@@ -4,7 +4,10 @@ import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
 import com.mapzen.erasermap.dummy.TestHelper;
+import com.mapzen.mapburrito.MapController;
+import com.mapzen.valhalla.Route;
 
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +38,14 @@ public class RoutePreviewViewTest {
     public void setDestination_shouldPopulateTextView() throws Exception {
         routePreview.setDestination(getTestSimpleFeature());
         assertThat(((TextView) routePreview.findViewById(R.id.destination)).getText())
-                .isEqualTo("Route from current location to " + TestHelper.TEST_TEXT);
+                .isEqualTo(TestHelper.TEST_TEXT);
+    }
+
+    @Test
+    public void onStart_shouldHaveCurrentLocation() throws Exception {
+        routePreview.setRoute(new Route(new JSONObject()));
+        TextView textView = (TextView) routePreview.findViewById(R.id.starting_point);
+        assertThat(textView).isNotNull();
+        assertThat(textView.getText().toString()).isEqualTo("Current Location");
     }
 }
