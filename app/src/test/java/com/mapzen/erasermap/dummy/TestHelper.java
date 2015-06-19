@@ -49,7 +49,6 @@ public class TestHelper {
         return SimpleFeature.fromFeature(getTestFeature(lat, lon));
     }
 
-
     public static String getFixture(String name) throws IOException {
         String fileName = getProperty("user.dir");
         File file = new File(fileName + "/src/test/java/fixtures/" + name + ".route");

@@ -5,7 +5,8 @@ import android.location.Location
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
-import android.widget.*
+import android.widget.RelativeLayout
+import android.widget.TextView
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.erasermap.R
 import com.mapzen.pelias.SimpleFeature
@@ -21,7 +22,7 @@ public class RoutePreviewView : RelativeLayout {
 
     public var route: Route? = null
         set (route) {
-            (findViewById(R.id.starting_point) as TextView).setText("Current Location")
+            (findViewById(R.id.starting_point) as TextView).setText(R.string.current_location)
         }
 
     public constructor(context: Context) : super(context) {

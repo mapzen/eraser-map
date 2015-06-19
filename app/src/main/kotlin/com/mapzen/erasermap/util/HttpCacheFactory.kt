@@ -1,4 +1,4 @@
-package util
+package com.mapzen.erasermap
 
 import com.squareup.okhttp.Cache
 import com.squareup.okhttp.OkHttpClient

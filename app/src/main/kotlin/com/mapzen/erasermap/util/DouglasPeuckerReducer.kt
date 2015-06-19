@@ -1,4 +1,4 @@
-package util
+package com.mapzen.erasermap.util
 
 import java.util.ArrayList
 import android.location.Location

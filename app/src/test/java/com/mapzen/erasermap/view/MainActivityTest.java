@@ -36,7 +36,6 @@ import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
-import android.widget.RadioButton;
 
 import java.util.ArrayList;
 import static android.content.Context.LOCATION_SERVICE;
@@ -48,9 +47,6 @@ import static com.mapzen.erasermap.dummy.TestMap.TestAnimator.clearLastGeoPoint;
 import static com.mapzen.erasermap.dummy.TestMap.TestAnimator.getLastGeoPoint;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(PrivateMapsTestRunner.class)
@@ -366,9 +362,8 @@ public class MainActivityTest {
         assertThat(activity.findViewById(R.id.route_preview).getVisibility()).isEqualTo(GONE);
     }
 
-
     @Test
-    public void onSuccess_ShouldShowDrawnRoute() throws Exception {
+    public void onSuccess_shouldShowDrawnRoute() throws Exception {
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
         assertThat(activity.getMapController().getMap().layers().contains(activity.getPath())).isTrue();
@@ -376,7 +371,7 @@ public class MainActivityTest {
 
 
     @Test
-    public void onBack_ShouldHideDrawnRoute() throws Exception {
+    public void onBack_shouldHideDrawnRoute() throws Exception {
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
         assertThat(activity.getMapController().getMap().layers().contains(activity.getPath())).isTrue();

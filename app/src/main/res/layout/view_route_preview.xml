@@ -5,7 +5,6 @@
     android:layout_gravity="fill_horizontal"
     android:background="@android:color/transparent">
 
-    <!-- TODO: Replace placeholder view with the real preview header (start, destination, reverse direction, route mode, etc. -->
     <include layout="@layout/route_header" />
 
     <LinearLayout
