@@ -1,10 +1,22 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/route_header_direction_list"
+        android:id="@+id/instruction_route_header"/>
+
+
+    <include layout="@layout/list_header_divider"
+        android:id="@+id/location_divider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <ListView
         android:id="@+id/instruction_list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="@color/transparent_white"
+        android:layout_below="@+id/instruction_route_header"/>
 
-</RelativeLayout>
+</LinearLayout>
