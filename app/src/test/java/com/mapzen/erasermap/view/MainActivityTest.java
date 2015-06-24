@@ -27,15 +27,19 @@ import org.oscim.tiling.source.oscimap4.OSciMap4TileSource;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.fakes.RoboMenu;
+import org.robolectric.shadows.ShadowActivity;
+import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.shadows.ShadowLocationManager;
 import org.robolectric.util.ReflectionHelpers;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
+import android.view.View;
 
 import java.util.ArrayList;
 import static android.content.Context.LOCATION_SERVICE;
@@ -377,6 +381,39 @@ public class MainActivityTest {
         assertThat(activity.getMapController().getMap().layers().contains(activity.getPath())).isTrue();
         activity.onBackPressed();
         assertThat(activity.getMapController().getMap().layers().contains(activity.getPath())).isFalse();
+    }
+
+    @Test
+    public void onRadioClick_ShouldChangeType() throws Exception {
+        activity.showRoutePreview(getTestFeature());
+        activity.success(new Route(getFixture("valhalla_route")));
+        activity.findViewById(R.id.route_preview).findViewById(R.id.by_bike).performClick();
+        assertThat(activity.getType()).isEqualTo(Router.Type.BIKING);
+        activity.findViewById(R.id.route_preview).findViewById(R.id.by_foot).performClick();
+        assertThat(activity.getType()).isEqualTo(Router.Type.WALKING);
+        activity.findViewById(R.id.route_preview).findViewById(R.id.by_car).performClick();
+        assertThat(activity.getType()).isEqualTo(Router.Type.DRIVING);
+    }
+
+    @Test
+    public void onReverseClick_ShouldSetReverse() throws Exception {
+        activity.showRoutePreview(getTestFeature());
+        activity.success(new Route(getFixture("valhalla_route")));
+        assertThat(activity.getReverse()).isFalse();
+        activity.findViewById(R.id.route_preview).findViewById(R.id.route_reverse).performClick();
+        assertThat(activity.getReverse()).isTrue();
+    }
+
+    @Test
+    public void onRoutingCircleClick_ShouldOpenDirectionListActivity() throws Exception {
+        activity.showRoutePreview(getTestFeature());
+        activity.success(new Route(getFixture("valhalla_route")));
+        assertThat(activity.findViewById(R.id.instruction_list_view)).isNull();
+        activity.findViewById(R.id.routing_circle).performClick();
+        ShadowActivity shadowActivity = shadowOf(activity);
+        Intent startedIntent = shadowActivity.getNextStartedActivity();
+        ShadowIntent shadowIntent = shadowOf(startedIntent);
+        assertThat(shadowIntent.getComponent().getClassName()).contains("InstructionListActivity");
     }
 
     @Test

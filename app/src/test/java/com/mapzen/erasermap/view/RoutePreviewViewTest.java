@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import android.view.View;
 import android.widget.TextView;
 
 import static com.mapzen.erasermap.dummy.TestHelper.getTestSimpleFeature;

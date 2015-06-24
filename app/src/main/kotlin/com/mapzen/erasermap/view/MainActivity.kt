@@ -68,7 +68,6 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
 
     public val requestCodeSearchResults: Int = 0x01
 
-    private var reverse = false;
     private var route: Route? = null;
     var locationClient: LostApiClient? = null
     @Inject set
@@ -92,6 +91,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     var path: PathLayer? = null
     var markers: ItemizedLayer<MarkerItem>? = null
     var type : Router.Type = Router.Type.DRIVING
+    var reverse : Boolean = false;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super<AppCompatActivity>.onCreate(savedInstanceState)

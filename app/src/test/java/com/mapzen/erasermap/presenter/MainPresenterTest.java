@@ -138,7 +138,6 @@ public class MainPresenterTest {
         presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
         presenter.onBackPressed();
         assertThat(controller.isRoutePreviewVisible).isFalse();
-
     }
 
     private class TestViewController implements ViewController {
