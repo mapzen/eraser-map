@@ -36,12 +36,12 @@ import static org.robolectric.Shadows.shadowOf;
 @RunWith(PrivateMapsTestRunner.class)
 @Config(constants = BuildConfig.class, emulateSdk = 21)
 public class InstructionListActivityTest {
-    private MainActivity startActivity;
+    private static MainActivity startActivity = Robolectric.setupActivity(MainActivity.class);;
     private InstructionListActivity activity;
 
     @Before
     public void setUp() throws Exception {
-        startActivity = Robolectric.setupActivity(MainActivity.class);
+        startActivity.setReverse(false);
         startActivity.showRoutePreview(getTestFeature());
         startActivity.success(new Route(getFixture("valhalla_route")));
         startActivity.findViewById(R.id.routing_circle).performClick();
@@ -79,7 +79,7 @@ public class InstructionListActivityTest {
     }
 
     @Test
-    public void onDirectionListOpen_ShouldHaveOriginSet() throws Exception {
+    public void onDirectionListOpen_shouldHaveOriginSet() throws Exception {
         assertThat(((TextView)activity.findViewById(R.id.destination)).getText())
                 .isEqualTo( SimpleFeature.fromFeature(startActivity.getDestination()).toString());
         assertThat(((TextView)activity.findViewById(R.id.starting_point)).getText())
@@ -87,7 +87,7 @@ public class InstructionListActivityTest {
     }
 
     @Test
-    public void onDirectionListOpenReversed_ShouldHaveOriginSet() throws Exception {
+    public void onDirectionListOpenReversed_shouldHaveOriginSet() throws Exception {
         setActivityToReverse();
         assertThat(((TextView) activity.findViewById(R.id.starting_point)).getText())
                 .isEqualTo(SimpleFeature.fromFeature(startActivity.getDestination()).toString());
@@ -96,7 +96,7 @@ public class InstructionListActivityTest {
     }
 
     @Test
-    public void onDirectionListOpen_ShouldHaveCurrentLocationFirst() throws Exception {
+    public void onDirectionListOpen_shouldHaveCurrentLocationFirst() throws Exception {
         View view = ((ListView) activity.findViewById(R.id.instruction_list_view)).getAdapter()
                 .getView(0, activity.findViewById(R.id.instruction_list_view),
                         getGenericViewGroup());
@@ -111,7 +111,7 @@ public class InstructionListActivityTest {
     }
 
     @Test
-    public void onDirectionListOpen_ShouldHaveFirstInstructionFirst() throws Exception {
+    public void onDirectionListOpen_shouldHaveFirstInstructionFirst() throws Exception {
           View view = ((ListView) activity.findViewById(R.id.instruction_list_view)).getAdapter()
                   .getView(1, activity.findViewById(R.id.instruction_list_view),
                           getGenericViewGroup());

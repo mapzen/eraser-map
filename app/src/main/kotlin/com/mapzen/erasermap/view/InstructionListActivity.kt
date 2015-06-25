@@ -22,8 +22,9 @@ public class InstructionListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_instructions)
-        getSupportActionBar().hide()
+        getSupportActionBar()?.hide()
         val listView = findViewById(R.id.instruction_list_view) as ListView
+        findViewById(R.id.route_reverse).setVisibility(View.GONE)
         val bundle = getIntent()?.getExtras()
         val instruction_strings: ArrayList<String>? = bundle?.getStringArrayList("instruction_strings")
         val instruction_types: ArrayList<Int>? = bundle?.getIntegerArrayList("instruction_types")
@@ -67,18 +68,20 @@ public class InstructionListActivity : AppCompatActivity() {
         private var instruction_types: ArrayList<Int>? = types
         private var instruction_distances: ArrayList<Int>? = distances
         private var context: Context  = context
-        private var reverse : Boolean = reverse;
+        private var reverse : Boolean = reverse
 
         override fun getCount(): Int {
-            return (instruction_strings!!.size() + CURRENT_LOCATION_OFFSET)
-        }
+            var size = if (instruction_strings != null) (instruction_strings!!.size()
+                    + CURRENT_LOCATION_OFFSET) else 0
+            return size
+         }
 
         override fun getItemId(position: Int): Long {
-            return 0;
+            return 0
         }
 
         override fun getItem(position: Int): Any? {
-            return 0;
+            return 0
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
@@ -92,11 +95,12 @@ public class InstructionListActivity : AppCompatActivity() {
         }
 
         private fun setReversedDirectionListItem(position : Int, view : View)  {
-            if(position == instruction_strings!!.size()) {
-                setListItemToCurrentLocation(view);
+            if(position == instruction_strings?.size()) {
+                setListItemToCurrentLocation(view)
             } else {
-                var distanceVal : Int = instruction_distances!!.get(position).toInt()
-                var formattedDistance : String = DistanceFormatter.format(distanceVal)
+                var distanceVal : Int? = instruction_distances?.get(position)
+                var formattedDistance : String = DistanceFormatter.format(
+                        (distanceVal?.toInt() as Int))
                 var iconId : Int = DisplayHelper.getRouteDrawable(context,
                         instruction_types?.get(position))
 
@@ -111,15 +115,14 @@ public class InstructionListActivity : AppCompatActivity() {
             if (position == 0 ) {
                 setListItemToCurrentLocation(view)
             } else {
-                var distanceVal : Int = instruction_distances!!
-                        .get(position - CURRENT_LOCATION_OFFSET).toInt()
-                var distance : String = DistanceFormatter.format(distanceVal)
+                var distanceVal : Int? = instruction_distances?.get(position - CURRENT_LOCATION_OFFSET)
+                var formattedDistance : String = DistanceFormatter.format((distanceVal?.toInt() as Int))
                 var iconId : Int = DisplayHelper.getRouteDrawable(context,
                         instruction_types?.get(position - CURRENT_LOCATION_OFFSET))
 
                 (view.findViewById(R.id.simple_instruction) as TextView).setText(
                         instruction_strings?.get(position - CURRENT_LOCATION_OFFSET).toString())
-                (view.findViewById(R.id.distance) as TextView).setText(distance)
+                (view.findViewById(R.id.distance) as TextView).setText(formattedDistance)
                 (view.findViewById(R.id.icon) as ImageView).setImageResource(iconId)
             }
         }
@@ -129,4 +132,5 @@ public class InstructionListActivity : AppCompatActivity() {
             (view.findViewById(R.id.icon) as ImageView).setImageResource(R.drawable.ic_locate)
         }
     }
+
 }

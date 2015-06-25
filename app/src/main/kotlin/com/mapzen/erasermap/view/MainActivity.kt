@@ -551,24 +551,8 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     private fun initreverseButton() {
         (findViewById(R.id.route_reverse) as ImageButton).setOnClickListener({ reverse()})
 
-        (findViewById(R.id.routing_circle) as ImageButton).setOnClickListener ({
-            val instructionStrings = ArrayList<String>()
-            val instructionType= ArrayList<Int>()
-            val instructionDistance= ArrayList<Int>()
-            for(instruction in route!!.getRouteInstructions() ) {
-                instructionStrings.add(instruction.getHumanTurnInstruction())
-                instructionType.add(instruction.turnInstruction)
-                instructionDistance.add(instruction.distance)
-            }
-            val simpleFeature = SimpleFeature.fromFeature(destination)
-            val intent = Intent(this, javaClass<InstructionListActivity>())
-            intent.putExtra("instruction_strings", instructionStrings)
-            intent.putExtra("instruction_types", instructionType)
-            intent.putExtra("instruction_distances", instructionDistance)
-            intent.putExtra("destination", simpleFeature.toString())
-            intent.putExtra("reverse", this.reverse)
-            startActivityForResult(intent, requestCodeSearchResults)
-        })
+        (findViewById(R.id.routing_circle) as ImageButton).setOnClickListener (
+                {presenter?.onShowDirectionList()})
     }
 
     override fun onBackPressed() {
@@ -582,6 +566,25 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
 
     override fun shutDown() {
         finish()
+    }
+
+    override fun showDirectionList() {
+        val instructionStrings = ArrayList<String>()
+        val instructionType= ArrayList<Int>()
+        val instructionDistance= ArrayList<Int>()
+        for(instruction in route!!.getRouteInstructions() ) {
+            instructionStrings.add(instruction.getHumanTurnInstruction())
+            instructionType.add(instruction.turnInstruction)
+            instructionDistance.add(instruction.distance)
+        }
+        val simpleFeature = SimpleFeature.fromFeature(destination)
+        val intent = Intent(this, javaClass<InstructionListActivity>())
+        intent.putExtra("instruction_strings", instructionStrings)
+        intent.putExtra("instruction_types", instructionType)
+        intent.putExtra("instruction_distances", instructionDistance)
+        intent.putExtra("destination", simpleFeature.toString())
+        intent.putExtra("reverse", this.reverse)
+        startActivityForResult(intent, requestCodeSearchResults)
     }
 
     private fun getInitializedRouter(): Router {

@@ -384,7 +384,7 @@ public class MainActivityTest {
     }
 
     @Test
-    public void onRadioClick_ShouldChangeType() throws Exception {
+    public void onRadioClick_shouldChangeType() throws Exception {
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
         activity.findViewById(R.id.route_preview).findViewById(R.id.by_bike).performClick();
@@ -396,7 +396,7 @@ public class MainActivityTest {
     }
 
     @Test
-    public void onReverseClick_ShouldSetReverse() throws Exception {
+    public void onReverseClick_shouldSetReverse() throws Exception {
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
         assertThat(activity.getReverse()).isFalse();
@@ -405,7 +405,7 @@ public class MainActivityTest {
     }
 
     @Test
-    public void onRoutingCircleClick_ShouldOpenDirectionListActivity() throws Exception {
+    public void onRoutingCircleClick_shouldOpenDirectionListActivity() throws Exception {
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
         assertThat(activity.findViewById(R.id.instruction_list_view)).isNull();

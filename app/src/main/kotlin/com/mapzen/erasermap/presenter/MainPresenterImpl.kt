@@ -77,4 +77,8 @@ public class MainPresenterImpl() : MainPresenter {
             viewController?.shutDown()
         }
     }
+
+    override fun onShowDirectionList() {
+        viewController?.showDirectionList()
+    }
 }
