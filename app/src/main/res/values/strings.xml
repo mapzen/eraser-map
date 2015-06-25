@@ -7,6 +7,7 @@
     <string name="no_recent_searches">No recent searches</string>
     <string name="search_results_indicator">%1$d of %2$d results</string>
     <string name="search_results">Search Results</string>
+    <string name="instruction_list">Instructions</string>
     <string name="from_text">From: </string>
     <string name="to_text">To: </string>
     <string name="current_location">Current Location</string>

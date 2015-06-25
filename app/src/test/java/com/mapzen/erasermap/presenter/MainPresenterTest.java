@@ -138,7 +138,12 @@ public class MainPresenterTest {
         presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
         presenter.onBackPressed();
         assertThat(controller.isRoutePreviewVisible).isFalse();
+    }
 
+    @Test
+    public void onShowDirectionList_shouldMakeDirectionsVisible(){
+        presenter.onShowDirectionList();
+        assertThat(controller.isDirectionListVisible).isTrue();
     }
 
     private class TestViewController implements ViewController {
@@ -148,6 +153,7 @@ public class MainPresenterTest {
         private boolean isViewAllVisible;
         private boolean isSearchVisible;
         private boolean isRoutePreviewVisible;
+        private boolean isDirectionListVisible;
 
         @Override public void showSearchResults(@NotNull List<? extends Feature> features) {
             searchResults = (List<Feature>) features;
@@ -201,5 +207,8 @@ public class MainPresenterTest {
 
         @Override public void shutDown() {
         }
+
+        @Override
+        public void showDirectionList() { isDirectionListVisible = true;}
     }
 }

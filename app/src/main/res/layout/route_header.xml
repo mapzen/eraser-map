@@ -94,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="4dp"
-                android:src="@drawable/ic_pin_outline"
+                android:src="@drawable/ic_locate"
                 android:visibility="gone" />
 
             <TextView
