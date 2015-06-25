@@ -8,6 +8,7 @@ machine:
     M2_HOME: $HOME/.m2/apache-maven-3.1.1/
     M2: $HOME/.m2/apache-maven-3.1.1/bin/
     ANDROID_HOME: /usr/local/android-sdk-linux
+    JAVA_OPTS: "-Xms256m -Xmx512m"
 
 
 dependencies:
