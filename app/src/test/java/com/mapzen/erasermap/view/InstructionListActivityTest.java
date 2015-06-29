@@ -36,7 +36,7 @@ import static org.robolectric.Shadows.shadowOf;
 @RunWith(PrivateMapsTestRunner.class)
 @Config(constants = BuildConfig.class, emulateSdk = 21)
 public class InstructionListActivityTest {
-    private static MainActivity startActivity = Robolectric.setupActivity(MainActivity.class);;
+    private static MainActivity startActivity = Robolectric.setupActivity(MainActivity.class);
     private InstructionListActivity activity;
 
     @Before

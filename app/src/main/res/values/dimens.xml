@@ -3,6 +3,9 @@
     <dimen name="padding_vertical_default">8dp</dimen>
     <dimen name="padding_vertical_small">4dp</dimen>
 
+    <dimen name="instruction_padding">4dp</dimen>
+
+
     <dimen name="font_big">28sp</dimen>
     <dimen name="font_medium">21sp</dimen>
     <dimen name="font_small">15sp</dimen>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:background="@color/transparent_light_gray">
+    <RelativeLayout
+        android:id="@+id/turn_container"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity ="center_vertical"
+        android:paddingRight="@dimen/instruction_padding">
+
+        <ImageButton
+            android:id="@+id/left_arrow"
+            android:src="@drawable/ic_left_arrow"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="@dimen/instruction_padding"
+            android:background="@android:color/transparent" />
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_above="@+id/distance"
+            android:gravity ="center_vertical"
+            android:paddingLeft="@dimen/instruction_padding"
+            android:layout_toRightOf="@id/left_arrow"
+            android:layout_alignParentTop="true"/>
+
+        <TextView
+            android:id="@+id/distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:textSize="@dimen/font_small"
+            android:textStyle="bold"
+            android:textColor="@color/brown"
+            android:paddingLeft="@dimen/instruction_padding"
+            android:layout_toRightOf="@id/left_arrow"
+            android:layout_marginBottom="@dimen/instruction_padding"
+            android:layout_alignParentBottom="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/instruction_container"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_toRightOf="@id/turn_container">
+
+        <ImageButton
+            android:id="@+id/right_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_right_arrow"
+            android:paddingLeft="@dimen/instruction_padding"
+            android:paddingRight="@dimen/instruction_padding"
+            android:background="@android:color/transparent" />
+
+        <TextView
+            android:id="@+id/instruction_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_toLeftOf="@id/right_arrow"
+            android:gravity="center"
+            android:maxLines="2"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="@color/brown"
+            android:textSize="@dimen/font_medium" />
+    </RelativeLayout>
+</RelativeLayout>
+
+
+
+
+
+

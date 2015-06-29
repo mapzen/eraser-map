@@ -13,7 +13,7 @@ public interface MainPresenter {
     public fun onSearchResultSelected(position: Int)
     public fun onExpandSearchView()
     public fun onCollapseSearchView()
-    public fun onShowDirectionList()
+    public fun onRoutingCircleClick(reverse: Boolean)
     public fun onQuerySubmit()
     public fun onViewAllSearchResults()
     public fun onBackPressed()
