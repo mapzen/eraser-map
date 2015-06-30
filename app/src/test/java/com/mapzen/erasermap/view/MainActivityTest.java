@@ -406,6 +406,7 @@ public class MainActivityTest {
 
     @Test
     public void onRoutingCircleClick_shouldOpenDirectionListActivity() throws Exception {
+        activity.setReverse(true);
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
         assertThat(activity.findViewById(R.id.instruction_list_view)).isNull();

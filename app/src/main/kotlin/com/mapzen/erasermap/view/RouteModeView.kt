@@ -36,22 +36,19 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
     }
 
     override fun onPageScrollStateChanged(state: Int) {
-
-   //     throw UnsupportedOperationException()
     }
 
     public fun setAdapter(adapter: PagerAdapter) {
         pager  = findViewById(R.id.instruction_pager) as ViewPager;
         pager?.setAdapter(adapter)
         pager?.setOnPageChangeListener(this)
-       // pager?.setOnTouchListener(View.OnTouchListener { view, motionEvent -> turnAutoPageOff() })
     }
 
-    public fun pageForward(position : Int) {
+    public fun pageForward(position: Int) {
         pager?.setCurrentItem(position + 1)
     }
 
-    public fun pageBackwards(position : Int) {
+    public fun pageBackwards(position: Int) {
         pager?.setCurrentItem(position - 1)
     }
 
@@ -70,10 +67,15 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
     }
 
     private fun setCurrentPagerItemStyling(position : Int) {
+        var lastItemIndex = (pager?.getAdapter() as InstructionAdapter).getCount()?.minus(1)
         if(autoPage) {
             (pager?.getAdapter() as InstructionAdapter).setBackgroundColorActive(pager?.findViewWithTag("Instruction_" + position))
         } else {
-            (pager?.getAdapter() as InstructionAdapter).setBackgroundColorInactive(pager?.findViewWithTag("Instruction_" + position))
+            if(position == lastItemIndex) {
+                (pager?.getAdapter() as InstructionAdapter).setBackgroundColorArrived(pager?.findViewWithTag("Instruction_" + position))
+            } else {
+                (pager?.getAdapter() as InstructionAdapter).setBackgroundColorInactive(pager?.findViewWithTag("Instruction_" + position))
+            }
         }
     }
 
