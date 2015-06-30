@@ -23,6 +23,7 @@ test:
   override:
     - ./gradlew testDebug
     - ./gradlew checkstyle
+    - ./gradlew -PvalhallaApiKey=$VALHALLA_API_KEY
 
 deployment:
   all:
