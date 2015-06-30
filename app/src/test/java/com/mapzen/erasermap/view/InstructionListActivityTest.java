@@ -1,14 +1,5 @@
 package com.mapzen.erasermap.view;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
-
 import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
@@ -22,9 +13,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.fakes.RoboMenuItem;
 import org.robolectric.shadows.ShadowActivity;
-import org.robolectric.shadows.ShadowIntent;
+
+import android.content.Intent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import java.io.IOException;
 
@@ -80,9 +76,9 @@ public class InstructionListActivityTest {
 
     @Test
     public void onDirectionListOpen_shouldHaveOriginSet() throws Exception {
-        assertThat(((TextView)activity.findViewById(R.id.destination)).getText())
-                .isEqualTo( SimpleFeature.fromFeature(startActivity.getDestination()).toString());
-        assertThat(((TextView)activity.findViewById(R.id.starting_point)).getText())
+        assertThat(((TextView) activity.findViewById(R.id.destination)).getText())
+                .isEqualTo(SimpleFeature.fromFeature(startActivity.getDestination()).toString());
+        assertThat(((TextView) activity.findViewById(R.id.starting_point)).getText())
                 .isEqualTo(activity.getString(R.string.current_location));
     }
 
@@ -91,7 +87,7 @@ public class InstructionListActivityTest {
         setActivityToReverse();
         assertThat(((TextView) activity.findViewById(R.id.starting_point)).getText())
                 .isEqualTo(SimpleFeature.fromFeature(startActivity.getDestination()).toString());
-        assertThat(((TextView)activity.findViewById(R.id.destination)).getText())
+        assertThat(((TextView) activity.findViewById(R.id.destination)).getText())
                 .isEqualTo(activity.getString(R.string.current_location));
     }
 
