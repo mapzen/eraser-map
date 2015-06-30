@@ -1,6 +1,5 @@
 package com.mapzen.erasermap.presenter
 
-import com.mapzen.erasermap.model.RouteModeEvent
 import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.view.ViewController
 import com.mapzen.pelias.gson.Feature
@@ -20,7 +19,6 @@ public class MainPresenterImpl() : MainPresenter {
 
     private var searchResults: Result? = null
     private var destination: Feature? = null
-    private var instructions: ArrayList<Instruction>? = null
 
     override fun onSearchResultsAvailable(searchResults: Result?) {
         this.searchResults = searchResults
@@ -71,12 +69,6 @@ public class MainPresenterImpl() : MainPresenter {
         destination = event.destination;
         viewController?.collapseSearchView()
         viewController?.showRoutePreview(event.destination)
-    }
-
-    [Subscribe] public fun onRouteModeEvent(event: RouteModeEvent) {
-        destination = event.destination;
-        viewController?.hideRoutePreview()
-        viewController?.showRoutingMode()
     }
 
     override fun onBackPressed() {

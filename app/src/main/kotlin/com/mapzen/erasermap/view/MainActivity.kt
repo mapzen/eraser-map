@@ -417,9 +417,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     override fun success(route: Route?) {
         this.route = route;
         runOnUiThread({
-            if( findViewById(R.id.route_mode).getVisibility() == View.VISIBLE) {
-
-            } else {
+            if( findViewById(R.id.route_mode).getVisibility() != View.VISIBLE) {
                 getSupportActionBar()?.hide()
                 findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
                 (findViewById(R.id.route_preview) as RoutePreviewView).destination =
@@ -597,17 +595,16 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         findViewById(R.id.route_preview).setVisibility(View.GONE)
         findViewById(R.id.route_mode).setVisibility(View.VISIBLE)
         route()
+
         val pager = findViewById(R.id.route_mode) as RouteModeView
-        pager.setVisibility(View.VISIBLE)
         val adapter = InstructionAdapter(this, route!!.getRouteInstructions(), pager)
         pager.setAdapter(adapter)
+        pager.setVisibility(View.VISIBLE)
     }
 
     override fun hideRoutingMode() {
         findViewById(R.id.route_mode).setVisibility(View.GONE)
     }
-
-
 
     private fun getInitializedRouter(): Router {
         when(type) {

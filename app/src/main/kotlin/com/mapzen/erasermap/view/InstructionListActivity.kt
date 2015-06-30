@@ -29,7 +29,7 @@ public class InstructionListActivity : AppCompatActivity() {
         val instruction_strings: ArrayList<String>? = bundle?.getStringArrayList("instruction_strings")
         val instruction_types: ArrayList<Int>? = bundle?.getIntegerArrayList("instruction_types")
         val instruction_distances: ArrayList<Int>? = bundle?.getIntegerArrayList("instruction_distances")
-        val reverse : Boolean = bundle?.getBoolean("reverse") as Boolean
+        val reverse : Boolean? = bundle?.getBoolean("reverse", true)
         setHeaderOrigins(bundle, reverse)
         if (instruction_strings != null) {
             listView.setAdapter(DirectionListAdapter(this, instruction_strings, instruction_types, instruction_distances, reverse))
@@ -40,8 +40,8 @@ public class InstructionListActivity : AppCompatActivity() {
         }
     }
 
-    private fun setHeaderOrigins(bundle: Bundle?, reverse: Boolean) {
-        if (reverse) {
+    private fun setHeaderOrigins(bundle: Bundle?, reverse: Boolean?) {
+        if (reverse == true) {
             (findViewById(R.id.starting_point) as TextView).setText(bundle?.getString("destination"))
             (findViewById(R.id.destination) as TextView).setText(R.string.current_location)
             findViewById(R.id.starting_location_icon).setVisibility(View.GONE)
@@ -62,13 +62,13 @@ public class InstructionListActivity : AppCompatActivity() {
 
     private class DirectionListAdapter(context: Context, strings: ArrayList<String>?,
                                        types: ArrayList<Int>?, distances: ArrayList<Int>?,
-                                       reverse : Boolean) : BaseAdapter() {
+                                       reverse : Boolean?) : BaseAdapter() {
         private final var CURRENT_LOCATION_OFFSET =  1
         private var instruction_strings: ArrayList<String>? = strings
         private var instruction_types: ArrayList<Int>? = types
         private var instruction_distances: ArrayList<Int>? = distances
         private var context: Context  = context
-        private var reverse : Boolean = reverse
+        private var reverse : Boolean? = reverse
 
         override fun getCount(): Int {
             var size = if (instruction_strings != null) (instruction_strings!!.size()
@@ -86,7 +86,7 @@ public class InstructionListActivity : AppCompatActivity() {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
             var view: View = View.inflate(context, R.layout.direction_list_item, null)
-            if(reverse) {
+            if(reverse == true) {
                 setReversedDirectionListItem(position, view)
             } else {
                 setDirectionListItem(position, view)

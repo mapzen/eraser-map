@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pager_item_instruction"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:background="@color/transparent_light_gray">
@@ -74,6 +75,7 @@
             android:textColor="@color/brown"
             android:textSize="@dimen/font_medium" />
     </RelativeLayout>
+
 </RelativeLayout>
 
 

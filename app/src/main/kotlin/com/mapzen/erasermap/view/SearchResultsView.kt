@@ -22,19 +22,19 @@ public class SearchResultsView(context: Context, attrs: AttributeSet)
     }
 
     public fun setAdapter(adapter: PagerAdapter) {
-    val pager = findViewById(R.id.pager) as ViewPager
-    val indicator = findViewById(R.id.indicator) as TextView
-    pager.setAdapter(adapter)
-    pager.setOnPageChangeListener(this)
-    indicator.setText(getResources().getString(R.string.search_results_indicator,
-            pager.getCurrentItem() + 1, pager.getAdapter().getCount()))
+        val pager = findViewById(R.id.pager) as ViewPager
+        val indicator = findViewById(R.id.indicator) as TextView
+        pager.setAdapter(adapter)
+        pager.setOnPageChangeListener(this)
+        indicator.setText(getResources().getString(R.string.search_results_indicator,
+                pager.getCurrentItem() + 1, pager.getAdapter().getCount()))
 
-    if (adapter.getCount() > 1) {
-        indicator.setVisibility(View.VISIBLE)
-    } else {
-        indicator.setVisibility(View.GONE)
+        if (adapter.getCount() > 1) {
+            indicator.setVisibility(View.VISIBLE)
+        } else {
+            indicator.setVisibility(View.GONE)
+        }
     }
-}
 
     public fun setCurrentItem(position: Int) {
         val pager = findViewById(R.id.pager) as ViewPager

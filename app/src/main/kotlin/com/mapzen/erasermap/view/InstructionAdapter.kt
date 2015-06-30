@@ -19,13 +19,9 @@ import javax.inject.Inject
 import java.util.ArrayList
 
 public class InstructionAdapter(val context: Context, val instructions: ArrayList<Instruction>,
-                                val pager : RouteModeView)
-    : PagerAdapter() {
-    var instructionPager : RouteModeView = pager
+                                val pager: RouteModeView) : PagerAdapter() {
 
-    init {
-  //      (context.getApplicationContext() as PrivateMapsApplication).component().inject(this)
-    }
+    var instructionPager: RouteModeView = pager
 
     override fun instantiateItem(container: ViewGroup?, position: Int): Any? {
         val instruction = instructions.get(position)
@@ -33,25 +29,29 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
         val title = view.findViewById(R.id.instruction_text) as TextView
         val distance = view.findViewById(R.id.distance) as TextView
         val icon = view.findViewById(R.id.icon) as ImageView
-        var iconId : Int = DisplayHelper.getRouteDrawable(context,
+        var iconId: Int = DisplayHelper.getRouteDrawable(context,
                 instruction.getIntegerInstruction())
         distance.setText((instruction.getFormattedDistance()))
         title.setText(instruction.getHumanTurnInstruction())
         icon.setImageResource(iconId)
-        if(position == 0) {
+        if (position == 0) {
             view.findViewById(R.id.left_arrow).setVisibility(View.INVISIBLE)
-            view.findViewById(R.id.right_arrow).setOnClickListener({
-
-            })
-               // pager.getsetCurrentItem(pager.getCurrentItem() - 1))
         }
-        if(position == getCount() - 1) {
+        if (position == getCount() - 1) {
             view.findViewById(R.id.right_arrow).setVisibility(View.INVISIBLE)
         }
         initArrowOnClickListeners(view, position)
         setTagId(view, position)
         container?.addView(view)
         return view
+    }
+
+    fun getView(): View {
+        return this.getView()
+    }
+
+    override fun getCount(): Int {
+        return instructions.size()
     }
 
     private fun setTagId(view: View, position: Int) {
@@ -61,33 +61,29 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
     private fun initArrowOnClickListeners(view: View, position: Int) {
         view.findViewById(R.id.right_arrow).setOnClickListener({
             instructionPager.pageForward(position)
-        });
-
+        })
         view.findViewById(R.id.left_arrow).setOnClickListener({
             instructionPager.pageBackwards(position)
-        });
-
-    }
-
-    fun getView() : View {
-        return this.getView()
-    }
-    override fun getCount(): Int {
-        return instructions.size()
+        })
     }
 
     public fun setBackgroundColorActive(view: View?) {
         if (view != null) {
-            view.setBackgroundColor(context.getResources().getColor(R.color.transparent_white));
+            view.setBackgroundColor(context.getResources().getColor(R.color.transparent_white))
         }
     }
 
     public fun setBackgroundColorInactive(view: View?) {
         if (view != null) {
-            view.setBackgroundColor(context.getResources().getColor(R.color.transparent_light_gray));
+            view.setBackgroundColor(context.getResources().getColor(R.color.transparent_light_gray))
         }
     }
 
+    public fun setBackgroundColorArrived(view: View?) {
+        if (view != null) {
+            view.setBackgroundColor(context.getResources().getColor(R.color.you_have_arrived))
+        }
+    }
 
     override fun isViewFromObject(view: View?, `object`: Any?): Boolean {
         return view == `object`
