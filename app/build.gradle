@@ -13,7 +13,7 @@ android {
   defaultConfig {
     applicationId "com.mapzen.erasermap"
     minSdkVersion 15
-    targetSdkVersion 21
+    targetSdkVersion 22
     versionCode 2
     versionName "0.3-SNAPSHOT"
   }
@@ -52,7 +52,7 @@ repositories {
 }
 
 dependencies {
-  compile 'com.android.support:appcompat-v7:22.1.0'
+  compile 'com.android.support:appcompat-v7:22.2.0'
   compile 'org.jetbrains.kotlin:kotlin-stdlib:0.12.213'
   compile 'org.oscim:vtm:0.5.9-SNAPSHOT'
   compile 'org.oscim:vtm-android:0.5.9-SNAPSHOT@aar'
@@ -65,7 +65,7 @@ dependencies {
   compile 'com.google.dagger:dagger:2.0'
   compile 'com.google.dagger:dagger-compiler:2.0'
   compile 'javax.annotation:javax.annotation-api:1.2'
-  compile 'com.android.support:support-v4:22.1.0@aar'
+  compile 'com.android.support:support-v4:22.2.0@aar'
   compile 'com.squareup:otto:1.3.7'
   compile ('com.mapzen:on-the-road:0.8-SNAPSHOT') {
     exclude group: 'org.apache.commons', module: 'commons-io'
