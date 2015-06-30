@@ -133,7 +133,7 @@ public class RouteModeViewTest {
         assertThat(distance.getText().toString()).isEqualTo("");
         assertThat(icon.getDrawable()).isEqualTo(startActivity.getDrawable(R.drawable.ic_route_4));
     }
-    
+
     class TestViewGroup extends ViewGroup {
         public TestViewGroup(Context context) {
             super(context);
