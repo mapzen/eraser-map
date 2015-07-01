@@ -141,13 +141,13 @@ public class MainPresenterTest {
     }
 
     @Test
-    public void onRoutingCircleClick_shouldMakeDirectionsVisible(){
+    public void onRoutingCircleClick_shouldMakeDirectionsVisible() {
         presenter.onRoutingCircleClick(true);
         assertThat(controller.isDirectionListVisible).isTrue();
     }
 
     @Test
-    public void onRoutingCircleClick_shouldMakeRouingModeVisible(){
+    public void onRoutingCircleClick_shouldMakeRouingModeVisible() {
         presenter.onRoutingCircleClick(false);
         assertThat(controller.isRoutingModeVisible).isTrue();
     }
@@ -216,7 +216,7 @@ public class MainPresenterTest {
         }
 
         @Override
-        public void showDirectionList() { isDirectionListVisible = true;}
+        public void showDirectionList() { isDirectionListVisible = true; }
 
         @Override
         public void hideRoutingMode() { isRoutingModeVisible = false; }

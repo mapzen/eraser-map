@@ -40,7 +40,8 @@ public class RouteModeViewTest {
         startActivity.success(new Route(getFixture("valhalla_route")));
         startActivity.findViewById(R.id.routing_circle).performClick();
         routeModeView = (RouteModeView) startActivity.findViewById(R.id.route_mode);
-        adapter = (InstructionAdapter) ((ViewPager)startActivity.findViewById(R.id.instruction_pager)).getAdapter();
+        adapter = (InstructionAdapter) ((ViewPager) startActivity
+                .findViewById(R.id.instruction_pager)).getAdapter();
         viewGroup = new TestViewGroup(application);
     }
 
@@ -125,11 +126,13 @@ public class RouteModeViewTest {
 
     @Test
     public void lastIntstruction_shouldHaveFirstInstruction() throws Exception {
-        View view = (View) adapter.instantiateItem(viewGroup, routeModeView.getPager().getAdapter().getCount() - 1);
+        View view = (View) adapter.instantiateItem(viewGroup,
+                routeModeView.getPager().getAdapter().getCount() - 1);
         TextView instructionText = (TextView) view.findViewById(R.id.instruction_text);
         TextView distance = (TextView) view.findViewById(R.id.distance);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        assertThat(instructionText.getText().toString()).isEqualTo("You have arrived at your destination.");
+        assertThat(instructionText.getText().toString())
+                .isEqualTo("You have arrived at your destination.");
         assertThat(distance.getText().toString()).isEqualTo("");
         assertThat(icon.getDrawable()).isEqualTo(startActivity.getDrawable(R.drawable.ic_route_4));
     }

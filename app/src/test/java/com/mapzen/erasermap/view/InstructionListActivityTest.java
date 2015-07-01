@@ -7,7 +7,6 @@ import com.mapzen.pelias.SimpleFeature;
 import com.mapzen.valhalla.Route;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,8 +20,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import java.io.IOException;
 
 import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
