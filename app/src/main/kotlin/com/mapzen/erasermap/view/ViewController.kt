@@ -1,6 +1,8 @@
 package com.mapzen.erasermap.view
 
 import com.mapzen.pelias.gson.Feature
+import com.mapzen.valhalla.Instruction
+import java.util.*
 
 public interface ViewController {
     public fun showSearchResults(features: List<Feature>)
@@ -17,5 +19,7 @@ public interface ViewController {
     public fun collapseSearchView()
     public fun showRoutePreview(feature: Feature)
     public fun hideRoutePreview()
+    public fun hideRoutingMode()
+    public fun showRoutingMode()
     public fun shutDown()
 }

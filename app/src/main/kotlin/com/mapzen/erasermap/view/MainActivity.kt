@@ -55,6 +55,7 @@ import retrofit.RetrofitError
 import retrofit.client.Response
 import com.mapzen.erasermap.util.DouglasPeuckerReducer
 import com.mapzen.erasermap.util.HttpCacheFactory
+import com.mapzen.valhalla.Instruction
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -416,13 +417,14 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     override fun success(route: Route?) {
         this.route = route;
         runOnUiThread({
-            getSupportActionBar()?.hide()
-            findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
-            (findViewById(R.id.route_preview) as RoutePreviewView).destination =
-                    SimpleFeature.fromFeature(destination);
-            (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
-            displayRoute(route)
-
+            if( findViewById(R.id.route_mode).getVisibility() != View.VISIBLE) {
+                getSupportActionBar()?.hide()
+                findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
+                (findViewById(R.id.route_preview) as RoutePreviewView).destination =
+                        SimpleFeature.fromFeature(destination);
+                (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
+                displayRoute(route)
+            }
         })
         updateRoutePreview(destination)
     }
@@ -490,6 +492,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
 
     override fun hideRoutePreview() {
         getSupportActionBar()?.show()
+        reverse = false
         findViewById(R.id.route_preview).setVisibility(View.GONE)
     }
 
@@ -552,7 +555,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         (findViewById(R.id.route_reverse) as ImageButton).setOnClickListener({ reverse()})
 
         (findViewById(R.id.routing_circle) as ImageButton).setOnClickListener (
-                {presenter?.onShowDirectionList()})
+                {presenter?.onRoutingCircleClick(reverse)})
     }
 
     override fun onBackPressed() {
@@ -585,6 +588,22 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         intent.putExtra("destination", simpleFeature.toString())
         intent.putExtra("reverse", this.reverse)
         startActivityForResult(intent, requestCodeSearchResults)
+    }
+
+    override fun showRoutingMode() {
+        reverse = false
+        findViewById(R.id.route_preview).setVisibility(View.GONE)
+        findViewById(R.id.route_mode).setVisibility(View.VISIBLE)
+        route()
+
+        val pager = findViewById(R.id.route_mode) as RouteModeView
+        val adapter = InstructionAdapter(this, route!!.getRouteInstructions(), pager)
+        pager.setAdapter(adapter)
+        pager.setVisibility(View.VISIBLE)
+    }
+
+    override fun hideRoutingMode() {
+        findViewById(R.id.route_mode).setVisibility(View.GONE)
     }
 
     private fun getInitializedRouter(): Router {

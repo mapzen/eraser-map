@@ -4,8 +4,10 @@ import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.view.ViewController
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
+import com.mapzen.valhalla.Instruction
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
+import java.util.*
 
 public class MainPresenterImpl() : MainPresenter {
     override var viewController: ViewController? = null
@@ -72,13 +74,18 @@ public class MainPresenterImpl() : MainPresenter {
     override fun onBackPressed() {
         if (destination != null) {
             viewController?.hideRoutePreview()
+            viewController?.hideRoutingMode()
             destination = null
         } else {
             viewController?.shutDown()
         }
     }
 
-    override fun onShowDirectionList() {
-        viewController?.showDirectionList()
+    override fun onRoutingCircleClick(reverse: Boolean) {
+        if(reverse) {
+            viewController?.showDirectionList()
+        } else {
+            viewController?.showRoutingMode()
+        }
     }
 }
