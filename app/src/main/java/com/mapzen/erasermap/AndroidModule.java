@@ -4,7 +4,6 @@ import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.TileCacheBuilder;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
-import com.mapzen.erasermap.view.MarkerSymbolFactory;
 import com.mapzen.pelias.SavedSearch;
 
 import com.squareup.okhttp.Cache;
@@ -44,10 +43,6 @@ public class AndroidModule {
 
     @Provides @Singleton MainPresenter provideMainPresenter() {
         return new MainPresenterImpl();
-    }
-
-    @Provides @Singleton MarkerSymbolFactory provideMarkerSymbolFactory() {
-        return new MarkerSymbolFactory(application);
     }
 
     @Provides @Singleton Bus provideBus() {
