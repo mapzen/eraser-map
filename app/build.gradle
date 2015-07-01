@@ -72,7 +72,7 @@ dependencies {
   compile ('com.mapzen.android:pelias-android-sdk:0.4-SNAPSHOT') {
     exclude group: 'javax.annotation:javax', module: 'javax.annotation-api'
   }
-  compile 'com.squareup.okhttp:okhttp:1.6.0'
+  compile 'com.squareup.okhttp:okhttp:2.4.0'
   compile 'com.google.dagger:dagger:2.0'
   compile 'com.google.dagger:dagger-compiler:2.0'
   compile 'javax.annotation:javax.annotation-api:1.2'
