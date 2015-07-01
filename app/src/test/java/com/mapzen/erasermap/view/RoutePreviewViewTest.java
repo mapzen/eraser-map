@@ -4,7 +4,6 @@ import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
 import com.mapzen.erasermap.dummy.TestHelper;
-import com.mapzen.mapburrito.MapController;
 import com.mapzen.valhalla.Route;
 
 import org.json.JSONObject;
@@ -13,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import android.view.View;
 import android.widget.TextView;
 
 import static com.mapzen.erasermap.dummy.TestHelper.getTestSimpleFeature;

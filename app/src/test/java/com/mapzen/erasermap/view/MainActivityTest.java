@@ -5,7 +5,6 @@ import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
 import com.mapzen.erasermap.dummy.TestMap;
-import com.mapzen.erasermap.model.RoutePreviewEvent;
 import com.mapzen.pelias.SavedSearch;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.widget.PeliasSearchView;
@@ -39,9 +38,9 @@ import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
-import android.view.View;
 
 import java.util.ArrayList;
+
 import static android.content.Context.LOCATION_SERVICE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -370,7 +369,8 @@ public class MainActivityTest {
     public void onSuccess_shouldShowDrawnRoute() throws Exception {
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
-        assertThat(activity.getMapController().getMap().layers().contains(activity.getPath())).isTrue();
+        assertThat(activity.getMapController().getMap().layers().contains(activity.getPath()))
+                .isTrue();
     }
 
 
@@ -378,9 +378,11 @@ public class MainActivityTest {
     public void onBack_shouldHideDrawnRoute() throws Exception {
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
-        assertThat(activity.getMapController().getMap().layers().contains(activity.getPath())).isTrue();
+        assertThat(activity.getMapController().getMap().layers().contains(activity.getPath()))
+                .isTrue();
         activity.onBackPressed();
-        assertThat(activity.getMapController().getMap().layers().contains(activity.getPath())).isFalse();
+        assertThat(activity.getMapController().getMap().layers().contains(activity.getPath()))
+                .isFalse();
     }
 
     @Test
@@ -420,16 +422,19 @@ public class MainActivityTest {
     public void success_shouldAddMarkerLayer() throws Exception {
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
-        assertThat(activity.getMapController().getMap().layers().contains(activity.getMarkers())).isTrue();
+        assertThat(activity.getMapController().getMap().layers().contains(activity.getMarkers()))
+                .isTrue();
     }
 
     @Test
     public void success_shouldClearMarkerLayer() throws Exception {
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
-        assertThat(activity.getMapController().getMap().layers().contains(activity.getMarkers())).isTrue();
+        assertThat(activity.getMapController().getMap().layers().contains(activity.getMarkers()))
+                .isTrue();
         activity.onBackPressed();
-        assertThat(activity.getMapController().getMap().layers().contains(activity.getMarkers())).isFalse();
+        assertThat(activity.getMapController().getMap().layers().contains(activity.getMarkers()))
+                .isFalse();
 
     }
 

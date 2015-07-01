@@ -141,7 +141,7 @@ public class MainPresenterTest {
     }
 
     @Test
-    public void onShowDirectionList_shouldMakeDirectionsVisible(){
+    public void onShowDirectionList_shouldMakeDirectionsVisible() {
         presenter.onShowDirectionList();
         assertThat(controller.isDirectionListVisible).isTrue();
     }
@@ -209,6 +209,6 @@ public class MainPresenterTest {
         }
 
         @Override
-        public void showDirectionList() { isDirectionListVisible = true;}
+        public void showDirectionList() { isDirectionListVisible = true; }
     }
 }
