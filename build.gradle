@@ -20,4 +20,4 @@ allprojects {
   }
 }
 
-defaultTasks = ['clean', 'assembleDebug', 'testDebug', 'checkstyle']
+defaultTasks = ['clean', 'assembleDebug', 'testDebug']
