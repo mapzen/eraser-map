@@ -19,7 +19,7 @@ import javax.inject.Inject
 import java.util.ArrayList
 
 public class InstructionAdapter(val context: Context, val instructions: ArrayList<Instruction>,
-                                val pager: RouteModeView) : PagerAdapter() {
+        val pager: RouteModeView) : PagerAdapter() {
 
     var instructionPager: RouteModeView = pager
 
@@ -68,21 +68,15 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
     }
 
     public fun setBackgroundColorActive(view: View?) {
-        if (view != null) {
-            view.setBackgroundColor(context.getResources().getColor(R.color.transparent_white))
-        }
+        view?.setBackgroundColor(context.getResources().getColor(R.color.transparent_white))
     }
 
     public fun setBackgroundColorInactive(view: View?) {
-        if (view != null) {
-            view.setBackgroundColor(context.getResources().getColor(R.color.transparent_light_gray))
-        }
+        view?.setBackgroundColor(context.getResources().getColor(R.color.transparent_light_gray))
     }
 
     public fun setBackgroundColorArrived(view: View?) {
-        if (view != null) {
-            view.setBackgroundColor(context.getResources().getColor(R.color.you_have_arrived))
-        }
+        view?.setBackgroundColor(context.getResources().getColor(R.color.you_have_arrived))
     }
 
     override fun isViewFromObject(view: View?, `object`: Any?): Boolean {

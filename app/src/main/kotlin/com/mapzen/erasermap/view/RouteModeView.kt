@@ -67,7 +67,11 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
     }
 
     private fun setCurrentPagerItemStyling(position : Int) {
-        var lastItemIndex = (pager?.getAdapter() as InstructionAdapter).getCount()?.minus(1)
+        var lastItemIndex = (pager?.getAdapter() as InstructionAdapter).getCount() - 1
+        var itemsUntilLastInstruction = (lastItemIndex - position)
+        if(itemsUntilLastInstruction ==  1) {
+            (pager?.getAdapter() as InstructionAdapter).setBackgroundColorArrived(pager?.findViewWithTag("Instruction_" + (position + 1)))
+        }
         if(autoPage) {
             (pager?.getAdapter() as InstructionAdapter).setBackgroundColorActive(pager?.findViewWithTag("Instruction_" + position))
         } else {
