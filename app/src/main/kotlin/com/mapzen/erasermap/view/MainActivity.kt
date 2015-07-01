@@ -21,7 +21,7 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.PrivateMapsApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.presenter.MainPresenter
-import com.mapzen.mapburrito.MapController
+import com.mapzen.erasermap.util.DouglasPeuckerReducer
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.SavedSearch
@@ -31,39 +31,21 @@ import com.mapzen.pelias.gson.Result
 import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
+import com.mapzen.tangram.Tangram
+import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
 import com.squareup.okhttp.Cache
-import com.squareup.okhttp.OkHttpClient
 import com.squareup.otto.Bus
-import org.oscim.android.MapView
-import org.oscim.android.canvas.AndroidGraphics
-import org.oscim.backend.canvas.Color
-import org.oscim.core.BoundingBox
-import org.oscim.core.GeoPoint
-import org.oscim.core.MapPosition
-import org.oscim.layers.PathLayer
-import org.oscim.layers.marker.ItemizedLayer
-import org.oscim.layers.marker.MarkerItem
-import org.oscim.layers.marker.MarkerSymbol
-import org.oscim.map.Map
-import org.oscim.tiling.source.HttpEngine
-import org.oscim.tiling.source.OkHttpEngine
-import org.oscim.tiling.source.UrlTileSource
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
-import com.mapzen.erasermap.util.DouglasPeuckerReducer
-import com.mapzen.erasermap.util.HttpCacheFactory
-import com.mapzen.valhalla.Instruction
 import java.util.ArrayList
 import javax.inject.Inject
 
+
 public class MainActivity : AppCompatActivity(), ViewController, Router.Callback,
-        SearchResultsView.OnSearchResultSelectedListener, PoiLayer.OnPoiClickListener {
-    private val BASE_TILE_URL: String = "http://vector.dev.mapzen.com/osm/all"
-    private val STYLE_PATH: String = "styles/mapzen.xml"
-    private val FIND_ME_ICON: Int = android.R.drawable.star_big_on
+        SearchResultsView.OnSearchResultSelectedListener {
     private val LOCATION_UPDATE_INTERVAL_IN_MS: Long = 1000L
     private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT: Float = 0f
 
@@ -78,21 +60,17 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     @Inject set
     var presenter: MainPresenter? = null
     @Inject set
-    var markerSymbolFactory: MarkerSymbolFactory? = null
-    @Inject set
     var bus: Bus? = null
     @Inject set
 
     var app: PrivateMapsApplication? = null
-    var mapController: MapController? = null
+    var tangram : Tangram? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
     var optionsMenu: Menu? = null
-    var poiLayer: PoiLayer? = null
     var destination: Feature? = null
-    var path: PathLayer? = null
-    var markers: ItemizedLayer<MarkerItem>? = null
     var type : Router.Type = Router.Type.DRIVING
     var reverse : Boolean = false;
+    var currentLocation : Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super<AppCompatActivity>.onCreate(savedInstanceState)
@@ -103,10 +81,9 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         presenter?.bus = bus
         locationClient?.connect()
         initMapController()
-        initPoiLayer()
         initAutoCompleteAdapter()
         initFindMeButton()
-        initreverseButton()
+        initReverseButton()
         centerOnCurrentLocation()
         presenter?.onRestoreViewState()
     }
@@ -142,25 +119,8 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
     private fun initMapController() {
-        val mapView = findViewById(R.id.map) as MapView
-        mapController = MapController(mapView.map())
-                .setHttpEngine(HttpCacheFactory(tileCache))
-                .setApiKey(BuildConfig.VECTOR_TILE_API_KEY)
-                .setTileSource(BASE_TILE_URL)
-                .addBuildingLayer()
-                .addLabelLayer()
-                .setTheme(STYLE_PATH)
-                .setCurrentLocationDrawable(getResources().getDrawable(FIND_ME_ICON))
-    }
-
-    private fun initPoiLayer() {
-        val map = mapController?.getMap()
-        val defaultMarker = markerSymbolFactory?.getDefaultMarker()
-        val activeMarker = markerSymbolFactory?.getActiveMarker()
-        if (map is Map && defaultMarker is MarkerSymbol && activeMarker is MarkerSymbol) {
-            poiLayer = PoiLayer(map, defaultMarker, activeMarker)
-            poiLayer?.onPoiClickListener = this
-        }
+        tangram = findViewById(R.id.map) as Tangram
+        tangram?.setup(this)
     }
 
     private fun initAutoCompleteAdapter() {
@@ -184,14 +144,14 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
                 .setSmallestDisplacement(LOCATION_UPDATE_SMALLEST_DISPLACEMENT)
 
         LocationServices.FusedLocationApi?.requestLocationUpdates(locationRequest) {
-            location: Location ->mapController?.showCurrentLocation(location)?.update()
+            location: Location -> currentLocation = location
         }
     }
 
     private fun centerOnCurrentLocation() {
         val location = LocationServices.FusedLocationApi?.getLastLocation()
         if (location != null) {
-            mapController?.showCurrentLocation(location)?.resetMapAndCenterOn(location)
+            currentLocation = location
         }
     }
 
@@ -209,7 +169,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         if (searchView is PeliasSearchView) {
             listView.setAdapter(autoCompleteAdapter)
             val pelias = Pelias.getPelias()
-            pelias.setLocationProvider(MapLocationProvider(mapController))
+            pelias.setLocationProvider(LocationProvider())
             searchView.setAutoCompleteListView(listView)
             searchView.setSavedSearch(savedSearch)
             searchView.setPelias(Pelias.getPelias())
@@ -327,13 +287,13 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         }
     }
 
-    class MapLocationProvider(val mapController: MapController?) : PeliasLocationProvider {
+    inner class LocationProvider() : PeliasLocationProvider {
         override fun getLat(): String? {
-            return mapController?.getMap()?.getMapPosition()?.getLatitude().toString()
+            return currentLocation?.getLatitude().toString()
         }
 
         override fun getLon(): String? {
-            return mapController?.getMap()?.getMapPosition()?.getLongitude().toString()
+            return currentLocation?.getLongitude().toString()
         }
     }
 
@@ -350,8 +310,6 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
     private fun addSearchResultsToMap(features: List<Feature>) {
-        poiLayer?.removeAllItems()
-        poiLayer?.addAll(features)
         centerOnCurrentFeature(features)
     }
 
@@ -363,25 +321,15 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
             val location = Location("map")
             location.setLatitude(feature.getLat())
             location.setLongitude(feature.getLon())
-            poiLayer?.resetAllItems()
-            poiLayer?.setActiveItem(position)
-            mapController?.resetMapAndCenterOn(location)
-            mapController?.getMap()?.updateMap(true)
         }, 100)
     }
 
     override fun hideSearchResults() {
         hideSearchResultsPager()
-        removeSearchResultsFromMap()
     }
 
     private fun hideSearchResultsPager() {
         (findViewById(R.id.search_results) as SearchResultsView).setVisibility(View.GONE)
-    }
-
-    private fun removeSearchResultsFromMap() {
-        poiLayer?.removeAllItems()
-        mapController?.getMap()?.updateMap(true)
     }
 
     override fun showProgress() = findViewById(R.id.progress).setVisibility(View.VISIBLE)
@@ -393,9 +341,6 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     override fun hideOverflowMenu() = optionsMenu?.setGroupVisible(R.id.menu_overflow, false)
 
     override fun onSearchResultSelected(position: Int) = presenter?.onSearchResultSelected(position)
-
-    override fun onPoiClick(position: Int) =
-            (findViewById(R.id.search_results) as SearchResultsView).setCurrentItem(position)
 
     override fun showActionViewAll() {
         optionsMenu?.findItem(R.id.action_view_all)?.setVisible(true)
@@ -417,73 +362,22 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     override fun success(route: Route?) {
         this.route = route;
         runOnUiThread({
+            getSupportActionBar()?.hide()
+            findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
+            (findViewById(R.id.route_preview) as RoutePreviewView).destination =
+                    SimpleFeature.fromFeature(destination);
+            (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
+            // TODO: Draw route on Tangram map
+
             if( findViewById(R.id.route_mode).getVisibility() != View.VISIBLE) {
                 getSupportActionBar()?.hide()
                 findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
                 (findViewById(R.id.route_preview) as RoutePreviewView).destination =
                         SimpleFeature.fromFeature(destination);
                 (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
-                displayRoute(route)
             }
         })
-        updateRoutePreview(destination)
-    }
-
-    fun displayRoute(route: Route?) {
-        try {
-            mapController?.getMap()?.layers()?.remove(path)
-            mapController?.getMap()?.layers()?.remove(markers)
-            path = PathLayer(mapController?.getMap(), Color.DKGRAY, 8f)
-            markers = ItemizedLayer(mapController?.getMap(), ArrayList<MarkerItem>(),
-                    AndroidGraphics.makeMarker(this.getResources().getDrawable(R.drawable.ic_pin),
-                            MarkerItem.HotspotPlace.BOTTOM_CENTER), null)
-
-            var points: List<Location> = route!!.getGeometry()
-            if (points.size() > 100) {
-                points = DouglasPeuckerReducer.reduceWithTolerance(points, 100.0)
-            }
-            path?.clearPath()
-            var minlat = Integer.MAX_VALUE.toDouble()
-            var minlon = Integer.MAX_VALUE.toDouble()
-            var maxlat = Integer.MIN_VALUE.toDouble()
-            var maxlon = Integer.MIN_VALUE.toDouble()
-            for (loc in points) {
-                maxlat = Math.max(maxlat, loc.getLatitude())
-                maxlon = Math.max(maxlon, loc.getLongitude())
-                minlat = Math.min(minlat, loc.getLatitude())
-                minlon = Math.min(minlon, loc.getLongitude())
-                path?.addPoint(GeoPoint(loc.getLatitude(), loc.getLongitude()))
-            }
-
-            val bbox = BoundingBox(minlat, minlon, maxlat, maxlon)
-            val w = mapController?.getMap()?.getWidth() as Int
-            val h = mapController?.getMap()?.getHeight() as Int
-            val position = MapPosition()
-            position.setByBoundingBox(bbox, w , h)
-
-            position.setScale(position.getZoomScale() * 0.85)
-
-            mapController!!.getMap().setMapPosition(position)
-
-            if (!((mapController?.getMap()?.layers()?.contains(path)) as Boolean)) {
-                mapController?.getMap()?.layers()?.add(path)
-            }
-
-            if (!((mapController?.getMap()?.layers()?.contains(markers)) as Boolean)) {
-                mapController?.getMap()?.layers()?.add(markers)
-            }
-            markers?.removeAllItems()
-            markers?.addItem(getMarkerItem(R.drawable.ic_a, points.get(0), MarkerItem.HotspotPlace.CENTER))
-            markers?.addItem(getMarkerItem(R.drawable.ic_pin_active, points.get(points.size() - 1), MarkerItem.HotspotPlace.BOTTOM_CENTER))
-        } catch (e: Exception) {
-            Toast.makeText(this@MainActivity, "No route found", Toast.LENGTH_LONG).show()
-        }
-    }
-
-    private fun getMarkerItem(icon: Int, loc: Location, place: MarkerItem.HotspotPlace): MarkerItem {
-        val markerItem = MarkerItem("Generic Marker", "Generic Description", GeoPoint(loc.getLatitude(), loc.getLongitude()))
-        markerItem.setMarker(MarkerSymbol(AndroidGraphics.drawableToBitmap(app!!.getResources().getDrawable(icon)), place))
-        return markerItem
+        updateRoutePreview()
     }
 
     override fun failure(statusCode: Int) {
@@ -514,26 +408,29 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         }
     }
 
-    fun updateRoutePreview(destination: Feature?) {
+    fun updateRoutePreview() {
         (findViewById(R.id.by_car) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
                 type = Router.Type.DRIVING
                 route()
-                (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_car_normal)
+                (findViewById(R.id.routing_circle) as ImageButton)
+                        .setImageResource(R.drawable.ic_start_car_normal)
             }
         }
         (findViewById(R.id.by_foot) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
                 type = Router.Type.WALKING
                 route()
-                (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_walk_normal)
+                (findViewById(R.id.routing_circle) as ImageButton)
+                        .setImageResource(R.drawable.ic_start_walk_normal)
             }
         }
         (findViewById(R.id.by_bike) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
                 type = Router.Type.BIKING
                 route()
-                (findViewById(R.id.routing_circle) as ImageButton).setImageResource(R.drawable.ic_start_bike_normal)
+                (findViewById(R.id.routing_circle) as ImageButton)
+                        .setImageResource(R.drawable.ic_start_bike_normal)
             }
         }
     }
@@ -551,7 +448,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         route()
     }
 
-    private fun initreverseButton() {
+    private fun initReverseButton() {
         (findViewById(R.id.route_reverse) as ImageButton).setOnClickListener({ reverse()})
 
         (findViewById(R.id.routing_circle) as ImageButton).setOnClickListener (
@@ -559,10 +456,6 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
     override fun onBackPressed() {
-        if ((findViewById(R.id.route_preview)).getVisibility() == View.VISIBLE) {
-            mapController?.getMap()?.layers()?.remove(path)
-            mapController?.getMap()?.layers()?.remove(markers)
-        }
         presenter?.onBackPressed()
         centerOnCurrentLocation()
     }
@@ -614,4 +507,3 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         }
     }
 }
-

@@ -4,10 +4,10 @@ import com.mapzen.android.lost.api.LocationServices;
 import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
-import com.mapzen.erasermap.dummy.TestMap;
 import com.mapzen.pelias.SavedSearch;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.widget.PeliasSearchView;
+import com.mapzen.tangram.Tangram;
 import com.mapzen.valhalla.Route;
 import com.mapzen.valhalla.Router;
 
@@ -15,21 +15,12 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.oscim.android.MapView;
-import org.oscim.layers.marker.ItemizedLayer;
-import org.oscim.layers.marker.MarkerItem;
-import org.oscim.layers.tile.buildings.BuildingLayer;
-import org.oscim.layers.tile.vector.VectorTileLayer;
-import org.oscim.layers.tile.vector.labeling.LabelLayer;
-import org.oscim.tiling.source.OkHttpEngine;
-import org.oscim.tiling.source.oscimap4.OSciMap4TileSource;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.fakes.RoboMenu;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.shadows.ShadowLocationManager;
-import org.robolectric.util.ReflectionHelpers;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -46,10 +37,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
-import static com.mapzen.erasermap.dummy.TestMap.TestAnimator.clearLastGeoPoint;
-import static com.mapzen.erasermap.dummy.TestMap.TestAnimator.getLastGeoPoint;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(PrivateMapsTestRunner.class)
@@ -58,15 +46,12 @@ public class MainActivityTest {
     private MainActivity activity;
     private LocationManager locationManager;
     private ShadowLocationManager shadowLocationManager;
-    private MapView mapView;
 
     @Before
     public void setUp() throws Exception {
         activity = Robolectric.setupActivity(MainActivity.class);
         locationManager = (LocationManager) activity.getSystemService(LOCATION_SERVICE);
         shadowLocationManager = shadowOf(locationManager);
-        mapView = (MapView) activity.findViewById(R.id.map);
-        clearLastGeoPoint();
     }
 
     @Test
@@ -81,68 +66,12 @@ public class MainActivityTest {
 
     @Test
     public void shouldHaveMapView() throws Exception {
-        assertThat(activity.findViewById(R.id.map)).isInstanceOf(MapView.class);
-    }
-
-    @Test
-    public void shouldHaveBaseMap() throws Exception {
-        assertThat(mapView.map().layers().get(1)).isInstanceOf(VectorTileLayer.class);
-    }
-
-    @Test
-    public void shouldHaveBuildingLayer() throws Exception {
-        assertThat(mapView.map().layers().get(2)).isInstanceOf(BuildingLayer.class);
-    }
-
-    @Test
-    public void shouldHaveLabelLayer() throws Exception {
-        assertThat(mapView.map().layers().get(3)).isInstanceOf(LabelLayer.class);
-    }
-
-    @Test
-    public void shouldSetHttpEngine() throws Exception {
-        VectorTileLayer baseLayer = activity.getMapController().getBaseLayer();
-        OSciMap4TileSource tileSource = ReflectionHelpers.getField(baseLayer, "mTileSource");
-        assertThat(tileSource.getHttpEngine()).isInstanceOf(OkHttpEngine.class);
-    }
-
-    @Test
-    public void shouldCenterOnLocationWhenFindMeButtonIsClicked() throws Exception {
-        LocationServices.FusedLocationApi.setMockMode(true);
-        LocationServices.FusedLocationApi.setMockLocation(getTestLocation(1.0, 2.0));
-        activity.findViewById(R.id.find_me).performClick();
-        assertThat(getLastGeoPoint().getLatitude()).isCloseTo(1.0, within(0.0001));
-        assertThat(getLastGeoPoint().getLongitude()).isEqualTo(2.0, within(0.0001));
-    }
-
-    @Test
-    public void shouldDisplayCurrentLocationIconWhenFindMeButtonIsClicked() throws Exception {
-        LocationServices.FusedLocationApi.setMockMode(true);
-        LocationServices.FusedLocationApi.setMockLocation(getTestLocation(1.0, 2.0));
-        activity.findViewById(R.id.find_me).performClick();
-        assertThat(mapView.map().layers().get(4)).isInstanceOf(ItemizedLayer.class);
+        assertThat(activity.findViewById(R.id.map)).isInstanceOf(Tangram.class);
     }
 
     @Test
     public void shouldRequestLocationUpdates() throws Exception {
         assertThat(shadowLocationManager.getRequestLocationUpdateListeners()).isNotEmpty();
-    }
-
-    @Test
-    public void shouldSetMarkerPositionOnLocationUpdate() throws Exception {
-        LocationServices.FusedLocationApi.setMockMode(true);
-        LocationServices.FusedLocationApi.setMockLocation(getTestLocation(1.0, 2.0));
-        ItemizedLayer itemizedLayer = (ItemizedLayer) mapView.map().layers().get(5);
-        MarkerItem item = itemizedLayer.removeItem(0);
-        assertThat(item.geoPoint.getLatitude()).isEqualTo(1.0);
-        assertThat(item.geoPoint.getLongitude()).isEqualTo(2.0);
-    }
-
-    @Test
-    public void shouldUpdateMapOnLocationUpdate() throws Exception {
-        LocationServices.FusedLocationApi.setMockMode(true);
-        LocationServices.FusedLocationApi.setMockLocation(getTestLocation(1.0, 2.0));
-        assertThat(((TestMap) mapView.map()).isUpdated()).isTrue();
     }
 
     @Test
@@ -257,38 +186,6 @@ public class MainActivityTest {
     }
 
     @Test
-    public void showSearchResults_shouldAddFeaturesToPoiLayer() throws Exception {
-        ArrayList<Feature> features = new ArrayList<>();
-        features.add(getTestFeature());
-        features.add(getTestFeature());
-        features.add(getTestFeature());
-        activity.showSearchResults(features);
-        assertThat(activity.getPoiLayer().size()).isEqualTo(3);
-    }
-
-    @Test
-    public void hideSearchResults_shouldClearPoiLayer() throws Exception {
-        ArrayList<Feature> features = new ArrayList<>();
-        features.add(getTestFeature());
-        features.add(getTestFeature());
-        features.add(getTestFeature());
-        activity.showSearchResults(features);
-        activity.hideSearchResults();
-        assertThat(activity.getPoiLayer().size()).isEqualTo(0);
-    }
-
-    @Test
-    public void showSearchResults_shouldCenterOnCurrentFeature() throws Exception {
-        Feature feature = getTestFeature(1.0, 2.0);
-        ArrayList<Feature> features = new ArrayList<>();
-        features.add(feature);
-        activity.showSearchResults(features);
-        Robolectric.flushForegroundScheduler();
-        assertThat(getLastGeoPoint().getLatitude()).isCloseTo(1.0, within(0.0001));
-        assertThat(getLastGeoPoint().getLongitude()).isEqualTo(2.0, within(0.0001));
-    }
-
-    @Test
     public void showOverflowMenu_shouldShowOverflowGroup() throws Exception {
         final RoboMenuWithGroup menu = new RoboMenuWithGroup(0, false);
         activity.onCreateOptionsMenu(menu);
@@ -366,26 +263,6 @@ public class MainActivityTest {
     }
 
     @Test
-    public void onSuccess_shouldShowDrawnRoute() throws Exception {
-        activity.showRoutePreview(getTestFeature());
-        activity.success(new Route(getFixture("valhalla_route")));
-        assertThat(activity.getMapController().getMap().layers().contains(activity.getPath()))
-                .isTrue();
-    }
-
-
-    @Test
-    public void onBack_shouldHideDrawnRoute() throws Exception {
-        activity.showRoutePreview(getTestFeature());
-        activity.success(new Route(getFixture("valhalla_route")));
-        assertThat(activity.getMapController().getMap().layers().contains(activity.getPath()))
-                .isTrue();
-        activity.onBackPressed();
-        assertThat(activity.getMapController().getMap().layers().contains(activity.getPath()))
-                .isFalse();
-    }
-
-    @Test
     public void onRadioClick_shouldChangeType() throws Exception {
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
@@ -417,26 +294,6 @@ public class MainActivityTest {
         Intent startedIntent = shadowActivity.getNextStartedActivity();
         ShadowIntent shadowIntent = shadowOf(startedIntent);
         assertThat(shadowIntent.getComponent().getClassName()).contains("InstructionListActivity");
-    }
-
-    @Test
-    public void success_shouldAddMarkerLayer() throws Exception {
-        activity.showRoutePreview(getTestFeature());
-        activity.success(new Route(getFixture("valhalla_route")));
-        assertThat(activity.getMapController().getMap().layers().contains(activity.getMarkers()))
-                .isTrue();
-    }
-
-    @Test
-    public void success_shouldClearMarkerLayer() throws Exception {
-        activity.showRoutePreview(getTestFeature());
-        activity.success(new Route(getFixture("valhalla_route")));
-        assertThat(activity.getMapController().getMap().layers().contains(activity.getMarkers()))
-                .isTrue();
-        activity.onBackPressed();
-        assertThat(activity.getMapController().getMap().layers().contains(activity.getMarkers()))
-                .isFalse();
-
     }
 
     private Location getTestLocation(double lat, double lng) {
