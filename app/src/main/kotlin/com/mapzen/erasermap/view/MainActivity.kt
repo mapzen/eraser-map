@@ -13,6 +13,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageButton
 import android.widget.RadioButton
+import android.widget.TextView
 import android.widget.Toast
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
@@ -362,13 +363,6 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     override fun success(route: Route?) {
         this.route = route;
         runOnUiThread({
-            getSupportActionBar()?.hide()
-            findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
-            (findViewById(R.id.route_preview) as RoutePreviewView).destination =
-                    SimpleFeature.fromFeature(destination);
-            (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
-            // TODO: Draw route on Tangram map
-
             if( findViewById(R.id.route_mode).getVisibility() != View.VISIBLE) {
                 getSupportActionBar()?.hide()
                 findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
@@ -491,12 +485,17 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
 
         val pager = findViewById(R.id.route_mode) as RouteModeView
         val adapter = InstructionAdapter(this, route!!.getRouteInstructions(), pager)
+        val simpleFeature = SimpleFeature.fromFeature(destination)
+        pager.route = this.route
         pager.setAdapter(adapter)
         pager.setVisibility(View.VISIBLE)
+        (findViewById(R.id.destination_name) as TextView).setText(simpleFeature.toString())
     }
 
     override fun hideRoutingMode() {
         findViewById(R.id.route_mode).setVisibility(View.GONE)
+        findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
+        getSupportActionBar()?.hide()
     }
 
     private fun getInitializedRouter(): Router {
