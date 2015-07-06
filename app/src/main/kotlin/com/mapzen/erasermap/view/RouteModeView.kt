@@ -32,7 +32,6 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
         }
     }
 
-
     override fun onPageSelected(position: Int) {
         setCurrentPagerItemStyling(pagerPositionWhenPaused?.toInt() as Int);
     }
@@ -43,7 +42,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
     public fun setAdapter(adapter: PagerAdapter) {
         pager  = findViewById(R.id.instruction_pager) as ViewPager;
         pager?.setAdapter(adapter)
-        pager?.setOnPageChangeListener(this)
+        pager?.addOnPageChangeListener(this)
         (findViewById(R.id.destination_distance) as TextView).setText(DistanceFormatter.format(route?.getRemainingDistanceToDestination() as Int))
     }
 
