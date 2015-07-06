@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.mapzen.erasermap.R
+import com.mapzen.helpers.DistanceFormatter
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.valhalla.Route
 
@@ -17,6 +18,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
     var pager : ViewPager? = null
     var autoPage : Boolean = true
     var pagerPositionWhenPaused : Int? = 0
+    var route : Route? = null
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
         if(pager?.getCurrentItem() == pagerPositionWhenPaused) {
@@ -42,6 +44,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
         pager  = findViewById(R.id.instruction_pager) as ViewPager;
         pager?.setAdapter(adapter)
         pager?.setOnPageChangeListener(this)
+        (findViewById(R.id.destination_distance) as TextView).setText(DistanceFormatter.format(route?.getRemainingDistanceToDestination() as Int))
     }
 
     public fun pageForward(position: Int) {

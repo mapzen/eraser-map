@@ -51,6 +51,11 @@ public class RouteModeViewTest {
     }
 
     @Test
+    public void routeFooter_shouldNotBeNull() throws Exception {
+        assertThat(routeModeView.findViewById(R.id.footer)).isNotNull();
+    }
+
+    @Test
     public void adapter_ShouldNotBeNull() throws Exception {
         assertThat(adapter).isNotNull();
     }
@@ -97,17 +102,19 @@ public class RouteModeViewTest {
 
     @Test
     public void firstPagerView_shouldNotHaveLeftArrow() throws Exception {
-        ImageButton leftArrow = (ImageButton) routeModeView.findViewById(R.id.left_arrow);
-        ImageButton rightArrow = (ImageButton) routeModeView.findViewById(R.id.right_arrow);
+        View view = (View) adapter.instantiateItem(viewGroup, 0);
+        ImageButton leftArrow = (ImageButton) view.findViewById(R.id.left_arrow);
+        ImageButton rightArrow = (ImageButton) view.findViewById(R.id.right_arrow);
         assertThat(leftArrow.getVisibility()).isNotEqualTo(View.VISIBLE);
         assertThat(rightArrow.getVisibility()).isEqualTo(View.VISIBLE);
     }
 
     @Test
     public void firstInstruction_shouldHaveFirstInstruction() throws Exception {
-        TextView instructionText = (TextView) routeModeView.findViewById(R.id.instruction_text);
-        TextView distance = (TextView) routeModeView.findViewById(R.id.distance);
-        ImageView icon = (ImageView) routeModeView.findViewById(R.id.icon);
+        View view = (View) adapter.instantiateItem(viewGroup, 0);
+        TextView instructionText = (TextView) view.findViewById(R.id.instruction_text);
+        TextView distance = (TextView) view.findViewById(R.id.distance);
+        ImageView icon = (ImageView) view.findViewById(R.id.icon);
         assertThat(instructionText.getText().toString()).isEqualTo("Go north on Adalbertstraße.");
         assertThat(distance.getText().toString()).isEqualTo("0.2 mi");
         assertThat(icon.getDrawable()).isEqualTo(startActivity.getDrawable(R.drawable.ic_route_1));
@@ -135,6 +142,14 @@ public class RouteModeViewTest {
                 .isEqualTo("You have arrived at your destination.");
         assertThat(distance.getText().toString()).isEqualTo("");
         assertThat(icon.getDrawable()).isEqualTo(startActivity.getDrawable(R.drawable.ic_route_4));
+    }
+
+    @Test
+    public void footer_shouldHaveCorrectDistanceAndDestination() throws Exception {
+        TextView distance = (TextView) startActivity.findViewById(R.id.destination_distance);
+        TextView destinationText = (TextView) startActivity.findViewById(R.id.destination_name);
+        assertThat(distance.getText().toString()).isEqualTo("1.2 mi");
+        assertThat(destinationText.getText()).isEqualTo("Text, Local Admin, Admin1 Abbr");
     }
     
     class TestViewGroup extends ViewGroup {
