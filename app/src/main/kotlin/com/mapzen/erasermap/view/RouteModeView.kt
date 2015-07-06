@@ -5,20 +5,22 @@ import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
+import com.mapzen.erasermap.PrivateMapsApplication
 import com.mapzen.erasermap.R
 import com.mapzen.helpers.DistanceFormatter
-import com.mapzen.pelias.SimpleFeature
+import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Route
+import javax.inject.Inject
 
 public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
-    var pager : ViewPager? = null
-    var autoPage : Boolean = true
-    var pagerPositionWhenPaused : Int? = 0
-    var route : Route? = null
+    var pager: ViewPager? = null
+    var autoPage: Boolean = true
+    var pagerPositionWhenPaused: Int? = 0
+    var route: Route? = null
+    var routeEngine: RouteEngine? = null
+    @Inject set
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
         if(pager?.getCurrentItem() == pagerPositionWhenPaused) {
@@ -86,19 +88,20 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
     }
 
     public constructor(context: Context) : super(context) {
-        init()
+        init(context)
     }
 
     public constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init()
+        init(context)
     }
 
     public constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
     : super(context, attrs, defStyleAttr) {
-        init()
+        init(context)
     }
 
-    private fun init() {
+    private fun init(context: Context) {
+        (context.getApplicationContext() as PrivateMapsApplication).component()?.inject(this)
         (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_mode, this, true)
     }

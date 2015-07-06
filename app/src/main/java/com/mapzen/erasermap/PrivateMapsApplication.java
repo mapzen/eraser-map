@@ -1,6 +1,7 @@
 package com.mapzen.erasermap;
 
 import com.mapzen.erasermap.view.MainActivity;
+import com.mapzen.erasermap.view.RouteModeView;
 import com.mapzen.erasermap.view.SearchResultsAdapter;
 
 import android.app.Application;
@@ -17,6 +18,7 @@ public class PrivateMapsApplication extends Application {
     public interface ApplicationComponent {
         void inject(MainActivity mainActivity);
         void inject(SearchResultsAdapter searchResultsAdapter);
+        void inject(RouteModeView routeModeView);
     }
 
     private ApplicationComponent component;
