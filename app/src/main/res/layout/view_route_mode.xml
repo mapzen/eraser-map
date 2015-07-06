@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -7,50 +8,44 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/instruction_pager"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/pager_height"/>
+        android:layout_height="@dimen/pager_height" />
 
     <RelativeLayout
+        android:id="@+id/footer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:layout_alignParentBottom="true">
+        android:background="@color/transparent_white"
+        android:paddingBottom="@dimen/padding_vertical_small"
+        android:paddingLeft="@dimen/instruction_padding"
+        android:paddingTop="@dimen/footer_padding">
 
-        <LinearLayout
-            android:id="@+id/footer"
-            android:layout_width="match_parent"
-            android:layout_height="75dp"
-            android:paddingLeft="@dimen/instruction_padding"
-            android:paddingTop="@dimen/footer_padding"
-            android:background="@color/transparent_white"
-            android:orientation="vertical"
+        <TextView
+            android:id="@+id/destination_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_alignParentBottom="true">
+            android:layout_weight="0"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="@color/brown"
+            android:textSize="@dimen/font_medium"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/destination_distance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_weight="0"
-                android:fontFamily="sans-serif-condensed"
-                android:textStyle="bold"
-                android:textColor="@color/brown"
-                android:textSize="@dimen/font_medium" />
-
-            <TextView
-                android:id="@+id/destination_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:singleLine="true"
-                android:textColor="@color/brown"
-                android:fontFamily="sans-serif-condensed"
-                android:textSize="@dimen/font_small" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/destination_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-condensed"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/brown"
+            android:textSize="@dimen/font_small" />
 
     </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>
