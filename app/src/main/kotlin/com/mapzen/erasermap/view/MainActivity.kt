@@ -32,7 +32,8 @@ import com.mapzen.pelias.gson.Result
 import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
-import com.mapzen.tangram.Tangram
+import com.mapzen.tangram.MapController
+import com.mapzen.tangram.MapView
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
@@ -65,7 +66,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     @Inject set
 
     var app: PrivateMapsApplication? = null
-    var tangram : Tangram? = null
+    var mapController : MapController? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
     var optionsMenu: Menu? = null
     var destination: Feature? = null
@@ -120,8 +121,8 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
     private fun initMapController() {
-        tangram = findViewById(R.id.map) as Tangram
-        tangram?.setup(this)
+        val mapView = findViewById(R.id.map) as MapView
+        mapController = MapController(this, mapView)
     }
 
     private fun initAutoCompleteAdapter() {
@@ -153,7 +154,9 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         val location = LocationServices.FusedLocationApi?.getLastLocation()
         if (location != null) {
             currentLocation = location
+            mapController?.setMapPosition(location.getLongitude(), location.getLatitude())
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
