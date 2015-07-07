@@ -7,7 +7,7 @@ import com.mapzen.erasermap.R;
 import com.mapzen.pelias.SavedSearch;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.widget.PeliasSearchView;
-import com.mapzen.tangram.Tangram;
+import com.mapzen.tangram.MapView;
 import com.mapzen.valhalla.Route;
 import com.mapzen.valhalla.Router;
 
@@ -66,7 +66,7 @@ public class MainActivityTest {
 
     @Test
     public void shouldHaveMapView() throws Exception {
-        assertThat(activity.findViewById(R.id.map)).isInstanceOf(Tangram.class);
+        assertThat(activity.findViewById(R.id.map)).isInstanceOf(MapView.class);
     }
 
     @Test
@@ -294,6 +294,23 @@ public class MainActivityTest {
         Intent startedIntent = shadowActivity.getNextStartedActivity();
         ShadowIntent shadowIntent = shadowOf(startedIntent);
         assertThat(shadowIntent.getComponent().getClassName()).contains("InstructionListActivity");
+    }
+
+    @Test
+    public void showRoutingMode_shouldSetRoute() throws Exception {
+        activity.setDestination(getTestFeature());
+        activity.success(new Route(getFixture("valhalla_route")));
+        activity.showRoutingMode();
+        RouteModeView routeModeView = (RouteModeView) activity.findViewById(R.id.route_mode);
+        assertThat(routeModeView.getRoute()).isNotNull();
+    }
+
+    @Test
+    public void hideRoutingMode_shouldClearRoute() throws Exception {
+        RouteModeView routeModeView = (RouteModeView) activity.findViewById(R.id.route_mode);
+        routeModeView.setRoute(new Route(getFixture("valhalla_route")));
+        activity.hideRoutingMode();
+        assertThat(routeModeView.getRoute()).isNull();
     }
 
     private Location getTestLocation(double lat, double lng) {

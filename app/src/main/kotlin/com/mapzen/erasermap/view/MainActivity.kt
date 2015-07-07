@@ -183,6 +183,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
             listView.setEmptyView(emptyView)
             restoreCurrentSearchTerm()
         }
+
         return true
     }
 
@@ -501,6 +502,8 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         findViewById(R.id.route_mode).setVisibility(View.GONE)
         findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
         getSupportActionBar()?.hide()
+        val routeModeView = findViewById(R.id.route_mode) as RouteModeView
+        routeModeView.route = null
     }
 
     private fun getInitializedRouter(): Router {
