@@ -1,9 +1,11 @@
 package com.mapzen.erasermap.view
 
 import android.content.Context
+import android.location.Location
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -12,6 +14,7 @@ import com.mapzen.erasermap.R
 import com.mapzen.helpers.DistanceFormatter
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Route
+import java.util.ArrayList
 import javax.inject.Inject
 
 public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
@@ -104,5 +107,55 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
         (context.getApplicationContext() as PrivateMapsApplication).component()?.inject(this)
         (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_mode, this, true)
+        routeEngine?.setListener(RouteModeListener())
+    }
+
+    inner class RouteModeListener : RouteEngine.RouteListener {
+        private val TAG: String = "RouteListener"
+        public var debug: Boolean = true
+
+        override fun onSnapLocation(originalLocation: Location?, snapLocation: Location?) {
+            log("[onSnapLocation]", "originalLocation = " + originalLocation
+                    + " | " + "snapLocation = " + snapLocation)
+        }
+
+        override fun onUpdateDistance(distanceToNextInstruction: Int, distanceToDestination: Int) {
+            log("[onUpdateDistance]", "distanceToNextInstruction = " + distanceToNextInstruction
+                    + " | " + "distanceToDestination = " + distanceToDestination)
+        }
+
+        override fun onInstructionComplete(index: Int) {
+            log("[onInstructionComplete]", index)
+        }
+
+        override fun onRecalculate(location: Location?) {
+            log("[onRecalculate]", location)
+        }
+
+        override fun onApproachInstruction(index: Int) {
+            log("[onApproachInstruction]", index)
+        }
+
+        override fun onRouteComplete() {
+            log("[onRouteComplete]")
+        }
+
+        private fun log(method: String, message: Any? = null) {
+            if (debug) {
+                var output = String()
+                output += method
+                if (message != null) {
+                    output += " " + message
+                }
+
+                Log.d(TAG, output)
+            }
+        }
+    }
+
+    fun onLocationChanged(location: Location) {
+        if (route != null) {
+            routeEngine?.onLocationChanged(location)
+        }
     }
 }

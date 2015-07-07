@@ -132,7 +132,7 @@ public class RouteModeViewTest {
     }
 
     @Test
-    public void lastIntstruction_shouldHaveFirstInstruction() throws Exception {
+    public void lastInstruction_shouldHaveFirstInstruction() throws Exception {
         View view = (View) adapter.instantiateItem(viewGroup,
                 routeModeView.getPager().getAdapter().getCount() - 1);
         TextView instructionText = (TextView) view.findViewById(R.id.instruction_text);
