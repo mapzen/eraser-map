@@ -60,7 +60,7 @@ public class InstructionListActivity : AppCompatActivity() {
         return true
     }
 
-    private class DirectionListAdapter(context: Context, strings: ArrayList<String>?,
+    public class DirectionListAdapter(context: Context, strings: ArrayList<String>?,
                                        types: ArrayList<Int>?, distances: ArrayList<Int>?,
                                        reverse : Boolean?) : BaseAdapter() {
         private final var CURRENT_LOCATION_OFFSET =  1

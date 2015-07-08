@@ -9,12 +9,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.ListView
 import com.mapzen.erasermap.PrivateMapsApplication
 import com.mapzen.erasermap.R
-import com.mapzen.helpers.DistanceFormatter
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Route
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
+import java.util.ArrayList
 import javax.inject.Inject
 
 public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
@@ -25,6 +26,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
     var pager: ViewPager? = null
     var autoPage: Boolean = true
     var route: Route? = null
+    var slideLayout: SlidingUpPanelLayout? = null
     var routeEngine: RouteEngine? = null
     @Inject set
     var routeListener: RouteModeListener = RouteModeListener()
@@ -85,6 +87,71 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
     public fun pageBackwards(position: Int) {
         pager?.setCurrentItem(position - 1)
     }
+
+    public fun initSlideLayout(view: View) {
+        slideLayout = view as SlidingUpPanelLayout
+        slideLayout?.setDragView(view.findViewById(R.id.drag_area))
+        slideLayout?.setPanelSlideListener(getPanelSlideListener())
+    }
+
+    public fun getPanelSlideListener():SlidingUpPanelLayout.PanelSlideListener {
+        return (object:SlidingUpPanelLayout.PanelSlideListener {
+            public override fun onPanelSlide(panel:View, slideOffset:Float) {
+                if (slideOffset >  0.1f) {
+                    findViewById(R.id.footer).setVisibility(View.GONE)
+                    showDirectionList();
+                    slideLayout?.setTouchEnabled(true);
+                }
+                if (slideOffset <  0.1f) {
+                    findViewById(R.id.footer).setVisibility(View.VISIBLE)
+                }
+                if (slideOffset == 1f) {
+                    slideLayout?.setTouchEnabled(false);
+                }
+            }
+
+            public override fun onPanelExpanded(panel:View) {
+            }
+
+            public override fun onPanelCollapsed(panel: View) {
+            }
+
+            public override fun onPanelAnchored(panel:View) {}
+            public override fun onPanelHidden(view:View) {}
+        })
+    }
+
+    private fun showDirectionList()  {
+        findViewById(R.id.footer).setVisibility(View.GONE)
+        val listView = findViewById(R.id.instruction_list_view_route_mode) as ListView
+        val instructionStrings = ArrayList<String>()
+        val instructionType= ArrayList<Int>()
+        val instructionDistance= ArrayList<Int>()
+        if(route != null) {
+            for (instruction in route!!.getRouteInstructions() ) {
+                instructionStrings.add(instruction.getHumanTurnInstruction())
+                instructionType.add(instruction.turnInstruction)
+                instructionDistance.add(instruction.distance)
+            }
+            listView.setAdapter(
+                    InstructionListActivity.DirectionListAdapter(listView.getContext(),
+                            instructionStrings,
+                            instructionType, instructionDistance, false))
+        }
+    }
+
+
+public fun collapseSlideLayout() {
+    if (slideLayoutIsExpanded()) {
+        slideLayout?.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+    }
+}
+
+
+
+    public fun slideLayoutIsExpanded() : Boolean {
+    return slideLayout?.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED;
+}
 
     private fun turnAutoPageOff() : Boolean {
         if (autoPage) {
