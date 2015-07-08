@@ -45,7 +45,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
     }
 
     public fun setAdapter(adapter: PagerAdapter) {
-        pager  = findViewById(R.id.instruction_pager) as ViewPager;
+        pager  = findViewById(R.id.instruction_pager) as ViewPager
         pager?.setAdapter(adapter)
         pager?.addOnPageChangeListener(this)
         (findViewById(R.id.destination_distance) as TextView).setText(DistanceFormatter.format(route?.getRemainingDistanceToDestination() as Int))
@@ -63,8 +63,8 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
         if (autoPage) {
             pagerPositionWhenPaused = pager?.getCurrentItem()
         }
-        autoPage = false;
-        return false;
+        autoPage = false
+        return false
     }
 
     private fun resumeAutoPaging() {
@@ -77,15 +77,19 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
         var lastItemIndex = (pager?.getAdapter() as InstructionAdapter).getCount() - 1
         var itemsUntilLastInstruction = (lastItemIndex - position)
         if(itemsUntilLastInstruction ==  1) {
-            (pager?.getAdapter() as InstructionAdapter).setBackgroundColorArrived(pager?.findViewWithTag("Instruction_" + (position + 1)))
+            (pager?.getAdapter() as InstructionAdapter)
+                    .setBackgroundColorArrived(pager?.findViewWithTag("Instruction_" + (position + 1)))
         }
         if(autoPage) {
-            (pager?.getAdapter() as InstructionAdapter).setBackgroundColorActive(pager?.findViewWithTag("Instruction_" + position))
+            (pager?.getAdapter() as InstructionAdapter)
+                    .setBackgroundColorActive(pager?.findViewWithTag("Instruction_" + position))
         } else {
             if(position == lastItemIndex) {
-                (pager?.getAdapter() as InstructionAdapter).setBackgroundColorArrived(pager?.findViewWithTag("Instruction_" + position))
+                (pager?.getAdapter() as InstructionAdapter)
+                        .setBackgroundColorArrived(pager?.findViewWithTag("Instruction_" + position))
             } else {
-                (pager?.getAdapter() as InstructionAdapter).setBackgroundColorInactive(pager?.findViewWithTag("Instruction_" + position))
+                (pager?.getAdapter() as InstructionAdapter)
+                        .setBackgroundColorInactive(pager?.findViewWithTag("Instruction_" + position))
             }
         }
     }
