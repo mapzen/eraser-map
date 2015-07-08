@@ -55,7 +55,7 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
     }
 
     private fun setTagId(view: View, position: Int) {
-        view.setTag("Instruction_" + position)
+        view.setTag(RouteModeView.VIEW_TAG + position)
     }
 
     private fun initArrowOnClickListeners(view: View, position: Int) {

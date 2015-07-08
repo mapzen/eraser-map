@@ -17,17 +17,22 @@ import com.mapzen.valhalla.Route
 import java.util.ArrayList
 import javax.inject.Inject
 
-public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
+public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
+    companion object {
+        val VIEW_TAG: String = "Instruction_"
+    }
+
     var pager: ViewPager? = null
     var autoPage: Boolean = true
-    var pagerPositionWhenPaused: Int? = 0
     var route: Route? = null
     var routeEngine: RouteEngine? = null
     @Inject set
 
+    private var currentInstructionIndex: Int? = 0
+
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-        if(pager?.getCurrentItem() == pagerPositionWhenPaused) {
-            setCurrentPagerItemStyling(pagerPositionWhenPaused?.toInt() as Int);
+        if(pager?.getCurrentItem() == currentInstructionIndex) {
+            setCurrentPagerItemStyling(currentInstructionIndex?.toInt() as Int);
             if(!autoPage) {
                 resumeAutoPaging()
             }
@@ -38,7 +43,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
     }
 
     override fun onPageSelected(position: Int) {
-        setCurrentPagerItemStyling(pagerPositionWhenPaused?.toInt() as Int);
+        setCurrentPagerItemStyling(currentInstructionIndex?.toInt() as Int);
     }
 
     override fun onPageScrollStateChanged(state: Int) {
@@ -48,7 +53,8 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
         pager  = findViewById(R.id.instruction_pager) as ViewPager
         pager?.setAdapter(adapter)
         pager?.addOnPageChangeListener(this)
-        (findViewById(R.id.destination_distance) as TextView).setText(DistanceFormatter.format(route?.getRemainingDistanceToDestination() as Int))
+        (findViewById(R.id.destination_distance) as TextView)
+                .setText(DistanceFormatter.format(route?.getRemainingDistanceToDestination() as Int))
     }
 
     public fun pageForward(position: Int) {
@@ -61,15 +67,15 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
 
     private fun turnAutoPageOff() : Boolean {
         if (autoPage) {
-            pagerPositionWhenPaused = pager?.getCurrentItem()
+            currentInstructionIndex = pager?.getCurrentItem()
         }
         autoPage = false
         return false
     }
 
     private fun resumeAutoPaging() {
-        pager?.setCurrentItem(pagerPositionWhenPaused?.toInt() as Int)
-        setCurrentPagerItemStyling(pagerPositionWhenPaused?.toInt() as Int)
+        pager?.setCurrentItem(currentInstructionIndex?.toInt() as Int)
+        setCurrentPagerItemStyling(currentInstructionIndex?.toInt() as Int)
         autoPage = true
     }
 
@@ -78,18 +84,18 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
         var itemsUntilLastInstruction = (lastItemIndex - position)
         if(itemsUntilLastInstruction ==  1) {
             (pager?.getAdapter() as InstructionAdapter)
-                    .setBackgroundColorArrived(pager?.findViewWithTag("Instruction_" + (position + 1)))
+                    .setBackgroundColorArrived(pager?.findViewWithTag(VIEW_TAG + (position + 1)))
         }
         if(autoPage) {
             (pager?.getAdapter() as InstructionAdapter)
-                    .setBackgroundColorActive(pager?.findViewWithTag("Instruction_" + position))
+                    .setBackgroundColorActive(pager?.findViewWithTag(VIEW_TAG + position))
         } else {
             if(position == lastItemIndex) {
                 (pager?.getAdapter() as InstructionAdapter)
-                        .setBackgroundColorArrived(pager?.findViewWithTag("Instruction_" + position))
+                        .setBackgroundColorArrived(pager?.findViewWithTag(VIEW_TAG + position))
             } else {
                 (pager?.getAdapter() as InstructionAdapter)
-                        .setBackgroundColorInactive(pager?.findViewWithTag("Instruction_" + position))
+                        .setBackgroundColorInactive(pager?.findViewWithTag(VIEW_TAG + position))
             }
         }
     }
