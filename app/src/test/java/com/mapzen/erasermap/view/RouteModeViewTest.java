@@ -132,7 +132,7 @@ public class RouteModeViewTest {
     }
 
     @Test
-    public void lastIntstruction_shouldHaveFirstInstruction() throws Exception {
+    public void lastInstruction_shouldHaveFirstInstruction() throws Exception {
         View view = (View) adapter.instantiateItem(viewGroup,
                 routeModeView.getPager().getAdapter().getCount() - 1);
         TextView instructionText = (TextView) view.findViewById(R.id.instruction_text);
@@ -151,7 +151,12 @@ public class RouteModeViewTest {
         assertThat(distance.getText().toString()).isEqualTo("1.2 mi");
         assertThat(destinationText.getText()).isEqualTo("Text, Local Admin, Admin1 Abbr");
     }
-    
+
+    @Test
+    public void shouldInjectRouteEngine() throws Exception {
+        assertThat(routeModeView.getRouteEngine()).isNotNull();
+    }
+
     class TestViewGroup extends ViewGroup {
         public TestViewGroup(Context context) {
             super(context);

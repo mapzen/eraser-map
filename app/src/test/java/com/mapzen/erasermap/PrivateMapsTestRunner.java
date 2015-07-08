@@ -1,7 +1,9 @@
 package com.mapzen.erasermap;
 
+import com.mapzen.erasermap.shadows.ShadowGLSurfaceView;
+import com.mapzen.erasermap.shadows.ShadowMapController;
 import com.mapzen.erasermap.shadows.ShadowPorterDuffColorFilter;
-import com.mapzen.erasermap.shadows.ShadowTangram;
+import com.mapzen.erasermap.shadows.ShadowMapView;
 
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -16,7 +18,8 @@ import java.util.List;
 public class PrivateMapsTestRunner extends RobolectricGradleTestRunner {
     private static final List<String> CUSTOM_SHADOW_TARGETS =
             Collections.unmodifiableList(Arrays.asList(
-                    "com.mapzen.tangram.Tangram"
+                    "com.mapzen.tangram.MapView",
+                    "com.mapzen.tangram.MapController"
             ));
 
     public PrivateMapsTestRunner(Class<?> klass) throws InitializationError {
@@ -27,7 +30,9 @@ public class PrivateMapsTestRunner extends RobolectricGradleTestRunner {
     protected ShadowMap createShadowMap() {
         return super.createShadowMap()
                 .newBuilder()
-                .addShadowClass(ShadowTangram.class)
+                .addShadowClass(ShadowMapView.class)
+                .addShadowClass(ShadowMapController.class)
+                .addShadowClass(ShadowGLSurfaceView.class)
                 .addShadowClass(ShadowPorterDuffColorFilter.class)
                 .build();
     }

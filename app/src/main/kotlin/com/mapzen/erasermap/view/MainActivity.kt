@@ -45,7 +45,6 @@ import retrofit.client.Response
 import java.util.ArrayList
 import javax.inject.Inject
 
-
 public class MainActivity : AppCompatActivity(), ViewController, Router.Callback,
         SearchResultsView.OnSearchResultSelectedListener {
     private val LOCATION_UPDATE_INTERVAL_IN_MS: Long = 1000L
@@ -143,10 +142,13 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         val locationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
+                .setFastestInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
                 .setSmallestDisplacement(LOCATION_UPDATE_SMALLEST_DISPLACEMENT)
 
         LocationServices.FusedLocationApi?.requestLocationUpdates(locationRequest) {
             location: Location -> currentLocation = location
+            val routeModeView = findViewById(R.id.route_mode) as RouteModeView
+            routeModeView.onLocationChanged(location)
         }
     }
 
@@ -156,7 +158,6 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
             currentLocation = location
             mapController?.setMapPosition(location.getLongitude(), location.getLatitude())
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -182,6 +183,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
             listView.setEmptyView(emptyView)
             restoreCurrentSearchTerm()
         }
+
         return true
     }
 
@@ -490,6 +492,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         val adapter = InstructionAdapter(this, route!!.getRouteInstructions(), pager)
         val simpleFeature = SimpleFeature.fromFeature(destination)
         pager.route = this.route
+        pager.routeEngine?.setRoute(route)
         pager.setAdapter(adapter)
         pager.setVisibility(View.VISIBLE)
         (findViewById(R.id.destination_name) as TextView).setText(simpleFeature.toString())
@@ -499,6 +502,8 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         findViewById(R.id.route_mode).setVisibility(View.GONE)
         findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
         getSupportActionBar()?.hide()
+        val routeModeView = findViewById(R.id.route_mode) as RouteModeView
+        routeModeView.route = null
     }
 
     private fun getInitializedRouter(): Router {
