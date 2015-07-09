@@ -27,8 +27,29 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
     var route: Route? = null
     var routeEngine: RouteEngine? = null
     @Inject set
+    var routeListener: RouteModeListener = RouteModeListener()
 
-    private var currentInstructionIndex: Int? = 0
+    private var currentInstructionIndex: Int = 0
+
+    public constructor(context: Context) : super(context) {
+        init(context)
+    }
+
+    public constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        init(context)
+    }
+
+    public constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
+    : super(context, attrs, defStyleAttr) {
+        init(context)
+    }
+
+    private fun init(context: Context) {
+        (context.getApplicationContext() as PrivateMapsApplication).component()?.inject(this)
+        (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
+                .inflate(R.layout.view_route_mode, this, true)
+        routeEngine?.setListener(routeListener)
+    }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
         if(pager?.getCurrentItem() == currentInstructionIndex) {
@@ -67,7 +88,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
 
     private fun turnAutoPageOff() : Boolean {
         if (autoPage) {
-            currentInstructionIndex = pager?.getCurrentItem()
+            currentInstructionIndex = pager?.getCurrentItem() as Int
         }
         autoPage = false
         return false
@@ -100,26 +121,9 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         }
     }
 
-    public constructor(context: Context) : super(context) {
-        init(context)
-    }
-
-    public constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(context)
-    }
-
-    public constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
-    : super(context, attrs, defStyleAttr) {
-        init(context)
-    }
-
-    private fun init(context: Context) {
-        (context.getApplicationContext() as PrivateMapsApplication).component()?.inject(this)
-        (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
-                .inflate(R.layout.view_route_mode, this, true)
-        routeEngine?.setListener(RouteModeListener())
-    }
-
+    /**
+     * Route engine callback object
+     */
     inner class RouteModeListener : RouteEngine.RouteListener {
         private val TAG: String = "RouteListener"
         public var debug: Boolean = true
@@ -136,6 +140,8 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
 
         override fun onInstructionComplete(index: Int) {
             log("[onInstructionComplete]", index)
+            currentInstructionIndex += 1
+            pager?.setCurrentItem(currentInstructionIndex)
         }
 
         override fun onRecalculate(location: Location?) {

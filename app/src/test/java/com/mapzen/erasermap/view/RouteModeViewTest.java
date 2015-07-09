@@ -1,14 +1,5 @@
 package com.mapzen.erasermap.view;
 
-import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v4.view.ViewPager;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
@@ -19,6 +10,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+
+import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
@@ -150,6 +150,12 @@ public class RouteModeViewTest {
         TextView destinationText = (TextView) startActivity.findViewById(R.id.destination_name);
         assertThat(distance.getText().toString()).isEqualTo("1.2 mi");
         assertThat(destinationText.getText()).isEqualTo("Text, Local Admin, Admin1 Abbr");
+    }
+
+    @Test
+    public void onInstructionComplete_shouldAdvanceViewPager() throws Exception {
+        routeModeView.getRouteListener().onInstructionComplete(0);
+        assertThat(routeModeView.getPager().getCurrentItem()).isEqualTo(1);
     }
 
     @Test
