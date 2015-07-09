@@ -159,6 +159,24 @@ public class RouteModeViewTest {
     }
 
     @Test
+    public void onUpdateDistance_shouldUpdateDistanceToNextInstruction() throws Exception {
+        adapter.instantiateItem(routeModeView.getPager(), 0);
+        routeModeView.getRouteListener().onUpdateDistance(100, 500);
+        DistanceView distanceView =
+                (DistanceView) routeModeView.findViewByIndex(0).findViewById(R.id.distance);
+        assertThat(distanceView.getDistanceInMeters()).isEqualTo(100);
+    }
+
+    @Test
+    public void onUpdateDistance_shouldUpdateDistanceToDestination() throws Exception {
+        adapter.instantiateItem(routeModeView.getPager(), 0);
+        routeModeView.getRouteListener().onUpdateDistance(100, 500);
+        DistanceView distanceView =
+                (DistanceView) routeModeView.findViewById(R.id.destination_distance);
+        assertThat(distanceView.getDistanceInMeters()).isEqualTo(500);
+    }
+
+    @Test
     public void shouldInjectRouteEngine() throws Exception {
         assertThat(routeModeView.getRouteEngine()).isNotNull();
     }

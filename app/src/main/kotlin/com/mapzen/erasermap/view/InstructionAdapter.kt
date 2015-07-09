@@ -27,11 +27,11 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
         val instruction = instructions.get(position)
         val view = View.inflate(context, R.layout.pager_item_instruction, null)
         val title = view.findViewById(R.id.instruction_text) as TextView
-        val distance = view.findViewById(R.id.distance) as TextView
+        val distance = view.findViewById(R.id.distance) as DistanceView
         val icon = view.findViewById(R.id.icon) as ImageView
         var iconId: Int = DisplayHelper.getRouteDrawable(context,
                 instruction.getIntegerInstruction())
-        distance.setText((instruction.getFormattedDistance()))
+        distance.distanceInMeters = instruction.distance
         title.setText(instruction.getHumanTurnInstruction())
         icon.setImageResource(iconId)
         if (position == 0) {

@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.mapzen.erasermap.PrivateMapsApplication
@@ -14,7 +15,6 @@ import com.mapzen.erasermap.R
 import com.mapzen.helpers.DistanceFormatter
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Route
-import java.util.ArrayList
 import javax.inject.Inject
 
 public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
@@ -53,7 +53,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
         if(pager?.getCurrentItem() == currentInstructionIndex) {
-            setCurrentPagerItemStyling(currentInstructionIndex?.toInt() as Int);
+            setCurrentPagerItemStyling(currentInstructionIndex);
             if(!autoPage) {
                 resumeAutoPaging()
             }
@@ -64,7 +64,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
     }
 
     override fun onPageSelected(position: Int) {
-        setCurrentPagerItemStyling(currentInstructionIndex?.toInt() as Int);
+        setCurrentPagerItemStyling(currentInstructionIndex);
     }
 
     override fun onPageScrollStateChanged(state: Int) {
@@ -74,8 +74,8 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         pager  = findViewById(R.id.instruction_pager) as ViewPager
         pager?.setAdapter(adapter)
         pager?.addOnPageChangeListener(this)
-        (findViewById(R.id.destination_distance) as TextView)
-                .setText(DistanceFormatter.format(route?.getRemainingDistanceToDestination() as Int))
+        (findViewById(R.id.destination_distance) as DistanceView).distanceInMeters =
+                (route?.getRemainingDistanceToDestination() as Int)
     }
 
     public fun pageForward(position: Int) {
@@ -95,8 +95,8 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
     }
 
     private fun resumeAutoPaging() {
-        pager?.setCurrentItem(currentInstructionIndex?.toInt() as Int)
-        setCurrentPagerItemStyling(currentInstructionIndex?.toInt() as Int)
+        pager?.setCurrentItem(currentInstructionIndex)
+        setCurrentPagerItemStyling(currentInstructionIndex)
         autoPage = true
     }
 
@@ -105,20 +105,24 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         var itemsUntilLastInstruction = (lastItemIndex - position)
         if(itemsUntilLastInstruction ==  1) {
             (pager?.getAdapter() as InstructionAdapter)
-                    .setBackgroundColorArrived(pager?.findViewWithTag(VIEW_TAG + (position + 1)))
+                    .setBackgroundColorArrived(findViewByIndex(position + 1))
         }
         if(autoPage) {
             (pager?.getAdapter() as InstructionAdapter)
-                    .setBackgroundColorActive(pager?.findViewWithTag(VIEW_TAG + position))
+                    .setBackgroundColorActive(findViewByIndex(position))
         } else {
             if(position == lastItemIndex) {
                 (pager?.getAdapter() as InstructionAdapter)
-                        .setBackgroundColorArrived(pager?.findViewWithTag(VIEW_TAG + position))
+                        .setBackgroundColorArrived(findViewByIndex(position))
             } else {
                 (pager?.getAdapter() as InstructionAdapter)
-                        .setBackgroundColorInactive(pager?.findViewWithTag(VIEW_TAG + position))
+                        .setBackgroundColorInactive(findViewByIndex(position))
             }
         }
+    }
+
+    public fun findViewByIndex(index: Int): View? {
+        return pager?.findViewWithTag(VIEW_TAG + index)
     }
 
     /**
@@ -136,6 +140,9 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         override fun onUpdateDistance(distanceToNextInstruction: Int, distanceToDestination: Int) {
             log("[onUpdateDistance]", "distanceToNextInstruction = " + distanceToNextInstruction
                     + " | " + "distanceToDestination = " + distanceToDestination)
+            val distanceView = findViewByIndex(currentInstructionIndex)?.findViewById(R.id.distance)
+            (distanceView as DistanceView).distanceInMeters = distanceToNextInstruction
+            (findViewById(R.id.destination_distance) as DistanceView).distanceInMeters = distanceToDestination
         }
 
         override fun onInstructionComplete(index: Int) {
