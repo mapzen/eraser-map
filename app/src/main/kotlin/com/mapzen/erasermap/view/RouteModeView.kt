@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.mapzen.erasermap.PrivateMapsApplication
@@ -14,81 +15,21 @@ import com.mapzen.erasermap.R
 import com.mapzen.helpers.DistanceFormatter
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Route
-import java.util.ArrayList
 import javax.inject.Inject
 
-public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
+public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
+    companion object {
+        val VIEW_TAG: String = "Instruction_"
+    }
+
     var pager: ViewPager? = null
     var autoPage: Boolean = true
-    var pagerPositionWhenPaused: Int? = 0
     var route: Route? = null
     var routeEngine: RouteEngine? = null
     @Inject set
+    var routeListener: RouteModeListener = RouteModeListener()
 
-    override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-        if(pager?.getCurrentItem() == pagerPositionWhenPaused) {
-            setCurrentPagerItemStyling(pagerPositionWhenPaused?.toInt() as Int);
-            if(!autoPage) {
-                resumeAutoPaging()
-            }
-        } else {
-            setCurrentPagerItemStyling(position)
-            autoPage = false
-        }
-    }
-
-    override fun onPageSelected(position: Int) {
-        setCurrentPagerItemStyling(pagerPositionWhenPaused?.toInt() as Int);
-    }
-
-    override fun onPageScrollStateChanged(state: Int) {
-    }
-
-    public fun setAdapter(adapter: PagerAdapter) {
-        pager  = findViewById(R.id.instruction_pager) as ViewPager;
-        pager?.setAdapter(adapter)
-        pager?.addOnPageChangeListener(this)
-        (findViewById(R.id.destination_distance) as TextView).setText(DistanceFormatter.format(route?.getRemainingDistanceToDestination() as Int))
-    }
-
-    public fun pageForward(position: Int) {
-        pager?.setCurrentItem(position + 1)
-    }
-
-    public fun pageBackwards(position: Int) {
-        pager?.setCurrentItem(position - 1)
-    }
-
-    private fun turnAutoPageOff() : Boolean {
-        if (autoPage) {
-            pagerPositionWhenPaused = pager?.getCurrentItem()
-        }
-        autoPage = false;
-        return false;
-    }
-
-    private fun resumeAutoPaging() {
-        pager?.setCurrentItem(pagerPositionWhenPaused?.toInt() as Int)
-        setCurrentPagerItemStyling(pagerPositionWhenPaused?.toInt() as Int)
-        autoPage = true
-    }
-
-    private fun setCurrentPagerItemStyling(position : Int) {
-        var lastItemIndex = (pager?.getAdapter() as InstructionAdapter).getCount() - 1
-        var itemsUntilLastInstruction = (lastItemIndex - position)
-        if(itemsUntilLastInstruction ==  1) {
-            (pager?.getAdapter() as InstructionAdapter).setBackgroundColorArrived(pager?.findViewWithTag("Instruction_" + (position + 1)))
-        }
-        if(autoPage) {
-            (pager?.getAdapter() as InstructionAdapter).setBackgroundColorActive(pager?.findViewWithTag("Instruction_" + position))
-        } else {
-            if(position == lastItemIndex) {
-                (pager?.getAdapter() as InstructionAdapter).setBackgroundColorArrived(pager?.findViewWithTag("Instruction_" + position))
-            } else {
-                (pager?.getAdapter() as InstructionAdapter).setBackgroundColorInactive(pager?.findViewWithTag("Instruction_" + position))
-            }
-        }
-    }
+    private var currentInstructionIndex: Int = 0
 
     public constructor(context: Context) : super(context) {
         init(context)
@@ -107,9 +48,86 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
         (context.getApplicationContext() as PrivateMapsApplication).component()?.inject(this)
         (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_mode, this, true)
-        routeEngine?.setListener(RouteModeListener())
+        routeEngine?.setListener(routeListener)
     }
 
+    override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+        if(pager?.getCurrentItem() == currentInstructionIndex) {
+            setCurrentPagerItemStyling(currentInstructionIndex);
+            if(!autoPage) {
+                resumeAutoPaging()
+            }
+        } else {
+            setCurrentPagerItemStyling(position)
+            autoPage = false
+        }
+    }
+
+    override fun onPageSelected(position: Int) {
+        setCurrentPagerItemStyling(currentInstructionIndex);
+    }
+
+    override fun onPageScrollStateChanged(state: Int) {
+    }
+
+    public fun setAdapter(adapter: PagerAdapter) {
+        pager  = findViewById(R.id.instruction_pager) as ViewPager
+        pager?.setAdapter(adapter)
+        pager?.addOnPageChangeListener(this)
+        (findViewById(R.id.destination_distance) as DistanceView).distanceInMeters =
+                (route?.getRemainingDistanceToDestination() as Int)
+    }
+
+    public fun pageForward(position: Int) {
+        pager?.setCurrentItem(position + 1)
+    }
+
+    public fun pageBackwards(position: Int) {
+        pager?.setCurrentItem(position - 1)
+    }
+
+    private fun turnAutoPageOff() : Boolean {
+        if (autoPage) {
+            currentInstructionIndex = pager?.getCurrentItem() as Int
+        }
+        autoPage = false
+        return false
+    }
+
+    private fun resumeAutoPaging() {
+        pager?.setCurrentItem(currentInstructionIndex)
+        setCurrentPagerItemStyling(currentInstructionIndex)
+        autoPage = true
+    }
+
+    private fun setCurrentPagerItemStyling(position : Int) {
+        var lastItemIndex = (pager?.getAdapter() as InstructionAdapter).getCount() - 1
+        var itemsUntilLastInstruction = (lastItemIndex - position)
+        if(itemsUntilLastInstruction ==  1) {
+            (pager?.getAdapter() as InstructionAdapter)
+                    .setBackgroundColorArrived(findViewByIndex(position + 1))
+        }
+        if(autoPage) {
+            (pager?.getAdapter() as InstructionAdapter)
+                    .setBackgroundColorActive(findViewByIndex(position))
+        } else {
+            if(position == lastItemIndex) {
+                (pager?.getAdapter() as InstructionAdapter)
+                        .setBackgroundColorArrived(findViewByIndex(position))
+            } else {
+                (pager?.getAdapter() as InstructionAdapter)
+                        .setBackgroundColorInactive(findViewByIndex(position))
+            }
+        }
+    }
+
+    public fun findViewByIndex(index: Int): View? {
+        return pager?.findViewWithTag(VIEW_TAG + index)
+    }
+
+    /**
+     * Route engine callback object
+     */
     inner class RouteModeListener : RouteEngine.RouteListener {
         private val TAG: String = "RouteListener"
         public var debug: Boolean = true
@@ -122,10 +140,15 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener{
         override fun onUpdateDistance(distanceToNextInstruction: Int, distanceToDestination: Int) {
             log("[onUpdateDistance]", "distanceToNextInstruction = " + distanceToNextInstruction
                     + " | " + "distanceToDestination = " + distanceToDestination)
+            val distanceView = findViewByIndex(currentInstructionIndex)?.findViewById(R.id.distance)
+            (distanceView as DistanceView).distanceInMeters = distanceToNextInstruction
+            (findViewById(R.id.destination_distance) as DistanceView).distanceInMeters = distanceToDestination
         }
 
         override fun onInstructionComplete(index: Int) {
             log("[onInstructionComplete]", index)
+            currentInstructionIndex += 1
+            pager?.setCurrentItem(currentInstructionIndex)
         }
 
         override fun onRecalculate(location: Location?) {
