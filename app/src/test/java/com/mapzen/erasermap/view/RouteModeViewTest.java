@@ -62,6 +62,12 @@ public class RouteModeViewTest {
     }
 
     @Test
+    public void onRestoreViewState_shouldRestoreRoutingVide() {
+        startActivity.getPresenter().onRestoreViewState();
+        assertThat(routeModeView.getVisibility()).isEqualTo(View.VISIBLE);
+    }
+
+    @Test
     public void defaultInstruction_shouldHaveTransparentGrayBackground() throws Exception {
         View view = (View) adapter.instantiateItem(viewGroup, 0);
         ColorDrawable background = (ColorDrawable) view.findViewById(R.id.pager_item_instruction)
@@ -182,29 +188,6 @@ public class RouteModeViewTest {
         assertThat(routeModeView.getRouteEngine()).isNotNull();
     }
 
-    @Test
-    public void expandedPane_shouldShowDirectionListFragment() {
-        assertThat(routeModeView.getSlideLayout()
-                .findViewById(R.id.instruction_list_view).getVisibility()).isEqualTo(
-                View.VISIBLE);
-        simulatePaneCloseSlide();
-        routeModeView.expandSlideLayout();
-        System.out.println(routeModeView.getSlideLayout().getPanelHeight());
-
-        assertThat(routeModeView.getSlideLayout()
-                .findViewById(R.id.instruction_list_view).findViewById(R.id.from_text)).isEqualTo(
-                "asdf");
-    }
-
-    private void simulatePaneOpenSlide() {
-        routeModeView.getPanelSlideListener().onPanelSlide(routeModeView.getSlideLayout(),
-                1f);
-    }
-
-    private void simulatePaneCloseSlide() {
-        routeModeView.getPanelSlideListener().onPanelSlide(routeModeView.getSlideLayout(),
-                ( routeModeView.getSLIDING_PANEL_OFFSET_OPEN() + 1));
-    }
 
     class TestViewGroup extends ViewGroup {
         public TestViewGroup(Context context) {

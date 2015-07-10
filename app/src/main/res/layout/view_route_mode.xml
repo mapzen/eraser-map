@@ -73,18 +73,15 @@
                     android:textSize="@dimen/font_small" />
 
             </RelativeLayout>
-            <ListView
-                android:id="@+id/instruction_list_view_route_mode"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/transparent_white"
-                android:layout_below="@+id/footer"/>
 
-            <include layout="@layout/activity_instructions"
+
+        <include layout="@layout/activity_instructions"
                 android:layout_below="@id/footer"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content" />
-    </RelativeLayout>
+
+        </RelativeLayout>
 
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
 </LinearLayout>

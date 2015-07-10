@@ -2,7 +2,6 @@ package com.mapzen.erasermap.view
 
 import android.content.Context
 import android.location.Location
-import android.os.Bundle
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.util.AttributeSet
@@ -101,24 +100,25 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
 
     public fun getPanelSlideListener(view : View):SlidingUpPanelLayout.PanelSlideListener {
         return (object:SlidingUpPanelLayout.PanelSlideListener {
+
             public override fun onPanelSlide(panel:View, slideOffset:Float) {
                 if (slideOffset >=  SLIDING_PANEL_OFFSET_OPEN) {
                     showDirectionList(view);
                 }
+
                 if (slideOffset <  SLIDING_PANEL_OFFSET_OPEN) {
                     findViewById(R.id.footer).setVisibility(View.VISIBLE)
                     slideLayout?.setDragView(view.findViewById(R.id.drag_area))
                 }
             }
 
-            public override fun onPanelExpanded(panel:View) {
-            }
+            public override fun onPanelExpanded(panel:View) { }
 
-            public override fun onPanelCollapsed(panel: View) {
-            }
+            public override fun onPanelCollapsed(panel: View) { }
 
-            public override fun onPanelAnchored(panel:View) {}
-            public override fun onPanelHidden(view:View) {}
+            public override fun onPanelAnchored(panel:View) { }
+
+            public override fun onPanelHidden(view:View) { }
         })
     }
 
@@ -150,13 +150,13 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         findViewById(R.id.route_reverse).setVisibility(View.GONE)
         slideLayout?.setDragView(view.findViewById(R.id.instruction_route_header))
         setHeaderOrigins()
-
     }
+
     private fun setHeaderOrigins() {
-            (findViewById(R.id.starting_point) as TextView).setText(R.string.current_location)
-            (findViewById(R.id.destination) as TextView).setText((findViewById(R.id.destination_name) as TextView).getText())
-            findViewById(R.id.starting_location_icon).setVisibility(View.VISIBLE)
-            findViewById(R.id.destination_location_icon).setVisibility(View.GONE)
+        (findViewById(R.id.starting_point) as TextView).setText(R.string.current_location)
+        (findViewById(R.id.destination) as TextView).setText((findViewById(R.id.destination_name) as TextView).getText())
+        findViewById(R.id.starting_location_icon).setVisibility(View.VISIBLE)
+        findViewById(R.id.destination_location_icon).setVisibility(View.GONE)
     }
 
     public fun collapseSlideLayout() {
@@ -196,19 +196,19 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         var lastItemIndex = (pager?.getAdapter() as InstructionAdapter).getCount() - 1
         var itemsUntilLastInstruction = (lastItemIndex - position)
         if(itemsUntilLastInstruction ==  1) {
-            (pager?.getAdapter() as InstructionAdapter)
-                    .setBackgroundColorArrived(findViewByIndex(position + 1))
+            (pager?.getAdapter() as InstructionAdapter).setBackgroundColorArrived(
+                    pager?.findViewWithTag("Instruction_" + (position + 1)))
         }
         if(autoPage) {
-            (pager?.getAdapter() as InstructionAdapter)
-                    .setBackgroundColorActive(findViewByIndex(position))
+            (pager?.getAdapter() as InstructionAdapter).setBackgroundColorActive(
+                    pager?.findViewWithTag("Instruction_" + position))
         } else {
             if(position == lastItemIndex) {
-                (pager?.getAdapter() as InstructionAdapter)
-                        .setBackgroundColorArrived(findViewByIndex(position))
+                (pager?.getAdapter() as InstructionAdapter).setBackgroundColorArrived(
+                        pager?.findViewWithTag("Instruction_" + position))
             } else {
-                (pager?.getAdapter() as InstructionAdapter)
-                        .setBackgroundColorInactive(findViewByIndex(position))
+                (pager?.getAdapter() as InstructionAdapter).setBackgroundColorInactive(
+                        pager?.findViewWithTag("Instruction_" + position))
             }
         }
     }

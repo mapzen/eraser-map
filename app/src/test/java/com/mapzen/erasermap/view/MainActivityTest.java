@@ -29,6 +29,7 @@ import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
+import android.view.View;
 
 import java.util.ArrayList;
 
@@ -249,6 +250,16 @@ public class MainActivityTest {
     }
 
     @Test
+    public void onRestoreViewState_shouldRestoreRoutingPreview() {
+        activity.findViewById(R.id.route_preview).setVisibility(GONE);
+        activity.showRoutePreview(getTestFeature());
+        activity.success(new Route(new JSONObject()));
+        Robolectric.flushForegroundScheduler();
+        activity.getPresenter().onRestoreViewState();
+        assertThat(activity.findViewById(R.id.route_preview).getVisibility()).isEqualTo(VISIBLE);
+    }
+
+    @Test
     public void hideRoutePreview_shouldShowActionBar() throws Exception {
         activity.getSupportActionBar().hide();
         activity.hideRoutePreview();
@@ -288,7 +299,6 @@ public class MainActivityTest {
         activity.setReverse(true);
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
-        assertThat(activity.findViewById(R.id.instruction_list_view)).isNull();
         activity.findViewById(R.id.routing_circle).performClick();
         ShadowActivity shadowActivity = shadowOf(activity);
         Intent startedIntent = shadowActivity.getNextStartedActivity();

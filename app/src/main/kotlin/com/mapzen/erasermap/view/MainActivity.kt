@@ -22,7 +22,6 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.PrivateMapsApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.presenter.MainPresenter
-import com.mapzen.erasermap.util.DouglasPeuckerReducer
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.SavedSearch
@@ -34,7 +33,6 @@ import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapView
-import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
 import com.squareup.okhttp.Cache
@@ -54,7 +52,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
 
     private var route: Route? = null;
     var locationClient: LostApiClient? = null
-    @Inject set
+        @Inject set
     var tileCache: Cache? = null
     @Inject set
     var savedSearch: SavedSearch? = null
@@ -364,17 +362,17 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         this.destination = feature
         route()
     }
+
     override fun success(route: Route?) {
         this.route = route;
-        runOnUiThread({
+        presenter?.route = route;
+        runOnUiThread   ({
             if( findViewById(R.id.route_mode).getVisibility() != View.VISIBLE) {
                 getSupportActionBar()?.hide()
                 findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
                 (findViewById(R.id.route_preview) as RoutePreviewView).destination =
                         SimpleFeature.fromFeature(destination);
                 (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
-            } else {
-                (findViewById(R.id.route_mode) as RouteModeView).route = route;
             }
         })
         updateRoutePreview()
@@ -410,7 +408,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         }
     }
 
-    fun  updateRoutePreview() {
+    fun updateRoutePreview() {
         (findViewById(R.id.by_car) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
                 type = Router.Type.DRIVING
@@ -485,23 +483,29 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         startActivityForResult(intent, requestCodeSearchResults)
     }
 
-    override fun showRoutingMode(feature : Feature) {
+    override fun showRoutingMode(feature: Feature) {
+        getSupportActionBar()?.hide()
         presenter?.routingEnabled = true
-        //this.destination = feature
+        this.destination = feature
         val routeModeView = findViewById(R.id.route_mode) as RouteModeView
         reverse = false
         findViewById(R.id.route_preview).setVisibility(View.GONE)
         findViewById(R.id.route_mode).setVisibility(View.VISIBLE)
-        route()
 
-        val simpleFeature = SimpleFeature.fromFeature(destination)
+        if(presenter?.route == null) {
+            route()
+        } else {
+            this.route = presenter?.route
+        }
 
         val pager = findViewById(R.id.route_mode) as RouteModeView
-        val adapter = InstructionAdapter(this, route!!.getRouteInstructions(), pager)
         pager.route = this.route
         pager.routeEngine?.setRoute(route)
+        val adapter = InstructionAdapter(this, route!!.getRouteInstructions(), pager)
         pager.setAdapter(adapter)
         pager.setVisibility(View.VISIBLE)
+
+        val simpleFeature = SimpleFeature.fromFeature(destination)
         (findViewById(R.id.destination_name) as TextView).setText(simpleFeature.toString())
     }
 

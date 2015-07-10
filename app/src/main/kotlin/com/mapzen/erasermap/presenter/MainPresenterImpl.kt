@@ -1,25 +1,22 @@
 package com.mapzen.erasermap.presenter
 
-import android.util.Log
-import android.widget.Toast
 import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.view.ViewController
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
-import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
-import java.util.*
 
 public class MainPresenterImpl() : MainPresenter {
-    override var routingEnabled: Boolean = false;
+    override var route: Route? = null;
+    override var routingEnabled : Boolean = false
     override var viewController: ViewController? = null
     override var currentSearchTerm: String? = null
     override var bus: Bus? = null
-    set(bus) {
-        bus?.register(this)
-    }
+        set(bus) {
+            bus?.register(this)
+        }
 
     private var searchResults: Result? = null
     private var destination: Feature? = null
@@ -45,8 +42,8 @@ public class MainPresenterImpl() : MainPresenter {
             }
         } else {
             if (searchResults != null) {
-            viewController?.showSearchResults(searchResults?.getFeatures())
-        }
+                viewController?.showSearchResults(searchResults?.getFeatures())
+            }
         }
     }
 
