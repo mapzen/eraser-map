@@ -364,12 +364,6 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         this.destination = feature
         route()
     }
-
-    override fun handleOrientationChange(feature: Feature) {
-            showRoutePreview(feature)
-        }
-
-
     override fun success(route: Route?) {
         this.route = route;
         runOnUiThread({
@@ -379,6 +373,8 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
                 (findViewById(R.id.route_preview) as RoutePreviewView).destination =
                         SimpleFeature.fromFeature(destination);
                 (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
+            } else {
+                (findViewById(R.id.route_mode) as RouteModeView).route = route;
             }
         })
         updateRoutePreview()
@@ -414,7 +410,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         }
     }
 
-    fun     updateRoutePreview() {
+    fun  updateRoutePreview() {
         (findViewById(R.id.by_car) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
                 type = Router.Type.DRIVING
@@ -490,16 +486,18 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
     override fun showRoutingMode(feature : Feature) {
-        this.destination = feature
+        presenter?.routingEnabled = true
+        //this.destination = feature
         val routeModeView = findViewById(R.id.route_mode) as RouteModeView
         reverse = false
         findViewById(R.id.route_preview).setVisibility(View.GONE)
         findViewById(R.id.route_mode).setVisibility(View.VISIBLE)
         route()
 
+        val simpleFeature = SimpleFeature.fromFeature(destination)
+
         val pager = findViewById(R.id.route_mode) as RouteModeView
         val adapter = InstructionAdapter(this, route!!.getRouteInstructions(), pager)
-        val simpleFeature = SimpleFeature.fromFeature(destination)
         pager.route = this.route
         pager.routeEngine?.setRoute(route)
         pager.setAdapter(adapter)
@@ -508,6 +506,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
     override fun hideRoutingMode() {
+        presenter?.routingEnabled = false
         val routeModeView = findViewById(R.id.route_mode) as RouteModeView
         if ( routeModeView.slideLayoutIsExpanded()) {
             routeModeView.collapseSlideLayout()

@@ -13,6 +13,7 @@ import com.squareup.otto.Subscribe
 import java.util.*
 
 public class MainPresenterImpl() : MainPresenter {
+    override var routingEnabled: Boolean = false;
     override var viewController: ViewController? = null
     override var currentSearchTerm: String? = null
     override var bus: Bus? = null
@@ -37,7 +38,11 @@ public class MainPresenterImpl() : MainPresenter {
 
     override fun onRestoreViewState() {
         if (destination != null) {
-                viewController?.handleOrientationChange(destination!!)
+            if(routingEnabled) {
+                viewController?.showRoutingMode(destination!!)
+            } else {
+                viewController?.showRoutePreview(destination!!)
+            }
         } else {
             if (searchResults != null) {
             viewController?.showSearchResults(searchResults?.getFeatures())

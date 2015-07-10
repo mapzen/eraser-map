@@ -22,5 +22,4 @@ public interface ViewController {
     public fun hideRoutingMode()
     public fun showRoutingMode(feature: Feature)
     public fun shutDown()
-    public fun handleOrientationChange(feature: Feature)
 }

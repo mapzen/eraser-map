@@ -8,6 +8,7 @@ public interface MainPresenter {
     public var currentSearchTerm: String?
     public var viewController: ViewController?
     public var bus: Bus?
+    public var routingEnabled: Boolean
 
     public fun onSearchResultsAvailable(result: Result?)
     public fun onSearchResultSelected(position: Int)
