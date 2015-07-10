@@ -153,6 +153,12 @@ public class MainPresenterTest {
         assertThat(controller.isRoutingModeVisible).isTrue();
     }
 
+    @Test
+    public void onResumeRouting_shouldCenterMapOnCurrentLocation() throws Exception {
+        presenter.onResumeRouting();
+        assertThat(controller.isCenteredOnCurrentLocation).isTrue();
+    }
+
     private class TestViewController implements ViewController {
         private List<Feature> searchResults;
         private boolean isProgressVisible;
@@ -162,6 +168,7 @@ public class MainPresenterTest {
         private boolean isRoutePreviewVisible;
         private boolean isDirectionListVisible;
         private boolean isRoutingModeVisible;
+        private boolean isCenteredOnCurrentLocation;
 
         @Override public void showSearchResults(@NotNull List<? extends Feature> features) {
             searchResults = (List<Feature>) features;
@@ -216,13 +223,24 @@ public class MainPresenterTest {
         @Override public void shutDown() {
         }
 
-        @Override
-        public void showDirectionList() { isDirectionListVisible = true; }
+        @Override public void showDirectionList() {
+            isDirectionListVisible = true;
+        }
 
-        @Override
-        public void hideRoutingMode() { isRoutingModeVisible = false; }
+        @Override public void hideRoutingMode() {
+            isRoutingModeVisible = false;
+        }
 
-        @Override
-        public void showRoutingMode(@NotNull Feature feature) { isRoutingModeVisible = true; }
+        @Override public void showRoutingMode(@NotNull Feature feature) {
+            isRoutingModeVisible = true;
+        }
+
+        @Override public void centerMapOnCurrentLocation() {
+            isCenteredOnCurrentLocation = true;
+        }
+
+        @Override public void centerMapOnCurrentLocation(float zoom) {
+            isCenteredOnCurrentLocation = true;
+        }
     }
 }

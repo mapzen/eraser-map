@@ -74,6 +74,16 @@
 
             </RelativeLayout>
 
+            <ImageButton
+                android:id="@+id/resume"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_above="@id/footer"
+                android:src="@android:drawable/ic_menu_compass" />
+
             <include layout="@layout/activity_instructions"
                 android:layout_below="@id/footer"
                 android:layout_height="wrap_content"

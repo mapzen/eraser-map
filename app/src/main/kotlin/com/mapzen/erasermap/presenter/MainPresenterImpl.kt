@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.presenter
 
 import com.mapzen.erasermap.model.RoutePreviewEvent
+import com.mapzen.erasermap.view.MainActivity
 import com.mapzen.erasermap.view.ViewController
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
@@ -97,5 +98,9 @@ public class MainPresenterImpl() : MainPresenter {
         } else {
             viewController?.showRoutingMode(destination!!)
         }
+    }
+
+    override fun onResumeRouting() {
+        viewController?.centerMapOnCurrentLocation(MainActivity.ROUTING_ZOOM)
     }
 }

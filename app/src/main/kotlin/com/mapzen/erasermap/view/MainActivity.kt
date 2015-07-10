@@ -45,6 +45,11 @@ import javax.inject.Inject
 
 public class MainActivity : AppCompatActivity(), ViewController, Router.Callback,
         SearchResultsView.OnSearchResultSelectedListener {
+    companion object {
+        val DEFAULT_ZOOM: Float = 14f
+        val ROUTING_ZOOM: Float = 17f
+    }
+
     private val LOCATION_UPDATE_INTERVAL_IN_MS: Long = 1000L
     private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT: Float = 0f
 
@@ -83,7 +88,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         initAutoCompleteAdapter()
         initFindMeButton()
         initReverseButton()
-        centerOnCurrentLocation()
+        centerMapOnCurrentLocation()
         presenter?.onRestoreViewState()
     }
 
@@ -129,7 +134,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
     private fun initFindMeButton() {
-        findViewById(R.id.find_me).setOnClickListener({ centerOnCurrentLocation() })
+        findViewById(R.id.find_me).setOnClickListener({ centerMapOnCurrentLocation() })
     }
 
     private fun initLocationUpdates() {
@@ -146,16 +151,30 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         LocationServices.FusedLocationApi?.requestLocationUpdates(locationRequest) {
             location: Location -> currentLocation = location
             val routeModeView = findViewById(R.id.route_mode) as RouteModeView
-            routeModeView.onLocationChanged(location)
+            if (routeModeView != null && routeModeView.getVisibility() == View.VISIBLE) {
+                routeModeView.onLocationChanged(location)
+                centerMapOnLocation(location, ROUTING_ZOOM)
+            }
         }
     }
 
-    private fun centerOnCurrentLocation() {
+    override fun centerMapOnCurrentLocation() {
+        centerMapOnCurrentLocation(DEFAULT_ZOOM)
+    }
+
+    override fun centerMapOnCurrentLocation(zoom: Float) {
         val location = LocationServices.FusedLocationApi?.getLastLocation()
         if (location != null) {
             currentLocation = location
-            mapController?.setMapPosition(location.getLongitude(), location.getLatitude())
+            centerMapOnLocation(location, zoom)
         }
+    }
+
+    public fun centerMapOnLocation(location: Location, zoom: Float) {
+        mapController?.setMapPosition(location.getLongitude(), location.getLatitude())
+        mapController?.setMapZoom(zoom)
+        mapController?.setMapRotation(0f)
+        mapController?.setMapTilt(0f)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -457,7 +476,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
 
     override fun onBackPressed() {
         presenter?.onBackPressed()
-        centerOnCurrentLocation()
+        centerMapOnCurrentLocation()
     }
 
     override fun shutDown() {
@@ -484,13 +503,20 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
     override fun showRoutingMode(feature: Feature) {
+        val startingLocation = route?.getRouteInstructions()?.get(0)?.location
+        if (startingLocation is Location) {
+            centerMapOnLocation(startingLocation, ROUTING_ZOOM)
+        }
+
+        findViewById(R.id.find_me).setVisibility(View.GONE)
         getSupportActionBar()?.hide()
         presenter?.routingEnabled = true
         this.destination = feature
         reverse = false
         findViewById(R.id.route_preview).setVisibility(View.GONE)
         findViewById(R.id.route_mode).setVisibility(View.VISIBLE)
-
+        (findViewById(R.id.route_mode) as RouteModeView).presenter = presenter
+        
         if(presenter?.route == null) {
             route()
         } else {
@@ -511,10 +537,12 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     override fun hideRoutingMode() {
         presenter?.routingEnabled = false
         val routeModeView = findViewById(R.id.route_mode) as RouteModeView
+
         if (routeModeView.slideLayoutIsExpanded()) {
             routeModeView.collapseSlideLayout()
         } else {
             findViewById(R.id.route_mode).setVisibility(View.GONE)
+            findViewById(R.id.find_me).setVisibility(View.VISIBLE)
             showRoutePreview(this.destination as Feature)
             getSupportActionBar()?.hide()
             routeModeView.route = null
