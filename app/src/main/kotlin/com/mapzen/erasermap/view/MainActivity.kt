@@ -365,6 +365,11 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         route()
     }
 
+    override fun handleOrientationChange(feature: Feature) {
+            showRoutePreview(feature)
+        }
+
+
     override fun success(route: Route?) {
         this.route = route;
         runOnUiThread({
@@ -384,9 +389,11 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
     override fun hideRoutePreview() {
-        getSupportActionBar()?.show()
-        reverse = false
-        findViewById(R.id.route_preview).setVisibility(View.GONE)
+        if((findViewById(R.id.route_mode) as RouteModeView).getVisibility() != View.VISIBLE) {
+            getSupportActionBar()?.show()
+            reverse = false
+            findViewById(R.id.route_preview).setVisibility(View.GONE)
+        }
     }
 
     fun route() {
@@ -407,7 +414,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         }
     }
 
-    fun updateRoutePreview() {
+    fun     updateRoutePreview() {
         (findViewById(R.id.by_car) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
                 type = Router.Type.DRIVING
@@ -482,7 +489,9 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         startActivityForResult(intent, requestCodeSearchResults)
     }
 
-    override fun showRoutingMode() {
+    override fun showRoutingMode(feature : Feature) {
+        this.destination = feature
+        val routeModeView = findViewById(R.id.route_mode) as RouteModeView
         reverse = false
         findViewById(R.id.route_preview).setVisibility(View.GONE)
         findViewById(R.id.route_mode).setVisibility(View.VISIBLE)
@@ -499,11 +508,17 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
     override fun hideRoutingMode() {
-        findViewById(R.id.route_mode).setVisibility(View.GONE)
-        findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
-        getSupportActionBar()?.hide()
         val routeModeView = findViewById(R.id.route_mode) as RouteModeView
-        routeModeView.route = null
+        if ( routeModeView.slideLayoutIsExpanded()) {
+            routeModeView.collapseSlideLayout()
+        } else {
+            if(routeModeView.route != null) {
+                findViewById(R.id.route_mode).setVisibility(View.GONE)
+                findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
+                getSupportActionBar()?.hide()
+                routeModeView.route = null
+            }
+        }
     }
 
     private fun getInitializedRouter(): Router {

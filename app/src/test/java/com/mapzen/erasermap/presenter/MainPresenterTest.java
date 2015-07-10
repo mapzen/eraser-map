@@ -147,7 +147,7 @@ public class MainPresenterTest {
     }
 
     @Test
-    public void onRoutingCircleClick_shouldMakeRouingModeVisible() {
+    public void onRoutingCircleClick_shouldMakeRoutingModeVisible() {
         presenter.onRoutingCircleClick(false);
         assertThat(controller.isRoutingModeVisible).isTrue();
     }
@@ -222,6 +222,13 @@ public class MainPresenterTest {
         public void hideRoutingMode() { isRoutingModeVisible = false; }
 
         @Override
-        public void showRoutingMode() { isRoutingModeVisible = true; }
+        public void showRoutingMode(@NotNull Feature feature) { isRoutingModeVisible = true; }
+
+
+        @Override public void handleOrientationChange(
+                @NotNull
+                Feature feature) {
+
+        }
     }
 }

@@ -300,7 +300,7 @@ public class MainActivityTest {
     public void showRoutingMode_shouldSetRoute() throws Exception {
         activity.setDestination(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
-        activity.showRoutingMode();
+        activity.showRoutingMode(getTestFeature());
         RouteModeView routeModeView = (RouteModeView) activity.findViewById(R.id.route_mode);
         assertThat(routeModeView.getRoute()).isNotNull();
     }

@@ -1,10 +1,13 @@
 package com.mapzen.erasermap.presenter
 
+import android.util.Log
+import android.widget.Toast
 import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.view.ViewController
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.valhalla.Instruction
+import com.mapzen.valhalla.Route
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 import java.util.*
@@ -34,9 +37,11 @@ public class MainPresenterImpl() : MainPresenter {
 
     override fun onRestoreViewState() {
         if (destination != null) {
-            viewController?.showRoutePreview(destination!!);
-        } else if (searchResults != null) {
+                viewController?.handleOrientationChange(destination!!)
+        } else {
+            if (searchResults != null) {
             viewController?.showSearchResults(searchResults?.getFeatures())
+        }
         }
     }
 
@@ -72,10 +77,9 @@ public class MainPresenterImpl() : MainPresenter {
     }
 
     override fun onBackPressed() {
-        if (destination != null) {
+        if (destination != null ) {
             viewController?.hideRoutePreview()
             viewController?.hideRoutingMode()
-            destination = null
         } else {
             viewController?.shutDown()
         }
@@ -85,7 +89,7 @@ public class MainPresenterImpl() : MainPresenter {
         if(reverse) {
             viewController?.showDirectionList()
         } else {
-            viewController?.showRoutingMode()
+            viewController?.showRoutingMode(destination!!)
         }
     }
 }
