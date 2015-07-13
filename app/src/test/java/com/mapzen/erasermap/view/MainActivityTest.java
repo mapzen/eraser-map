@@ -1,15 +1,6 @@
 package com.mapzen.erasermap.view;
 
-import com.mapzen.android.lost.api.LocationServices;
-import com.mapzen.erasermap.BuildConfig;
-import com.mapzen.erasermap.PrivateMapsTestRunner;
-import com.mapzen.erasermap.R;
-import com.mapzen.pelias.SavedSearch;
-import com.mapzen.pelias.gson.Feature;
-import com.mapzen.pelias.widget.PeliasSearchView;
-import com.mapzen.tangram.MapView;
-import com.mapzen.valhalla.Route;
-import com.mapzen.valhalla.Router;
+import java.util.ArrayList;
 
 import org.json.JSONObject;
 import org.junit.Before;
@@ -30,7 +21,16 @@ import android.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 
-import java.util.ArrayList;
+import com.mapzen.android.lost.api.LocationServices;
+import com.mapzen.erasermap.BuildConfig;
+import com.mapzen.erasermap.PrivateMapsTestRunner;
+import com.mapzen.erasermap.R;
+import com.mapzen.pelias.SavedSearch;
+import com.mapzen.pelias.gson.Feature;
+import com.mapzen.pelias.widget.PeliasSearchView;
+import com.mapzen.tangram.MapView;
+import com.mapzen.valhalla.Route;
+import com.mapzen.valhalla.Router;
 
 import static android.content.Context.LOCATION_SERVICE;
 import static android.view.View.GONE;
@@ -249,6 +249,16 @@ public class MainActivityTest {
     }
 
     @Test
+    public void onRestoreViewState_shouldRestoreRoutingPreview() {
+        activity.findViewById(R.id.route_preview).setVisibility(GONE);
+        activity.showRoutePreview(getTestFeature());
+        activity.success(new Route(new JSONObject()));
+        Robolectric.flushForegroundScheduler();
+        activity.getPresenter().onRestoreViewState();
+        assertThat(activity.findViewById(R.id.route_preview).getVisibility()).isEqualTo(VISIBLE);
+    }
+
+    @Test
     public void hideRoutePreview_shouldShowActionBar() throws Exception {
         activity.getSupportActionBar().hide();
         activity.hideRoutePreview();
@@ -288,7 +298,6 @@ public class MainActivityTest {
         activity.setReverse(true);
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
-        assertThat(activity.findViewById(R.id.instruction_list_view)).isNull();
         activity.findViewById(R.id.routing_circle).performClick();
         ShadowActivity shadowActivity = shadowOf(activity);
         Intent startedIntent = shadowActivity.getNextStartedActivity();
@@ -300,13 +309,14 @@ public class MainActivityTest {
     public void showRoutingMode_shouldSetRoute() throws Exception {
         activity.setDestination(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
-        activity.showRoutingMode();
+        activity.showRoutingMode(getTestFeature());
         RouteModeView routeModeView = (RouteModeView) activity.findViewById(R.id.route_mode);
         assertThat(routeModeView.getRoute()).isNotNull();
     }
 
     @Test
     public void hideRoutingMode_shouldClearRoute() throws Exception {
+        activity.showRoutePreview(getTestFeature());
         RouteModeView routeModeView = (RouteModeView) activity.findViewById(R.id.route_mode);
         routeModeView.setRoute(new Route(getFixture("valhalla_route")));
         activity.hideRoutingMode();

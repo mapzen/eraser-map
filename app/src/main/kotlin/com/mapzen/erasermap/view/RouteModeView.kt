@@ -9,22 +9,27 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.ListView
 import android.widget.TextView
 import com.mapzen.erasermap.PrivateMapsApplication
 import com.mapzen.erasermap.R
-import com.mapzen.helpers.DistanceFormatter
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Route
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
+import java.util.ArrayList
 import javax.inject.Inject
 
 public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
     companion object {
         val VIEW_TAG: String = "Instruction_"
     }
+    public val SLIDING_PANEL_OFFSET_OPEN: Float = 0.1f
 
     var pager: ViewPager? = null
     var autoPage: Boolean = true
     var route: Route? = null
+    var slideLayout: SlidingUpPanelLayout? = null
+    var panelListener: SlidingUpPanelLayout.PanelSlideListener? = null
     var routeEngine: RouteEngine? = null
     @Inject set
     var routeListener: RouteModeListener = RouteModeListener()
@@ -49,6 +54,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_mode, this, true)
         routeEngine?.setListener(routeListener)
+        initSlideLayout(findViewById(R.id.sliding_layout))
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
@@ -84,6 +90,84 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
 
     public fun pageBackwards(position: Int) {
         pager?.setCurrentItem(position - 1)
+    }
+
+    public fun initSlideLayout(view: View) {
+        slideLayout = view as SlidingUpPanelLayout
+        slideLayout?.setDragView(view.findViewById(R.id.drag_area))
+        panelListener = getPanelSlideListener(view)
+        slideLayout?.setPanelSlideListener(panelListener)
+    }
+
+    public fun getPanelSlideListener(view : View):SlidingUpPanelLayout.PanelSlideListener {
+        return (object:SlidingUpPanelLayout.PanelSlideListener {
+
+            public override fun onPanelSlide(panel:View, slideOffset:Float) {
+                if (slideOffset >=  SLIDING_PANEL_OFFSET_OPEN) {
+                    showDirectionList(view);
+                }
+
+                if (slideOffset <  SLIDING_PANEL_OFFSET_OPEN) {
+                    findViewById(R.id.footer).setVisibility(View.VISIBLE)
+                    slideLayout?.setDragView(view.findViewById(R.id.drag_area))
+                }
+            }
+
+            public override fun onPanelExpanded(panel:View) { }
+
+            public override fun onPanelCollapsed(panel: View) { }
+
+            public override fun onPanelAnchored(panel:View) { }
+
+            public override fun onPanelHidden(view:View) { }
+        })
+    }
+
+    private fun showDirectionList(view : View)  {
+        findViewById(R.id.footer).setVisibility(View.GONE)
+        val listView = findViewById(R.id.instruction_list_view) as ListView
+        val instructionStrings = ArrayList<String>()
+        val instructionType= ArrayList<Int>()
+        val instructionDistance= ArrayList<Int>()
+        if(route != null) {
+            for (instruction in route!!.getRouteInstructions() ) {
+                instructionStrings.add(instruction.getHumanTurnInstruction())
+                instructionType.add(instruction.turnInstruction)
+                instructionDistance.add(instruction.distance)
+            }
+            listView.setAdapter(
+                    DirectionListAdapter(listView.getContext(),
+                            instructionStrings,
+                            instructionType, instructionDistance, false))
+        }
+        listView.setOnItemClickListener { adapterView, view, i, l ->
+            collapseSlideLayout()
+            pager?.setCurrentItem(i - 1)
+        }
+        findViewById(R.id.route_reverse).setVisibility(View.GONE)
+        slideLayout?.setDragView(view.findViewById(R.id.instruction_route_header))
+        setHeaderOrigins()
+    }
+
+    private fun setHeaderOrigins() {
+        (findViewById(R.id.starting_point) as TextView).setText(R.string.current_location)
+        (findViewById(R.id.destination) as TextView).setText((findViewById(R.id.destination_name) as TextView).getText())
+        findViewById(R.id.starting_location_icon).setVisibility(View.VISIBLE)
+        findViewById(R.id.destination_location_icon).setVisibility(View.GONE)
+    }
+
+    public fun collapseSlideLayout() {
+        if (slideLayoutIsExpanded()) {
+            slideLayout?.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        }
+    }
+
+    public fun slideLayoutIsExpanded() : Boolean {
+        return slideLayout?.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED;
+    }
+
+    public fun slideLayoutIsCollapsed() : Boolean {
+        return slideLayout?.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED;
     }
 
     private fun turnAutoPageOff() : Boolean {

@@ -1,9 +1,9 @@
 package com.mapzen.erasermap.view;
 
-import com.mapzen.erasermap.BuildConfig;
-import com.mapzen.erasermap.PrivateMapsTestRunner;
-import com.mapzen.erasermap.R;
-import com.mapzen.valhalla.Route;
+import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
+import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.robolectric.RuntimeEnvironment.application;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,10 +20,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
-import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.robolectric.RuntimeEnvironment.application;
+import com.mapzen.erasermap.BuildConfig;
+import com.mapzen.erasermap.PrivateMapsTestRunner;
+import com.mapzen.erasermap.R;
+import com.mapzen.valhalla.Route;
 
 @RunWith(PrivateMapsTestRunner.class)
 @Config(constants = BuildConfig.class, emulateSdk = 21)
@@ -33,12 +33,13 @@ public class RouteModeViewTest {
     private static MainActivity startActivity = Robolectric.setupActivity(MainActivity.class);
     private ViewGroup viewGroup;
 
+
     @Before
     public void setUp() throws Exception {
         startActivity.setReverse(false);
         startActivity.showRoutePreview(getTestFeature());
         startActivity.success(new Route(getFixture("valhalla_route")));
-        startActivity.findViewById(R.id.routing_circle).performClick();
+        startActivity.showRoutingMode(getTestFeature());
         routeModeView = (RouteModeView) startActivity.findViewById(R.id.route_mode);
         adapter = (InstructionAdapter) ((ViewPager) startActivity
                 .findViewById(R.id.instruction_pager)).getAdapter();
@@ -58,6 +59,12 @@ public class RouteModeViewTest {
     @Test
     public void adapter_ShouldNotBeNull() throws Exception {
         assertThat(adapter).isNotNull();
+    }
+
+    @Test
+    public void onRestoreViewState_shouldRestoreRoutingView() {
+        startActivity.getPresenter().onRestoreViewState();
+        assertThat(routeModeView.getVisibility()).isEqualTo(View.VISIBLE);
     }
 
     @Test
@@ -180,6 +187,7 @@ public class RouteModeViewTest {
     public void shouldInjectRouteEngine() throws Exception {
         assertThat(routeModeView.getRouteEngine()).isNotNull();
     }
+
 
     class TestViewGroup extends ViewGroup {
         public TestViewGroup(Context context) {

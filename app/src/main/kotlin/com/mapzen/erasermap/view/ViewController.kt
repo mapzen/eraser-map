@@ -20,6 +20,6 @@ public interface ViewController {
     public fun showRoutePreview(feature: Feature)
     public fun hideRoutePreview()
     public fun hideRoutingMode()
-    public fun showRoutingMode()
+    public fun showRoutingMode(feature: Feature)
     public fun shutDown()
 }

@@ -22,7 +22,6 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.PrivateMapsApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.presenter.MainPresenter
-import com.mapzen.erasermap.util.DouglasPeuckerReducer
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.SavedSearch
@@ -34,7 +33,6 @@ import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapView
-import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
 import com.squareup.okhttp.Cache
@@ -54,15 +52,15 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
 
     private var route: Route? = null;
     var locationClient: LostApiClient? = null
-    @Inject set
+      @Inject set
     var tileCache: Cache? = null
-    @Inject set
+      @Inject set
     var savedSearch: SavedSearch? = null
-    @Inject set
+      @Inject set
     var presenter: MainPresenter? = null
-    @Inject set
+      @Inject set
     var bus: Bus? = null
-    @Inject set
+      @Inject set
 
     var app: PrivateMapsApplication? = null
     var mapController : MapController? = null
@@ -363,17 +361,18 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     override fun showRoutePreview(feature: Feature) {
         this.destination = feature
         route()
+        (findViewById(R.id.route_preview) as RoutePreviewView).destination =
+                SimpleFeature.fromFeature(destination);
+        (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
     }
 
     override fun success(route: Route?) {
         this.route = route;
-        runOnUiThread({
+        presenter?.route = route;
+        runOnUiThread   ({
             if( findViewById(R.id.route_mode).getVisibility() != View.VISIBLE) {
                 getSupportActionBar()?.hide()
                 findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
-                (findViewById(R.id.route_preview) as RoutePreviewView).destination =
-                        SimpleFeature.fromFeature(destination);
-                (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
             }
         })
         updateRoutePreview()
@@ -384,9 +383,11 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     }
 
     override fun hideRoutePreview() {
-        getSupportActionBar()?.show()
-        reverse = false
-        findViewById(R.id.route_preview).setVisibility(View.GONE)
+        if((findViewById(R.id.route_mode) as RouteModeView).getVisibility() != View.VISIBLE) {
+            getSupportActionBar()?.show()
+            reverse = false
+            findViewById(R.id.route_preview).setVisibility(View.GONE)
+        }
     }
 
     fun route() {
@@ -482,28 +483,42 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         startActivityForResult(intent, requestCodeSearchResults)
     }
 
-    override fun showRoutingMode() {
+    override fun showRoutingMode(feature: Feature) {
+        getSupportActionBar()?.hide()
+        presenter?.routingEnabled = true
+        this.destination = feature
         reverse = false
         findViewById(R.id.route_preview).setVisibility(View.GONE)
         findViewById(R.id.route_mode).setVisibility(View.VISIBLE)
-        route()
+
+        if(presenter?.route == null) {
+            route()
+        } else {
+            this.route = presenter?.route
+        }
 
         val pager = findViewById(R.id.route_mode) as RouteModeView
-        val adapter = InstructionAdapter(this, route!!.getRouteInstructions(), pager)
-        val simpleFeature = SimpleFeature.fromFeature(destination)
         pager.route = this.route
         pager.routeEngine?.setRoute(route)
+        val adapter = InstructionAdapter(this, route!!.getRouteInstructions(), pager)
         pager.setAdapter(adapter)
         pager.setVisibility(View.VISIBLE)
+
+        val simpleFeature = SimpleFeature.fromFeature(destination)
         (findViewById(R.id.destination_name) as TextView).setText(simpleFeature.toString())
     }
 
     override fun hideRoutingMode() {
-        findViewById(R.id.route_mode).setVisibility(View.GONE)
-        findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
-        getSupportActionBar()?.hide()
+        presenter?.routingEnabled = false
         val routeModeView = findViewById(R.id.route_mode) as RouteModeView
-        routeModeView.route = null
+        if (routeModeView.slideLayoutIsExpanded()) {
+            routeModeView.collapseSlideLayout()
+        } else {
+            findViewById(R.id.route_mode).setVisibility(View.GONE)
+            showRoutePreview(this.destination as Feature)
+            getSupportActionBar()?.hide()
+            routeModeView.route = null
+        }
     }
 
     private fun getInitializedRouter(): Router {
