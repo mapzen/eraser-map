@@ -4,18 +4,11 @@ import android.content.Context
 import android.support.v4.view.PagerAdapter
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import com.mapzen.erasermap.PrivateMapsApplication
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.util.DisplayHelper
-import com.mapzen.pelias.SimpleFeature
-import com.mapzen.pelias.gson.Feature
 import com.mapzen.valhalla.Instruction
-import com.squareup.otto.Bus
-import javax.inject.Inject
 import java.util.ArrayList
 
 public class InstructionAdapter(val context: Context, val instructions: ArrayList<Instruction>,

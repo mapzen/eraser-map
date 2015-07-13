@@ -1,15 +1,14 @@
 package com.mapzen.erasermap.view;
 
-import com.mapzen.android.lost.api.LocationServices;
-import com.mapzen.erasermap.BuildConfig;
-import com.mapzen.erasermap.PrivateMapsTestRunner;
-import com.mapzen.erasermap.R;
-import com.mapzen.pelias.SavedSearch;
-import com.mapzen.pelias.gson.Feature;
-import com.mapzen.pelias.widget.PeliasSearchView;
-import com.mapzen.tangram.MapView;
-import com.mapzen.valhalla.Route;
-import com.mapzen.valhalla.Router;
+import static android.content.Context.LOCATION_SERVICE;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
+import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.robolectric.Shadows.shadowOf;
+
+import java.util.ArrayList;
 
 import org.json.JSONObject;
 import org.junit.Before;
@@ -29,17 +28,17 @@ import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
-import android.view.View;
 
-import java.util.ArrayList;
-
-import static android.content.Context.LOCATION_SERVICE;
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
-import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.robolectric.Shadows.shadowOf;
+import com.mapzen.android.lost.api.LocationServices;
+import com.mapzen.erasermap.BuildConfig;
+import com.mapzen.erasermap.PrivateMapsTestRunner;
+import com.mapzen.erasermap.R;
+import com.mapzen.pelias.SavedSearch;
+import com.mapzen.pelias.gson.Feature;
+import com.mapzen.pelias.widget.PeliasSearchView;
+import com.mapzen.tangram.MapView;
+import com.mapzen.valhalla.Route;
+import com.mapzen.valhalla.Router;
 
 @RunWith(PrivateMapsTestRunner.class)
 @Config(constants = BuildConfig.class, emulateSdk = 21)
