@@ -74,8 +74,7 @@
 
             </RelativeLayout>
 
-
-        <include layout="@layout/activity_instructions"
+            <include layout="@layout/activity_instructions"
                 android:layout_below="@id/footer"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content" />
@@ -85,3 +84,4 @@
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
 </LinearLayout>
+

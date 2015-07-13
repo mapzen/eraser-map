@@ -80,7 +80,12 @@ public class MainPresenterImpl() : MainPresenter {
 
     override fun onBackPressed() {
         if (destination != null ) {
-            viewController?.hideRoutePreview()
+            if(routingEnabled == true) {
+                viewController?.hideRoutingMode()
+            } else {
+                viewController?.hideRoutePreview()
+                destination = null
+            }
             viewController?.hideRoutingMode()
         } else {
             viewController?.shutDown()

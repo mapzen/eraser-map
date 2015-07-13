@@ -317,6 +317,7 @@ public class MainActivityTest {
 
     @Test
     public void hideRoutingMode_shouldClearRoute() throws Exception {
+        activity.showRoutePreview(getTestFeature());
         RouteModeView routeModeView = (RouteModeView) activity.findViewById(R.id.route_mode);
         routeModeView.setRoute(new Route(getFixture("valhalla_route")));
         activity.hideRoutingMode();

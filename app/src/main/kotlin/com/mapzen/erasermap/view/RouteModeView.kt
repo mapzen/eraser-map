@@ -29,7 +29,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
     var autoPage: Boolean = true
     var route: Route? = null
     var slideLayout: SlidingUpPanelLayout? = null
-    var paneListener: SlidingUpPanelLayout.PanelSlideListener? = null
+    var panelListener: SlidingUpPanelLayout.PanelSlideListener? = null
     var routeEngine: RouteEngine? = null
     @Inject set
     var routeListener: RouteModeListener = RouteModeListener()
@@ -54,6 +54,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_mode, this, true)
         routeEngine?.setListener(routeListener)
+        initSlideLayout(findViewById(R.id.sliding_layout))
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
@@ -94,8 +95,8 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
     public fun initSlideLayout(view: View) {
         slideLayout = view as SlidingUpPanelLayout
         slideLayout?.setDragView(view.findViewById(R.id.drag_area))
-        paneListener = getPanelSlideListener(view)
-        slideLayout?.setPanelSlideListener(paneListener)
+        panelListener = getPanelSlideListener(view)
+        slideLayout?.setPanelSlideListener(panelListener)
     }
 
     public fun getPanelSlideListener(view : View):SlidingUpPanelLayout.PanelSlideListener {
@@ -123,7 +124,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
     }
 
     public fun getPanelSlideListener(): SlidingUpPanelLayout.PanelSlideListener? {
-        return paneListener
+        return panelListener
     }
 
     private fun showDirectionList(view : View)  {
@@ -139,7 +140,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
                 instructionDistance.add(instruction.distance)
             }
             listView.setAdapter(
-                    InstructionListActivity.DirectionListAdapter(listView   .getContext(),
+                    InstructionListActivity.DirectionListAdapter(listView.getContext(),
                             instructionStrings,
                             instructionType, instructionDistance, false))
         }

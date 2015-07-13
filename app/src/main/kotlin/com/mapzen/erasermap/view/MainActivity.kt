@@ -358,9 +358,12 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         optionsMenu?.findItem(R.id.action_search)?.collapseActionView()
     }
 
-    override fun showRoutePreview(feature: Feature) {
+    override fun showRoutePreview(feature: Feature?) {
         this.destination = feature
         route()
+        (findViewById(R.id.route_preview) as RoutePreviewView).destination =
+                SimpleFeature.fromFeature(destination);
+        (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
     }
 
     override fun success(route: Route?) {
@@ -370,9 +373,6 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
             if( findViewById(R.id.route_mode).getVisibility() != View.VISIBLE) {
                 getSupportActionBar()?.hide()
                 findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
-                (findViewById(R.id.route_preview) as RoutePreviewView).destination =
-                        SimpleFeature.fromFeature(destination);
-                (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
             }
         })
         updateRoutePreview()
@@ -512,15 +512,13 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     override fun hideRoutingMode() {
         presenter?.routingEnabled = false
         val routeModeView = findViewById(R.id.route_mode) as RouteModeView
-        if ( routeModeView.slideLayoutIsExpanded()) {
+        if (routeModeView.slideLayoutIsExpanded()) {
             routeModeView.collapseSlideLayout()
         } else {
-            if(routeModeView.route != null) {
                 findViewById(R.id.route_mode).setVisibility(View.GONE)
-                findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
+                showRoutePreview(this.destination)
                 getSupportActionBar()?.hide()
                 routeModeView.route = null
-            }
         }
     }
 
