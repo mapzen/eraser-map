@@ -62,7 +62,7 @@ public class RouteModeViewTest {
     }
 
     @Test
-    public void onRestoreViewState_shouldRestoreRoutingVide() {
+    public void onRestoreViewState_shouldRestoreRoutingView() {
         startActivity.getPresenter().onRestoreViewState();
         assertThat(routeModeView.getVisibility()).isEqualTo(View.VISIBLE);
     }

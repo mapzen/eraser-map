@@ -52,15 +52,15 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
 
     private var route: Route? = null;
     var locationClient: LostApiClient? = null
-        @Inject set
+      @Inject set
     var tileCache: Cache? = null
-    @Inject set
+      @Inject set
     var savedSearch: SavedSearch? = null
-    @Inject set
+      @Inject set
     var presenter: MainPresenter? = null
-    @Inject set
+      @Inject set
     var bus: Bus? = null
-    @Inject set
+      @Inject set
 
     var app: PrivateMapsApplication? = null
     var mapController : MapController? = null
@@ -358,7 +358,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         optionsMenu?.findItem(R.id.action_search)?.collapseActionView()
     }
 
-    override fun showRoutePreview(feature: Feature?) {
+    override fun showRoutePreview(feature: Feature) {
         this.destination = feature
         route()
         (findViewById(R.id.route_preview) as RoutePreviewView).destination =
@@ -487,7 +487,6 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         getSupportActionBar()?.hide()
         presenter?.routingEnabled = true
         this.destination = feature
-        val routeModeView = findViewById(R.id.route_mode) as RouteModeView
         reverse = false
         findViewById(R.id.route_preview).setVisibility(View.GONE)
         findViewById(R.id.route_mode).setVisibility(View.VISIBLE)
@@ -515,10 +514,10 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         if (routeModeView.slideLayoutIsExpanded()) {
             routeModeView.collapseSlideLayout()
         } else {
-                findViewById(R.id.route_mode).setVisibility(View.GONE)
-                showRoutePreview(this.destination)
-                getSupportActionBar()?.hide()
-                routeModeView.route = null
+            findViewById(R.id.route_mode).setVisibility(View.GONE)
+            showRoutePreview(this.destination as Feature)
+            getSupportActionBar()?.hide()
+            routeModeView.route = null
         }
     }
 

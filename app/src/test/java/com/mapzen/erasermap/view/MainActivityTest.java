@@ -1,13 +1,5 @@
 package com.mapzen.erasermap.view;
 
-import static android.content.Context.LOCATION_SERVICE;
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
-import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.robolectric.Shadows.shadowOf;
-
 import java.util.ArrayList;
 
 import org.json.JSONObject;
@@ -39,6 +31,14 @@ import com.mapzen.pelias.widget.PeliasSearchView;
 import com.mapzen.tangram.MapView;
 import com.mapzen.valhalla.Route;
 import com.mapzen.valhalla.Router;
+
+import static android.content.Context.LOCATION_SERVICE;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
+import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(PrivateMapsTestRunner.class)
 @Config(constants = BuildConfig.class, emulateSdk = 21)

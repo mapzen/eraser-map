@@ -123,10 +123,6 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         })
     }
 
-    public fun getPanelSlideListener(): SlidingUpPanelLayout.PanelSlideListener? {
-        return panelListener
-    }
-
     private fun showDirectionList(view : View)  {
         findViewById(R.id.footer).setVisibility(View.GONE)
         val listView = findViewById(R.id.instruction_list_view) as ListView
@@ -140,7 +136,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
                 instructionDistance.add(instruction.distance)
             }
             listView.setAdapter(
-                    InstructionListActivity.DirectionListAdapter(listView.getContext(),
+                    DirectionListAdapter(listView.getContext(),
                             instructionStrings,
                             instructionType, instructionDistance, false))
         }
@@ -166,11 +162,6 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         }
     }
 
-    public fun expandSlideLayout() {
-        if (slideLayoutIsCollapsed()) {
-            slideLayout?.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
-        }
-    }
     public fun slideLayoutIsExpanded() : Boolean {
         return slideLayout?.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED;
     }
@@ -197,19 +188,19 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         var lastItemIndex = (pager?.getAdapter() as InstructionAdapter).getCount() - 1
         var itemsUntilLastInstruction = (lastItemIndex - position)
         if(itemsUntilLastInstruction ==  1) {
-            (pager?.getAdapter() as InstructionAdapter).setBackgroundColorArrived(
-                    pager?.findViewWithTag("Instruction_" + (position + 1)))
+            (pager?.getAdapter() as InstructionAdapter)
+                    .setBackgroundColorArrived(findViewByIndex(position + 1))
         }
         if(autoPage) {
-            (pager?.getAdapter() as InstructionAdapter).setBackgroundColorActive(
-                    pager?.findViewWithTag("Instruction_" + position))
+            (pager?.getAdapter() as InstructionAdapter)
+                    .setBackgroundColorActive(findViewByIndex(position))
         } else {
             if(position == lastItemIndex) {
-                (pager?.getAdapter() as InstructionAdapter).setBackgroundColorArrived(
-                        pager?.findViewWithTag("Instruction_" + position))
+                (pager?.getAdapter() as InstructionAdapter)
+                        .setBackgroundColorArrived(findViewByIndex(position))
             } else {
-                (pager?.getAdapter() as InstructionAdapter).setBackgroundColorInactive(
-                        pager?.findViewWithTag("Instruction_" + position))
+                (pager?.getAdapter() as InstructionAdapter)
+                        .setBackgroundColorInactive(findViewByIndex(position))
             }
         }
     }

@@ -86,7 +86,6 @@ public class MainPresenterImpl() : MainPresenter {
                 viewController?.hideRoutePreview()
                 destination = null
             }
-            viewController?.hideRoutingMode()
         } else {
             viewController?.shutDown()
         }
