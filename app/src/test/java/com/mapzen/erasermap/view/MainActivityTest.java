@@ -339,6 +339,16 @@ public class MainActivityTest {
     }
 
     @Test
+    public void centerOnFeature_shouldSetCoordinates() throws Exception {
+        ArrayList<Feature> featureList = new ArrayList<>();
+        featureList.add(getTestFeature(34.0, 43.0));
+        activity.centerOnCurrentFeature(featureList);
+        Robolectric.flushForegroundThreadScheduler();
+        assertThat(activity.getMapController().getMapPosition()[0]).isEqualTo(43.0);
+        assertThat(activity.getMapController().getMapPosition()[1]).isEqualTo(34.0);
+    }
+
+    @Test
     public void showRoutingMode_shouldHideFindMeButton() throws Exception {
         activity.setDestination(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
