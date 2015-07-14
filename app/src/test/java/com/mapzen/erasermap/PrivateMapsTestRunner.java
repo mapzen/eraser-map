@@ -2,25 +2,15 @@ package com.mapzen.erasermap;
 
 import com.mapzen.erasermap.shadows.ShadowGLSurfaceView;
 import com.mapzen.erasermap.shadows.ShadowMapController;
-import com.mapzen.erasermap.shadows.ShadowPorterDuffColorFilter;
 import com.mapzen.erasermap.shadows.ShadowMapView;
+import com.mapzen.erasermap.shadows.ShadowPorterDuffColorFilter;
 
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.internal.bytecode.ClassInfo;
-import org.robolectric.internal.bytecode.InstrumentingClassLoaderConfig;
+import org.robolectric.internal.bytecode.InstrumentationConfiguration;
 import org.robolectric.internal.bytecode.ShadowMap;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 public class PrivateMapsTestRunner extends RobolectricGradleTestRunner {
-    private static final List<String> CUSTOM_SHADOW_TARGETS =
-            Collections.unmodifiableList(Arrays.asList(
-                    "com.mapzen.tangram.MapView",
-                    "com.mapzen.tangram.MapController"
-            ));
 
     public PrivateMapsTestRunner(Class<?> klass) throws InitializationError {
         super(klass);
@@ -38,15 +28,9 @@ public class PrivateMapsTestRunner extends RobolectricGradleTestRunner {
     }
 
     @Override
-    public InstrumentingClassLoaderConfig createSetup() {
-        return new PrivateMapsInstrumentingClassLoaderConfig();
-    }
-
-    public class PrivateMapsInstrumentingClassLoaderConfig extends InstrumentingClassLoaderConfig {
-        @Override
-        public boolean shouldInstrument(ClassInfo classInfo) {
-            return CUSTOM_SHADOW_TARGETS.contains(classInfo.getName())
-                    || super.shouldInstrument(classInfo);
-        }
+    public InstrumentationConfiguration createClassLoaderConfig() {
+        return InstrumentationConfiguration.newBuilder()
+                .addInstrumentedPackage("com.mapzen.tangram")
+                .build();
     }
 }

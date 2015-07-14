@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(PrivateMapsTestRunner.class)
-@Config(constants = BuildConfig.class, emulateSdk = 21)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class MainActivityTest {
     private MainActivity activity;
     private LocationManager locationManager;
@@ -236,7 +236,7 @@ public class MainActivityTest {
         activity.getSupportActionBar().show();
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(new JSONObject()));
-        Robolectric.flushForegroundScheduler();
+        Robolectric.flushForegroundThreadScheduler();
         assertThat(activity.getSupportActionBar().isShowing()).isFalse();
     }
 
@@ -245,7 +245,7 @@ public class MainActivityTest {
         activity.findViewById(R.id.route_preview).setVisibility(GONE);
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(new JSONObject()));
-        Robolectric.flushForegroundScheduler();
+        Robolectric.flushForegroundThreadScheduler();
         assertThat(activity.findViewById(R.id.route_preview).getVisibility()).isEqualTo(VISIBLE);
     }
 
@@ -254,7 +254,7 @@ public class MainActivityTest {
         activity.findViewById(R.id.route_preview).setVisibility(GONE);
         activity.showRoutePreview(getTestFeature());
         activity.success(new Route(new JSONObject()));
-        Robolectric.flushForegroundScheduler();
+        Robolectric.flushForegroundThreadScheduler();
         activity.getPresenter().onRestoreViewState();
         assertThat(activity.findViewById(R.id.route_preview).getVisibility()).isEqualTo(VISIBLE);
     }
