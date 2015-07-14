@@ -15,7 +15,7 @@ import android.view.MenuItem;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(PrivateMapsTestRunner.class)
-@Config(constants = BuildConfig.class, emulateSdk = 21)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class SearchResultsListActivityTest {
     private SearchResultsListActivity activity;
 

@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
 @RunWith(PrivateMapsTestRunner.class)
-@Config(constants = BuildConfig.class, emulateSdk = 21)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class SearchResultsViewTest {
     private SearchResultsView searchResultsView;
 
