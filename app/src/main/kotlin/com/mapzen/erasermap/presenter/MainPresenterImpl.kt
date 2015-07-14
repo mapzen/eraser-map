@@ -1,7 +1,10 @@
 package com.mapzen.erasermap.presenter
 
+import android.location.Location
 import com.mapzen.erasermap.model.RoutePreviewEvent
-import com.mapzen.erasermap.view.ViewController
+import com.mapzen.erasermap.view.MainActivity
+import com.mapzen.erasermap.view.MainViewController
+import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.valhalla.Route
@@ -11,7 +14,8 @@ import com.squareup.otto.Subscribe
 public class MainPresenterImpl() : MainPresenter {
     override var route: Route? = null;
     override var routingEnabled : Boolean = false
-    override var viewController: ViewController? = null
+    override var mainViewController: MainViewController? = null
+    override var routeViewController: RouteViewController? = null
     override var currentSearchTerm: String? = null
     override var bus: Bus? = null
         set(bus) {
@@ -23,79 +27,90 @@ public class MainPresenterImpl() : MainPresenter {
 
     override fun onSearchResultsAvailable(searchResults: Result?) {
         this.searchResults = searchResults
-        viewController?.showSearchResults(searchResults?.getFeatures())
-        viewController?.hideProgress()
+        mainViewController?.showSearchResults(searchResults?.getFeatures())
+        mainViewController?.hideProgress()
         val featureCount = searchResults?.getFeatures()?.size()
         if (featureCount != null && featureCount > 1) {
-            viewController?.showActionViewAll()
+            mainViewController?.showActionViewAll()
         } else {
-            viewController?.hideActionViewAll()
+            mainViewController?.hideActionViewAll()
         }
     }
 
     override fun onRestoreViewState() {
         if (destination != null) {
             if(routingEnabled) {
-                viewController?.showRoutingMode(destination!!)
+                mainViewController?.showRoutingMode(destination!!)
             } else {
-                viewController?.showRoutePreview(destination!!)
+                mainViewController?.showRoutePreview(destination!!)
             }
         } else {
             if (searchResults != null) {
-                viewController?.showSearchResults(searchResults?.getFeatures())
+                mainViewController?.showSearchResults(searchResults?.getFeatures())
             }
         }
     }
 
     override fun onExpandSearchView() {
-        viewController?.hideOverflowMenu()
+        mainViewController?.hideOverflowMenu()
     }
 
     override fun onCollapseSearchView() {
         searchResults = null;
-        viewController?.hideSearchResults()
-        viewController?.showOverflowMenu()
-        viewController?.hideActionViewAll()
+        mainViewController?.hideSearchResults()
+        mainViewController?.showOverflowMenu()
+        mainViewController?.hideActionViewAll()
     }
 
     override fun onQuerySubmit() {
-        viewController?.showProgress()
+        mainViewController?.showProgress()
     }
 
     override fun onSearchResultSelected(position: Int) {
         if (searchResults != null) {
-            viewController?.centerOnCurrentFeature(searchResults?.getFeatures())
+            mainViewController?.centerOnCurrentFeature(searchResults?.getFeatures())
         }
     }
 
     override fun onViewAllSearchResults() {
-        viewController?.showAllSearchResults(searchResults?.getFeatures())
+        mainViewController?.showAllSearchResults(searchResults?.getFeatures())
     }
 
     [Subscribe] public fun onRoutePreviewEvent(event: RoutePreviewEvent) {
         destination = event.destination;
-        viewController?.collapseSearchView()
-        viewController?.showRoutePreview(event.destination)
+        mainViewController?.collapseSearchView()
+        mainViewController?.showRoutePreview(event.destination)
     }
 
     override fun onBackPressed() {
         if (destination != null ) {
             if(routingEnabled == true) {
-                viewController?.hideRoutingMode()
+                mainViewController?.hideRoutingMode()
             } else {
-                viewController?.hideRoutePreview()
+                mainViewController?.hideRoutePreview()
                 destination = null
             }
         } else {
-            viewController?.shutDown()
+            mainViewController?.shutDown()
         }
     }
 
     override fun onRoutingCircleClick(reverse: Boolean) {
         if(reverse) {
-            viewController?.showDirectionList()
+            mainViewController?.showDirectionList()
         } else {
-            viewController?.showRoutingMode(destination!!)
+            mainViewController?.showRoutingMode(destination!!)
+        }
+    }
+
+    override fun onResumeRouting() {
+        mainViewController?.centerMapOnCurrentLocation(MainPresenter.ROUTING_ZOOM)
+    }
+
+    override fun onLocationChanged(location: Location) {
+        if (routingEnabled) {
+            routeViewController?.onLocationChanged(location)
+            mainViewController?.centerMapOnLocation(location, MainPresenter.ROUTING_ZOOM)
         }
     }
 }

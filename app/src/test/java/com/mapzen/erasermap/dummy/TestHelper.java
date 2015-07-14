@@ -1,10 +1,13 @@
 package com.mapzen.erasermap.dummy;
 
-import com.google.common.io.Files;
 import com.mapzen.pelias.SimpleFeature;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.gson.Geometry;
 import com.mapzen.pelias.gson.Properties;
+
+import com.google.common.io.Files;
+
+import android.location.Location;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,5 +58,17 @@ public class TestHelper {
         String content;
         content = Files.toString(file, Charset.defaultCharset());
         return content;
+    }
+
+    public static Location getTestLocation(double lon, double lat) {
+        final Location location = new Location("test");
+        location.setLongitude(lon);
+        location.setLatitude(lat);
+        return location;
+    }
+
+    public static Location getTestLocation() {
+        final Location location = new Location("test");
+        return location;
     }
 }

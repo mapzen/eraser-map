@@ -1,6 +1,15 @@
 package com.mapzen.erasermap.view;
 
-import java.util.ArrayList;
+import com.mapzen.android.lost.api.LocationServices;
+import com.mapzen.erasermap.BuildConfig;
+import com.mapzen.erasermap.PrivateMapsTestRunner;
+import com.mapzen.erasermap.R;
+import com.mapzen.pelias.SavedSearch;
+import com.mapzen.pelias.gson.Feature;
+import com.mapzen.pelias.widget.PeliasSearchView;
+import com.mapzen.tangram.MapView;
+import com.mapzen.valhalla.Route;
+import com.mapzen.valhalla.Router;
 
 import org.json.JSONObject;
 import org.junit.Before;
@@ -15,28 +24,20 @@ import org.robolectric.shadows.ShadowLocationManager;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Location;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
+import android.view.View;
 
-import com.mapzen.android.lost.api.LocationServices;
-import com.mapzen.erasermap.BuildConfig;
-import com.mapzen.erasermap.PrivateMapsTestRunner;
-import com.mapzen.erasermap.R;
-import com.mapzen.pelias.SavedSearch;
-import com.mapzen.pelias.gson.Feature;
-import com.mapzen.pelias.widget.PeliasSearchView;
-import com.mapzen.tangram.MapView;
-import com.mapzen.valhalla.Route;
-import com.mapzen.valhalla.Router;
+import java.util.ArrayList;
 
 import static android.content.Context.LOCATION_SERVICE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
+import static com.mapzen.erasermap.dummy.TestHelper.getTestLocation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -323,11 +324,34 @@ public class MainActivityTest {
         assertThat(routeModeView.getRoute()).isNull();
     }
 
-    private Location getTestLocation(double lat, double lng) {
-        Location location = new Location("test");
-        location.setLatitude(lat);
-        location.setLongitude(lng);
-        return location;
+    @Test
+    public void centerMapOnLocation_shouldSetCoordinates() throws Exception {
+        activity.centerMapOnLocation(getTestLocation(100, 200), 10);
+        assertThat(activity.getMapController().getMapPosition()[0]).isEqualTo(100);
+        assertThat(activity.getMapController().getMapPosition()[1]).isEqualTo(200);
+    }
+
+    @Test
+    public void centerMapOnLocation_resetSetZoom() throws Exception {
+        activity.getMapController().setMapZoom(10);
+        activity.centerMapOnLocation(getTestLocation(100, 200), 10);
+        assertThat(activity.getMapController().getMapZoom()).isEqualTo(10);
+    }
+
+    @Test
+    public void showRoutingMode_shouldHideFindMeButton() throws Exception {
+        activity.setDestination(getTestFeature());
+        activity.success(new Route(getFixture("valhalla_route")));
+        activity.showRoutingMode(getTestFeature());
+        assertThat(activity.findViewById(R.id.find_me).getVisibility()).isEqualTo(View.GONE);
+    }
+
+    @Test
+    public void hideRoutingMode_shouldShowFindMeButton() throws Exception {
+        activity.setDestination(getTestFeature());
+        activity.findViewById(R.id.find_me).setVisibility(View.GONE);
+        activity.hideRoutingMode();
+        assertThat(activity.findViewById(R.id.find_me).getVisibility()).isEqualTo(View.VISIBLE);
     }
 
     private class RoboMenuWithGroup extends RoboMenu {

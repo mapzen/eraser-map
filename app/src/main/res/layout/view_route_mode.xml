@@ -23,6 +23,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/pager_height"
                 android:keepScreenOn="true"/>
+
+            <ImageButton
+                android:id="@+id/resume"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="16dp"
+                android:layout_marginRight="16dp"
+                android:src="@android:drawable/ic_menu_compass" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -42,17 +52,11 @@
                 android:paddingLeft="@dimen/instruction_padding"
                 android:paddingTop="@dimen/footer_padding">
 
-                <View
-                    android:id="@+id/drag_area"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp" />
-
                 <com.mapzen.erasermap.view.DistanceView
                     android:id="@+id/destination_distance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
-                    android:layout_weight="0"
                     android:fontFamily="sans-serif-condensed"
                     android:textColor="@color/brown"
                     android:textSize="@dimen/font_medium"
@@ -64,7 +68,6 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_gravity="top"
-                    android:layout_weight="1"
                     android:ellipsize="end"
                     android:fontFamily="sans-serif-condensed"
                     android:maxLines="1"
@@ -73,6 +76,12 @@
                     android:textSize="@dimen/font_small" />
 
             </RelativeLayout>
+
+            <View
+                android:id="@+id/drag_area"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_alignParentTop="true" />
 
             <include layout="@layout/activity_instructions"
                 android:layout_below="@id/footer"
@@ -84,4 +93,3 @@
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
 </LinearLayout>
-

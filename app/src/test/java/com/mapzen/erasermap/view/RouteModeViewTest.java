@@ -1,14 +1,15 @@
 package com.mapzen.erasermap.view;
 
-import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
-import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.robolectric.RuntimeEnvironment.application;
+import com.mapzen.erasermap.BuildConfig;
+import com.mapzen.erasermap.PrivateMapsTestRunner;
+import com.mapzen.erasermap.R;
+import com.mapzen.valhalla.Route;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import android.content.Context;
@@ -20,10 +21,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.mapzen.erasermap.BuildConfig;
-import com.mapzen.erasermap.PrivateMapsTestRunner;
-import com.mapzen.erasermap.R;
-import com.mapzen.valhalla.Route;
+import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
+import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.robolectric.RuntimeEnvironment.application;
 
 @RunWith(PrivateMapsTestRunner.class)
 @Config(constants = BuildConfig.class, emulateSdk = 21)
@@ -32,7 +33,6 @@ public class RouteModeViewTest {
     RouteModeView routeModeView;
     private static MainActivity startActivity = Robolectric.setupActivity(MainActivity.class);
     private ViewGroup viewGroup;
-
 
     @Before
     public void setUp() throws Exception {
@@ -188,6 +188,11 @@ public class RouteModeViewTest {
         assertThat(routeModeView.getRouteEngine()).isNotNull();
     }
 
+    @Test
+    public void shouldSetSlideLayoutTouchListener() throws Exception {
+        assertThat(Shadows.shadowOf(routeModeView.findViewById(R.id.drag_area))
+                .getOnTouchListener()).isNotNull();
+    }
 
     class TestViewGroup extends ViewGroup {
         public TestViewGroup(Context context) {

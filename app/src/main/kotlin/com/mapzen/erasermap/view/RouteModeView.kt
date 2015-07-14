@@ -7,19 +7,22 @@ import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 import com.mapzen.erasermap.PrivateMapsApplication
 import com.mapzen.erasermap.R
+import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Route
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import java.util.ArrayList
 import javax.inject.Inject
 
-public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
+public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener {
     companion object {
         val VIEW_TAG: String = "Instruction_"
     }
@@ -33,6 +36,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
     var routeEngine: RouteEngine? = null
     @Inject set
     var routeListener: RouteModeListener = RouteModeListener()
+    var presenter: MainPresenter? = null
 
     private var currentInstructionIndex: Int = 0
 
@@ -54,6 +58,10 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_mode, this, true)
         routeEngine?.setListener(routeListener)
+        (findViewById(R.id.resume) as ImageButton).setOnClickListener {
+            presenter?.onResumeRouting()
+            pager?.setCurrentItem(currentInstructionIndex)
+        }
         initSlideLayout(findViewById(R.id.sliding_layout))
     }
 
@@ -77,7 +85,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
     }
 
     public fun setAdapter(adapter: PagerAdapter) {
-        pager  = findViewById(R.id.instruction_pager) as ViewPager
+        pager = findViewById(R.id.instruction_pager) as ViewPager
         pager?.setAdapter(adapter)
         pager?.addOnPageChangeListener(this)
         (findViewById(R.id.destination_distance) as DistanceView).distanceInMeters =
@@ -97,6 +105,13 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         slideLayout?.setDragView(view.findViewById(R.id.drag_area))
         panelListener = getPanelSlideListener(view)
         slideLayout?.setPanelSlideListener(panelListener)
+        slideLayout?.setTouchEnabled(false)
+        findViewById(R.id.drag_area).setOnTouchListener(object: View.OnTouchListener {
+            override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
+                slideLayout?.setTouchEnabled(true)
+                return true
+            }
+        })
     }
 
     public fun getPanelSlideListener(view : View):SlidingUpPanelLayout.PanelSlideListener {
@@ -111,11 +126,17 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
                     findViewById(R.id.footer).setVisibility(View.VISIBLE)
                     slideLayout?.setDragView(view.findViewById(R.id.drag_area))
                 }
+
+                if (slideOffset == SLIDING_PANEL_OFFSET_OPEN) {
+                    slideLayout?.setTouchEnabled(false)
+                }
             }
 
             public override fun onPanelExpanded(panel:View) { }
 
-            public override fun onPanelCollapsed(panel: View) { }
+            public override fun onPanelCollapsed(panel: View) {
+                slideLayout?.setTouchEnabled(false)
+            }
 
             public override fun onPanelAnchored(panel:View) { }
 
@@ -224,9 +245,8 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         override fun onUpdateDistance(distanceToNextInstruction: Int, distanceToDestination: Int) {
             log("[onUpdateDistance]", "distanceToNextInstruction = " + distanceToNextInstruction
                     + " | " + "distanceToDestination = " + distanceToDestination)
-            val distanceView = findViewByIndex(currentInstructionIndex)?.findViewById(R.id.distance)
-            (distanceView as DistanceView).distanceInMeters = distanceToNextInstruction
-            (findViewById(R.id.destination_distance) as DistanceView).distanceInMeters = distanceToDestination
+            setDistanceToNextInstruction(distanceToNextInstruction)
+            setDistanceToDestination(distanceToDestination)
         }
 
         override fun onInstructionComplete(index: Int) {
@@ -260,7 +280,22 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         }
     }
 
-    fun onLocationChanged(location: Location) {
+    private fun setDistanceToDestination(distanceToDestination: Int) {
+        val distanceToDestinationView = findViewById(R.id.destination_distance)
+        if (distanceToDestinationView is DistanceView) {
+            distanceToDestinationView.distanceInMeters = distanceToDestination
+        }
+    }
+
+    private fun setDistanceToNextInstruction(distanceToNextInstruction: Int) {
+        val currentInstructionView = findViewByIndex(currentInstructionIndex)
+        val distanceToNextView = currentInstructionView?.findViewById(R.id.distance)
+        if (distanceToNextView is DistanceView) {
+            distanceToNextView.distanceInMeters = distanceToNextInstruction
+        }
+    }
+
+    override fun onLocationChanged(location: Location) {
         if (route != null) {
             routeEngine?.onLocationChanged(location)
         }
