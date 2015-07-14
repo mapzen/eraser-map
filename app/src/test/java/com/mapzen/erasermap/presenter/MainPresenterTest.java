@@ -188,6 +188,16 @@ public class MainPresenterTest {
         assertThat(mainController.location).isNotNull();
     }
 
+    @Test
+    public void onSearchResultSelected_shouldCenterOnCurrentFeature() throws Exception {
+        Result result = new Result();
+        ArrayList<Feature> features = new ArrayList<>();
+        result.setFeatures(features);
+        presenter.onSearchResultsAvailable(result);
+        presenter.onSearchResultSelected(0);
+        assertThat(mainController.isCenteredOnCurrentFeature).isTrue();
+    }
+
     private class TestMainController implements MainViewController {
         private List<Feature> searchResults;
         private Location location;
@@ -201,12 +211,14 @@ public class MainPresenterTest {
         private boolean isDirectionListVisible;
         private boolean isRoutingModeVisible;
         private boolean isCenteredOnCurrentLocation;
+        private boolean isCenteredOnCurrentFeature;
 
         @Override public void showSearchResults(@NotNull List<? extends Feature> features) {
             searchResults = (List<Feature>) features;
         }
 
         @Override public void centerOnCurrentFeature(@NotNull List<? extends Feature> features) {
+            isCenteredOnCurrentFeature = true;
         }
 
         @Override public void hideSearchResults() {
