@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -104,6 +105,13 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         slideLayout?.setDragView(view.findViewById(R.id.drag_area))
         panelListener = getPanelSlideListener(view)
         slideLayout?.setPanelSlideListener(panelListener)
+        slideLayout?.setTouchEnabled(false)
+        findViewById(R.id.drag_area).setOnTouchListener(object: View.OnTouchListener {
+            override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
+                slideLayout?.setTouchEnabled(true)
+                return true
+            }
+        })
     }
 
     public fun getPanelSlideListener(view : View):SlidingUpPanelLayout.PanelSlideListener {
@@ -118,11 +126,17 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
                     findViewById(R.id.footer).setVisibility(View.VISIBLE)
                     slideLayout?.setDragView(view.findViewById(R.id.drag_area))
                 }
+
+                if (slideOffset == SLIDING_PANEL_OFFSET_OPEN) {
+                    slideLayout?.setTouchEnabled(false)
+                }
             }
 
             public override fun onPanelExpanded(panel:View) { }
 
-            public override fun onPanelCollapsed(panel: View) { }
+            public override fun onPanelCollapsed(panel: View) {
+                slideLayout?.setTouchEnabled(false)
+            }
 
             public override fun onPanelAnchored(panel:View) { }
 

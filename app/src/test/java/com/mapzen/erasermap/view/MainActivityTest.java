@@ -342,7 +342,7 @@ public class MainActivityTest {
     public void showRoutingMode_shouldHideFindMeButton() throws Exception {
         activity.setDestination(getTestFeature());
         activity.success(new Route(getFixture("valhalla_route")));
-        activity.showRoutingMode();
+        activity.showRoutingMode(getTestFeature());
         assertThat(activity.findViewById(R.id.find_me).getVisibility()).isEqualTo(View.GONE);
     }
 

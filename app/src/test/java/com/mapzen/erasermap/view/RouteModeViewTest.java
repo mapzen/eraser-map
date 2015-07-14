@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import android.content.Context;
@@ -185,6 +186,12 @@ public class RouteModeViewTest {
     @Test
     public void shouldInjectRouteEngine() throws Exception {
         assertThat(routeModeView.getRouteEngine()).isNotNull();
+    }
+
+    @Test
+    public void shouldSetSlideLayoutTouchListener() throws Exception {
+        assertThat(Shadows.shadowOf(routeModeView.findViewById(R.id.drag_area))
+                .getOnTouchListener()).isNotNull();
     }
 
     class TestViewGroup extends ViewGroup {
