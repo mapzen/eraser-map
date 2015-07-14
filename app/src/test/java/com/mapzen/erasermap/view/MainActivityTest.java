@@ -348,6 +348,7 @@ public class MainActivityTest {
 
     @Test
     public void hideRoutingMode_shouldShowFindMeButton() throws Exception {
+        activity.setDestination(getTestFeature());
         activity.findViewById(R.id.find_me).setVisibility(View.GONE);
         activity.hideRoutingMode();
         assertThat(activity.findViewById(R.id.find_me).getVisibility()).isEqualTo(View.VISIBLE);
