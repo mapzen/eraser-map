@@ -343,7 +343,7 @@ public class MainActivityTest {
         ArrayList<Feature> featureList = new ArrayList<>();
         featureList.add(getTestFeature(34.0, 43.0));
         activity.centerOnCurrentFeature(featureList);
-        Robolectric.flushForegroundScheduler();
+        Robolectric.flushForegroundThreadScheduler();
         assertThat(activity.getMapController().getMapPosition()[0]).isEqualTo(43.0);
         assertThat(activity.getMapController().getMapPosition()[1]).isEqualTo(34.0);
     }
