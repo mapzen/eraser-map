@@ -43,13 +43,8 @@ import retrofit.client.Response
 import java.util.ArrayList
 import javax.inject.Inject
 
-public class MainActivity : AppCompatActivity(), ViewController, Router.Callback,
+public class MainActivity : AppCompatActivity(), MainViewController, Router.Callback,
         SearchResultsView.OnSearchResultSelectedListener {
-    companion object {
-        val DEFAULT_ZOOM: Float = 14f
-        val ROUTING_ZOOM: Float = 17f
-    }
-
     private val LOCATION_UPDATE_INTERVAL_IN_MS: Long = 1000L
     private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT: Float = 0f
 
@@ -81,7 +76,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         setContentView(R.layout.activity_main)
         app = getApplication() as PrivateMapsApplication
         app?.component()?.inject(this)
-        presenter?.viewController = this
+        presenter?.mainViewController = this
         presenter?.bus = bus
         locationClient?.connect()
         initMapController()
@@ -150,16 +145,12 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
 
         LocationServices.FusedLocationApi?.requestLocationUpdates(locationRequest) {
             location: Location -> currentLocation = location
-            val routeModeView = findViewById(R.id.route_mode) as RouteModeView
-            if (routeModeView != null && routeModeView.getVisibility() == View.VISIBLE) {
-                routeModeView.onLocationChanged(location)
-                centerMapOnLocation(location, ROUTING_ZOOM)
-            }
+            presenter?.onLocationChanged(location)
         }
     }
 
     override fun centerMapOnCurrentLocation() {
-        centerMapOnCurrentLocation(DEFAULT_ZOOM)
+        centerMapOnCurrentLocation(MainPresenter.DEFAULT_ZOOM)
     }
 
     override fun centerMapOnCurrentLocation(zoom: Float) {
@@ -170,7 +161,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         }
     }
 
-    public fun centerMapOnLocation(location: Location, zoom: Float) {
+    override fun centerMapOnLocation(location: Location, zoom: Float) {
         mapController?.setMapPosition(location.getLongitude(), location.getLatitude())
         mapController?.setMapZoom(zoom)
         mapController?.setMapRotation(0f)
@@ -505,7 +496,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
     override fun showRoutingMode(feature: Feature) {
         val startingLocation = route?.getRouteInstructions()?.get(0)?.location
         if (startingLocation is Location) {
-            centerMapOnLocation(startingLocation, ROUTING_ZOOM)
+            centerMapOnLocation(startingLocation, MainPresenter.ROUTING_ZOOM)
         }
 
         findViewById(R.id.find_me).setVisibility(View.GONE)
@@ -516,6 +507,7 @@ public class MainActivity : AppCompatActivity(), ViewController, Router.Callback
         findViewById(R.id.route_preview).setVisibility(View.GONE)
         findViewById(R.id.route_mode).setVisibility(View.VISIBLE)
         (findViewById(R.id.route_mode) as RouteModeView).presenter = presenter
+        presenter?.routeViewController = findViewById(R.id.route_mode) as RouteModeView
         
         if(presenter?.route == null) {
             route()

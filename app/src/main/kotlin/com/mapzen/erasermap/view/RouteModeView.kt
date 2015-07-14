@@ -22,7 +22,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import java.util.ArrayList
 import javax.inject.Inject
 
-public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
+public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener {
     companion object {
         val VIEW_TAG: String = "Instruction_"
     }
@@ -295,7 +295,7 @@ public class RouteModeView : LinearLayout , ViewPager.OnPageChangeListener {
         }
     }
 
-    fun onLocationChanged(location: Location) {
+    override fun onLocationChanged(location: Location) {
         if (route != null) {
             routeEngine?.onLocationChanged(location)
         }

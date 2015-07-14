@@ -24,7 +24,6 @@ import org.robolectric.shadows.ShadowLocationManager;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Location;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
@@ -38,6 +37,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
+import static com.mapzen.erasermap.dummy.TestHelper.getTestLocation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -352,13 +352,6 @@ public class MainActivityTest {
         activity.findViewById(R.id.find_me).setVisibility(View.GONE);
         activity.hideRoutingMode();
         assertThat(activity.findViewById(R.id.find_me).getVisibility()).isEqualTo(View.VISIBLE);
-    }
-
-    private Location getTestLocation(double lon, double lat) {
-        Location location = new Location("test");
-        location.setLongitude(lon);
-        location.setLatitude(lat);
-        return location;
     }
 
     private class RoboMenuWithGroup extends RoboMenu {

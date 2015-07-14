@@ -1,7 +1,8 @@
 package com.mapzen.erasermap.presenter;
 
 import com.mapzen.erasermap.model.RoutePreviewEvent;
-import com.mapzen.erasermap.view.ViewController;
+import com.mapzen.erasermap.view.MainViewController;
+import com.mapzen.erasermap.view.RouteViewController;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.gson.Result;
 
@@ -9,21 +10,27 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 
+import android.location.Location;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
+import static com.mapzen.erasermap.dummy.TestHelper.getTestLocation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MainPresenterTest {
     private MainPresenterImpl presenter;
-    private TestViewController controller;
+    private TestMainController mainController;
+    private TestRouteController routeController;
 
     @Before
     public void setUp() throws Exception {
         presenter = new MainPresenterImpl();
-        controller = new TestViewController();
-        presenter.setViewController(controller);
+        mainController = new TestMainController();
+        routeController = new TestRouteController();
+        presenter.setMainViewController(mainController);
+        presenter.setRouteViewController(routeController);
     }
 
     @Test
@@ -37,7 +44,7 @@ public class MainPresenterTest {
         ArrayList<Feature> features = new ArrayList<>();
         result.setFeatures(features);
         presenter.onSearchResultsAvailable(result);
-        assertThat(controller.searchResults).isEqualTo(features);
+        assertThat(mainController.searchResults).isEqualTo(features);
     }
 
     @Test
@@ -47,8 +54,8 @@ public class MainPresenterTest {
         result.setFeatures(features);
         presenter.onSearchResultsAvailable(result);
 
-        TestViewController newController = new TestViewController();
-        presenter.setViewController(newController);
+        TestMainController newController = new TestMainController();
+        presenter.setMainViewController(newController);
         presenter.onRestoreViewState();
         assertThat(newController.searchResults).isEqualTo(features);
     }
@@ -56,8 +63,8 @@ public class MainPresenterTest {
     @Test
     public void onRestoreViewState_shouldRestoreRoutePreview() throws Exception {
         presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
-        TestViewController newController = new TestViewController();
-        presenter.setViewController(newController);
+        TestMainController newController = new TestMainController();
+        presenter.setMainViewController(newController);
         presenter.onRestoreViewState();
         assertThat(newController.isRoutePreviewVisible).isTrue();
     }
@@ -69,39 +76,39 @@ public class MainPresenterTest {
         result.setFeatures(features);
         presenter.onSearchResultsAvailable(result);
         presenter.onCollapseSearchView();
-        assertThat(controller.searchResults).isNull();
+        assertThat(mainController.searchResults).isNull();
     }
 
     @Test
     public void onQuerySubmit_shouldShowProgress() throws Exception {
         presenter.onQuerySubmit();
-        assertThat(controller.isProgressVisible).isTrue();
+        assertThat(mainController.isProgressVisible).isTrue();
     }
 
     @Test
     public void onSearchResultsAvailable_shouldHideProgress() throws Exception {
-        controller.showProgress();
+        mainController.showProgress();
         presenter.onSearchResultsAvailable(new Result());
-        assertThat(controller.isProgressVisible).isFalse();
+        assertThat(mainController.isProgressVisible).isFalse();
     }
 
     @Test
     public void onExpandSearchView_shouldHideOverflowMenu() throws Exception {
-        controller.isOverflowVisible = true;
+        mainController.isOverflowVisible = true;
         presenter.onExpandSearchView();
-        assertThat(controller.isOverflowVisible).isFalse();
+        assertThat(mainController.isOverflowVisible).isFalse();
     }
 
     @Test
     public void onCollapseSearchView_shouldShowOverflowMenu() throws Exception {
-        controller.isOverflowVisible = false;
+        mainController.isOverflowVisible = false;
         presenter.onCollapseSearchView();
-        assertThat(controller.isOverflowVisible).isTrue();
+        assertThat(mainController.isOverflowVisible).isTrue();
     }
 
     @Test
     public void onSearchResultsAvailable_shouldShowActionViewAll() throws Exception {
-        controller.isViewAllVisible = false;
+        mainController.isViewAllVisible = false;
         Result result = new Result();
         ArrayList<Feature> features = new ArrayList<>();
         features.add(new Feature());
@@ -109,58 +116,83 @@ public class MainPresenterTest {
         features.add(new Feature());
         result.setFeatures(features);
         presenter.onSearchResultsAvailable(result);
-        assertThat(controller.isViewAllVisible).isTrue();
+        assertThat(mainController.isViewAllVisible).isTrue();
     }
 
     @Test
     public void onCollapseSearchView_shouldHideActionViewAll() throws Exception {
-        controller.isViewAllVisible = true;
+        mainController.isViewAllVisible = true;
         presenter.onCollapseSearchView();
-        assertThat(controller.isViewAllVisible).isFalse();
+        assertThat(mainController.isViewAllVisible).isFalse();
     }
 
     @Test
     public void onRoutePreviewEvent_shouldCollapseSearchView() throws Exception {
-        controller.isSearchVisible = true;
+        mainController.isSearchVisible = true;
         presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
-        assertThat(controller.isSearchVisible).isFalse();
+        assertThat(mainController.isSearchVisible).isFalse();
     }
 
     @Test
     public void onRoutePreviewEvent_shouldShowRoutePreview() throws Exception {
-        controller.isRoutePreviewVisible = false;
+        mainController.isRoutePreviewVisible = false;
         presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
-        assertThat(controller.isRoutePreviewVisible).isTrue();
+        assertThat(mainController.isRoutePreviewVisible).isTrue();
     }
 
     @Test
     public void onBackPressed_shouldHideRoutePreview() throws Exception {
         presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
         presenter.onBackPressed();
-        assertThat(controller.isRoutePreviewVisible).isFalse();
+        assertThat(mainController.isRoutePreviewVisible).isFalse();
     }
 
     @Test
     public void onRoutingCircleClick_shouldMakeDirectionsVisible() {
         presenter.onRoutingCircleClick(true);
-        assertThat(controller.isDirectionListVisible).isTrue();
+        assertThat(mainController.isDirectionListVisible).isTrue();
     }
 
     @Test
     public void onRoutingCircleClick_shouldMakeRoutingModeVisible() {
         presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
         presenter.onRoutingCircleClick(false);
-        assertThat(controller.isRoutingModeVisible).isTrue();
+        assertThat(mainController.isRoutingModeVisible).isTrue();
     }
 
     @Test
     public void onResumeRouting_shouldCenterMapOnCurrentLocation() throws Exception {
         presenter.onResumeRouting();
-        assertThat(controller.isCenteredOnCurrentLocation).isTrue();
+        assertThat(mainController.isCenteredOnCurrentLocation).isTrue();
     }
 
-    private class TestViewController implements ViewController {
+    @Test
+    public void onLocationChanged_shouldNotifyRouteControllerIfRoutingIsEnabled() throws Exception {
+        presenter.setRoutingEnabled(false);
+        presenter.onLocationChanged(getTestLocation());
+        assertThat(routeController.location).isNull();
+
+        presenter.setRoutingEnabled(true);
+        presenter.onLocationChanged(getTestLocation());
+        assertThat(routeController.location).isNotNull();
+    }
+
+    @Test
+    public void onLocationChanged_shouldCenterMapIfRoutingIsEnabled() throws Exception {
+        presenter.setRoutingEnabled(false);
+        presenter.onLocationChanged(getTestLocation());
+        assertThat(mainController.location).isNull();
+
+        presenter.setRoutingEnabled(true);
+        presenter.onLocationChanged(getTestLocation());
+        assertThat(mainController.location).isNotNull();
+    }
+
+    private class TestMainController implements MainViewController {
         private List<Feature> searchResults;
+        private Location location;
+        private float zoom;
+
         private boolean isProgressVisible;
         private boolean isOverflowVisible;
         private boolean isViewAllVisible;
@@ -241,6 +273,19 @@ public class MainPresenterTest {
 
         @Override public void centerMapOnCurrentLocation(float zoom) {
             isCenteredOnCurrentLocation = true;
+        }
+
+        @Override public void centerMapOnLocation(Location location, float zoom) {
+            this.location = location;
+            this.zoom = zoom;
+        }
+    }
+
+    private class TestRouteController implements RouteViewController {
+        private Location location;
+
+        @Override public void onLocationChanged(@NotNull Location location) {
+            this.location = location;
         }
     }
 }
