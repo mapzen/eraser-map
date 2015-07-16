@@ -13,7 +13,7 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
-import com.mapzen.erasermap.PrivateMapsApplication
+import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.helpers.RouteEngine
@@ -54,7 +54,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     private fun init(context: Context) {
-        (context.getApplicationContext() as PrivateMapsApplication).component()?.inject(this)
+        (context.getApplicationContext() as EraserMapApplication).component()?.inject(this)
         (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_mode, this, true)
         routeEngine?.setListener(routeListener)

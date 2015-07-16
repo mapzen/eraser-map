@@ -10,11 +10,9 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 
-public class PrivateMapsApplication extends Application {
-    public static final String TAG = "PrivateMaps";
-
+public class EraserMapApplication extends Application {
     @Singleton
-    @Component(modules = AndroidModule.class)
+    @Component(modules = { AndroidModule.class, CommonModule.class })
     public interface ApplicationComponent {
         void inject(MainActivity mainActivity);
         void inject(SearchResultsAdapter searchResultsAdapter);
@@ -26,7 +24,7 @@ public class PrivateMapsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        component = DaggerPrivateMapsApplication_ApplicationComponent.builder()
+        component = DaggerEraserMapApplication_ApplicationComponent.builder()
                 .androidModule(new AndroidModule(this))
                 .build();
     }

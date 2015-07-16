@@ -6,6 +6,7 @@ apply plugin: 'checkstyle'
 def VECTOR_TILE_API_KEY_DEBUG = hasProperty('vectorTileApiKeyDebugProp') ? '"' + vectorTileApiKeyDebugProp + '"' : "null";
 def VECTOR_TILE_API_KEY_RELEASE = hasProperty('vectorTileApiKeyReleaseProp') ? '"' + vectorTileApiKeyReleaseProp + '"' : "null";
 def VALHALLA_API_KEY = hasProperty('valhallaApiKey') ? '"' + valhallaApiKey + '"' : "null";
+def MINT_API_KEY = hasProperty('mintApiKey') ? '"' + mintApiKey + '"' : "null";
 
 android {
   compileSdkVersion 22
@@ -22,10 +23,12 @@ android {
     debug {
       buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY_DEBUG
       buildConfigField "String", "VALHALLA_API_KEY", VALHALLA_API_KEY
+      buildConfigField "String", "MINT_API_KEY", MINT_API_KEY
     }
     release {
       buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY_RELEASE
       buildConfigField "String", "VALHALLA_API_KEY", VALHALLA_API_KEY
+      buildConfigField "String", "MINT_API_KEY", MINT_API_KEY
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
@@ -60,6 +63,7 @@ repositories {
   mavenLocal()
   mavenCentral()
   maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+  maven { url "https://mint.splunk.com/gradle/" }
 }
 
 dependencies {
@@ -79,6 +83,7 @@ dependencies {
   compile ('com.mapzen:on-the-road:0.8-SNAPSHOT') {
     exclude group: 'org.apache.commons', module: 'commons-io'
   }
+  compile "com.splunk.mint:mint:4.2.1"
 
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.9.5'
