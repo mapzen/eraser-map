@@ -3,6 +3,7 @@ package com.mapzen.erasermap.presenter
 import android.location.Location
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
+import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.valhalla.Route
 import com.squareup.otto.Bus
@@ -14,6 +15,7 @@ public interface MainPresenter {
     }
 
     public var currentSearchTerm: String?
+    public var currentFeature: Feature?
     public var mainViewController: MainViewController?
     public var bus: Bus?
     public var route: Route?
@@ -21,6 +23,7 @@ public interface MainPresenter {
     public var routeViewController: RouteViewController?
 
     public fun onSearchResultsAvailable(result: Result?)
+    public fun onReverseGeocodeResultsAvailable(searchResults: Result?)
     public fun onSearchResultSelected(position: Int)
     public fun onExpandSearchView()
     public fun onCollapseSearchView()

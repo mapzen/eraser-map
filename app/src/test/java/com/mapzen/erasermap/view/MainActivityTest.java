@@ -21,14 +21,18 @@ import org.robolectric.fakes.RoboMenu;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.shadows.ShadowLocationManager;
+import org.robolectric.shadows.ShadowMotionEvent;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -359,6 +363,24 @@ public class MainActivityTest {
         assertThat(activity.findViewById(R.id.find_me).getVisibility()).isEqualTo(View.VISIBLE);
     }
 
+    @Test
+    public void showReverseGeocodeFeature_shouldShowSearchPager() throws Exception {
+        ArrayList<Feature> features = new ArrayList<>();
+        features.add(getTestFeature(30.0, 30.0));
+        activity.showReverseGeocodeFeature(features);
+        assertThat(activity.findViewById(R.id.search_results).getVisibility()).isEqualTo(
+                View.VISIBLE);
+        assertThat(((TextView) (activity.findViewById(R.id.search_results).findViewById(R.id.title))).getText()).isEqualTo(
+                "Text");
+    }
+
+    @Test
+    public void onLongClick_shouldSetPresenterFeature() throws Exception {
+        assertThat(activity.getPresenter().getCurrentFeature()).isNull();
+        activity.reverseGeolocate(getLongPressMotionEvent());
+        assertThat(activity.getPresenter().getCurrentFeature()).isNotNull();
+    }
+
     private class RoboMenuWithGroup extends RoboMenu {
         private int group;
         private boolean visible;
@@ -373,5 +395,12 @@ public class MainActivityTest {
             this.group = group;
             this.visible = visible;
         }
+    }
+
+    private MotionEvent getLongPressMotionEvent() {
+        return MotionEvent.obtain(SystemClock.uptimeMillis(),
+                SystemClock.uptimeMillis() + 501,
+                MotionEvent.ACTION_DOWN,
+                30.0f, 30.0f, 1.0f,1.0f, 1, 1.0f,1.0f,0, 0);
     }
 }

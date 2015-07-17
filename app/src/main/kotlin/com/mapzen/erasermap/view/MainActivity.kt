@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageButton
 import android.widget.RadioButton
@@ -28,6 +29,8 @@ import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
+import com.mapzen.pelias.gson.Geometry
+import com.mapzen.pelias.gson.Properties
 import com.mapzen.pelias.gson.Result
 import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteListView
@@ -122,6 +125,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
     private fun initMapController() {
         val mapView = findViewById(R.id.map) as MapView
         mapController = MapController(this, mapView)
+        mapController?.setGenericMotionListener(View.OnGenericMotionListener {
+            view, motionEvent -> reverseGeolocate(motionEvent) })
     }
 
     private fun initAutoCompleteAdapter() {
@@ -291,6 +296,20 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         }
     }
 
+
+    inner class ReversePeliasCallback : Callback<Result> {
+        private val TAG: String = "ReversePeliasCallback"
+
+        override fun success(result: Result?, response: Response?) {
+            presenter?.onReverseGeocodeResultsAvailable(result)
+        }
+
+        override fun failure(error: RetrofitError?) {
+            hideProgress()
+            Log.e(TAG, "Error Reverse Geolocating: " + error?.getMessage())
+        }
+    }
+
     inner class SearchOnActionExpandListener : MenuItemCompat.OnActionExpandListener {
         override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
             presenter?.onExpandSearchView()
@@ -325,6 +344,14 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         pager.onSearchResultsSelectedListener = this
     }
 
+
+    override  fun showReverseGeocodeFeature(features: List<Feature>) {
+            val pager = findViewById(R.id.search_results) as SearchResultsView
+            pager.setAdapter(SearchResultsAdapter(this, features.subList(0, 1)))
+            pager.setVisibility(View.VISIBLE)
+            pager.onSearchResultsSelectedListener = this
+    }
+
     private fun addSearchResultsToMap(features: List<Feature>) {
         centerOnCurrentFeature(features)
     }
@@ -337,6 +364,16 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
             mapController?.setMapPosition(feature.getLon() ,feature.getLat())
             mapController?.setMapZoom(MainPresenter.DEFAULT_ZOOM)
         }, 100)
+    }
+
+    public fun reverseGeolocate(event: MotionEvent) : Boolean {
+        val pelias = Pelias.getPelias()
+        pelias.setLocationProvider(LocationProvider())
+        var coords  = mapController?.coordinatesAtScreenPosition(
+                event.getRawX().toDouble(), event.getRawY().toDouble())
+        presenter?.currentFeature = getGenericLocationFeature(coords?.get(1) as Double, coords?.get(0) as Double)
+        pelias.reverse(coords?.get(1).toString(), coords?.get(0).toString(), ReversePeliasCallback())
+        return true
     }
 
     override fun hideSearchResults() {
@@ -548,5 +585,23 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
             Router.Type.WALKING -> return Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setWalking()
             Router.Type.BIKING -> return Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setBiking()
         }
+    }
+
+    private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {
+        var nameLength: Int = 6;
+        val feature = Feature()
+        val properties = Properties()
+        if(lat.toString().length() > nameLength && lon.toString().length() > nameLength + 1) {
+            properties.setText( lat.toString().substring(0, nameLength) + "," + lon.toString()
+                    .substring(0, nameLength + 1))
+        }
+        feature.setProperties(properties)
+        val geometry = Geometry()
+        val coordinates = ArrayList<Double>()
+        coordinates.add(lon)
+        coordinates.add(lat)
+        geometry.setCoordinates(coordinates)
+        feature.setGeometry(geometry)
+        return feature
     }
 }

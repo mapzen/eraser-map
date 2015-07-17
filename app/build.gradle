@@ -69,7 +69,7 @@ repositories {
 dependencies {
   compile 'com.android.support:appcompat-v7:22.2.0'
   compile 'org.jetbrains.kotlin:kotlin-stdlib:0.12.213'
-  compile 'com.mapzen.tangram:tangram-es:0.1-SNAPSHOT'
+  compile 'com.mapzen.tangram:tangram:0.1-SNAPSHOT'
   compile 'com.mapzen.android:lost:1.0.1'
   compile ('com.mapzen.android:pelias-android-sdk:0.4-SNAPSHOT') {
     exclude group: 'javax.annotation:javax', module: 'javax.annotation-api'
