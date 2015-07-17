@@ -125,7 +125,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
     private fun initMapController() {
         val mapView = findViewById(R.id.map) as MapView
         mapController = MapController(this, mapView)
-        mapController?.setGenericMotionListener(View.OnGenericMotionListener {
+        mapController?.setLongPressListener(View.OnGenericMotionListener {
             view, motionEvent -> reverseGeolocate(motionEvent) })
     }
 
