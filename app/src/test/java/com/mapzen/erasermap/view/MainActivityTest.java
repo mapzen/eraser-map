@@ -21,7 +21,6 @@ import org.robolectric.fakes.RoboMenu;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.shadows.ShadowLocationManager;
-import org.robolectric.shadows.ShadowMotionEvent;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -370,8 +369,8 @@ public class MainActivityTest {
         activity.showReverseGeocodeFeature(features);
         assertThat(activity.findViewById(R.id.search_results).getVisibility()).isEqualTo(
                 View.VISIBLE);
-        assertThat(((TextView) (activity.findViewById(R.id.search_results).findViewById(R.id.title))).getText()).isEqualTo(
-                "Text");
+        assertThat(((TextView) (activity.findViewById(R.id.search_results)
+                .findViewById(R.id.title))).getText()).isEqualTo("Text");
     }
 
     @Test
@@ -401,6 +400,6 @@ public class MainActivityTest {
         return MotionEvent.obtain(SystemClock.uptimeMillis(),
                 SystemClock.uptimeMillis() + 501,
                 MotionEvent.ACTION_DOWN,
-                30.0f, 30.0f, 1.0f,1.0f, 1, 1.0f,1.0f,0, 0);
+                30.0f, 30.0f, 1.0f, 1.0f, 1, 1.0f, 1.0f, 0, 0);
     }
 }

@@ -303,7 +303,7 @@ public class MainPresenterTest {
         }
 
         @Override public void showReverseGeocodeFeature(@NotNull List<? extends Feature> features)
-        {isReverseGeocodeVisible = true;}
+        { isReverseGeocodeVisible = true; }
     }
 
     private class TestRouteController implements RouteViewController {
