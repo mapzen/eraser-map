@@ -19,8 +19,9 @@ import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.erasermap.BuildConfig
-import com.mapzen.erasermap.PrivateMapsApplication
+import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
+import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.PeliasLocationProvider
@@ -53,16 +54,16 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
     private var route: Route? = null;
     var locationClient: LostApiClient? = null
       @Inject set
-    var tileCache: Cache? = null
-      @Inject set
     var savedSearch: SavedSearch? = null
       @Inject set
     var presenter: MainPresenter? = null
       @Inject set
     var bus: Bus? = null
       @Inject set
+    var crashReportService: CrashReportService? = null
+      @Inject set
 
-    var app: PrivateMapsApplication? = null
+    var app: EraserMapApplication? = null
     var mapController : MapController? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
     var optionsMenu: Menu? = null
@@ -73,9 +74,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super<AppCompatActivity>.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        app = getApplication() as PrivateMapsApplication
+        app = getApplication() as EraserMapApplication
         app?.component()?.inject(this)
+        crashReportService?.initAndStartSession(this)
+        setContentView(R.layout.activity_main)
         presenter?.mainViewController = this
         presenter?.bus = bus
         locationClient?.connect()
@@ -507,7 +509,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         findViewById(R.id.route_mode).setVisibility(View.VISIBLE)
         (findViewById(R.id.route_mode) as RouteModeView).presenter = presenter
         presenter?.routeViewController = findViewById(R.id.route_mode) as RouteModeView
-        
+
         if(presenter?.route == null) {
             route()
         } else {

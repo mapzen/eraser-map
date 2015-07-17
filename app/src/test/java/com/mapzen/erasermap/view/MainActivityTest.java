@@ -96,11 +96,6 @@ public class MainActivityTest {
     }
 
     @Test
-    public void shouldInjectTileCache() throws Exception {
-        assertThat(activity.getTileCache()).isNotNull();
-    }
-
-    @Test
     public void shouldInjectSavedSearch() throws Exception {
         assertThat(activity.getSavedSearch()).isNotNull();
     }

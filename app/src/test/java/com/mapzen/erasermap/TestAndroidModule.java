@@ -2,6 +2,8 @@ package com.mapzen.erasermap;
 
 import com.mapzen.android.lost.api.LostApiClient;
 
+import org.mockito.Mockito;
+
 import android.content.Context;
 
 import javax.inject.Singleton;
@@ -10,10 +12,10 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class AndroidModule {
-    private final EraserMapApplication application;
+public class TestAndroidModule {
+    private final TestEraserMapApplication application;
 
-    public AndroidModule(EraserMapApplication application) {
+    public TestAndroidModule(TestEraserMapApplication application) {
         this.application = application;
     }
 
@@ -26,6 +28,6 @@ public class AndroidModule {
     }
 
     @Provides @Singleton CrashReportService provideCrashReportService() {
-        return new CrashReportService();
+        return Mockito.mock(CrashReportService.class);
     }
 }

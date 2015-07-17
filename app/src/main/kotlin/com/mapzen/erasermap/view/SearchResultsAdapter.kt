@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import com.mapzen.erasermap.PrivateMapsApplication
+import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.pelias.SimpleFeature
@@ -21,7 +21,7 @@ public class SearchResultsAdapter(val context: Context, val features: List<Featu
         [Inject] set
 
     init {
-        (context.getApplicationContext() as PrivateMapsApplication).component().inject(this)
+        (context.getApplicationContext() as EraserMapApplication).component().inject(this)
     }
 
     override fun instantiateItem(container: ViewGroup?, position: Int): Any? {
