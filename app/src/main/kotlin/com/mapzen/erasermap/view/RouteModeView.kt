@@ -112,6 +112,12 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
                 return true
             }
         })
+        findViewById(R.id.instruction_route_header).setOnTouchListener(object: View.OnTouchListener {
+            override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
+                slideLayout?.setTouchEnabled(true)
+                return true
+            }
+        })
     }
 
     public fun getPanelSlideListener(view : View):SlidingUpPanelLayout.PanelSlideListener {
@@ -119,12 +125,11 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
             public override fun onPanelSlide(panel:View, slideOffset:Float) {
                 if (slideOffset >=  SLIDING_PANEL_OFFSET_OPEN) {
-                    showDirectionList(view);
+                    presenter?.onSlidingPanelOpen()
                 }
 
                 if (slideOffset <  SLIDING_PANEL_OFFSET_OPEN) {
-                    findViewById(R.id.footer).setVisibility(View.VISIBLE)
-                    slideLayout?.setDragView(view.findViewById(R.id.drag_area))
+                    presenter?.onSlidingPanelCollapse()
                 }
 
                 if (slideOffset == SLIDING_PANEL_OFFSET_OPEN) {
@@ -144,7 +149,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         })
     }
 
-    private fun showDirectionList(view : View)  {
+    override fun showDirectionList()  {
         findViewById(R.id.footer).setVisibility(View.GONE)
         val listView = findViewById(R.id.instruction_list_view) as ListView
         val instructionStrings = ArrayList<String>()
@@ -166,8 +171,13 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             pager?.setCurrentItem(i - 1)
         }
         findViewById(R.id.route_reverse).setVisibility(View.GONE)
-        slideLayout?.setDragView(view.findViewById(R.id.instruction_route_header))
+        slideLayout?.setDragView(slideLayout?.findViewById(R.id.instruction_route_header))
         setHeaderOrigins()
+    }
+
+    override fun hideDirectionList() {
+        findViewById(R.id.footer).setVisibility(View.VISIBLE)
+        slideLayout?.setDragView(slideLayout?.findViewById(R.id.drag_area))
     }
 
     private fun setHeaderOrigins() {
@@ -185,18 +195,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     public fun slideLayoutIsExpanded() : Boolean {
         return slideLayout?.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED;
-    }
-
-    public fun slideLayoutIsCollapsed() : Boolean {
-        return slideLayout?.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED;
-    }
-
-    private fun turnAutoPageOff() : Boolean {
-        if (autoPage) {
-            currentInstructionIndex = pager?.getCurrentItem() as Int
-        }
-        autoPage = false
-        return false
     }
 
     private fun resumeAutoPaging() {

@@ -194,6 +194,12 @@ public class RouteModeViewTest {
                 .getOnTouchListener()).isNotNull();
     }
 
+    @Test
+    public void shouldInstructionHeaderTouchListener() throws Exception {
+        assertThat(Shadows.shadowOf(routeModeView.findViewById(R.id.instruction_route_header))
+                .getOnTouchListener()).isNotNull();
+    }
+
     class TestViewGroup extends ViewGroup {
         public TestViewGroup(Context context) {
             super(context);
