@@ -2,7 +2,6 @@ package com.mapzen.erasermap.presenter
 
 import android.location.Location
 import com.mapzen.erasermap.model.RoutePreviewEvent
-import com.mapzen.erasermap.view.MainActivity
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.gson.Feature
@@ -10,8 +9,10 @@ import com.mapzen.pelias.gson.Result
 import com.mapzen.valhalla.Route
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
+import java.util.ArrayList
 
 public class MainPresenterImpl() : MainPresenter {
+    override var currentFeature: Feature? = null;
     override var route: Route? = null;
     override var routingEnabled : Boolean = false
     override var mainViewController: MainViewController? = null
@@ -34,6 +35,17 @@ public class MainPresenterImpl() : MainPresenter {
             mainViewController?.showActionViewAll()
         } else {
             mainViewController?.hideActionViewAll()
+        }
+    }
+
+    override fun onReverseGeocodeResultsAvailable(searchResults: Result?) {
+        this.searchResults = searchResults
+        if(searchResults?.getFeatures()?.isEmpty() as Boolean) {
+            var features = ArrayList<Feature>()
+            features.add(currentFeature)
+            mainViewController?.showReverseGeocodeFeature(features)
+        } else {
+            mainViewController?.showReverseGeocodeFeature(searchResults?.getFeatures())
         }
     }
 
@@ -91,7 +103,12 @@ public class MainPresenterImpl() : MainPresenter {
                 destination = null
             }
         } else {
-            mainViewController?.shutDown()
+            if(searchResults == null) {
+                mainViewController?.shutDown()
+            } else {
+                mainViewController?.hideSearchResults()
+                searchResults = null
+            }
         }
     }
 

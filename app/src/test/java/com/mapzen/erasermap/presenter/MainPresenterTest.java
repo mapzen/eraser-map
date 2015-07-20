@@ -48,6 +48,15 @@ public class MainPresenterTest {
     }
 
     @Test
+    public void onReverseGeocodeResultsAvailable_shouldShowSearchResults() throws Exception {
+        Result result = new Result();
+        ArrayList<Feature> features = new ArrayList<>();
+        result.setFeatures(features);
+        presenter.onReverseGeocodeResultsAvailable(result);
+        assertThat(mainController.isReverseGeocodeVisible).isTrue();
+    }
+
+    @Test
     public void onRestoreViewState_shouldRestorePreviousSearchResults() throws Exception {
         Result result = new Result();
         ArrayList<Feature> features = new ArrayList<>();
@@ -212,6 +221,7 @@ public class MainPresenterTest {
         private boolean isRoutingModeVisible;
         private boolean isCenteredOnCurrentLocation;
         private boolean isCenteredOnCurrentFeature;
+        private boolean isReverseGeocodeVisible;
 
         @Override public void showSearchResults(@NotNull List<? extends Feature> features) {
             searchResults = (List<Feature>) features;
@@ -291,6 +301,9 @@ public class MainPresenterTest {
             this.location = location;
             this.zoom = zoom;
         }
+
+        @Override public void showReverseGeocodeFeature(@NotNull List<? extends Feature> features)
+        { isReverseGeocodeVisible = true; }
     }
 
     private class TestRouteController implements RouteViewController {
