@@ -5,6 +5,7 @@ import com.mapzen.erasermap.view.MainViewController;
 import com.mapzen.erasermap.view.RouteViewController;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.gson.Result;
+import com.mapzen.valhalla.Instruction;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
+import static com.mapzen.erasermap.dummy.TestHelper.getTestInstruction;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestLocation;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -220,10 +222,40 @@ public class MainPresenterTest {
         assertThat(routeController.isDirectionListVisible).isFalse();
     }
 
+    @Test
+    public void onInstructionSelected_shouldCenterMapOnLocation() throws Exception {
+        Instruction instruction = getTestInstruction();
+        Location location = getTestLocation();
+        instruction.setLocation(location);
+        presenter.onInstructionSelected(instruction);
+        assertThat(mainController.location).isEqualTo(location);
+    }
+
+    @Test
+    public void onInstructionSelected_shouldSetMapTilt() throws Exception {
+        Instruction instruction = getTestInstruction();
+        Location location = getTestLocation();
+        instruction.setLocation(location);
+        presenter.onInstructionSelected(instruction);
+        assertThat(mainController.tilt).isEqualTo(MainPresenter.ROUTING_TILT);
+    }
+
+    @Test
+    public void onInstructionSelected_shouldSetMapRotation() throws Exception {
+        Instruction instruction = getTestInstruction();
+        Location location = getTestLocation();
+        instruction.setLocation(location);
+        instruction.setBearing(180);
+        presenter.onInstructionSelected(instruction);
+        assertThat(mainController.rotation).isEqualTo((float) Math.toRadians(180));
+    }
+
     private class TestMainController implements MainViewController {
         private List<Feature> searchResults;
         private Location location;
         private float zoom;
+        private float tilt;
+        private float rotation;
 
         private boolean isProgressVisible;
         private boolean isOverflowVisible;
@@ -313,6 +345,14 @@ public class MainPresenterTest {
         @Override public void centerMapOnLocation(Location location, float zoom) {
             this.location = location;
             this.zoom = zoom;
+        }
+
+        @Override public void setMapTilt(float radians) {
+            this.tilt = radians;
+        }
+
+        @Override public void setMapRotation(float radians) {
+            this.rotation = radians;
         }
 
         @Override public void showReverseGeocodeFeature(@NotNull List<? extends Feature> features)

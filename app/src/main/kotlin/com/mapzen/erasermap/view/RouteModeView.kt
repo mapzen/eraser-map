@@ -17,6 +17,7 @@ import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.helpers.RouteEngine
+import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import java.util.ArrayList
@@ -79,6 +80,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun onPageSelected(position: Int) {
         setCurrentPagerItemStyling(currentInstructionIndex);
+        val instruction = route?.getRouteInstructions()?.get(position)
+        if (instruction is Instruction) {
+            presenter?.onInstructionSelected(instruction)
+        }
     }
 
     override fun onPageScrollStateChanged(state: Int) {

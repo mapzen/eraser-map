@@ -20,9 +20,9 @@ import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.erasermap.BuildConfig
+import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.PeliasLocationProvider
@@ -37,9 +37,9 @@ import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapView
+import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
-import com.squareup.okhttp.Cache
 import com.squareup.otto.Bus
 import retrofit.Callback
 import retrofit.RetrofitError
@@ -173,6 +173,14 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         mapController?.setMapZoom(zoom)
         mapController?.setMapRotation(0f)
         mapController?.setMapTilt(0f)
+    }
+
+    override fun setMapTilt(radians: Float) {
+        mapController?.setMapTilt(radians)
+    }
+
+    override fun setMapRotation(radians: Float) {
+        mapController?.setMapRotation(radians)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -559,6 +567,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         val adapter = InstructionAdapter(this, route!!.getRouteInstructions(), pager)
         pager.setAdapter(adapter)
         pager.setVisibility(View.VISIBLE)
+
+        val firstInstruction = route?.getRouteInstructions()?.get(0)
+        if (firstInstruction is Instruction) {
+            presenter?.onInstructionSelected(firstInstruction)
+        }
 
         val simpleFeature = SimpleFeature.fromFeature(destination)
         (findViewById(R.id.destination_name) as TextView).setText(simpleFeature.toString())
