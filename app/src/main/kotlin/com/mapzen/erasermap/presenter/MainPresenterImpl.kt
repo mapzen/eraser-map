@@ -50,13 +50,16 @@ public class MainPresenterImpl() : MainPresenter {
     }
 
     override fun onReverseGeocodeResultsAvailable(searchResults: Result?) {
+        var features = ArrayList<Feature>()
         this.searchResults = searchResults
         if(searchResults?.getFeatures()?.isEmpty() as Boolean) {
-            var features = ArrayList<Feature>()
             features.add(currentFeature)
             mainViewController?.showReverseGeocodeFeature(features)
+            searchResults?.setFeatures(features)
         } else {
-            mainViewController?.showReverseGeocodeFeature(searchResults?.getFeatures())
+            features.add(searchResults?.getFeatures()?.get(0))
+            searchResults?.setFeatures(features)
+            mainViewController?.showReverseGeocodeFeature(features)
         }
     }
 
