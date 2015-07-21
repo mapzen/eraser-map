@@ -26,6 +26,17 @@ public class MainPresenterImpl() : MainPresenter {
     private var searchResults: Result? = null
     private var destination: Feature? = null
 
+    private enum class ViewState {
+        DEFAULT,
+        SEARCH,
+        SEARCH_RESULTS,
+        ROUTING_PREVIEW,
+        ROUTING,
+        ROUTING_DIRECTION_LIST
+    }
+
+    private var viewState: ViewState = ViewState.DEFAULT
+
     override fun onSearchResultsAvailable(searchResults: Result?) {
         this.searchResults = searchResults
         mainViewController?.showSearchResults(searchResults?.getFeatures())
@@ -60,6 +71,10 @@ public class MainPresenterImpl() : MainPresenter {
             if (searchResults != null) {
                 mainViewController?.showSearchResults(searchResults?.getFeatures())
             }
+        }
+
+        if (viewState == ViewState.ROUTING_DIRECTION_LIST) {
+            routeViewController?.showDirectionList()
         }
     }
 
@@ -129,5 +144,15 @@ public class MainPresenterImpl() : MainPresenter {
             routeViewController?.onLocationChanged(location)
             mainViewController?.centerMapOnLocation(location, MainPresenter.ROUTING_ZOOM)
         }
+    }
+
+    override fun onSlidingPanelOpen() {
+        viewState = ViewState.ROUTING_DIRECTION_LIST
+        routeViewController?.showDirectionList()
+    }
+
+    override fun onSlidingPanelCollapse() {
+        viewState = ViewState.ROUTING
+        routeViewController?.hideDirectionList()
     }
 }

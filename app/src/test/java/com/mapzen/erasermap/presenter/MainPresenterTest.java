@@ -207,6 +207,19 @@ public class MainPresenterTest {
         assertThat(mainController.isCenteredOnCurrentFeature).isTrue();
     }
 
+    @Test
+    public void onSlidingPanelOpen_shouldShowRouteDirectionList() throws Exception {
+        presenter.onSlidingPanelOpen();
+        assertThat(routeController.isDirectionListVisible).isTrue();
+    }
+
+    @Test
+    public void onSlidingPanelCollapse_shouldHideRouteDirectionList() throws Exception {
+        routeController.isDirectionListVisible = true;
+        presenter.onSlidingPanelCollapse();
+        assertThat(routeController.isDirectionListVisible).isFalse();
+    }
+
     private class TestMainController implements MainViewController {
         private List<Feature> searchResults;
         private Location location;
@@ -308,9 +321,18 @@ public class MainPresenterTest {
 
     private class TestRouteController implements RouteViewController {
         private Location location;
+        private boolean isDirectionListVisible;
 
         @Override public void onLocationChanged(@NotNull Location location) {
             this.location = location;
+        }
+
+        @Override public void showDirectionList() {
+            isDirectionListVisible = true;
+        }
+
+        @Override public void hideDirectionList() {
+            isDirectionListVisible = false;
         }
     }
 }

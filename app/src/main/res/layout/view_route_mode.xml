@@ -1,95 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sliding_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    sothree:umanoPanelHeight="60dp"
+    sothree:umanoShadowHeight="4dp"
+    sothree:umanoParalaxOffset="110dp">
 
-    <com.sothree.slidinguppanel.SlidingUpPanelLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:sothree="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/sliding_layout"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/instruction_pager"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/pager_height"
+            android:keepScreenOn="true" />
+
+        <ImageButton
+            android:id="@+id/resume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginRight="16dp"
+            android:src="@android:drawable/ic_menu_compass" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/footer_wrapper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="bottom"
-        sothree:umanoPanelHeight="60dp"
-        sothree:umanoShadowHeight="4dp"
-        sothree:umanoParalaxOffset="110dp">
+        android:layout_gravity="bottom">
 
         <RelativeLayout
+            android:id="@+id/footer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <android.support.v4.view.ViewPager
-                android:id="@+id/instruction_pager"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/pager_height"
-                android:keepScreenOn="true"/>
+            android:layout_height="60dp"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="top"
+            android:background="@color/transparent_white"
+            android:paddingBottom="@dimen/padding_vertical_small"
+            android:paddingLeft="@dimen/instruction_padding"
+            android:paddingTop="@dimen/footer_padding">
 
-            <ImageButton
-                android:id="@+id/resume"
+            <com.mapzen.erasermap.view.DistanceView
+                android:id="@+id/destination_distance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="16dp"
-                android:layout_marginRight="16dp"
-                android:src="@android:drawable/ic_menu_compass" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/footer_wrapper"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="top">
-
-            <RelativeLayout
-                android:id="@+id/footer"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_alignParentTop="true"
                 android:layout_gravity="top"
-                android:background="@color/transparent_white"
-                android:paddingBottom="@dimen/padding_vertical_small"
-                android:paddingLeft="@dimen/instruction_padding"
-                android:paddingTop="@dimen/footer_padding">
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@color/brown"
+                android:textSize="@dimen/font_medium"
+                android:textStyle="bold" />
 
-                <com.mapzen.erasermap.view.DistanceView
-                    android:id="@+id/destination_distance"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top"
-                    android:fontFamily="sans-serif-condensed"
-                    android:textColor="@color/brown"
-                    android:textSize="@dimen/font_medium"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/destination_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_gravity="top"
-                    android:ellipsize="end"
-                    android:fontFamily="sans-serif-condensed"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textColor="@color/brown"
-                    android:textSize="@dimen/font_small" />
-
-            </RelativeLayout>
-
-            <View
-                android:id="@+id/drag_area"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:layout_alignParentTop="true" />
-
-            <include layout="@layout/activity_instructions"
-                android:layout_below="@id/footer"
+            <TextView
+                android:id="@+id/destination_name"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_width="wrap_content" />
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="top"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-condensed"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/brown"
+                android:textSize="@dimen/font_small" />
 
         </RelativeLayout>
 
-    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+        <View
+            android:id="@+id/drag_area"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_alignParentTop="true" />
 
-</LinearLayout>
+        <include
+            layout="@layout/activity_instructions"
+            android:layout_below="@id/footer"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content" />
+
+    </RelativeLayout>
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>
