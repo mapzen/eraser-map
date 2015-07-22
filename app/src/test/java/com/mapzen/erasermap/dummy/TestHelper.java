@@ -4,8 +4,13 @@ import com.mapzen.pelias.SimpleFeature;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.gson.Geometry;
 import com.mapzen.pelias.gson.Properties;
+import com.mapzen.valhalla.Instruction;
 
 import com.google.common.io.Files;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.mockito.Mockito;
 
 import android.location.Location;
 
@@ -70,5 +75,12 @@ public class TestHelper {
     public static Location getTestLocation() {
         final Location location = new Location("test");
         return location;
+    }
+
+    public static Instruction getTestInstruction() throws JSONException {
+        JSONObject jsonObject = Mockito.mock(JSONObject.class);
+        Mockito.when(jsonObject.length()).thenReturn(6);
+        Mockito.when(jsonObject.getString("type")).thenReturn("0");
+        return new Instruction(jsonObject);
     }
 }

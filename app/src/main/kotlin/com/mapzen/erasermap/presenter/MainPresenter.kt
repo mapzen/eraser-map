@@ -5,6 +5,7 @@ import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
+import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.squareup.otto.Bus
 
@@ -12,6 +13,9 @@ public interface MainPresenter {
     companion object {
         val DEFAULT_ZOOM: Float = 14f
         val ROUTING_ZOOM: Float = 17f
+
+        val DEFAULT_TILT: Float = 0f
+        val ROUTING_TILT: Float = 0.785398163f // 45°
     }
 
     public var currentSearchTerm: String?
@@ -36,4 +40,5 @@ public interface MainPresenter {
     public fun onLocationChanged(location: Location)
     public fun onSlidingPanelOpen()
     public fun onSlidingPanelCollapse()
+    public fun onInstructionSelected(instruction: Instruction)
 }

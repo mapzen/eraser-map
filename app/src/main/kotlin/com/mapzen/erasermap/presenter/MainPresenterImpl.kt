@@ -6,6 +6,7 @@ import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
+import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
@@ -146,6 +147,7 @@ public class MainPresenterImpl() : MainPresenter {
         if (routingEnabled) {
             routeViewController?.onLocationChanged(location)
             mainViewController?.centerMapOnLocation(location, MainPresenter.ROUTING_ZOOM)
+            mainViewController?.setMapTilt(MainPresenter.ROUTING_TILT)
         }
     }
 
@@ -157,5 +159,11 @@ public class MainPresenterImpl() : MainPresenter {
     override fun onSlidingPanelCollapse() {
         viewState = ViewState.ROUTING
         routeViewController?.hideDirectionList()
+    }
+
+    override fun onInstructionSelected(instruction: Instruction) {
+        mainViewController?.centerMapOnLocation(instruction.location, MainPresenter.ROUTING_ZOOM)
+        mainViewController?.setMapTilt(MainPresenter.ROUTING_TILT)
+        mainViewController?.setMapRotation(Math.toRadians(instruction.bearing.toDouble()).toFloat())
     }
 }
