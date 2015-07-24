@@ -27,10 +27,9 @@ public class CommonModule {
         return new Bus();
     }
 
-    @Provides @Singleton ManifestModel provideApiKeys() {return new ManifestModel();}
+    @Provides @Singleton ManifestModel provideApiKeys() { return new ManifestModel(); }
 
-        @Provides RouteEngine provideRouteEngine() {
+    @Provides RouteEngine provideRouteEnCgine() {
         return new RouteEngine();
     }
-
 }

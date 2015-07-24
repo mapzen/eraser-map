@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.AsyncTask
 import android.util.Log
 import com.google.gson.Gson
+import com.google.gson.JsonParseException
 import com.mapzen.erasermap.model.ManifestModel
 import com.squareup.okhttp.*
 
@@ -26,21 +27,24 @@ public class ManifestDownLoader() {
         client = OkHttpClient()
     }
 
-
     public fun download(manifest: ManifestModel?,  callback : () -> Unit) {
         (object : AsyncTask<Void, Void, ManifestModel>() {
             override fun doInBackground(vararg params: Void): ManifestModel? {
                 try {
-                var request: Request =  Request.Builder()
-                        .url(URL(host + "erasermap_manifest"))
-                        .build();
-
-                val response: Response = client!!.newCall(request).execute()
-                    var gson: Gson = Gson()
+                    var request: Request =  Request.Builder()
+                            .url(URL(host + "erasermap_manifest"))
+                            .build()
+                    val response: Response = client!!.newCall(request).execute()
                     val responseString: String = response.body().string()
-                    return gson.fromJson(responseString,
-                                    javaClass<ManifestModel>())
-
+                    var gson: Gson = Gson()
+                    try {
+                        var model: ManifestModel = gson.fromJson(responseString,
+                                javaClass<ManifestModel>())
+                        return model
+                    }
+                    catch (e: Exception) {
+                        return null
+                    }
                 } catch (ioe: IOException) {
                     Log.d("Error", "Unable to get api keys")
                 }
@@ -48,15 +52,16 @@ public class ManifestDownLoader() {
             }
 
             override  fun onPostExecute(model : ManifestModel?) {
-                manifest?.mintApiKey = model?.mintApiKey
-                manifest?.valhallaApiKey = model?.valhallaApiKey
-                manifest?.minVersion = model?.minVersion
-                manifest?.vectorTileApiKeyReleaseProp = model?.vectorTileApiKeyReleaseProp
-                manifest?.peliasApiKey = model?.peliasApiKey
+                if(model != null) {
+                    manifest?.setMintApiKey(model.getMintApiKey())
+                    manifest?.setValhallaApiKey(model.getValhallaApiKey())
+                    manifest?.setMinVersion(model.getMinVersion())
+                    manifest?.setVectorTileApiKeyReleaseProp(model.getVectorTileApiKeyReleaseProp())
+                    manifest?.setPeliasApiKey(model.getPeliasApiKey())
+                }
                 callback()
             }
-            }).execute().get()
+        }).execute().get()
     }
-
-
 }
+

@@ -23,9 +23,11 @@ Config(constants = BuildConfig::class, sdk=intArrayOf(21))
 public class ManifestDownLoaderTest {
     var downLoader: ManifestDownLoader? = null
     var server: MockWebServer? = null
-    var sampleResponse: String = "{\r\n\"minVersion\": 1.1,\r\n\"VectorTileApiKeyReleaseProp\":" +
-            " \"vectorkey\",\r\n\"valhallaApiKey\":" +
-            " \"routekey\",\r\n\"mintApiKey\": \"mintkey\",\r\n\"peliasApiKey\":\"peliasKey\" \"\"\r\n}\r\n"
+    var sampleResponse: String = "{\"minVersion\": 0.1,\r\n" +
+            "    \"vectorTileApiKeyReleaseProp\": \"vectorKey\",\r\n " +
+            "   \"valhallaApiKey\": \"routeKey\",\r\n    " +
+            "\"mintApiKey\": \"mintKey\",\r\n    " +
+            "\"peliasApiKey\": \"peliasKey\"}\r\n"
 
     Before
     throws(Exception::class)
@@ -57,13 +59,14 @@ public class ManifestDownLoaderTest {
     public fun  shouldSetManifestModelObject() {
         var keys: ManifestModel = ManifestModel()
         server?.enqueue(MockResponse().setBody(sampleResponse))
-        downLoader?.download(keys, {})
+        downLoader?.download(keys, {
+        })
         server?.takeRequest(1000, TimeUnit.MILLISECONDS);
-        assertThat(keys.minVersion).isEqualTo(1.1)
-        assertThat(keys.mintApiKey).isEqualTo("mintkey")
-        assertThat(keys.valhallaApiKey).isEqualTo("routekey")
-        assertThat(keys.vectorTileApiKeyReleaseProp).isEqualTo("vectorkey")
-        assertThat(keys.peliasApiKey).isEqualTo("peliasKey")
-
+        assertThat(keys.getMintApiKey()).isEqualTo("mintKey")
+        assertThat(keys.getValhallaApiKey()).isEqualTo("routeKey")
+        assertThat(keys.getVectorTileApiKeyReleaseProp()).isEqualTo("vectorKey")
+        assertThat(keys.getPeliasApiKey()).isEqualTo("peliasKey")
+        assertThat(keys.getMinVersion()).isEqualTo(0.1)
     }
 }
+

@@ -8,8 +8,8 @@ import android.content.Context;
 
 public class CrashReportService {
     public void initAndStartSession(Context context, ManifestModel apiKeys) {
-        if (apiKeys.mintApiKey!= null) {
-            Mint.initAndStartSession(context, apiKeys.mintApiKey);
+        if (apiKeys.getMintApiKey() != null) {
+            Mint.initAndStartSession(context, apiKeys.getMintApiKey());
         }
     }
 }
