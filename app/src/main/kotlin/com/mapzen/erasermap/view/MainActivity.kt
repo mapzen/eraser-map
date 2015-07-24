@@ -23,6 +23,8 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
+import com.mapzen.erasermap.model.ManifestDownLoader
+import com.mapzen.erasermap.model.ManifestModel
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.PeliasLocationProvider
@@ -66,6 +68,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
     var crashReportService: CrashReportService? = null
       @Inject set
 
+    var apiKeys: ManifestModel? = null
+      @Inject set
+
     var app: EraserMapApplication? = null
     var mapController : MapController? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
@@ -79,7 +84,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         super<AppCompatActivity>.onCreate(savedInstanceState)
         app = getApplication() as EraserMapApplication
         app?.component()?.inject(this)
-        crashReportService?.initAndStartSession(this)
         setContentView(R.layout.activity_main)
         presenter?.mainViewController = this
         presenter?.bus = bus
@@ -90,6 +94,15 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         initReverseButton()
         centerMapOnCurrentLocation()
         presenter?.onRestoreViewState()
+        getApiKeys({initCrashReportService()})
+    }
+
+
+    private fun initCrashReportService() {
+        if(apiKeys?.mintApiKey == null) {
+            apiKeys?.mintApiKey = BuildConfig.MINT_API_KEY
+        }
+        crashReportService?.initAndStartSession(this, apiKeys)
     }
 
     override fun onStart() {
@@ -139,6 +152,20 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         findViewById(R.id.find_me).setOnClickListener({ centerMapOnCurrentLocation() })
     }
 
+    private fun getApiKeys(callback : () -> Unit) {
+        var dl: ManifestDownLoader = ManifestDownLoader()
+        dl.download(apiKeys, callback)
+
+        if(apiKeys?.valhallaApiKey == null) {
+            apiKeys?.valhallaApiKey = BuildConfig.VALHALLA_API_KEY
+        }
+
+
+        if(apiKeys?.vectorTileApiKeyReleaseProp == null) {
+            apiKeys?.vectorTileApiKeyReleaseProp = BuildConfig.VECTOR_TILE_API_KEY
+        }
+    }
+
     private fun initLocationUpdates() {
         if (locationClient?.isConnected() == false) {
             locationClient?.connect()
@@ -159,6 +186,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
     override fun centerMapOnCurrentLocation() {
         centerMapOnCurrentLocation(MainPresenter.DEFAULT_ZOOM)
     }
+
 
     override fun centerMapOnCurrentLocation(zoom: Float) {
         val location = LocationServices.FusedLocationApi?.getLastLocation()
@@ -420,7 +448,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         (findViewById(R.id.route_preview) as RoutePreviewView).destination =
                 SimpleFeature.fromFeature(destination);
         (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
-    }
+        }
 
     override fun success(route: Route?) {
         this.route = route;
@@ -594,9 +622,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
 
     private fun getInitializedRouter(): Router {
         when(type) {
-            Router.Type.DRIVING -> return Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setDriving()
-            Router.Type.WALKING -> return Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setWalking()
-            Router.Type.BIKING -> return Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setBiking()
+            Router.Type.DRIVING -> return Router().setApiKey(apiKeys?.valhallaApiKey as String).setDriving()
+            Router.Type.WALKING -> return Router().setApiKey(apiKeys?.valhallaApiKey as String).setWalking()
+            Router.Type.BIKING -> return Router().setApiKey(apiKeys?.valhallaApiKey as String).setBiking()
         }
     }
 

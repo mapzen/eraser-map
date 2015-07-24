@@ -16,6 +16,7 @@ public class PrivateMapsTestRunner extends RobolectricGradleTestRunner {
         super(klass);
     }
 
+
     @Override
     protected ShadowMap createShadowMap() {
         return super.createShadowMap()

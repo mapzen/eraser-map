@@ -77,6 +77,7 @@ dependencies {
   compile ('com.mapzen.android:pelias-android-sdk:0.5-SNAPSHOT') {
     exclude group: 'javax.annotation:javax', module: 'javax.annotation-api'
   }
+  compile 'com.squareup.retrofit:retrofit:1.9.0'
   compile 'com.google.dagger:dagger:2.0'
   compile 'com.google.dagger:dagger-compiler:2.0'
   compile 'javax.annotation:javax.annotation-api:1.2'
@@ -87,6 +88,7 @@ dependencies {
     exclude group: 'org.apache.commons', module: 'commons-io'
   }
   compile "com.splunk.mint:mint:4.2.1"
+  compile 'com.squareup.okhttp:okhttp:2.4.0'
 
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.9.5'

@@ -396,6 +396,7 @@ public class MainActivityTest {
         }
     }
 
+
     private MotionEvent getLongPressMotionEvent() {
         return MotionEvent.obtain(SystemClock.uptimeMillis(),
                 SystemClock.uptimeMillis() + 501,

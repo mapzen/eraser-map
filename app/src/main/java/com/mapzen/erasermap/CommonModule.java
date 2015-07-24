@@ -1,5 +1,6 @@
 package com.mapzen.erasermap;
 
+import com.mapzen.erasermap.model.ManifestModel;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.helpers.RouteEngine;
@@ -26,7 +27,10 @@ public class CommonModule {
         return new Bus();
     }
 
-    @Provides RouteEngine provideRouteEngine() {
+    @Provides @Singleton ManifestModel provideApiKeys() {return new ManifestModel();}
+
+        @Provides RouteEngine provideRouteEngine() {
         return new RouteEngine();
     }
+
 }
