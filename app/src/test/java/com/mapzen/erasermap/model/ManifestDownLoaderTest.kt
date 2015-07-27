@@ -2,20 +2,14 @@ package com.mapzen.erasermap.model
 
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.PrivateMapsTestRunner
-import com.mapzen.erasermap.model.ManifestDownLoader
-
 import com.squareup.okhttp.mockwebserver.MockResponse
 import com.squareup.okhttp.mockwebserver.MockWebServer
-import com.squareup.okhttp.mockwebserver.RecordedRequest
-
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.Robolectric
 import org.robolectric.annotation.Config
-
-import org.assertj.core.api.Assertions.assertThat
 import java.util.concurrent.TimeUnit
 
 RunWith(PrivateMapsTestRunner::class)
