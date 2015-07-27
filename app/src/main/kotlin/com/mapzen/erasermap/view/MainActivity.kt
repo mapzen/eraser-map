@@ -23,6 +23,8 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
+import com.mapzen.erasermap.model.ManifestDownLoader
+import com.mapzen.erasermap.model.ManifestModel
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.PeliasLocationProvider
@@ -65,6 +67,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
       @Inject set
     var crashReportService: CrashReportService? = null
       @Inject set
+    var apiKeys: ManifestModel? = null
+      @Inject set
 
     var app: EraserMapApplication? = null
     var mapController : MapController? = null
@@ -79,7 +83,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         super<AppCompatActivity>.onCreate(savedInstanceState)
         app = getApplication() as EraserMapApplication
         app?.component()?.inject(this)
-        crashReportService?.initAndStartSession(this)
+        initCrashReportService()
         setContentView(R.layout.activity_main)
         presenter?.mainViewController = this
         presenter?.bus = bus
@@ -90,6 +94,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         initReverseButton()
         centerMapOnCurrentLocation()
         presenter?.onRestoreViewState()
+        getApiKeys()
     }
 
     override fun onStart() {
@@ -137,6 +142,23 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
 
     private fun initFindMeButton() {
         findViewById(R.id.find_me).setOnClickListener({ centerMapOnCurrentLocation() })
+    }
+
+
+    private fun initCrashReportService() {
+        crashReportService?.initAndStartSession(this)
+    }
+
+    private fun getApiKeys() {
+        var dl: ManifestDownLoader = ManifestDownLoader()
+        dl.download(apiKeys, {
+            if(apiKeys?.getValhallaApiKey()== null) {
+                apiKeys?.setValhallaApiKey(BuildConfig.VALHALLA_API_KEY)
+            }
+            if(apiKeys?.getVectorTileApiKeyReleaseProp()== null) {
+                apiKeys?.setVectorTileApiKeyReleaseProp(BuildConfig.VECTOR_TILE_API_KEY)
+            }
+        })
     }
 
     private fun initLocationUpdates() {
@@ -594,9 +616,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
 
     private fun getInitializedRouter(): Router {
         when(type) {
-            Router.Type.DRIVING -> return Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setDriving()
-            Router.Type.WALKING -> return Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setWalking()
-            Router.Type.BIKING -> return Router().setApiKey(BuildConfig.VALHALLA_API_KEY).setBiking()
+            Router.Type.DRIVING -> return Router().setApiKey(apiKeys?.getValhallaApiKey() as String).setDriving()
+            Router.Type.WALKING -> return Router().setApiKey(apiKeys?.getValhallaApiKey()  as String).setWalking()
+            Router.Type.BIKING -> return Router().setApiKey(apiKeys?.getValhallaApiKey()  as String).setBiking()
         }
     }
 
