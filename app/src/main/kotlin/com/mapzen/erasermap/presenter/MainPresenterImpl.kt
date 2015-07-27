@@ -170,11 +170,9 @@ public class MainPresenterImpl() : MainPresenter {
     }
 
     override fun onPause(mapzenLocation: MapzenLocation?) {
-        if (isRouting() || isRoutingDirectionList()) {
-            return
+        if (!isRouting() && !isRoutingDirectionList()) {
+            mapzenLocation?.disconnect()
         }
-
-        mapzenLocation?.disconnect()
     }
 
     private fun isRouting(): Boolean {

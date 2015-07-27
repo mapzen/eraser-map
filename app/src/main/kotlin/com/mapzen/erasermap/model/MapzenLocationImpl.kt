@@ -33,7 +33,7 @@ public class MapzenLocationImpl(val app: EraserMapApplication) : MapzenLocation 
     }
 
     override fun initLocationUpdates(callback: (location: Location) -> Unit) {
-        if (locationClient?.isConnected() == false) {
+        if (!isConnected()) {
             locationClient?.connect()
         }
 
