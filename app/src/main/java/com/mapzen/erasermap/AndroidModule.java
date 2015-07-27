@@ -1,6 +1,8 @@
 package com.mapzen.erasermap;
 
 import com.mapzen.android.lost.api.LostApiClient;
+import com.mapzen.erasermap.model.MapzenLocation;
+import com.mapzen.erasermap.model.MapzenLocationImpl;
 
 import android.content.Context;
 
@@ -27,5 +29,9 @@ public class AndroidModule {
 
     @Provides @Singleton CrashReportService provideCrashReportService() {
         return new CrashReportService();
+    }
+
+    @Provides @Singleton MapzenLocation provideMapzenLocation() {
+        return new MapzenLocationImpl(application);
     }
 }

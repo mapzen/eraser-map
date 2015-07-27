@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.presenter
 
 import android.location.Location
+import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
@@ -107,7 +108,7 @@ public class MainPresenterImpl() : MainPresenter {
         mainViewController?.showAllSearchResults(searchResults?.getFeatures())
     }
 
-    [Subscribe] public fun onRoutePreviewEvent(event: RoutePreviewEvent) {
+    @Subscribe public fun onRoutePreviewEvent(event: RoutePreviewEvent) {
         destination = event.destination;
         mainViewController?.collapseSearchView()
         mainViewController?.showRoutePreview(event.destination)
@@ -115,14 +116,14 @@ public class MainPresenterImpl() : MainPresenter {
 
     override fun onBackPressed() {
         if (destination != null ) {
-            if(routingEnabled == true) {
+            if (routingEnabled == true) {
                 mainViewController?.hideRoutingMode()
             } else {
                 mainViewController?.hideRoutePreview()
                 destination = null
             }
         } else {
-            if(searchResults == null) {
+            if (searchResults == null) {
                 mainViewController?.shutDown()
             } else {
                 mainViewController?.hideSearchResults()
@@ -132,10 +133,11 @@ public class MainPresenterImpl() : MainPresenter {
     }
 
     override fun onRoutingCircleClick(reverse: Boolean) {
-        if(reverse) {
+        if (reverse) {
             mainViewController?.showDirectionList()
         } else {
-            mainViewController?.showRoutingMode(destination!!)
+            if (destination is Feature) mainViewController?.showRoutingMode(destination!!)
+            viewState = ViewState.ROUTING
         }
     }
 
@@ -165,5 +167,19 @@ public class MainPresenterImpl() : MainPresenter {
         mainViewController?.centerMapOnLocation(instruction.location, MainPresenter.ROUTING_ZOOM)
         mainViewController?.setMapTilt(MainPresenter.ROUTING_TILT)
         mainViewController?.setMapRotation(Math.toRadians(instruction.bearing.toDouble()).toFloat())
+    }
+
+    override fun onPause(mapzenLocation: MapzenLocation?) {
+        if (!isRouting() && !isRoutingDirectionList()) {
+            mapzenLocation?.disconnect()
+        }
+    }
+
+    private fun isRouting(): Boolean {
+        return viewState == ViewState.ROUTING
+    }
+
+    private fun isRoutingDirectionList(): Boolean {
+        return viewState == ViewState.ROUTING_DIRECTION_LIST
     }
 }

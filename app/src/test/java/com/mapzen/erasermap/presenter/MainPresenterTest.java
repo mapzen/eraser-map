@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.presenter;
 
 import com.mapzen.erasermap.model.RoutePreviewEvent;
+import com.mapzen.erasermap.model.TestMapzenLocation;
 import com.mapzen.erasermap.view.MainViewController;
 import com.mapzen.erasermap.view.RouteViewController;
 import com.mapzen.pelias.gson.Feature;
@@ -248,6 +249,28 @@ public class MainPresenterTest {
         instruction.setBearing(180);
         presenter.onInstructionSelected(instruction);
         assertThat(mainController.rotation).isEqualTo((float) Math.toRadians(180));
+    }
+
+    @Test
+    public void onPause_shouldDisconnectLocationUpdates() throws Exception {
+        TestMapzenLocation mapzenLocation = new TestMapzenLocation();
+        mapzenLocation.connect();
+        presenter.onPause(mapzenLocation);
+        assertThat(mapzenLocation.isConnected()).isFalse();
+    }
+
+    @Test
+    public void onPause_shouldNotDisconnectLocationUpdatesWhileRouting() throws Exception {
+        TestMapzenLocation mapzenLocation = new TestMapzenLocation();
+        mapzenLocation.connect();
+
+        presenter.onRoutingCircleClick(false);
+        presenter.onPause(mapzenLocation);
+        assertThat(mapzenLocation.isConnected()).isTrue();
+
+        presenter.onSlidingPanelOpen();
+        presenter.onPause(mapzenLocation);
+        assertThat(mapzenLocation.isConnected()).isTrue();
     }
 
     private class TestMainController implements MainViewController {

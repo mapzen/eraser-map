@@ -94,8 +94,8 @@ public class MainActivityTest {
     }
 
     @Test
-    public void shouldInjectLocationClient() throws Exception {
-        assertThat(activity.getLocationClient()).isNotNull();
+    public void shouldInjectMapzenLocation() throws Exception {
+        assertThat(activity.getMapzenLocation()).isNotNull();
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.mapzen.erasermap;
 
+import com.mapzen.erasermap.model.MapzenLocationImpl;
 import com.mapzen.erasermap.view.MainActivity;
 import com.mapzen.erasermap.view.RouteModeView;
 import com.mapzen.erasermap.view.SearchResultsAdapter;
@@ -17,6 +18,7 @@ public class EraserMapApplication extends Application {
         void inject(MainActivity mainActivity);
         void inject(SearchResultsAdapter searchResultsAdapter);
         void inject(RouteModeView routeModeView);
+        void inject(MapzenLocationImpl mapzenLocation);
     }
 
     private ApplicationComponent component;
