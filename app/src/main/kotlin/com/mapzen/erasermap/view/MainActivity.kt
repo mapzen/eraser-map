@@ -18,13 +18,13 @@ import android.widget.TextView
 import android.widget.Toast
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
-import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.ManifestDownLoader
 import com.mapzen.erasermap.model.ManifestModel
+import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.PeliasLocationProvider
@@ -51,13 +51,11 @@ import javax.inject.Inject
 
 public class MainActivity : AppCompatActivity(), MainViewController, Router.Callback,
         SearchResultsView.OnSearchResultSelectedListener {
-    private val LOCATION_UPDATE_INTERVAL_IN_MS: Long = 1000L
-    private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT: Float = 0f
 
     public val requestCodeSearchResults: Int = 0x01
 
     private var route: Route? = null;
-    var locationClient: LostApiClient? = null
+    var mapzenLocation: MapzenLocation? = null
       @Inject set
     var savedSearch: SavedSearch? = null
       @Inject set
@@ -77,7 +75,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
     var destination: Feature? = null
     var type : Router.Type = Router.Type.DRIVING
     var reverse : Boolean = false;
-    var currentLocation : Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super<AppCompatActivity>.onCreate(savedInstanceState)
@@ -87,7 +84,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         setContentView(R.layout.activity_main)
         presenter?.mainViewController = this
         presenter?.bus = bus
-        locationClient?.connect()
+        mapzenLocation?.connect()
         initMapController()
         initAutoCompleteAdapter()
         initFindMeButton()
@@ -110,7 +107,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
 
     override fun onPause() {
         super<AppCompatActivity>.onPause()
-        locationClient?.disconnect()
+        mapzenLocation?.disconnect()
     }
 
     override fun onStop() {
@@ -144,7 +141,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         findViewById(R.id.find_me).setOnClickListener({ centerMapOnCurrentLocation() })
     }
 
-
     private fun initCrashReportService() {
         crashReportService?.initAndStartSession(this)
     }
@@ -162,19 +158,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
     }
 
     private fun initLocationUpdates() {
-        if (locationClient?.isConnected() == false) {
-            locationClient?.connect()
-        }
-
-        val locationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
-                .setFastestInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
-                .setSmallestDisplacement(LOCATION_UPDATE_SMALLEST_DISPLACEMENT)
-
-        LocationServices.FusedLocationApi?.requestLocationUpdates(locationRequest) {
-            location: Location -> currentLocation = location
-            presenter?.onLocationChanged(location)
+        mapzenLocation?.initLocationUpdates {
+            location: Location -> presenter?.onLocationChanged(location)
         }
     }
 
@@ -183,9 +168,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
     }
 
     override fun centerMapOnCurrentLocation(zoom: Float) {
-        val location = LocationServices.FusedLocationApi?.getLastLocation()
+        val location = mapzenLocation?.getLastLocation()
         if (location != null) {
-            currentLocation = location
             centerMapOnLocation(location, zoom)
         }
     }
@@ -219,7 +203,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         if (searchView is PeliasSearchView) {
             listView.setAdapter(autoCompleteAdapter)
             val pelias = Pelias.getPelias()
-            pelias.setLocationProvider(LocationProvider())
+            pelias.setLocationProvider(mapzenLocation)
             searchView.setAutoCompleteListView(listView)
             searchView.setSavedSearch(savedSearch)
             searchView.setPelias(Pelias.getPelias())
@@ -352,16 +336,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         }
     }
 
-    inner class LocationProvider() : PeliasLocationProvider {
-        override fun getLat(): String? {
-            return currentLocation?.getLatitude().toString()
-        }
-
-        override fun getLon(): String? {
-            return currentLocation?.getLongitude().toString()
-        }
-    }
-
     override fun showSearchResults(features: List<Feature>) {
         showSearchResultsPager(features)
         addSearchResultsToMap(features)
@@ -398,7 +372,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
 
     public fun reverseGeolocate(event: MotionEvent) : Boolean {
         val pelias = Pelias.getPelias()
-        pelias.setLocationProvider(LocationProvider())
+        pelias.setLocationProvider(mapzenLocation)
         var coords  = mapController?.coordinatesAtScreenPosition(
                 event.getRawX().toDouble(), event.getRawY().toDouble())
         presenter?.currentFeature = getGenericLocationFeature(coords?.get(1) as Double, coords?.get(0) as Double)
@@ -470,7 +444,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
 
     fun route() {
         val simpleFeature = SimpleFeature.fromFeature(destination)
-        val location = LocationServices.FusedLocationApi?.getLastLocation()
+        val location = mapzenLocation?.getLastLocation()
         if (reverse) {
             if (location is Location) {
                 val start: DoubleArray = doubleArrayOf(simpleFeature.getLat(), simpleFeature.getLon())
@@ -617,8 +591,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
     private fun getInitializedRouter(): Router {
         when(type) {
             Router.Type.DRIVING -> return Router().setApiKey(apiKeys?.getValhallaApiKey() as String).setDriving()
-            Router.Type.WALKING -> return Router().setApiKey(apiKeys?.getValhallaApiKey()  as String).setWalking()
-            Router.Type.BIKING -> return Router().setApiKey(apiKeys?.getValhallaApiKey()  as String).setBiking()
+            Router.Type.WALKING -> return Router().setApiKey(apiKeys?.getValhallaApiKey() as String).setWalking()
+            Router.Type.BIKING -> return Router().setApiKey(apiKeys?.getValhallaApiKey() as String).setBiking()
         }
     }
 

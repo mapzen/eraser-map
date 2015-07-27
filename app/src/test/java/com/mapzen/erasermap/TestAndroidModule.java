@@ -1,6 +1,7 @@
 package com.mapzen.erasermap;
 
 import com.mapzen.android.lost.api.LostApiClient;
+import com.mapzen.erasermap.model.MapzenLocation;
 
 import org.mockito.Mockito;
 
@@ -29,5 +30,9 @@ public class TestAndroidModule {
 
     @Provides @Singleton CrashReportService provideCrashReportService() {
         return Mockito.mock(CrashReportService.class);
+    }
+
+    @Provides @Singleton MapzenLocation provideMapzenLocation() {
+        return new MapzenLocation(application);
     }
 }
