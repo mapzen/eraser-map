@@ -2,6 +2,7 @@ package com.mapzen.erasermap;
 
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.MapzenLocation;
+import com.mapzen.erasermap.model.MapzenLocationImpl;
 
 import org.mockito.Mockito;
 
@@ -33,6 +34,6 @@ public class TestAndroidModule {
     }
 
     @Provides @Singleton MapzenLocation provideMapzenLocation() {
-        return new MapzenLocation(application);
+        return new MapzenLocationImpl(application);
     }
 }

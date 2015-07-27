@@ -16,8 +16,6 @@ import android.widget.ImageButton
 import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
-import com.mapzen.android.lost.api.LocationRequest
-import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
@@ -27,7 +25,6 @@ import com.mapzen.erasermap.model.ManifestModel
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.pelias.Pelias
-import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
@@ -107,7 +104,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
 
     override fun onPause() {
         super<AppCompatActivity>.onPause()
-        mapzenLocation?.disconnect()
+        presenter?.onPause(mapzenLocation)
     }
 
     override fun onStop() {

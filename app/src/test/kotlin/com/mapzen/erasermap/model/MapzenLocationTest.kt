@@ -16,11 +16,11 @@ import org.robolectric.annotation.Config
 @RunWith(PrivateMapsTestRunner::class)
 @Config(constants = BuildConfig::class, sdk=intArrayOf(21))
 public class MapzenLocationTest {
-    private var mapzenLocation: MapzenLocation? = null
+    private var mapzenLocation: MapzenLocationImpl? = null
 
     @Before
     fun setUp() {
-        mapzenLocation = MapzenLocation(RuntimeEnvironment.application as EraserMapApplication)
+        mapzenLocation = MapzenLocationImpl(RuntimeEnvironment.application as EraserMapApplication)
     }
 
     @Test
