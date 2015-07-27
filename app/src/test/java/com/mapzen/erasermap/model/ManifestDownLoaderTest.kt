@@ -52,8 +52,7 @@ public class ManifestDownLoaderTest {
     public fun  shouldSetManifestModelObject() {
         var keys: ManifestModel = ManifestModel()
         server?.enqueue(MockResponse().setBody(sampleResponse))
-        downLoader?.download(keys, {
-        })
+        downLoader?.download(keys, {})
         server?.takeRequest(1000, TimeUnit.MILLISECONDS);
         assertThat(keys.getValhallaApiKey()).isEqualTo("routeKey")
         assertThat(keys.getVectorTileApiKeyReleaseProp()).isEqualTo("vectorKey")

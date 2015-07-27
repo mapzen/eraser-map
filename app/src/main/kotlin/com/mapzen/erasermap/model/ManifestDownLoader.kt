@@ -1,13 +1,24 @@
 package com.mapzen.erasermap.model
 
+import com.google.common.io.Files
+
+import android.content.Context
 import android.os.AsyncTask
 import android.util.Log
 import com.google.gson.Gson
-import com.squareup.okhttp.OkHttpClient
-import com.squareup.okhttp.Request
-import com.squareup.okhttp.Response
+import com.google.gson.JsonParseException
+import com.mapzen.erasermap.model.ManifestModel
+import com.squareup.okhttp.*
+
+import java.io.BufferedInputStream
+import java.io.File
 import java.io.IOException
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.MalformedURLException
 import java.net.URL
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 public class ManifestDownLoader() {
     private var client: OkHttpClient? = null

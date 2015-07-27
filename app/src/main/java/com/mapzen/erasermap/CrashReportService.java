@@ -6,6 +6,8 @@ import android.content.Context;
 
 public class CrashReportService {
     public void initAndStartSession(Context context) {
-        Mint.initAndStartSession(context, BuildConfig.MINT_API_KEY);
+        if (BuildConfig.MINT_API_KEY != null) {
+            Mint.initAndStartSession(context, BuildConfig.MINT_API_KEY);
+        }
     }
 }

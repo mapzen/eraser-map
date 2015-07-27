@@ -83,6 +83,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         super<AppCompatActivity>.onCreate(savedInstanceState)
         app = getApplication() as EraserMapApplication
         app?.component()?.inject(this)
+        initCrashReportService()
         setContentView(R.layout.activity_main)
         presenter?.mainViewController = this
         presenter?.bus = bus
@@ -93,7 +94,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         initReverseButton()
         centerMapOnCurrentLocation()
         presenter?.onRestoreViewState()
-        getApiKeys({initCrashReportService()})
+        getApiKeys()
     }
 
     override fun onStart() {
@@ -148,16 +149,16 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         crashReportService?.initAndStartSession(this)
     }
 
-    private fun getApiKeys(callback : () -> Unit) {
+    private fun getApiKeys() {
         var dl: ManifestDownLoader = ManifestDownLoader()
-        dl.download(apiKeys, callback)
-
-        if(apiKeys?.getValhallaApiKey()== null) {
-            apiKeys?.setValhallaApiKey(BuildConfig.VALHALLA_API_KEY)
-        }
-        if(apiKeys?.getVectorTileApiKeyReleaseProp()== null) {
-            apiKeys?.setVectorTileApiKeyReleaseProp(BuildConfig.VECTOR_TILE_API_KEY)
-        }
+        dl.download(apiKeys, {
+            if(apiKeys?.getValhallaApiKey()== null) {
+                apiKeys?.setValhallaApiKey(BuildConfig.VALHALLA_API_KEY)
+            }
+            if(apiKeys?.getVectorTileApiKeyReleaseProp()== null) {
+                apiKeys?.setVectorTileApiKeyReleaseProp(BuildConfig.VECTOR_TILE_API_KEY)
+            }
+        })
     }
 
     private fun initLocationUpdates() {
