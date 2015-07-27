@@ -60,4 +60,3 @@ public class ManifestDownLoaderTest {
         assertThat(keys.getMinVersion()).isEqualTo(0.1)
     }
 }
-
