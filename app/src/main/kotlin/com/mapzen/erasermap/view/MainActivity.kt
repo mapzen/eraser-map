@@ -145,10 +145,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
 
 
     private fun initCrashReportService() {
-        if(apiKeys?.getMintApiKey() == null) {
-            apiKeys?.setMintApiKey(BuildConfig.MINT_API_KEY)
-        }
-        crashReportService?.initAndStartSession(this, apiKeys)
+        crashReportService?.initAndStartSession(this)
     }
 
     private fun getApiKeys(callback : () -> Unit) {

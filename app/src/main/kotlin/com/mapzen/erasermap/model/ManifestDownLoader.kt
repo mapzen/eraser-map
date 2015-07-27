@@ -53,7 +53,6 @@ public class ManifestDownLoader() {
 
             override  fun onPostExecute(model : ManifestModel?) {
                 if(model != null) {
-                    manifest?.setMintApiKey(model.getMintApiKey())
                     manifest?.setValhallaApiKey(model.getValhallaApiKey())
                     manifest?.setMinVersion(model.getMinVersion())
                     manifest?.setVectorTileApiKeyReleaseProp(model.getVectorTileApiKeyReleaseProp())

@@ -26,10 +26,9 @@ public class ManifestDownLoaderTest {
     var sampleResponse: String = "{\"minVersion\": 0.1,\r\n" +
             "    \"vectorTileApiKeyReleaseProp\": \"vectorKey\",\r\n " +
             "   \"valhallaApiKey\": \"routeKey\",\r\n    " +
-            "\"mintApiKey\": \"mintKey\",\r\n    " +
             "\"peliasApiKey\": \"peliasKey\"}\r\n"
 
-    Before
+    @Before
     throws(Exception::class)
     public fun setup() {
         downLoader = ManifestDownLoader()
@@ -39,13 +38,13 @@ public class ManifestDownLoaderTest {
 
     }
 
-    After
+    @After
     throws(Exception::class)
     public fun teardown() {
         server?.shutdown()
     }
 
-    Test
+    @Test
     throws(Exception::class)
     public fun  shouldRequestManifest() {
         server?.enqueue(MockResponse().setBody(sampleResponse))
@@ -54,7 +53,7 @@ public class ManifestDownLoaderTest {
         assertThat(request?.getPath().toString()).isEqualTo("/erasermap_manifest")
     }
 
-    Test
+    @Test
     throws(Exception::class)
     public fun  shouldSetManifestModelObject() {
         var keys: ManifestModel = ManifestModel()
@@ -62,7 +61,6 @@ public class ManifestDownLoaderTest {
         downLoader?.download(keys, {
         })
         server?.takeRequest(1000, TimeUnit.MILLISECONDS);
-        assertThat(keys.getMintApiKey()).isEqualTo("mintKey")
         assertThat(keys.getValhallaApiKey()).isEqualTo("routeKey")
         assertThat(keys.getVectorTileApiKeyReleaseProp()).isEqualTo("vectorKey")
         assertThat(keys.getPeliasApiKey()).isEqualTo("peliasKey")

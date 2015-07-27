@@ -4,7 +4,6 @@ public class ManifestModel {
     private double minVersion;
     private String vectorTileApiKeyReleaseProp;
     private String valhallaApiKey;
-    private String mintApiKey;
     private String peliasApiKey;
 
     public double getMinVersion() {
@@ -29,14 +28,6 @@ public class ManifestModel {
 
     public void setValhallaApiKey(String valhallaApiKey) {
         this.valhallaApiKey = valhallaApiKey;
-    }
-
-    public String getMintApiKey() {
-        return mintApiKey;
-    }
-
-    public void setMintApiKey(String mintApiKey) {
-        this.mintApiKey = mintApiKey;
     }
 
     public String getPeliasApiKey() {
