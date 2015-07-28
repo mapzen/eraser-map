@@ -113,7 +113,7 @@ public class MainActivityTest {
     @Test
     throws(Exception::class)
     public fun shouldInjectLocationClient() {
-        assertThat(activity!!.locationClient).isNotNull()
+        assertThat(activity!!.mapzenLocation).isNotNull()
     }
 
     @Test

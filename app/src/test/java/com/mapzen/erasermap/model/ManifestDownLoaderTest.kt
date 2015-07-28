@@ -17,7 +17,7 @@ Config(constants = BuildConfig::class, sdk=intArrayOf(21))
 public class ManifestDownLoaderTest {
     var downLoader: ManifestDownLoader? = null
     var server: MockWebServer? = null
-    var sampleResponse: String = "{\"minVersion\": 0.1,\r\n" +
+    var sampleResponse: String = "{\"minVersion\": 2,\r\n" +
             "    \"vectorTileApiKeyReleaseProp\": \"vectorKey\",\r\n " +
             "   \"valhallaApiKey\": \"routeKey\",\r\n    " +
             "\"peliasApiKey\": \"peliasKey\"}\r\n"
@@ -57,6 +57,6 @@ public class ManifestDownLoaderTest {
         assertThat(keys.getValhallaApiKey()).isEqualTo("routeKey")
         assertThat(keys.getVectorTileApiKeyReleaseProp()).isEqualTo("vectorKey")
         assertThat(keys.getPeliasApiKey()).isEqualTo("peliasKey")
-        assertThat(keys.getMinVersion()).isEqualTo(0.1)
+        assertThat(keys.getMinVersion()).isEqualTo(2)
     }
 }

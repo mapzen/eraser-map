@@ -163,7 +163,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
 
     public fun checkIfUpdateNeeded() {
         var currentVersion: Int = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-        if(apiKeys?.getMinVersion() as Int > 1 ) {
+        if(apiKeys?.getMinVersion() as Int > currentVersion ) {
             var builder: AlertDialog.Builder  = AlertDialog.Builder(this);
             builder.setMessage(getString(R.string.update_message))
                     .setPositiveButton(getString(R.string.accept_update), DialogInterface.OnClickListener { dialogInterface, i ->
