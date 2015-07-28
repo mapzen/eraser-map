@@ -469,21 +469,28 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         val location = mapzenLocation?.getLastLocation()
         if (reverse) {
             if (location is Location) {
-                val start: DoubleArray = doubleArrayOf(simpleFeature.getLat(), simpleFeature.getLon())
-                val dest: DoubleArray = doubleArrayOf(location.getLatitude(), location.getLongitude())
-                getInitializedRouter().setLocation(start).setLocation(dest).setCallback(this).fetch()
+                val start: DoubleArray = doubleArrayOf(simpleFeature.getLat(),
+                        simpleFeature.getLon())
+                val dest: DoubleArray = doubleArrayOf(location.getLatitude(),
+                        location.getLongitude())
+                getInitializedRouter().setLocation(start).setLocation(dest)
+                        .setCallback(this).fetch()
             }
         } else {
             if (location is Location) {
-                val start: DoubleArray = doubleArrayOf(location.getLatitude(), location.getLongitude())
-                val dest: DoubleArray = doubleArrayOf(simpleFeature.getLat(), simpleFeature.getLon())
-                getInitializedRouter().setLocation(start).setLocation(dest).setCallback(this).fetch()
+                val start: DoubleArray = doubleArrayOf(location.getLatitude(),
+                        location.getLongitude())
+                val dest: DoubleArray = doubleArrayOf(simpleFeature.getLat(),
+                        simpleFeature.getLon())
+                getInitializedRouter().setLocation(start).setLocation(dest)
+                        .setCallback(this).fetch()
             }
         }
     }
 
     fun updateRoutePreview() {
-        (findViewById(R.id.by_car) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
+        (findViewById(R.id.by_car) as RadioButton)
+                .setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
                 type = Router.Type.DRIVING
                 route()
@@ -491,7 +498,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
                         .setImageResource(R.drawable.ic_start_car_normal)
             }
         }
-        (findViewById(R.id.by_foot) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
+        (findViewById(R.id.by_foot) as RadioButton)
+                .setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
                 type = Router.Type.WALKING
                 route()
@@ -499,7 +507,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
                         .setImageResource(R.drawable.ic_start_walk_normal)
             }
         }
-        (findViewById(R.id.by_bike) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
+        (findViewById(R.id.by_bike) as RadioButton)
+                .setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
                 type = Router.Type.BIKING
                 route()

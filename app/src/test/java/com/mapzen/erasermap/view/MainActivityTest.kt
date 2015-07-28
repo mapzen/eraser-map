@@ -59,7 +59,6 @@ public class MainActivityTest {
     private var shadowLocationManager: ShadowLocationManager? = null
 
     @Before
-    throws(Exception::class)
     public fun setUp() {
         activity = Robolectric.setupActivity<MainActivity>(javaClass<MainActivity>())
         locationManager = activity!!.getSystemService(LOCATION_SERVICE) as LocationManager
@@ -67,32 +66,27 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun shouldNotBeNull() {
         assertThat(activity).isNotNull()
     }
 
     @Test
-    throws(Exception::class)
     public fun shouldReturnAppName() {
         assertThat(activity!!.getString(R.string.app_name)).isEqualTo("Eraser Map")
     }
 
     @Test
-    throws(Exception::class)
     public fun shouldHaveMapView() {
         assertThat(activity!!.findViewById(R.id.map)).isInstanceOf(javaClass<MapView>())
     }
 
     @Test
-    throws(Exception::class)
     public fun shouldRequestLocationUpdates() {
         assertThat(
                 shadowLocationManager!!.getRequestLocationUpdateListeners()).isNotEmpty()
     }
 
     @Test
-    throws(Exception::class)
     public fun onPause_shouldDisconnectLocationServices() {
         activity!!.onPause()
         assertThat(LocationServices.FusedLocationApi).isNull()
@@ -101,7 +95,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun onResume_shouldReconnectLocationServices() {
         activity!!.onPause()
         (activity as MainActivity)?.onResume()
@@ -111,19 +104,16 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun shouldInjectLocationClient() {
         assertThat(activity!!.mapzenLocation).isNotNull()
     }
 
     @Test
-    throws(Exception::class)
     public fun shouldInjectSavedSearch() {
         assertThat(activity!!.savedSearch).isNotNull()
     }
 
     @Test
-    throws(Exception::class)
     public fun onCreateOptionsMenu_shouldInflateOptionsMenu() {
         val menu = RoboMenu()
         activity!!.onCreateOptionsMenu(menu)
@@ -133,7 +123,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun onOptionsItemSelected_shouldClearSavedSearchesOnActionClear() {
         activity!!.savedSearch!!.store("query")
         val menu = RoboMenu()
@@ -143,7 +132,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun onStop_shouldPersistSavedSearch() {
         activity!!.savedSearch!!.store("query")
         activity!!.onStop()
@@ -156,7 +144,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun onCreate_shouldRestoreSavedSearch() {
         val savedSearch = SavedSearch()
         savedSearch.store("query")
@@ -168,7 +155,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun onDestroy_shouldSetCurrentSearchTerm() {
         val menu = RoboMenu()
         activity!!.onCreateOptionsMenu(menu)
@@ -182,7 +168,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun onCreateOptionsMenu_shouldRestoreCurrentSearchTerm() {
         val menu = RoboMenu()
         activity!!.onCreateOptionsMenu(menu)
@@ -195,14 +180,12 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun showProgress_shouldSetProgressViewVisible() {
         activity!!.showProgress()
         assertThat(activity!!.findViewById(R.id.progress).getVisibility()).isEqualTo(VISIBLE)
     }
 
     @Test
-    throws(Exception::class)
     public fun hideProgress_shouldSetProgressViewGone() {
         activity!!.showProgress()
         activity!!.hideProgress()
@@ -210,7 +193,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun showOverflowMenu_shouldShowOverflowGroup() {
         val menu = RoboMenuWithGroup(0, false)
         activity!!.onCreateOptionsMenu(menu)
@@ -220,7 +202,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun hideOverflowMenu_shouldHideOverflowGroup() {
         val menu = RoboMenuWithGroup(0, true)
         activity!!.onCreateOptionsMenu(menu)
@@ -230,7 +211,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun showActionViewAll_shouldSetMenuItemVisible() {
         val menu = RoboMenu()
         activity!!.onCreateOptionsMenu(menu)
@@ -240,7 +220,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun hideActionViewAll_shouldSetMenuItemNotVisible() {
         val menu = RoboMenu()
         activity!!.onCreateOptionsMenu(menu)
@@ -250,7 +229,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun showAllSearchResults_shouldStartSearchResultsActivityForResult() {
         activity!!.showAllSearchResults(ArrayList<Feature>())
         assertThat(shadowOf(
@@ -261,7 +239,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun showRoutePreview_shouldHideActionBar() {
         activity!!.getSupportActionBar()!!.show()
         activity!!.showRoutePreview(getTestFeature())
@@ -271,7 +248,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun showRoutePreview_shouldShowRoutePreviewView() {
         activity!!.findViewById(R.id.route_preview).setVisibility(GONE)
         activity!!.showRoutePreview(getTestFeature())
@@ -291,7 +267,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun hideRoutePreview_shouldShowActionBar() {
         activity!!.getSupportActionBar()!!.hide()
         activity!!.hideRoutePreview()
@@ -299,7 +274,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun hideRoutePreview_shouldHideRoutePreviewView() {
         activity!!.findViewById(R.id.route_preview).setVisibility(VISIBLE)
         activity!!.hideRoutePreview()
@@ -307,7 +281,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun onRadioClick_shouldChangeType() {
         activity!!.showRoutePreview(getTestFeature())
         activity!!.success(Route(getFixture("valhalla_route")))
@@ -320,7 +293,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun onReverseClick_shouldSetReverse() {
         activity!!.showRoutePreview(getTestFeature())
         activity!!.success(Route(getFixture("valhalla_route")))
@@ -330,7 +302,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun onRoutingCircleClick_shouldOpenDirectionListActivity() {
         activity!!.reverse = true
         activity!!.showRoutePreview(getTestFeature())
@@ -343,7 +314,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun showRoutingMode_shouldSetRoute() {
         activity!!.destination = getTestFeature()
         activity!!.success(Route(getFixture("valhalla_route")))
@@ -353,7 +323,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun hideRoutingMode_shouldClearRoute() {
         activity!!.showRoutePreview(getTestFeature())
         val routeModeView = activity!!.findViewById(R.id.route_mode) as RouteModeView
@@ -363,7 +332,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun centerMapOnLocation_shouldSetCoordinates() {
         activity!!.centerMapOnLocation(getTestLocation(100.0, 200.0), 10f)
         assertThat(activity!!.mapController!!.getMapPosition()[0]).isEqualTo(100.0)
@@ -371,7 +339,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun centerMapOnLocation_resetSetZoom() {
         activity!!.mapController!!.setMapZoom(10f)
         activity!!.centerMapOnLocation(getTestLocation(100.0, 200.0), 10f)
@@ -379,7 +346,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun centerOnFeature_shouldSetCoordinates() {
         val featureList = ArrayList<Feature>()
         featureList.add(getTestFeature(34.0, 43.0))
@@ -390,7 +356,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun showRoutingMode_shouldHideFindMeButton() {
         activity!!.destination = getTestFeature()
         activity!!.success(Route(getFixture("valhalla_route")))
@@ -399,7 +364,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun hideRoutingMode_shouldShowFindMeButton() {
         activity!!.destination = getTestFeature()
         activity!!.findViewById(R.id.find_me).setVisibility(View.GONE)
@@ -408,7 +372,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun showReverseGeocodeFeature_shouldShowSearchPager() {
         val features = ArrayList<Feature>()
         features.add(getTestFeature(30.0, 30.0))
@@ -420,7 +383,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun onLongClick_shouldSetPresenterFeature() {
         assertThat(activity!!.presenter!!.currentFeature).isNull()
         activity!!.reverseGeolocate(getLongPressMotionEvent())
@@ -428,7 +390,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun onMinVersionGreaterThanCurrent_shouldLaunchUpdateDialog() {
         var server: MockWebServer? = mockServerToMakeAppUpdate()
         activity?.checkIfUpdateNeeded()
@@ -439,7 +400,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun onMinVersionGreaterThanCurrent_clickUpdateNowShouldOpenPlayStore() {
         var server: MockWebServer? = mockServerToMakeAppUpdate()
         activity?.checkIfUpdateNeeded()
@@ -452,7 +412,6 @@ public class MainActivityTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun onMinVersionGreaterThanCurrent_clickExitShouldExitApp() {
         var server: MockWebServer? = mockServerToMakeAppUpdate()
         activity?.checkIfUpdateNeeded()

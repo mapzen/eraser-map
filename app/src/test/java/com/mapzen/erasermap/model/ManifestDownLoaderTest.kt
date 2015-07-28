@@ -28,18 +28,16 @@ public class ManifestDownLoaderTest {
         downLoader = ManifestDownLoader()
         server = MockWebServer()
         server?.play()
-       downLoader?.host = server?.getUrl("/").toString()
+        downLoader?.host = server?.getUrl("/").toString()
 
     }
 
     @After
-    throws(Exception::class)
     public fun teardown() {
         server?.shutdown()
     }
 
     @Test
-    throws(Exception::class)
     public fun  shouldRequestManifest() {
         server?.enqueue(MockResponse().setBody(sampleResponse))
         downLoader?.download(ManifestModel(), {})
@@ -48,7 +46,6 @@ public class ManifestDownLoaderTest {
     }
 
     @Test
-    throws(Exception::class)
     public fun  shouldSetManifestModelObject() {
         var keys: ManifestModel = ManifestModel()
         server?.enqueue(MockResponse().setBody(sampleResponse))
