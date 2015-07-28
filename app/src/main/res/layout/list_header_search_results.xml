@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:drawableLeft="@drawable/ic_search_sm"
+            android:drawableLeft="@drawable/ic_search"
             android:drawablePadding="4dp"
             android:fontFamily="sans-serif-condensed"
             android:paddingTop="@dimen/padding_vertical_default"
