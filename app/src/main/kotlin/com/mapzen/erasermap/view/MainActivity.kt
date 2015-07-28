@@ -162,20 +162,21 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
     }
 
     public fun checkIfUpdateNeeded() {
-        var currentVersion: Int = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-        if(apiKeys?.getMinVersion() as Int > currentVersion ) {
+        if(apiKeys?.getMinVersion() as Int > BuildConfig.VERSION_CODE ) {
             var builder: AlertDialog.Builder  = AlertDialog.Builder(this);
             builder.setMessage(getString(R.string.update_message))
-                    .setPositiveButton(getString(R.string.accept_update), DialogInterface.OnClickListener { dialogInterface, i ->
-                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())))
+                    .setPositiveButton(getString(R.string.accept_update),
+                            DialogInterface.OnClickListener { dialogInterface, i ->
+                            startActivity(Intent(Intent.ACTION_VIEW,
+                                    Uri.parse("market://details?id=" + getPackageName())))
                             finish()
                          })
-                    .setNegativeButton(getString(R.string.decline_update),DialogInterface.OnClickListener { dialogInterface, i -> finish() })
+                    .setNegativeButton(getString(R.string.decline_update),
+                            DialogInterface.OnClickListener { dialogInterface, i -> finish() })
+                    .setCancelable(false)
             builder.create().show()
        }
     }
-
-
 
     private fun initLocationUpdates() {
         mapzenLocation?.initLocationUpdates {
@@ -330,7 +331,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         }
     }
 
-
     inner class ReversePeliasCallback : Callback<Result> {
         private val TAG: String = "ReversePeliasCallback"
 
@@ -363,7 +363,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
 
     private fun showSearchResultsPager(features: List<Feature>) {
         val pager = findViewById(R.id.search_results) as SearchResultsView
-            pager.setAdapter(SearchResultsAdapter(this, features))
+        pager.setAdapter(SearchResultsAdapter(this, features))
         pager.setVisibility(View.VISIBLE)
         pager.onSearchResultsSelectedListener = this
     }
@@ -395,8 +395,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         pelias.setLocationProvider(mapzenLocation)
         var coords  = mapController?.coordinatesAtScreenPosition(
                 event.getRawX().toDouble(), event.getRawY().toDouble())
-        presenter?.currentFeature = getGenericLocationFeature(coords?.get(1) as Double, coords?.get(0) as Double)
-        pelias.reverse(coords?.get(1).toString(), coords?.get(0).toString(), ReversePeliasCallback())
+        presenter?.currentFeature = getGenericLocationFeature(coords?.get(1) as Double,
+                coords?.get(0) as Double)
+        pelias.reverse(coords?.get(1).toString(), coords?.get(0).toString(),
+                ReversePeliasCallback())
         return true
     }
 
@@ -610,9 +612,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
 
     private fun getInitializedRouter(): Router {
         when(type) {
-            Router.Type.DRIVING -> return Router().setApiKey(apiKeys?.getValhallaApiKey() as String).setDriving()
-            Router.Type.WALKING -> return Router().setApiKey(apiKeys?.getValhallaApiKey() as String).setWalking()
-            Router.Type.BIKING -> return Router().setApiKey(apiKeys?.getValhallaApiKey() as String).setBiking()
+            Router.Type.DRIVING -> return Router()
+                    .setApiKey(apiKeys?.getValhallaApiKey() as String).setDriving()
+            Router.Type.WALKING -> return Router()
+                    .setApiKey(apiKeys?.getValhallaApiKey() as String).setWalking()
+            Router.Type.BIKING -> return Router()
+                    .setApiKey(apiKeys?.getValhallaApiKey() as String).setBiking()
         }
     }
 
