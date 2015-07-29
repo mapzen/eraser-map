@@ -11,4 +11,7 @@
     <string name="from_text">From: </string>
     <string name="to_text">To: </string>
     <string name="current_location">Current Location</string>
+    <string name="update_message">Your application is out of date and requires an update.</string>
+    <string name="accept_update">Update Now</string>
+    <string name="decline_update">Exit Application</string>
 </resources>

@@ -1,7 +1,10 @@
 package com.mapzen.erasermap.view
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
@@ -43,6 +46,7 @@ import com.squareup.otto.Bus
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
+import java.lang
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -73,7 +77,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
     var type : Router.Type = Router.Type.DRIVING
     var reverse : Boolean = false;
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override public fun onCreate(savedInstanceState: Bundle?) {
         super<AppCompatActivity>.onCreate(savedInstanceState)
         app = getApplication() as EraserMapApplication
         app?.component()?.inject(this)
@@ -91,23 +95,23 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         getApiKeys()
     }
 
-    override fun onStart() {
+    override public fun onStart() {
         super<AppCompatActivity>.onStart()
         savedSearch?.deserialize(PreferenceManager.getDefaultSharedPreferences(this)
                 .getString(SavedSearch.TAG, null))
     }
 
-    override fun onResume() {
+    override public fun onResume() {
         super<AppCompatActivity>.onResume()
         initLocationUpdates()
     }
 
-    override fun onPause() {
+    override public fun onPause() {
         super<AppCompatActivity>.onPause()
         presenter?.onPause(mapzenLocation)
     }
 
-    override fun onStop() {
+    override public fun onStop() {
         super<AppCompatActivity>.onStop()
         PreferenceManager.getDefaultSharedPreferences(this)
                 .edit()
@@ -115,7 +119,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
                 .commit()
     }
 
-    override fun onDestroy() {
+    override public fun onDestroy() {
         super<AppCompatActivity>.onDestroy()
         saveCurrentSearchTerm()
         bus?.unregister(presenter)
@@ -145,13 +149,33 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
     private fun getApiKeys() {
         var dl: ManifestDownLoader = ManifestDownLoader()
         dl.download(apiKeys, {
-            if(apiKeys?.getValhallaApiKey()== null) {
+            if (apiKeys?.getValhallaApiKey() == null) {
                 apiKeys?.setValhallaApiKey(BuildConfig.VALHALLA_API_KEY)
             }
-            if(apiKeys?.getVectorTileApiKeyReleaseProp()== null) {
+            if (apiKeys?.getVectorTileApiKeyReleaseProp() == null) {
                 apiKeys?.setVectorTileApiKeyReleaseProp(BuildConfig.VECTOR_TILE_API_KEY)
             }
+            if(apiKeys?.getMinVersion() != null) {
+                checkIfUpdateNeeded()
+            }
         })
+    }
+
+    public fun checkIfUpdateNeeded() {
+        if(apiKeys?.getMinVersion() as Int > BuildConfig.VERSION_CODE ) {
+            var builder: AlertDialog.Builder  = AlertDialog.Builder(this);
+            builder.setMessage(getString(R.string.update_message))
+                    .setPositiveButton(getString(R.string.accept_update),
+                            DialogInterface.OnClickListener { dialogInterface, i ->
+                            startActivity(Intent(Intent.ACTION_VIEW,
+                                    Uri.parse("market://details?id=" + getPackageName())))
+                            finish()
+                         })
+                    .setNegativeButton(getString(R.string.decline_update),
+                            DialogInterface.OnClickListener { dialogInterface, i -> finish() })
+                    .setCancelable(false)
+            builder.create().show()
+       }
     }
 
     private fun initLocationUpdates() {
@@ -307,7 +331,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         }
     }
 
-
     inner class ReversePeliasCallback : Callback<Result> {
         private val TAG: String = "ReversePeliasCallback"
 
@@ -372,8 +395,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         pelias.setLocationProvider(mapzenLocation)
         var coords  = mapController?.coordinatesAtScreenPosition(
                 event.getRawX().toDouble(), event.getRawY().toDouble())
-        presenter?.currentFeature = getGenericLocationFeature(coords?.get(1) as Double, coords?.get(0) as Double)
-        pelias.reverse(coords?.get(1).toString(), coords?.get(0).toString(), ReversePeliasCallback())
+        presenter?.currentFeature = getGenericLocationFeature(coords?.get(1) as Double,
+                coords?.get(0) as Double)
+        pelias.reverse(coords?.get(1).toString(), coords?.get(0).toString(),
+                ReversePeliasCallback())
         return true
     }
 
@@ -444,21 +469,28 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         val location = mapzenLocation?.getLastLocation()
         if (reverse) {
             if (location is Location) {
-                val start: DoubleArray = doubleArrayOf(simpleFeature.getLat(), simpleFeature.getLon())
-                val dest: DoubleArray = doubleArrayOf(location.getLatitude(), location.getLongitude())
-                getInitializedRouter().setLocation(start).setLocation(dest).setCallback(this).fetch()
+                val start: DoubleArray = doubleArrayOf(simpleFeature.getLat(),
+                        simpleFeature.getLon())
+                val dest: DoubleArray = doubleArrayOf(location.getLatitude(),
+                        location.getLongitude())
+                getInitializedRouter().setLocation(start).setLocation(dest)
+                        .setCallback(this).fetch()
             }
         } else {
             if (location is Location) {
-                val start: DoubleArray = doubleArrayOf(location.getLatitude(), location.getLongitude())
-                val dest: DoubleArray = doubleArrayOf(simpleFeature.getLat(), simpleFeature.getLon())
-                getInitializedRouter().setLocation(start).setLocation(dest).setCallback(this).fetch()
+                val start: DoubleArray = doubleArrayOf(location.getLatitude(),
+                        location.getLongitude())
+                val dest: DoubleArray = doubleArrayOf(simpleFeature.getLat(),
+                        simpleFeature.getLon())
+                getInitializedRouter().setLocation(start).setLocation(dest)
+                        .setCallback(this).fetch()
             }
         }
     }
 
     fun updateRoutePreview() {
-        (findViewById(R.id.by_car) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
+        (findViewById(R.id.by_car) as RadioButton)
+                .setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
                 type = Router.Type.DRIVING
                 route()
@@ -466,7 +498,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
                         .setImageResource(R.drawable.ic_start_car_normal)
             }
         }
-        (findViewById(R.id.by_foot) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
+        (findViewById(R.id.by_foot) as RadioButton)
+                .setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
                 type = Router.Type.WALKING
                 route()
@@ -474,7 +507,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
                         .setImageResource(R.drawable.ic_start_walk_normal)
             }
         }
-        (findViewById(R.id.by_bike) as RadioButton).setOnCheckedChangeListener { compoundButton, b ->
+        (findViewById(R.id.by_bike) as RadioButton)
+                .setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
                 type = Router.Type.BIKING
                 route()
@@ -587,9 +621,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
 
     private fun getInitializedRouter(): Router {
         when(type) {
-            Router.Type.DRIVING -> return Router().setApiKey(apiKeys?.getValhallaApiKey() as String).setDriving()
-            Router.Type.WALKING -> return Router().setApiKey(apiKeys?.getValhallaApiKey() as String).setWalking()
-            Router.Type.BIKING -> return Router().setApiKey(apiKeys?.getValhallaApiKey() as String).setBiking()
+            Router.Type.DRIVING -> return Router()
+                    .setApiKey(apiKeys?.getValhallaApiKey() as String).setDriving()
+            Router.Type.WALKING -> return Router()
+                    .setApiKey(apiKeys?.getValhallaApiKey() as String).setWalking()
+            Router.Type.BIKING -> return Router()
+                    .setApiKey(apiKeys?.getValhallaApiKey() as String).setBiking()
         }
     }
 

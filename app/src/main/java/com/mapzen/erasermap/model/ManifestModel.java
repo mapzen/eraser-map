@@ -1,16 +1,16 @@
 package com.mapzen.erasermap.model;
 
 public class ManifestModel {
-    private double minVersion;
+    private int minVersion;
     private String vectorTileApiKeyReleaseProp;
     private String valhallaApiKey;
     private String peliasApiKey;
 
-    public double getMinVersion() {
+    public int getMinVersion() {
         return minVersion;
     }
 
-    public void setMinVersion(double minVersion) {
+    public void setMinVersion(int minVersion) {
         this.minVersion = minVersion;
     }
 
