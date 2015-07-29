@@ -6,7 +6,7 @@
     </style>
 
     <style name="PrivateMaps.Widget.AppCompat.SearchView" parent="Widget.AppCompat.SearchView">
-        <item name="searchIcon">@drawable/ic_menu_search</item>
+        <item name="searchIcon">@drawable/ic_search</item>
     </style>
 
 </resources>
