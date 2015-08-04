@@ -51,8 +51,8 @@ import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowAlertDialog
 import java.util.concurrent.TimeUnit
 
-RunWith(PrivateMapsTestRunner::class)
-Config(constants = BuildConfig::class,  sdk=intArrayOf(21))
+@RunWith(PrivateMapsTestRunner::class)
+@Config(constants = BuildConfig::class, sdk=intArrayOf(21))
 public class MainActivityTest {
     private var activity: MainActivity? = null
     private var locationManager: LocationManager? = null
@@ -63,6 +63,12 @@ public class MainActivityTest {
         activity = Robolectric.setupActivity<MainActivity>(javaClass<MainActivity>())
         locationManager = activity!!.getSystemService(LOCATION_SERVICE) as LocationManager
         shadowLocationManager = shadowOf(locationManager)
+    }
+
+    @Test
+    public fun testTest() {
+        activity = null
+        activity?.onPause()
     }
 
     @Test
@@ -82,25 +88,22 @@ public class MainActivityTest {
 
     @Test
     public fun shouldRequestLocationUpdates() {
-        assertThat(
-                shadowLocationManager!!.getRequestLocationUpdateListeners()).isNotEmpty()
+        assertThat(shadowLocationManager!!.getRequestLocationUpdateListeners()).isNotEmpty()
     }
 
     @Test
     public fun onPause_shouldDisconnectLocationServices() {
         activity!!.onPause()
         assertThat(LocationServices.FusedLocationApi).isNull()
-        assertThat(
-                shadowLocationManager!!.getRequestLocationUpdateListeners()).isEmpty()
+        assertThat(shadowLocationManager!!.getRequestLocationUpdateListeners()).isEmpty()
     }
 
     @Test
     public fun onResume_shouldReconnectLocationServices() {
         activity!!.onPause()
-        (activity as MainActivity)?.onResume()
+        activity!!.onResume()
         assertThat(LocationServices.FusedLocationApi).isNotNull()
-        assertThat(
-                shadowLocationManager!!.getRequestLocationUpdateListeners()).isNotEmpty()
+        assertThat(shadowLocationManager!!.getRequestLocationUpdateListeners()).isNotEmpty()
     }
 
     @Test
@@ -163,7 +166,7 @@ public class MainActivityTest {
         val searchView = menu.findItem(R.id.action_search).getActionView() as SearchView
         searchView.setQuery("query", false)
         searchView.requestFocus()
-        activity?.onDestroy()
+        activity!!.onDestroy()
         assertThat(activity!!.presenter!!.currentSearchTerm).isEqualTo("query")
     }
 
@@ -231,11 +234,10 @@ public class MainActivityTest {
     @Test
     public fun showAllSearchResults_shouldStartSearchResultsActivityForResult() {
         activity!!.showAllSearchResults(ArrayList<Feature>())
-        assertThat(shadowOf(
-                activity).peekNextStartedActivityForResult().intent.getComponent().getClassName()).isEqualTo(
-                javaClass<SearchResultsListActivity>().getName())
-        assertThat(shadowOf(activity).peekNextStartedActivityForResult().requestCode).isEqualTo(
-                activity!!.requestCodeSearchResults)
+        assertThat(shadowOf(activity).peekNextStartedActivityForResult().intent.getComponent()
+                .getClassName()).isEqualTo(javaClass<SearchResultsListActivity>().getName())
+        assertThat(shadowOf(activity).peekNextStartedActivityForResult().requestCode)
+                .isEqualTo(activity!!.requestCodeSearchResults)
     }
 
     @Test
@@ -392,29 +394,31 @@ public class MainActivityTest {
     @Test
     public fun onMinVersionGreaterThanCurrent_shouldLaunchUpdateDialog() {
         var server: MockWebServer? = mockServerToMakeAppUpdate()
-        activity?.checkIfUpdateNeeded()
+        activity!!.checkIfUpdateNeeded()
         server?.shutdown()
         var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
         assertThat(dialog.isShowing()).isTrue()
-        assertThat(shadowOf(dialog).getMessage()).isEqualTo(activity?.getString(R.string.update_message))
+        assertThat(shadowOf(dialog).getMessage())
+                .isEqualTo(activity!!.getString(R.string.update_message))
     }
 
     @Test
     public fun onMinVersionGreaterThanCurrent_clickUpdateNowShouldOpenPlayStore() {
         var server: MockWebServer? = mockServerToMakeAppUpdate()
-        activity?.checkIfUpdateNeeded()
+        activity!!.checkIfUpdateNeeded()
         server?.shutdown()
         var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
         assertThat(dialog.isShowing()).isTrue()
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick()
         var startedIntent: Intent = shadowOf(activity).getNextStartedActivity();
-        assertThat(startedIntent.getData().toString()).isEqualTo("market://details?id=com.mapzen.erasermap");
+        assertThat(startedIntent.getData().toString())
+                .isEqualTo("market://details?id=com.mapzen.erasermap");
     }
 
     @Test
     public fun onMinVersionGreaterThanCurrent_clickExitShouldExitApp() {
         var server: MockWebServer? = mockServerToMakeAppUpdate()
-        activity?.checkIfUpdateNeeded()
+        activity!!.checkIfUpdateNeeded()
         server?.shutdown()
         var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
         assertThat(dialog.isShowing()).isTrue()
@@ -433,12 +437,13 @@ public class MainActivityTest {
                 "\"mintApiKey\": \"mintKey\",\r\n    " +
                 "\"peliasApiKey\": \"peliasKey\"}\r\n"
         server?.enqueue(MockResponse().setBody(sampleResponse))
-        downLoader?.download(activity?.apiKeys, {})
+        downLoader?.download(activity!!.apiKeys, {})
         server?.takeRequest(1000, TimeUnit.MILLISECONDS);
         return server
     }
 
-    protected inner class RoboMenuWithGroup public constructor(public var group: Int, public var visible: Boolean) : RoboMenu() {
+    protected inner class RoboMenuWithGroup public constructor(public var group: Int,
+            public var visible: Boolean) : RoboMenu() {
 
         override fun setGroupVisible(group: Int, visible: Boolean) {
             this.group = group
