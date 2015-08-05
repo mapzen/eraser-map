@@ -1,23 +1,27 @@
 package com.mapzen.erasermap.model
 
+import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.S3Object
+import com.amazonaws.services.s3.model.S3ObjectInputStream
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.PrivateMapsTestRunner
-import com.squareup.okhttp.mockwebserver.MockResponse
-import com.squareup.okhttp.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Matchers.anyObject
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
 import org.robolectric.annotation.Config
-import java.util.concurrent.TimeUnit
+import java.io.ByteArrayInputStream
 
 RunWith(PrivateMapsTestRunner::class)
 Config(constants = BuildConfig::class, sdk=intArrayOf(21))
 public class ManifestDownLoaderTest {
     var downLoader: ManifestDownLoader? = null
-    var server: MockWebServer? = null
-    var sampleResponse: String = "{\"minVersion\": 2,\r\n" +
+    var mocks3Client: AmazonS3Client? = null;
+    var sampleResponse: String = "{\"minVersion\": 0.1,\r\n" +
             "    \"vectorTileApiKeyReleaseProp\": \"vectorKey\",\r\n " +
             "   \"valhallaApiKey\": \"routeKey\",\r\n    " +
             "\"peliasApiKey\": \"peliasKey\"}\r\n"
@@ -26,31 +30,27 @@ public class ManifestDownLoaderTest {
     throws(Exception::class)
     public fun setup() {
         downLoader = ManifestDownLoader()
-        server = MockWebServer()
-        server?.play()
-        downLoader?.host = server?.getUrl("/").toString()
-
+        initMockS3Client()
+        downLoader?.key = "fakeawskey"
+        downLoader?.secret = "fakeawssecret"
+        downLoader?.s3Client = mocks3Client
     }
 
-    @After
-    public fun teardown() {
-        server?.shutdown()
-    }
-
-    @Test
-    public fun  shouldRequestManifest() {
-        server?.enqueue(MockResponse().setBody(sampleResponse))
-        downLoader?.download(ManifestModel(), {})
-        var request = server?.takeRequest(1000, TimeUnit.MILLISECONDS);
-        assertThat(request?.getPath().toString()).isEqualTo("/erasermap_manifest")
+    private fun initMockS3Client() {
+        mocks3Client = mock(javaClass<AmazonS3Client>())
+        var mockS3Object = mock(javaClass<S3Object>())
+        `when`(mockS3Object.getObjectContent()).thenReturn(
+                S3ObjectInputStream(ByteArrayInputStream(sampleResponse.getBytes()))
+        )
+        `when`(mocks3Client?.getObject(anyObject())).thenReturn(
+                mockS3Object
+        )
     }
 
     @Test
     public fun  shouldSetManifestModelObject() {
         var keys: ManifestModel = ManifestModel()
-        server?.enqueue(MockResponse().setBody(sampleResponse))
         downLoader?.download(keys, {})
-        server?.takeRequest(1000, TimeUnit.MILLISECONDS);
         assertThat(keys.getValhallaApiKey()).isEqualTo("routeKey")
         assertThat(keys.getVectorTileApiKeyReleaseProp()).isEqualTo("vectorKey")
         assertThat(keys.getPeliasApiKey()).isEqualTo("peliasKey")
