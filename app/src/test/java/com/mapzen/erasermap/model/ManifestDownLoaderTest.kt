@@ -20,7 +20,7 @@ RunWith(PrivateMapsTestRunner::class)
 Config(constants = BuildConfig::class, sdk=intArrayOf(21))
 public class ManifestDownLoaderTest {
     var downLoader: ManifestDownLoader? = null
-    var mocks3Client: AmazonS3Client? = null;
+    var mocks3Client: AmazonS3Client? = null
     var sampleResponse: String = "{\"minVersion\": 0.1,\r\n" +
             "    \"vectorTileApiKeyReleaseProp\": \"vectorKey\",\r\n " +
             "   \"valhallaApiKey\": \"routeKey\",\r\n    " +

@@ -21,13 +21,13 @@ public class ManifestDownLoader() {
 
     init {
         try {
-            System.loadLibrary("leyndo");
+            System.loadLibrary("leyndo")
             key = getDecryptedAwsKey()
             secret = getDecryptedAwsSecret()
             s3Client = AmazonS3Client(BasicAWSCredentials(key, secret))
         } catch (e: UnsatisfiedLinkError) {
             if ("Dalvik".equals(System.getProperty("java.vm.name"))) {
-                throw e;
+                throw e
             }
         }
     }
@@ -52,7 +52,7 @@ public class ManifestDownLoader() {
         for(letter in encrypted) {
             key += letter.toInt().xor(crypt.toInt()).toChar().toString()
         }
-        key = key.removeSuffix(getDecryptedAwsKey());
+        key = key.removeSuffix(getDecryptedAwsKey())
         return key
     }
 
@@ -66,8 +66,7 @@ public class ManifestDownLoader() {
                             var manifest = s3Client?.getObject(GetObjectRequest(
                                     host, fileName ))
                             var reader: BufferedReader = BufferedReader(
-                                    InputStreamReader(manifest?.getObjectContent()));
-
+                                    InputStreamReader(manifest?.getObjectContent()))
                             var responseString: String = ""
                             while (true) {
                                 var line = reader.readLine()
