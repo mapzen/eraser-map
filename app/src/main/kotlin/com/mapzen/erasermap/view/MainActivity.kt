@@ -240,24 +240,17 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.getItemId()
         when (id) {
-            R.id.action_settings -> {
-                onActionSettings(); return true
-            }
-            R.id.action_search -> {
-                onActionSearch(); return true
-            }
-            R.id.action_clear -> {
-                onActionClear(); return true
-            }
-            R.id.action_view_all -> {
-                onActionViewAll(); return true
-            }
+            R.id.action_settings -> { onActionSettings(); return true }
+            R.id.action_search -> { onActionSearch(); return true }
+            R.id.action_clear -> { onActionClear(); return true }
+            R.id.action_view_all -> { onActionViewAll(); return true }
         }
 
         return super<AppCompatActivity>.onOptionsItemSelected(item)
     }
 
     private fun onActionSettings() {
+        startActivity(Intent(this, javaClass<SettingsActivity>()))
     }
 
     private fun onActionSearch() {
