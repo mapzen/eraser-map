@@ -1,11 +1,12 @@
 package com.mapzen.erasermap.model
 
+import android.content.SharedPreferences
 import android.location.Location
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.erasermap.EraserMapApplication
-import com.mapzen.pelias.PeliasLocationProvider
+import com.mapzen.erasermap.R
 import javax.inject.Inject
 
 public class MapzenLocationImpl(val app: EraserMapApplication) : MapzenLocation {
@@ -14,6 +15,8 @@ public class MapzenLocationImpl(val app: EraserMapApplication) : MapzenLocation 
 
     var locationClient: LostApiClient? = null
         @Inject set
+    var prefs: SharedPreferences? = null
+        @Inject set
 
     init {
         app.component()?.inject(this)
@@ -21,6 +24,20 @@ public class MapzenLocationImpl(val app: EraserMapApplication) : MapzenLocation 
 
     override fun connect() {
         locationClient?.connect()
+        val mockMode = prefs?.getBoolean(app.getString(R.string.checkbox_mock_location_key), false)
+        if (mockMode as Boolean) {
+            initMockMode(mockMode)
+        }
+    }
+
+    private fun initMockMode(mockMode: Boolean) {
+        val rawValues = prefs?.getString(app.getString(R.string.edittext_mock_location_key), null)
+        val splitValues = rawValues?.split(",")
+        val location = Location("mock")
+        location.setLatitude(splitValues?.get(0)?.toDouble() as Double)
+        location.setLongitude(splitValues?.get(1)?.toDouble() as Double)
+        LocationServices.FusedLocationApi?.setMockMode(mockMode)
+        LocationServices.FusedLocationApi?.setMockLocation(location)
     }
 
     override fun disconnect() {
@@ -34,7 +51,7 @@ public class MapzenLocationImpl(val app: EraserMapApplication) : MapzenLocation 
 
     override fun initLocationUpdates(callback: (location: Location) -> Unit) {
         if (!isConnected()) {
-            locationClient?.connect()
+            connect()
         }
 
         val locationRequest = LocationRequest.create()

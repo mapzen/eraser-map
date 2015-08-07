@@ -1,27 +1,22 @@
 package com.mapzen.erasermap.model
 
 import android.location.Location
-import com.mapzen.android.lost.api.LocationServices
+import com.mapzen.android.lost.api.LocationServices.FusedLocationApi
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.PrivateMapsTestRunner
+import com.mapzen.erasermap.R
 import com.mapzen.erasermap.dummy.TestHelper
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RuntimeEnvironment
+import org.robolectric.RuntimeEnvironment.application
 import org.robolectric.annotation.Config
 
 @RunWith(PrivateMapsTestRunner::class)
 @Config(constants = BuildConfig::class, sdk=intArrayOf(21))
 public class MapzenLocationTest {
-    private var mapzenLocation: MapzenLocationImpl? = null
-
-    @Before
-    fun setUp() {
-        mapzenLocation = MapzenLocationImpl(RuntimeEnvironment.application as EraserMapApplication)
-    }
+    var mapzenLocation = MapzenLocationImpl(application as EraserMapApplication)
 
     @Test
     fun shouldNotBeNull() {
@@ -30,32 +25,53 @@ public class MapzenLocationTest {
 
     @Test
     fun connect_shouldConnectLocationClient() {
-        mapzenLocation?.connect()
-        assertThat(mapzenLocation?.locationClient?.isConnected()).isTrue()
+        mapzenLocation.connect()
+        assertThat(mapzenLocation.locationClient?.isConnected()).isTrue()
     }
 
     @Test
     fun disconnect_shouldDisconnectLocationClient() {
-        mapzenLocation?.connect()
-        mapzenLocation?.disconnect()
-        assertThat(mapzenLocation?.locationClient?.isConnected()).isFalse()
+        mapzenLocation.connect()
+        mapzenLocation.disconnect()
+        assertThat(mapzenLocation.locationClient!!.isConnected()).isFalse()
     }
 
     @Test
     fun initLocationUpdates_shouldConnectIfDisconnected() {
-        mapzenLocation?.connect()
-        mapzenLocation?.disconnect()
-        mapzenLocation?.initLocationUpdates {  }
-        assertThat(mapzenLocation?.locationClient?.isConnected()).isTrue()
+        mapzenLocation.connect()
+        mapzenLocation.disconnect()
+        mapzenLocation.initLocationUpdates {  }
+        assertThat(mapzenLocation.locationClient?.isConnected()).isTrue()
     }
 
     @Test
     fun initLocationUpdates_shouldRequestLocationUpdates() {
         val expected = TestHelper.getTestLocation()
         var actual: Location? = null
-        mapzenLocation?.initLocationUpdates { location: Location -> actual = location }
-        LocationServices.FusedLocationApi.setMockMode(true)
-        LocationServices.FusedLocationApi.setMockLocation(expected)
+        mapzenLocation.initLocationUpdates { location: Location -> actual = location }
+        FusedLocationApi.setMockMode(true)
+        FusedLocationApi.setMockLocation(expected)
         assertThat(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun connect_shouldSetMockLocationIfMockModeEnabled() {
+        val editor = mapzenLocation.prefs!!.edit()
+        editor.putBoolean(application.getString(R.string.checkbox_mock_location_key), true)
+        editor.putString(application.getString(R.string.edittext_mock_location_key), "1.0, 2.0")
+        editor.commit()
+        mapzenLocation.connect()
+        assertThat(FusedLocationApi.getLastLocation().getLatitude()).isEqualTo(1.0)
+        assertThat(FusedLocationApi.getLastLocation().getLongitude()).isEqualTo(2.0)
+    }
+
+    @Test
+    fun connect_shouldNotSetMockLocationIfMockModeNotEnabled() {
+        val editor = mapzenLocation.prefs!!.edit()
+        editor.putBoolean(application.getString(R.string.checkbox_mock_location_key), false)
+        editor.putString(application.getString(R.string.edittext_mock_location_key), "1.0, 2.0")
+        editor.commit()
+        mapzenLocation.connect()
+        assertThat(FusedLocationApi.getLastLocation()).isNull()
     }
 }

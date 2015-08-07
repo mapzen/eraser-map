@@ -5,6 +5,8 @@ import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import javax.inject.Singleton;
 
@@ -33,5 +35,9 @@ public class AndroidModule {
 
     @Provides @Singleton MapzenLocation provideMapzenLocation() {
         return new MapzenLocationImpl(application);
+    }
+
+    @Provides @Singleton SharedPreferences provideSharedPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(application);
     }
 }

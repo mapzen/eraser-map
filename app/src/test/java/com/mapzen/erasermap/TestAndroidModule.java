@@ -7,6 +7,8 @@ import com.mapzen.erasermap.model.MapzenLocationImpl;
 import org.mockito.Mockito;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import javax.inject.Singleton;
 
@@ -35,5 +37,9 @@ public class TestAndroidModule {
 
     @Provides @Singleton MapzenLocation provideMapzenLocation() {
         return new MapzenLocationImpl(application);
+    }
+
+    @Provides @Singleton SharedPreferences provideSharedPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(application);
     }
 }
