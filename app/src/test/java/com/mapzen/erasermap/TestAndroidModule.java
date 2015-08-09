@@ -3,6 +3,8 @@ package com.mapzen.erasermap;
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
+import com.mapzen.erasermap.presenter.MainPresenter;
+import com.mapzen.erasermap.presenter.MainPresenterImpl;
 
 import org.mockito.Mockito;
 
@@ -41,5 +43,9 @@ public class TestAndroidModule {
 
     @Provides @Singleton SharedPreferences provideSharedPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(application);
+    }
+
+    @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation) {
+        return new MainPresenterImpl(mapzenLocation);
     }
 }

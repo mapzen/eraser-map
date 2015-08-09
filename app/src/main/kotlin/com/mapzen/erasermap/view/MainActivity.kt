@@ -46,7 +46,6 @@ import com.squareup.otto.Bus
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
-import java.lang
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -108,7 +107,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
 
     override public fun onPause() {
         super<AppCompatActivity>.onPause()
-        presenter?.onPause(mapzenLocation)
+        presenter?.onPause()
     }
 
     override public fun onStop() {

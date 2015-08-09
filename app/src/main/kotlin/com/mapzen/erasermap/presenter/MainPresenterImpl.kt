@@ -13,7 +13,7 @@ import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 import java.util.ArrayList
 
-public class MainPresenterImpl() : MainPresenter {
+public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresenter {
     override var currentFeature: Feature? = null;
     override var route: Route? = null;
     override var routingEnabled : Boolean = false
@@ -169,9 +169,9 @@ public class MainPresenterImpl() : MainPresenter {
         mainViewController?.setMapRotation(Math.toRadians(instruction.bearing.toDouble()).toFloat())
     }
 
-    override fun onPause(mapzenLocation: MapzenLocation?) {
+    override fun onPause() {
         if (!isRouting() && !isRoutingDirectionList()) {
-            mapzenLocation?.disconnect()
+            mapzenLocation.disconnect()
         }
     }
 

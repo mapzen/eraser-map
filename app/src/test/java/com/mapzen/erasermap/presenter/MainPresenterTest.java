@@ -23,13 +23,15 @@ import static com.mapzen.erasermap.dummy.TestHelper.getTestLocation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MainPresenterTest {
-    private MainPresenterImpl presenter;
+    private MainPresenter presenter;
     private TestMainController mainController;
     private TestRouteController routeController;
+    private TestMapzenLocation mapzenLocation;
 
     @Before
     public void setUp() throws Exception {
-        presenter = new MainPresenterImpl();
+        mapzenLocation = new TestMapzenLocation();
+        presenter = new MainPresenterImpl(mapzenLocation);
         mainController = new TestMainController();
         routeController = new TestRouteController();
         presenter.setMainViewController(mainController);
@@ -74,7 +76,7 @@ public class MainPresenterTest {
 
     @Test
     public void onRestoreViewState_shouldRestoreRoutePreview() throws Exception {
-        presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
+        postRoutePreviewEvent();
         TestMainController newController = new TestMainController();
         presenter.setMainViewController(newController);
         presenter.onRestoreViewState();
@@ -141,20 +143,20 @@ public class MainPresenterTest {
     @Test
     public void onRoutePreviewEvent_shouldCollapseSearchView() throws Exception {
         mainController.isSearchVisible = true;
-        presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
+        postRoutePreviewEvent();
         assertThat(mainController.isSearchVisible).isFalse();
     }
 
     @Test
     public void onRoutePreviewEvent_shouldShowRoutePreview() throws Exception {
         mainController.isRoutePreviewVisible = false;
-        presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
+        postRoutePreviewEvent();
         assertThat(mainController.isRoutePreviewVisible).isTrue();
     }
 
     @Test
     public void onBackPressed_shouldHideRoutePreview() throws Exception {
-        presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
+        postRoutePreviewEvent();
         presenter.onBackPressed();
         assertThat(mainController.isRoutePreviewVisible).isFalse();
     }
@@ -167,7 +169,7 @@ public class MainPresenterTest {
 
     @Test
     public void onRoutingCircleClick_shouldMakeRoutingModeVisible() {
-        presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
+        postRoutePreviewEvent();
         presenter.onRoutingCircleClick(false);
         assertThat(mainController.isRoutingModeVisible).isTrue();
     }
@@ -253,24 +255,26 @@ public class MainPresenterTest {
 
     @Test
     public void onPause_shouldDisconnectLocationUpdates() throws Exception {
-        TestMapzenLocation mapzenLocation = new TestMapzenLocation();
         mapzenLocation.connect();
-        presenter.onPause(mapzenLocation);
+        presenter.onPause();
         assertThat(mapzenLocation.isConnected()).isFalse();
     }
 
     @Test
     public void onPause_shouldNotDisconnectLocationUpdatesWhileRouting() throws Exception {
-        TestMapzenLocation mapzenLocation = new TestMapzenLocation();
         mapzenLocation.connect();
 
         presenter.onRoutingCircleClick(false);
-        presenter.onPause(mapzenLocation);
         assertThat(mapzenLocation.isConnected()).isTrue();
 
         presenter.onSlidingPanelOpen();
-        presenter.onPause(mapzenLocation);
+        presenter.onPause();
         assertThat(mapzenLocation.isConnected()).isTrue();
+    }
+
+    private void postRoutePreviewEvent() {
+        ((MainPresenterImpl) presenter)
+                .onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
     }
 
     private class TestMainController implements MainViewController {
@@ -378,8 +382,9 @@ public class MainPresenterTest {
             this.rotation = radians;
         }
 
-        @Override public void showReverseGeocodeFeature(@NotNull List<? extends Feature> features)
-        { isReverseGeocodeVisible = true; }
+        @Override public void showReverseGeocodeFeature(@NotNull List<? extends Feature> features) {
+            isReverseGeocodeVisible = true;
+        }
     }
 
     private class TestRouteController implements RouteViewController {
