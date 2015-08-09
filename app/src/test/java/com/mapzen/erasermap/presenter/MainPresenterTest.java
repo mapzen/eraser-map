@@ -177,7 +177,8 @@ public class MainPresenterTest {
     @Test
     public void onResumeRouting_shouldCenterMapOnCurrentLocation() throws Exception {
         presenter.onResumeRouting();
-        assertThat(mainController.isCenteredOnCurrentLocation).isTrue();
+        assertThat(mainController.location).isNotNull();
+        assertThat(mainController.zoom).isEqualTo(MainPresenter.ROUTING_ZOOM);
     }
 
     @Test
@@ -263,13 +264,27 @@ public class MainPresenterTest {
     @Test
     public void onPause_shouldNotDisconnectLocationUpdatesWhileRouting() throws Exception {
         mapzenLocation.connect();
-
         presenter.onRoutingCircleClick(false);
-        assertThat(mapzenLocation.isConnected()).isTrue();
-
         presenter.onSlidingPanelOpen();
         presenter.onPause();
         assertThat(mapzenLocation.isConnected()).isTrue();
+    }
+
+    @Test
+    public void onResume_shouldConnectLocationClientAndInitLocationUpdates() throws Exception {
+        mapzenLocation.disconnect();
+        presenter.onResume();
+        assertThat(mapzenLocation.isConnected()).isTrue();
+        assertThat(mapzenLocation.getCallback()).isNotNull();
+    }
+
+    @Test
+    public void onResume_shouldNotConnectClientAndInitUpdatesWhileRouting() throws Exception {
+        mapzenLocation.disconnect();
+        presenter.onRoutingCircleClick(false);
+        presenter.onResume();
+        assertThat(mapzenLocation.isConnected()).isFalse();
+        assertThat(mapzenLocation.getCallback()).isNull();
     }
 
     private void postRoutePreviewEvent() {
@@ -291,7 +306,6 @@ public class MainPresenterTest {
         private boolean isRoutePreviewVisible;
         private boolean isDirectionListVisible;
         private boolean isRoutingModeVisible;
-        private boolean isCenteredOnCurrentLocation;
         private boolean isCenteredOnCurrentFeature;
         private boolean isReverseGeocodeVisible;
 
@@ -338,7 +352,8 @@ public class MainPresenterTest {
             isSearchVisible = false;
         }
 
-        @Override public void showRoutePreview(@NotNull Feature feature) {
+        @Override public void showRoutePreview(@NotNull Location location,
+                @NotNull Feature feature) {
             isRoutePreviewVisible = true;
         }
 
@@ -359,14 +374,6 @@ public class MainPresenterTest {
 
         @Override public void showRoutingMode(@NotNull Feature feature) {
             isRoutingModeVisible = true;
-        }
-
-        @Override public void centerMapOnCurrentLocation() {
-            isCenteredOnCurrentLocation = true;
-        }
-
-        @Override public void centerMapOnCurrentLocation(float zoom) {
-            isCenteredOnCurrentLocation = true;
         }
 
         @Override public void centerMapOnLocation(Location location, float zoom) {

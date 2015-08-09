@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
+import static com.mapzen.erasermap.dummy.TestHelper.getTestLocation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
@@ -37,7 +38,7 @@ public class RouteModeViewTest {
     @Before
     public void setUp() throws Exception {
         startActivity.setReverse(false);
-        startActivity.showRoutePreview(getTestFeature());
+        startActivity.showRoutePreview(getTestLocation(), getTestFeature());
         startActivity.success(new Route(getFixture("valhalla_route")));
         startActivity.showRoutingMode(getTestFeature());
         routeModeView = (RouteModeView) startActivity.findViewById(R.id.route_mode);

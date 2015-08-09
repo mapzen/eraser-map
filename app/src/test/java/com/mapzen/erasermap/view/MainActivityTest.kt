@@ -61,12 +61,6 @@ public class MainActivityTest {
     }
 
     @Test
-    public fun testTest() {
-        activity = null
-        activity?.onPause()
-    }
-
-    @Test
     public fun shouldNotBeNull() {
         assertThat(activity).isNotNull()
     }
@@ -99,11 +93,6 @@ public class MainActivityTest {
         activity!!.onResume()
         assertThat(LocationServices.FusedLocationApi).isNotNull()
         assertThat(shadowLocationManager!!.getRequestLocationUpdateListeners()).isNotEmpty()
-    }
-
-    @Test
-    public fun shouldInjectLocationClient() {
-        assertThat(activity!!.mapzenLocation).isNotNull()
     }
 
     @Test
@@ -238,7 +227,7 @@ public class MainActivityTest {
     @Test
     public fun showRoutePreview_shouldHideActionBar() {
         activity!!.getSupportActionBar()!!.show()
-        activity!!.showRoutePreview(getTestFeature())
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         activity!!.success(Route(JSONObject()))
         Robolectric.flushForegroundThreadScheduler()
         assertThat(activity!!.getSupportActionBar()!!.isShowing()).isFalse()
@@ -247,7 +236,7 @@ public class MainActivityTest {
     @Test
     public fun showRoutePreview_shouldShowRoutePreviewView() {
         activity!!.findViewById(R.id.route_preview).setVisibility(GONE)
-        activity!!.showRoutePreview(getTestFeature())
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         activity!!.success(Route(JSONObject()))
         Robolectric.flushForegroundThreadScheduler()
         assertThat(activity!!.findViewById(R.id.route_preview).getVisibility()).isEqualTo(VISIBLE)
@@ -256,7 +245,7 @@ public class MainActivityTest {
     @Test
     public fun onRestoreViewState_shouldRestoreRoutingPreview() {
         activity!!.findViewById(R.id.route_preview).setVisibility(GONE)
-        activity!!.showRoutePreview(getTestFeature())
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         activity!!.success(Route(JSONObject()))
         Robolectric.flushForegroundThreadScheduler()
         activity!!.presenter!!.onRestoreViewState()
@@ -279,7 +268,7 @@ public class MainActivityTest {
 
     @Test
     public fun onRadioClick_shouldChangeType() {
-        activity!!.showRoutePreview(getTestFeature())
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         activity!!.success(Route(getFixture("valhalla_route")))
         activity!!.findViewById(R.id.route_preview).findViewById(R.id.by_bike).performClick()
         assertThat(activity!!.type).isEqualTo(Router.Type.BIKING)
@@ -291,7 +280,7 @@ public class MainActivityTest {
 
     @Test
     public fun onReverseClick_shouldSetReverse() {
-        activity!!.showRoutePreview(getTestFeature())
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         activity!!.success(Route(getFixture("valhalla_route")))
         assertThat(activity!!.reverse).isFalse()
         activity!!.findViewById(R.id.route_preview).findViewById(R.id.route_reverse).performClick()
@@ -301,7 +290,7 @@ public class MainActivityTest {
     @Test
     public fun onRoutingCircleClick_shouldOpenDirectionListActivity() {
         activity!!.reverse = true
-        activity!!.showRoutePreview(getTestFeature())
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         activity!!.success(Route(getFixture("valhalla_route")))
         activity!!.findViewById(R.id.routing_circle).performClick()
         val shadowActivity = shadowOf(activity)
@@ -321,7 +310,7 @@ public class MainActivityTest {
 
     @Test
     public fun hideRoutingMode_shouldClearRoute() {
-        activity!!.showRoutePreview(getTestFeature())
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         val routeModeView = activity!!.findViewById(R.id.route_mode) as RouteModeView
         routeModeView.route = Route(getFixture("valhalla_route"))
         activity!!.hideRoutingMode()

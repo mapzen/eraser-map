@@ -74,7 +74,7 @@ dependencies {
   compile 'org.jetbrains.kotlin:kotlin-stdlib:0.12.213'
   compile 'com.mapzen.tangram:tangram:0.1-SNAPSHOT'
   compile 'com.mapzen.android:lost:1.0.1'
-  compile ('com.mapzen.android:pelias-android-sdk:0.5-SNAPSHOT') {
+  compile('com.mapzen.android:pelias-android-sdk:0.5-SNAPSHOT') {
     exclude group: 'javax.annotation:javax', module: 'javax.annotation-api'
   }
   compile 'com.google.dagger:dagger:2.0'
@@ -83,12 +83,11 @@ dependencies {
   compile 'com.android.support:support-v4:22.2.0'
   compile 'com.squareup:otto:1.3.7'
   compile 'com.sothree.slidinguppanel:library:3.0.0'
-  compile ('com.mapzen:on-the-road:0.8-SNAPSHOT') {
+  compile('com.mapzen:on-the-road:0.8-SNAPSHOT') {
     exclude group: 'org.apache.commons', module: 'commons-io'
   }
-  compile "com.splunk.mint:mint:4.2.1"
+  compile 'com.splunk.mint:mint:4.2.1'
   compile 'com.squareup.okhttp:okhttp:2.4.0'
-
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.9.5'
   testCompile 'org.assertj:assertj-core:1.7.0'

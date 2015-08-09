@@ -5,6 +5,7 @@ import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
+import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.valhalla.Instruction
@@ -32,9 +33,9 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
         DEFAULT,
         SEARCH,
         SEARCH_RESULTS,
-        ROUTING_PREVIEW,
+        ROUTE_PREVIEW,
         ROUTING,
-        ROUTING_DIRECTION_LIST
+        ROUTE_DIRECTION_LIST
     }
 
     private var viewState: ViewState = ViewState.DEFAULT
@@ -68,9 +69,9 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
     override fun onRestoreViewState() {
         if (destination != null) {
             if(routingEnabled) {
-                mainViewController?.showRoutingMode(destination!!)
+                generateRoutingMode()
             } else {
-                mainViewController?.showRoutePreview(destination!!)
+                generateRoutePreview()
             }
         } else {
             if (searchResults != null) {
@@ -78,7 +79,7 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
             }
         }
 
-        if (viewState == ViewState.ROUTING_DIRECTION_LIST) {
+        if (viewState == ViewState.ROUTE_DIRECTION_LIST) {
             routeViewController?.showDirectionList()
         }
     }
@@ -111,12 +112,13 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
     @Subscribe public fun onRoutePreviewEvent(event: RoutePreviewEvent) {
         destination = event.destination;
         mainViewController?.collapseSearchView()
-        mainViewController?.showRoutePreview(event.destination)
+        generateRoutePreview()
     }
 
     override fun onBackPressed() {
         if (destination != null ) {
             if (routingEnabled == true) {
+                viewState = ViewState.ROUTE_PREVIEW
                 mainViewController?.hideRoutingMode()
             } else {
                 mainViewController?.hideRoutePreview()
@@ -136,13 +138,16 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
         if (reverse) {
             mainViewController?.showDirectionList()
         } else {
-            if (destination is Feature) mainViewController?.showRoutingMode(destination!!)
+            generateRoutingMode()
             viewState = ViewState.ROUTING
         }
     }
 
     override fun onResumeRouting() {
-        mainViewController?.centerMapOnCurrentLocation(MainPresenter.ROUTING_ZOOM)
+        val location = mapzenLocation.getLastLocation()
+        if (location is Location) {
+            mainViewController?.centerMapOnLocation(location, MainPresenter.ROUTING_ZOOM)
+        }
     }
 
     override fun onLocationChanged(location: Location) {
@@ -154,7 +159,7 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
     }
 
     override fun onSlidingPanelOpen() {
-        viewState = ViewState.ROUTING_DIRECTION_LIST
+        viewState = ViewState.ROUTE_DIRECTION_LIST
         routeViewController?.showDirectionList()
     }
 
@@ -175,11 +180,47 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
         }
     }
 
+    override fun onResume() {
+        if (!isRouting() && !isRoutingDirectionList()) {
+            mapzenLocation.connect()
+            mapzenLocation.initLocationUpdates {
+                location: Location -> onLocationChanged(location)
+                System.out.println("onLocationChanged: " + location)
+            }
+        }
+    }
+
     private fun isRouting(): Boolean {
         return viewState == ViewState.ROUTING
     }
 
     private fun isRoutingDirectionList(): Boolean {
-        return viewState == ViewState.ROUTING_DIRECTION_LIST
+        return viewState == ViewState.ROUTE_DIRECTION_LIST
+    }
+
+    override fun onFindMeButtonClick() {
+        val currentLocation = mapzenLocation.getLastLocation()
+        if (currentLocation is Location) {
+            mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
+        }
+    }
+
+    override fun getPeliasLocationProvider(): PeliasLocationProvider {
+        return mapzenLocation
+    }
+
+    private fun generateRoutePreview() {
+        val location = mapzenLocation.getLastLocation()
+        val feature = destination
+        if (location is Location && feature is Feature) {
+            mainViewController?.showRoutePreview(location, feature)
+        }
+    }
+
+    private fun generateRoutingMode() {
+        val feature = destination
+        if (feature is Feature) {
+            mainViewController?.showRoutingMode(feature)
+        }
     }
 }
