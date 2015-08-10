@@ -28,6 +28,7 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
 
     private var searchResults: Result? = null
     private var destination: Feature? = null
+    private var initialized = false
 
     enum class ViewState {
         DEFAULT,
@@ -196,9 +197,14 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
         mainViewController?.setMapRotation(Math.toRadians(instruction.bearing.toDouble()).toFloat())
     }
 
-    override fun onPause() {
-        if (!isRouting() && !isRoutingDirectionList()) {
-            mapzenLocation.disconnect()
+    override fun onCreate() {
+        if (!initialized) {
+            mapzenLocation.connect()
+            val currentLocation = mapzenLocation.getLastLocation()
+            if (currentLocation is Location) {
+                mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
+            }
+            initialized = true
         }
     }
 
@@ -209,6 +215,12 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
                 location: Location -> onLocationChanged(location)
                 System.out.println("onLocationChanged: " + location)
             }
+        }
+    }
+
+    override fun onPause() {
+        if (!isRouting() && !isRoutingDirectionList()) {
+            mapzenLocation.disconnect()
         }
     }
 

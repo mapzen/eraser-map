@@ -87,6 +87,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         initAutoCompleteAdapter()
         initFindMeButton()
         initReverseButton()
+        presenter?.onCreate()
         presenter?.onRestoreViewState()
         getApiKeys()
     }

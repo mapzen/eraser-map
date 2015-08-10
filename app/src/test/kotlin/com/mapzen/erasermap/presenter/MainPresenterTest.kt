@@ -5,7 +5,12 @@ import com.mapzen.erasermap.dummy.TestHelper.getTestInstruction
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
 import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.model.TestMapzenLocation
-import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.*
+import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.DEFAULT
+import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.ROUTE_DIRECTION_LIST
+import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.ROUTE_PREVIEW
+import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.ROUTING
+import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.SEARCH
+import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.SEARCH_RESULTS
 import com.mapzen.erasermap.view.TestMainController
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.pelias.gson.Feature
@@ -289,5 +294,19 @@ public class MainPresenterTest {
         assertThat(presenter.viewState).isEqualTo(SEARCH)
         presenter.onBackPressed()
         assertThat(presenter.viewState).isEqualTo(DEFAULT)
+    }
+
+    @Test
+    public fun onCreate_shouldSetMapLocationFirstTimeInvoked() {
+        presenter.onCreate()
+        assertThat(mainController.location).isNotNull()
+    }
+
+    @Test
+    public fun onCreate_shouldNotSetMapLocationSecondTimeInvoked() {
+        presenter.onCreate()
+        mainController.location = null
+        presenter.onCreate()
+        assertThat(mainController.location).isNull()
     }
 }

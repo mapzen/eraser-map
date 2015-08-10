@@ -42,8 +42,9 @@ public interface MainPresenter {
     public fun onSlidingPanelOpen()
     public fun onSlidingPanelCollapse()
     public fun onInstructionSelected(instruction: Instruction)
-    public fun onPause()
+    public fun onCreate()
     public fun onResume()
+    public fun onPause()
     public fun onFindMeButtonClick()
     public fun getPeliasLocationProvider(): PeliasLocationProvider
 }
