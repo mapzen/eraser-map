@@ -192,7 +192,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         findViewById(R.id.destination_location_icon).setVisibility(View.GONE)
     }
 
-    public fun collapseSlideLayout() {
+    override fun collapseSlideLayout() {
         if (slideLayoutIsExpanded()) {
             slideLayout?.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }

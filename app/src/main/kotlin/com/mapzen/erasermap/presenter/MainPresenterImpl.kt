@@ -29,7 +29,7 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
     private var searchResults: Result? = null
     private var destination: Feature? = null
 
-    private enum class ViewState {
+    enum class ViewState {
         DEFAULT,
         SEARCH,
         SEARCH_RESULTS,
@@ -38,7 +38,7 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
         ROUTE_DIRECTION_LIST
     }
 
-    private var viewState: ViewState = ViewState.DEFAULT
+    var viewState: ViewState = ViewState.DEFAULT
 
     override fun onSearchResultsAvailable(searchResults: Result?) {
         this.searchResults = searchResults
@@ -110,28 +110,50 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
     }
 
     @Subscribe public fun onRoutePreviewEvent(event: RoutePreviewEvent) {
+        viewState = ViewState.ROUTE_PREVIEW
         destination = event.destination;
         mainViewController?.collapseSearchView()
         generateRoutePreview()
     }
 
     override fun onBackPressed() {
-        if (destination != null ) {
-            if (routingEnabled == true) {
-                viewState = ViewState.ROUTE_PREVIEW
-                mainViewController?.hideRoutingMode()
-            } else {
-                mainViewController?.hideRoutePreview()
-                destination = null
-            }
-        } else {
-            if (searchResults == null) {
-                mainViewController?.shutDown()
-            } else {
-                mainViewController?.hideSearchResults()
-                searchResults = null
-            }
+        when (viewState) {
+            ViewState.DEFAULT -> onBackPressedStateDefault()
+            ViewState.SEARCH -> onBackPressedStateSearch()
+            ViewState.SEARCH_RESULTS -> onBackPressedStateSearchResults()
+            ViewState.ROUTE_PREVIEW -> onBackPressedStateRoutePreview()
+            ViewState.ROUTING -> onBackPressedStateRouting()
+            ViewState.ROUTE_DIRECTION_LIST -> onBackPressedStateRouteDirectionList()
         }
+    }
+
+    private fun onBackPressedStateDefault() {
+        mainViewController?.shutDown()
+    }
+
+    private fun onBackPressedStateSearch() {
+        viewState = ViewState.DEFAULT
+        mainViewController?.collapseSearchView()
+    }
+
+    private fun onBackPressedStateSearchResults() {
+        viewState = ViewState.SEARCH
+        mainViewController?.hideSearchResults()
+    }
+
+    private fun onBackPressedStateRoutePreview() {
+        viewState = ViewState.SEARCH_RESULTS
+        mainViewController?.hideRoutePreview()
+    }
+
+    private fun onBackPressedStateRouting() {
+        viewState = ViewState.ROUTE_PREVIEW
+        mainViewController?.hideRoutingMode()
+    }
+
+    private fun onBackPressedStateRouteDirectionList() {
+        viewState = ViewState.ROUTING
+        routeViewController?.collapseSlideLayout()
     }
 
     override fun onRoutingCircleClick(reverse: Boolean) {

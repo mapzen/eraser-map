@@ -6,4 +6,5 @@ public interface RouteViewController {
     public fun onLocationChanged(location: Location)
     public fun showDirectionList()
     public fun hideDirectionList()
+    public fun collapseSlideLayout()
 }

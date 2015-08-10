@@ -20,10 +20,16 @@ import java.util.List;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestInstruction;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestLocation;
+import static com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.DEFAULT;
+import static com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.ROUTE_DIRECTION_LIST;
+import static com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.ROUTE_PREVIEW;
+import static com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.ROUTING;
+import static com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.SEARCH;
+import static com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.SEARCH_RESULTS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MainPresenterTest {
-    private MainPresenter presenter;
+    private MainPresenterImpl presenter;
     private TestMainController mainController;
     private TestRouteController routeController;
     private TestMapzenLocation mapzenLocation;
@@ -76,7 +82,7 @@ public class MainPresenterTest {
 
     @Test
     public void onRestoreViewState_shouldRestoreRoutePreview() throws Exception {
-        postRoutePreviewEvent();
+        presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
         TestMainController newController = new TestMainController();
         presenter.setMainViewController(newController);
         presenter.onRestoreViewState();
@@ -143,20 +149,20 @@ public class MainPresenterTest {
     @Test
     public void onRoutePreviewEvent_shouldCollapseSearchView() throws Exception {
         mainController.isSearchVisible = true;
-        postRoutePreviewEvent();
+        presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
         assertThat(mainController.isSearchVisible).isFalse();
     }
 
     @Test
     public void onRoutePreviewEvent_shouldShowRoutePreview() throws Exception {
         mainController.isRoutePreviewVisible = false;
-        postRoutePreviewEvent();
+        presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
         assertThat(mainController.isRoutePreviewVisible).isTrue();
     }
 
     @Test
     public void onBackPressed_shouldHideRoutePreview() throws Exception {
-        postRoutePreviewEvent();
+        presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
         presenter.onBackPressed();
         assertThat(mainController.isRoutePreviewVisible).isFalse();
     }
@@ -169,7 +175,7 @@ public class MainPresenterTest {
 
     @Test
     public void onRoutingCircleClick_shouldMakeRoutingModeVisible() {
-        postRoutePreviewEvent();
+        presenter.onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
         presenter.onRoutingCircleClick(false);
         assertThat(mainController.isRoutingModeVisible).isTrue();
     }
@@ -287,9 +293,19 @@ public class MainPresenterTest {
         assertThat(mapzenLocation.getCallback()).isNull();
     }
 
-    private void postRoutePreviewEvent() {
-        ((MainPresenterImpl) presenter)
-                .onRoutePreviewEvent(new RoutePreviewEvent(getTestFeature()));
+    @Test
+    public void onBackPressed_shouldUpdateViewState() throws Exception {
+        presenter.setViewState(ROUTE_DIRECTION_LIST);
+        presenter.onBackPressed();
+        assertThat(presenter.getViewState()).isEqualTo(ROUTING);
+        presenter.onBackPressed();
+        assertThat(presenter.getViewState()).isEqualTo(ROUTE_PREVIEW);
+        presenter.onBackPressed();
+        assertThat(presenter.getViewState()).isEqualTo(SEARCH_RESULTS);
+        presenter.onBackPressed();
+        assertThat(presenter.getViewState()).isEqualTo(SEARCH);
+        presenter.onBackPressed();
+        assertThat(presenter.getViewState()).isEqualTo(DEFAULT);
     }
 
     private class TestMainController implements MainViewController {
@@ -408,6 +424,9 @@ public class MainPresenterTest {
 
         @Override public void hideDirectionList() {
             isDirectionListVisible = false;
+        }
+
+        @Override public void collapseSlideLayout() {
         }
     }
 }

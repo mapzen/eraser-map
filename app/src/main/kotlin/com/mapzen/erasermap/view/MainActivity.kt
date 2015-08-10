@@ -581,18 +581,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
     override fun hideRoutingMode() {
         presenter?.routingEnabled = false
         val routeModeView = findViewById(R.id.route_mode) as RouteModeView
-
-        if (routeModeView.slideLayoutIsExpanded()) {
-            routeModeView.collapseSlideLayout()
-        } else {
-            findViewById(R.id.route_mode).setVisibility(View.GONE)
-            findViewById(R.id.find_me).setVisibility(View.VISIBLE)
-            if (origin is Location && destination is Feature) {
-                showRoutePreview(origin as Location, destination as Feature)
-            }
-            getSupportActionBar()?.hide()
-            routeModeView.route = null
+        findViewById(R.id.route_mode).setVisibility(View.GONE)
+        findViewById(R.id.find_me).setVisibility(View.VISIBLE)
+        if (origin is Location && destination is Feature) {
+            showRoutePreview(origin as Location, destination as Feature)
         }
+        getSupportActionBar()?.hide()
+        routeModeView.route = null
     }
 
     private fun getInitializedRouter(): Router {
