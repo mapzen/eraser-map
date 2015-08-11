@@ -265,7 +265,7 @@ public class MainPresenterTest {
     }
 
     @Test
-    public fun onResume_shouldConnectLocationClientAndInitLocationUpdates() {
+    public fun onResume_shouldReconnectLocationClientAndInitLocationUpdates() {
         mapzenLocation.disconnect()
         presenter.onResume()
         assertThat(mapzenLocation.isConnected()).isTrue()
@@ -273,9 +273,10 @@ public class MainPresenterTest {
     }
 
     @Test
-    public fun onResume_shouldNotConnectClientAndInitUpdatesWhileRouting() {
+    public fun onResume_shouldNotReconnectClientAndInitUpdatesWhileRouting() {
         mapzenLocation.disconnect()
         presenter.onRoutingCircleClick(false)
+        mapzenLocation.callback = null
         presenter.onResume()
         assertThat(mapzenLocation.isConnected()).isFalse()
         assertThat(mapzenLocation.callback).isNull()

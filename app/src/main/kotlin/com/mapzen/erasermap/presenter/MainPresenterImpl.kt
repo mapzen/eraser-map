@@ -5,6 +5,7 @@ import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
+import com.mapzen.pelias.BuildConfig
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
@@ -161,6 +162,12 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
         if (reverse) {
             mainViewController?.showDirectionList()
         } else {
+            mapzenLocation.initRouteLocationUpdates {
+                location: Location -> onLocationChanged(location)
+                if (BuildConfig.DEBUG) {
+                    System.out.println("onLocationChanged(Routing): " + location)
+                }
+            }
             generateRoutingMode()
             viewState = ViewState.ROUTING
         }
@@ -213,7 +220,9 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
             mapzenLocation.connect()
             mapzenLocation.initLocationUpdates {
                 location: Location -> onLocationChanged(location)
-                System.out.println("onLocationChanged: " + location)
+                if (BuildConfig.DEBUG) {
+                    System.out.println("onLocationChanged: " + location)
+                }
             }
         }
     }

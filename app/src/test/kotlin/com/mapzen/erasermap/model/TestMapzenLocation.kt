@@ -23,6 +23,10 @@ public class TestMapzenLocation : MapzenLocation {
         this.callback = callback
     }
 
+    override fun initRouteLocationUpdates(callback: (Location) -> Unit) {
+        this.callback = callback
+    }
+
     override fun getLastLocation(): Location? {
         return TestHelper.getTestLocation()
     }
