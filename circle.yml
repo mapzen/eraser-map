@@ -31,5 +31,5 @@ deployment:
   master:
     branch: master
     commands:
-      - s3cmd put app/build/outputs/apk/app-debug.apk s3://android.mapzen.com/erasermap/latest.apk
+      - s3cmd put app/build/outputs/apk/app-debug.apk s3://android.mapzen.com/erasermap-latest.apk
       - s3cmd put app/build/outputs/apk/app-debug.apk s3://android.mapzen.com/erasermap-snapshots/master-$CIRCLE_BUILD_NUM.apk
