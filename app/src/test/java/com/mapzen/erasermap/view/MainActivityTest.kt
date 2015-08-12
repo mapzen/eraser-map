@@ -40,6 +40,9 @@ import android.content.Context.LOCATION_SERVICE
 import android.content.DialogInterface
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.S3Object
+import com.amazonaws.services.s3.model.S3ObjectInputStream
 import com.mapzen.erasermap.dummy.TestHelper.getFixture
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
@@ -47,8 +50,12 @@ import com.mapzen.erasermap.model.ManifestDownLoader
 import com.squareup.okhttp.mockwebserver.MockResponse
 import com.squareup.okhttp.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
+import org.mockito.Mockito
+import org.mockito.Matchers.anyObject
+import org.mockito.Mockito.`when`
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowAlertDialog
+import java.io.ByteArrayInputStream
 import java.util.concurrent.TimeUnit
 
 RunWith(PrivateMapsTestRunner::class)
@@ -391,9 +398,8 @@ public class MainActivityTest {
 
     @Test
     public fun onMinVersionGreaterThanCurrent_shouldLaunchUpdateDialog() {
-        var server: MockWebServer? = mockServerToMakeAppUpdate()
+        mockServerToMakeAppUpdate()
         activity?.checkIfUpdateNeeded()
-        server?.shutdown()
         var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
         assertThat(dialog.isShowing()).isTrue()
         assertThat(shadowOf(dialog).getMessage()).isEqualTo(activity?.getString(R.string.update_message))
@@ -401,9 +407,8 @@ public class MainActivityTest {
 
     @Test
     public fun onMinVersionGreaterThanCurrent_clickUpdateNowShouldOpenPlayStore() {
-        var server: MockWebServer? = mockServerToMakeAppUpdate()
+        mockServerToMakeAppUpdate()
         activity?.checkIfUpdateNeeded()
-        server?.shutdown()
         var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
         assertThat(dialog.isShowing()).isTrue()
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick()
@@ -413,29 +418,35 @@ public class MainActivityTest {
 
     @Test
     public fun onMinVersionGreaterThanCurrent_clickExitShouldExitApp() {
-        var server: MockWebServer? = mockServerToMakeAppUpdate()
+        mockServerToMakeAppUpdate()
         activity?.checkIfUpdateNeeded()
-        server?.shutdown()
         var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
         assertThat(dialog.isShowing()).isTrue()
         dialog.getButton(DialogInterface.BUTTON_NEGATIVE).performClick()
         assertThat(shadowOf(activity).isFinishing()).isTrue()
     }
 
-    private fun mockServerToMakeAppUpdate(): MockWebServer? {
+    private fun mockServerToMakeAppUpdate() {
         var downLoader: ManifestDownLoader? = ManifestDownLoader()
-        var server: MockWebServer? = MockWebServer()
-        server?.play()
-        downLoader?.host = server?.getUrl("/").toString()
         var sampleResponse: String = "{\"minVersion\": 101.0,\r\n" +
-                "    \"vectorTileApiKeyReleaseProp\": \"vectorKey\",\r\n " +
-                "   \"valhallaApiKey\": \"routeKey\",\r\n    " +
-                "\"mintApiKey\": \"mintKey\",\r\n    " +
-                "\"peliasApiKey\": \"peliasKey\"}\r\n"
-        server?.enqueue(MockResponse().setBody(sampleResponse))
+                                "    \"vectorTileApiKeyReleaseProp\": \"vectorKey\",\r\n " +
+                                "   \"valhallaApiKey\": \"routeKey\",\r\n    " +
+                                "\"mintApiKey\": \"mintKey\",\r\n    " +
+                                "\"peliasApiKey\": \"peliasKey\"}\r\n"
+        var mocks3Client: AmazonS3Client? = org.mockito.Mockito.mock(
+                   javaClass<AmazonS3Client>())
+        var mockS3Object = Mockito.mock(
+                javaClass<S3Object>())
+        `when`(mockS3Object.getObjectContent()).thenReturn(
+                S3ObjectInputStream(ByteArrayInputStream(sampleResponse.getBytes()))
+        )
+        `when`(mocks3Client?.getObject(anyObject())).thenReturn(
+                mockS3Object
+        )
+        downLoader?.key = "fakeawskey"
+        downLoader?.secret = "fakeawssecret"
+        downLoader?.s3Client = mocks3Client
         downLoader?.download(activity?.apiKeys, {})
-        server?.takeRequest(1000, TimeUnit.MILLISECONDS);
-        return server
     }
 
     protected inner class RoboMenuWithGroup public constructor(public var group: Int, public var visible: Boolean) : RoboMenu() {

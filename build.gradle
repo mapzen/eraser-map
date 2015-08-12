@@ -5,6 +5,7 @@ buildscript {
     jcenter()
   }
   dependencies {
+    classpath 'com.nabilhachicha:android-native-dependencies:0.1.3'
     classpath 'com.android.tools.build:gradle:1.2.3'
     classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:0.12.213'
     classpath 'com.neenbedankt.gradle.plugins:android-apt:1.5.1'

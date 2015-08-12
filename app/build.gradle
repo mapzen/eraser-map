@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'checkstyle'
+apply plugin: 'android-native-dependencies'
 
 def VECTOR_TILE_API_KEY_DEBUG = hasProperty('vectorTileApiKeyDebugProp') ? '"' + vectorTileApiKeyDebugProp + '"' : "null";
 def VECTOR_TILE_API_KEY_RELEASE = hasProperty('vectorTileApiKeyReleaseProp') ? '"' + vectorTileApiKeyReleaseProp + '"' : "null";
@@ -18,6 +19,7 @@ android {
     targetSdkVersion 22
     versionCode 2
     versionName "0.3-SNAPSHOT"
+    multiDexEnabled true
   }
   buildTypes {
     debug {
@@ -69,6 +71,12 @@ repositories {
   maven { url "https://mint.splunk.com/gradle/" }
 }
 
+native_dependencies {
+  artifact 'com.mapzen.android:leyndo:0.0.1-SNAPSHOT:x86'
+  artifact 'com.mapzen.android:leyndo:0.0.1-SNAPSHOT:armeabi'
+  artifact 'com.mapzen.android:leyndo:0.0.1-SNAPSHOT:armeabi-v7a'
+}
+
 dependencies {
   compile 'com.android.support:appcompat-v7:22.2.0'
   compile 'org.jetbrains.kotlin:kotlin-stdlib:0.12.213'
@@ -76,6 +84,12 @@ dependencies {
   compile 'com.mapzen.android:lost:1.0.1'
   compile ('com.mapzen.android:pelias-android-sdk:0.5-SNAPSHOT') {
     exclude group: 'javax.annotation:javax', module: 'javax.annotation-api'
+  }
+  compile ('com.amazonaws:aws-android-sdk-core:2.2.4') {
+    exclude group: 'commons-logging', module: 'commons-logging'
+  }
+  compile('com.amazonaws:aws-android-sdk-s3:2.2.4') {
+    exclude group: 'commons-logging', module: 'commons-logging'
   }
   compile 'com.google.dagger:dagger:2.0'
   compile 'com.google.dagger:dagger-compiler:2.0'

@@ -1,53 +1,90 @@
 package com.mapzen.erasermap.model
 
-import com.google.common.io.Files
-
-import android.content.Context
 import android.os.AsyncTask
 import android.util.Log
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.services.s3.AmazonS3
+import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.GetObjectRequest
 import com.google.gson.Gson
-import com.google.gson.JsonParseException
-import com.mapzen.erasermap.model.ManifestModel
-import com.squareup.okhttp.*
-
-import java.io.BufferedInputStream
-import java.io.File
+import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.MalformedURLException
-import java.net.URL
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+import java.io.InputStreamReader
+
 
 public class ManifestDownLoader() {
-    private var client: OkHttpClient? = null
-    public var host: String? = "http://android.mapzen.com/"
+    public var s3Client: AmazonS3? = null
+    public var host: String? = "android.mapzen.com"
+    public var fileName: String? = "erasermap_manifest"
+    public var key: String? = null
+    public var secret: String? = null
+
     init {
-        client = OkHttpClient()
+        try {
+            System.loadLibrary("leyndo")
+            key = getDecryptedAwsKey()
+            secret = getDecryptedAwsSecret()
+            s3Client = AmazonS3Client(BasicAWSCredentials(key, secret))
+        } catch (e: UnsatisfiedLinkError) {
+            if ("Dalvik".equals(System.getProperty("java.vm.name"))) {
+                throw e
+            }
+        }
+    }
+
+    native fun getAwsSecret() : String
+    native fun getAwsKey() : String
+
+    public fun getDecryptedAwsKey(): String {
+        var key: String = ""
+        var crypt: Char = '#'
+        var encrypted = getAwsKey().toCharArray()
+        for(letter in encrypted) {
+            key += letter.toInt().xor(crypt.toInt()).toChar().toString()
+        }
+        return key
+    }
+
+    public fun getDecryptedAwsSecret(): String {
+        var key: String = ""
+        var crypt: Char = '#'
+        var encrypted = getAwsSecret().toCharArray()
+        for(letter in encrypted) {
+            key += letter.toInt().xor(crypt.toInt()).toChar().toString()
+        }
+        key = key.removeSuffix(getDecryptedAwsKey())
+        return key
     }
 
     public fun download(manifest: ManifestModel?,  callback : () -> Unit) {
         (object : AsyncTask<Void, Void, ManifestModel>() {
             override fun doInBackground(vararg params: Void): ManifestModel? {
                 try {
-                    var request: Request =  Request.Builder()
-                            .url(URL(host + "erasermap_manifest"))
-                            .build()
-                    val response: Response = client!!.newCall(request).execute()
-                    val responseString: String = response.body().string()
-                    var gson: Gson = Gson()
-                    try {
-                        var model: ManifestModel = gson.fromJson(responseString,
-                                javaClass<ManifestModel>())
-                        return model
+                    if (key != null && secret != null) {
+                        var gson: Gson = Gson()
+                        try {
+                            var manifest = s3Client?.getObject(GetObjectRequest(
+                                    host, fileName ))
+                            var reader: BufferedReader = BufferedReader(
+                                    InputStreamReader(manifest?.getObjectContent()))
+                            var responseString: String = ""
+                            while (true) {
+                                var line = reader.readLine()
+                                if (line == null) break
+                                responseString += line
+                            }
+
+                            var model: ManifestModel = gson.fromJson(responseString,
+                                    javaClass<ManifestModel>())
+                            return model
+                        } catch (e: Exception) {
+                            return null
+                        }
                     }
-                    catch (e: Exception) {
-                        return null
+                    } catch (ioe: IOException) {
+                        Log.d("Error", "Unable to get api keys")
                     }
-                } catch (ioe: IOException) {
-                    Log.d("Error", "Unable to get api keys")
-                }
+
                 return null
             }
 

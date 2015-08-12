@@ -8,7 +8,7 @@ machine:
     M2_HOME: $HOME/.m2/apache-maven-3.1.1/
     M2: $HOME/.m2/apache-maven-3.1.1/bin/
     ANDROID_HOME: /usr/local/android-sdk-linux
-    JAVA_OPTS: "-Xms256m -Xmx512m"
+    JAVA_OPTS: "-Xmx512m -XX:MaxPermSize=512m"
 
 
 dependencies:
@@ -16,6 +16,8 @@ dependencies:
     - echo y | android update sdk --all --no-ui --force --filter "extra-android-m2repository"
     - sudo apt-get update; sudo apt-get install s3cmd
     - printf "[default]\naccess_key = $S3_ACCESS_KEY\n secret_key = $S3_SECRET_KEY" > ~/.s3cfg
+    - git clone https://github.com/mapzen/apk-s3-lister.git; cd apk-s3-lister; ./upload.sh
+    - git clone git@github.com:mapzen/leyndo.git; cd leyndo; git checkout erasermap; ./install.sh
 
 test:
   override:
