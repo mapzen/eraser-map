@@ -1,9 +1,11 @@
 package com.mapzen.erasermap.model
 
 import android.location.Location
+import com.mapzen.erasermap.dummy.TestHelper
 
 public class TestMapzenLocation : MapzenLocation {
     private var connected = false;
+    public var callback: ((Location) -> Unit)? = null
 
     override fun connect() {
         connected = true
@@ -18,18 +20,22 @@ public class TestMapzenLocation : MapzenLocation {
     }
 
     override fun initLocationUpdates(callback: (Location) -> Unit) {
-        throw UnsupportedOperationException()
+        this.callback = callback
+    }
+
+    override fun initRouteLocationUpdates(callback: (Location) -> Unit) {
+        this.callback = callback
     }
 
     override fun getLastLocation(): Location? {
-        throw UnsupportedOperationException()
+        return TestHelper.getTestLocation()
     }
 
     override fun getLon(): String? {
-        throw UnsupportedOperationException()
+        return "0.0"
     }
 
     override fun getLat(): String? {
-        throw UnsupportedOperationException()
+        return "0.0"
     }
 }

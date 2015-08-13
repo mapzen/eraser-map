@@ -31,6 +31,9 @@
         <activity
             android:name=".view.InstructionListActivity"
             android:label="@string/instruction_list" />
+        <activity
+            android:name=".view.SettingsActivity"
+            android:label="@string/settings" />
     </application>
 
 </manifest>

@@ -11,11 +11,10 @@ import com.mapzen.erasermap.R
 import com.mapzen.pelias.SimpleFeature
 import java.util.ArrayList
 
-public class SearchResultsListActivity : AppCompatActivity() {
+public class SearchResultsListActivity : HomeAsUpActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_results)
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true)
 
         val listView = findViewById(R.id.search_results_list_view) as ListView
         val headerView = View.inflate(this, R.layout.list_header_search_results, null)
@@ -37,11 +36,5 @@ public class SearchResultsListActivity : AppCompatActivity() {
                 finish()
             }
         }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        setResult(-1)
-        finish()
-        return true
     }
 }

@@ -1,58 +1,53 @@
 package com.mapzen.erasermap.view
 
 import android.app.AlertDialog
+import android.content.ComponentName
+import android.content.Context.LOCATION_SERVICE
+import android.content.DialogInterface
+import android.content.Intent
+import android.location.LocationManager
+import android.os.SystemClock
+import android.preference.PreferenceManager
+import android.support.v7.widget.SearchView
+import android.view.MotionEvent
+import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.widget.TextView
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.PrivateMapsTestRunner
 import com.mapzen.erasermap.R
+import com.mapzen.erasermap.dummy.TestHelper.getFixture
+import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
+import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
+import com.mapzen.erasermap.model.ManifestDownLoader
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.mapzen.tangram.MapView
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
-
+import com.squareup.okhttp.mockwebserver.MockResponse
+import com.squareup.okhttp.mockwebserver.MockWebServer
+import org.assertj.core.api.Assertions.assertThat
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.fakes.RoboMenu
-import org.robolectric.shadows.ShadowActivity
-import org.robolectric.shadows.ShadowIntent
-import org.robolectric.shadows.ShadowLocationManager
-
-import android.content.Intent
-import android.content.SharedPreferences
-import android.location.LocationManager
-import android.os.SystemClock
-import android.preference.PreferenceManager
-import android.support.v7.widget.SearchView
-import android.view.Menu
-import android.view.MotionEvent
-import android.view.View
-import android.widget.TextView
-
-import java.util.ArrayList
-
-import android.content.Context.LOCATION_SERVICE
-import android.content.DialogInterface
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import com.mapzen.erasermap.dummy.TestHelper.getFixture
-import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
-import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
-import com.mapzen.erasermap.model.ManifestDownLoader
-import com.squareup.okhttp.mockwebserver.MockResponse
-import com.squareup.okhttp.mockwebserver.MockWebServer
-import org.assertj.core.api.Assertions.assertThat
-import org.robolectric.Shadows.shadowOf
+import org.robolectric.fakes.RoboMenuItem
 import org.robolectric.shadows.ShadowAlertDialog
+import org.robolectric.shadows.ShadowApplication
+import org.robolectric.shadows.ShadowLocationManager
+import java.util.ArrayList
 import java.util.concurrent.TimeUnit
 
-RunWith(PrivateMapsTestRunner::class)
-Config(constants = BuildConfig::class,  sdk=intArrayOf(21))
+@RunWith(PrivateMapsTestRunner::class)
+@Config(constants = BuildConfig::class, sdk=intArrayOf(21))
 public class MainActivityTest {
     private var activity: MainActivity? = null
     private var locationManager: LocationManager? = null
@@ -82,30 +77,22 @@ public class MainActivityTest {
 
     @Test
     public fun shouldRequestLocationUpdates() {
-        assertThat(
-                shadowLocationManager!!.getRequestLocationUpdateListeners()).isNotEmpty()
+        assertThat(shadowLocationManager!!.getRequestLocationUpdateListeners()).isNotEmpty()
     }
 
     @Test
     public fun onPause_shouldDisconnectLocationServices() {
         activity!!.onPause()
         assertThat(LocationServices.FusedLocationApi).isNull()
-        assertThat(
-                shadowLocationManager!!.getRequestLocationUpdateListeners()).isEmpty()
+        assertThat(shadowLocationManager!!.getRequestLocationUpdateListeners()).isEmpty()
     }
 
     @Test
     public fun onResume_shouldReconnectLocationServices() {
         activity!!.onPause()
-        (activity as MainActivity)?.onResume()
+        activity!!.onResume()
         assertThat(LocationServices.FusedLocationApi).isNotNull()
-        assertThat(
-                shadowLocationManager!!.getRequestLocationUpdateListeners()).isNotEmpty()
-    }
-
-    @Test
-    public fun shouldInjectLocationClient() {
-        assertThat(activity!!.mapzenLocation).isNotNull()
+        assertThat(shadowLocationManager!!.getRequestLocationUpdateListeners()).isNotEmpty()
     }
 
     @Test
@@ -163,7 +150,7 @@ public class MainActivityTest {
         val searchView = menu.findItem(R.id.action_search).getActionView() as SearchView
         searchView.setQuery("query", false)
         searchView.requestFocus()
-        activity?.onDestroy()
+        activity!!.onDestroy()
         assertThat(activity!!.presenter!!.currentSearchTerm).isEqualTo("query")
     }
 
@@ -231,17 +218,16 @@ public class MainActivityTest {
     @Test
     public fun showAllSearchResults_shouldStartSearchResultsActivityForResult() {
         activity!!.showAllSearchResults(ArrayList<Feature>())
-        assertThat(shadowOf(
-                activity).peekNextStartedActivityForResult().intent.getComponent().getClassName()).isEqualTo(
-                javaClass<SearchResultsListActivity>().getName())
-        assertThat(shadowOf(activity).peekNextStartedActivityForResult().requestCode).isEqualTo(
-                activity!!.requestCodeSearchResults)
+        assertThat(shadowOf(activity).peekNextStartedActivityForResult().intent.getComponent()
+                .getClassName()).isEqualTo(javaClass<SearchResultsListActivity>().getName())
+        assertThat(shadowOf(activity).peekNextStartedActivityForResult().requestCode)
+                .isEqualTo(activity!!.requestCodeSearchResults)
     }
 
     @Test
     public fun showRoutePreview_shouldHideActionBar() {
         activity!!.getSupportActionBar()!!.show()
-        activity!!.showRoutePreview(getTestFeature())
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         activity!!.success(Route(JSONObject()))
         Robolectric.flushForegroundThreadScheduler()
         assertThat(activity!!.getSupportActionBar()!!.isShowing()).isFalse()
@@ -250,7 +236,7 @@ public class MainActivityTest {
     @Test
     public fun showRoutePreview_shouldShowRoutePreviewView() {
         activity!!.findViewById(R.id.route_preview).setVisibility(GONE)
-        activity!!.showRoutePreview(getTestFeature())
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         activity!!.success(Route(JSONObject()))
         Robolectric.flushForegroundThreadScheduler()
         assertThat(activity!!.findViewById(R.id.route_preview).getVisibility()).isEqualTo(VISIBLE)
@@ -259,7 +245,7 @@ public class MainActivityTest {
     @Test
     public fun onRestoreViewState_shouldRestoreRoutingPreview() {
         activity!!.findViewById(R.id.route_preview).setVisibility(GONE)
-        activity!!.showRoutePreview(getTestFeature())
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         activity!!.success(Route(JSONObject()))
         Robolectric.flushForegroundThreadScheduler()
         activity!!.presenter!!.onRestoreViewState()
@@ -282,7 +268,7 @@ public class MainActivityTest {
 
     @Test
     public fun onRadioClick_shouldChangeType() {
-        activity!!.showRoutePreview(getTestFeature())
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         activity!!.success(Route(getFixture("valhalla_route")))
         activity!!.findViewById(R.id.route_preview).findViewById(R.id.by_bike).performClick()
         assertThat(activity!!.type).isEqualTo(Router.Type.BIKING)
@@ -294,7 +280,7 @@ public class MainActivityTest {
 
     @Test
     public fun onReverseClick_shouldSetReverse() {
-        activity!!.showRoutePreview(getTestFeature())
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         activity!!.success(Route(getFixture("valhalla_route")))
         assertThat(activity!!.reverse).isFalse()
         activity!!.findViewById(R.id.route_preview).findViewById(R.id.route_reverse).performClick()
@@ -304,7 +290,7 @@ public class MainActivityTest {
     @Test
     public fun onRoutingCircleClick_shouldOpenDirectionListActivity() {
         activity!!.reverse = true
-        activity!!.showRoutePreview(getTestFeature())
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         activity!!.success(Route(getFixture("valhalla_route")))
         activity!!.findViewById(R.id.routing_circle).performClick()
         val shadowActivity = shadowOf(activity)
@@ -324,7 +310,7 @@ public class MainActivityTest {
 
     @Test
     public fun hideRoutingMode_shouldClearRoute() {
-        activity!!.showRoutePreview(getTestFeature())
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         val routeModeView = activity!!.findViewById(R.id.route_mode) as RouteModeView
         routeModeView.route = Route(getFixture("valhalla_route"))
         activity!!.hideRoutingMode()
@@ -392,34 +378,44 @@ public class MainActivityTest {
     @Test
     public fun onMinVersionGreaterThanCurrent_shouldLaunchUpdateDialog() {
         var server: MockWebServer? = mockServerToMakeAppUpdate()
-        activity?.checkIfUpdateNeeded()
+        activity!!.checkIfUpdateNeeded()
         server?.shutdown()
         var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
         assertThat(dialog.isShowing()).isTrue()
-        assertThat(shadowOf(dialog).getMessage()).isEqualTo(activity?.getString(R.string.update_message))
+        assertThat(shadowOf(dialog).getMessage())
+                .isEqualTo(activity!!.getString(R.string.update_message))
     }
 
     @Test
     public fun onMinVersionGreaterThanCurrent_clickUpdateNowShouldOpenPlayStore() {
         var server: MockWebServer? = mockServerToMakeAppUpdate()
-        activity?.checkIfUpdateNeeded()
+        activity!!.checkIfUpdateNeeded()
         server?.shutdown()
         var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
         assertThat(dialog.isShowing()).isTrue()
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick()
         var startedIntent: Intent = shadowOf(activity).getNextStartedActivity();
-        assertThat(startedIntent.getData().toString()).isEqualTo("market://details?id=com.mapzen.erasermap");
+        assertThat(startedIntent.getData().toString())
+                .isEqualTo("market://details?id=com.mapzen.erasermap");
     }
 
     @Test
     public fun onMinVersionGreaterThanCurrent_clickExitShouldExitApp() {
         var server: MockWebServer? = mockServerToMakeAppUpdate()
-        activity?.checkIfUpdateNeeded()
+        activity!!.checkIfUpdateNeeded()
         server?.shutdown()
         var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
         assertThat(dialog.isShowing()).isTrue()
         dialog.getButton(DialogInterface.BUTTON_NEGATIVE).performClick()
         assertThat(shadowOf(activity).isFinishing()).isTrue()
+    }
+
+    @Test
+    public fun onOptionsItemSelected_settingsShouldStartSettingsFragment() {
+        val menuItem = RoboMenuItem(R.id.action_settings)
+        activity!!.onOptionsItemSelected(menuItem)
+        assertThat(ShadowApplication.getInstance().getNextStartedActivity().getComponent())
+                .isEqualTo(ComponentName(activity, javaClass<SettingsActivity>()))
     }
 
     private fun mockServerToMakeAppUpdate(): MockWebServer? {
@@ -433,12 +429,13 @@ public class MainActivityTest {
                 "\"mintApiKey\": \"mintKey\",\r\n    " +
                 "\"peliasApiKey\": \"peliasKey\"}\r\n"
         server?.enqueue(MockResponse().setBody(sampleResponse))
-        downLoader?.download(activity?.apiKeys, {})
+        downLoader?.download(activity!!.apiKeys, {})
         server?.takeRequest(1000, TimeUnit.MILLISECONDS);
         return server
     }
 
-    protected inner class RoboMenuWithGroup public constructor(public var group: Int, public var visible: Boolean) : RoboMenu() {
+    protected inner class RoboMenuWithGroup public constructor(public var group: Int,
+            public var visible: Boolean) : RoboMenu() {
 
         override fun setGroupVisible(group: Int, visible: Boolean) {
             this.group = group

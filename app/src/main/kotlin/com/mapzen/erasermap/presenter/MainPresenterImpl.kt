@@ -5,6 +5,8 @@ import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
+import com.mapzen.pelias.BuildConfig
+import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.valhalla.Instruction
@@ -13,7 +15,7 @@ import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 import java.util.ArrayList
 
-public class MainPresenterImpl() : MainPresenter {
+public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresenter {
     override var currentFeature: Feature? = null;
     override var route: Route? = null;
     override var routingEnabled : Boolean = false
@@ -27,17 +29,18 @@ public class MainPresenterImpl() : MainPresenter {
 
     private var searchResults: Result? = null
     private var destination: Feature? = null
+    private var initialized = false
 
-    private enum class ViewState {
+    enum class ViewState {
         DEFAULT,
         SEARCH,
         SEARCH_RESULTS,
-        ROUTING_PREVIEW,
+        ROUTE_PREVIEW,
         ROUTING,
-        ROUTING_DIRECTION_LIST
+        ROUTE_DIRECTION_LIST
     }
 
-    private var viewState: ViewState = ViewState.DEFAULT
+    var viewState: ViewState = ViewState.DEFAULT
 
     override fun onSearchResultsAvailable(searchResults: Result?) {
         this.searchResults = searchResults
@@ -68,9 +71,9 @@ public class MainPresenterImpl() : MainPresenter {
     override fun onRestoreViewState() {
         if (destination != null) {
             if(routingEnabled) {
-                mainViewController?.showRoutingMode(destination!!)
+                generateRoutingMode()
             } else {
-                mainViewController?.showRoutePreview(destination!!)
+                generateRoutePreview()
             }
         } else {
             if (searchResults != null) {
@@ -78,7 +81,7 @@ public class MainPresenterImpl() : MainPresenter {
             }
         }
 
-        if (viewState == ViewState.ROUTING_DIRECTION_LIST) {
+        if (viewState == ViewState.ROUTE_DIRECTION_LIST) {
             routeViewController?.showDirectionList()
         }
     }
@@ -109,40 +112,72 @@ public class MainPresenterImpl() : MainPresenter {
     }
 
     @Subscribe public fun onRoutePreviewEvent(event: RoutePreviewEvent) {
+        viewState = ViewState.ROUTE_PREVIEW
         destination = event.destination;
         mainViewController?.collapseSearchView()
-        mainViewController?.showRoutePreview(event.destination)
+        generateRoutePreview()
     }
 
     override fun onBackPressed() {
-        if (destination != null ) {
-            if (routingEnabled == true) {
-                mainViewController?.hideRoutingMode()
-            } else {
-                mainViewController?.hideRoutePreview()
-                destination = null
-            }
-        } else {
-            if (searchResults == null) {
-                mainViewController?.shutDown()
-            } else {
-                mainViewController?.hideSearchResults()
-                searchResults = null
-            }
+        when (viewState) {
+            ViewState.DEFAULT -> onBackPressedStateDefault()
+            ViewState.SEARCH -> onBackPressedStateSearch()
+            ViewState.SEARCH_RESULTS -> onBackPressedStateSearchResults()
+            ViewState.ROUTE_PREVIEW -> onBackPressedStateRoutePreview()
+            ViewState.ROUTING -> onBackPressedStateRouting()
+            ViewState.ROUTE_DIRECTION_LIST -> onBackPressedStateRouteDirectionList()
         }
+    }
+
+    private fun onBackPressedStateDefault() {
+        mainViewController?.shutDown()
+    }
+
+    private fun onBackPressedStateSearch() {
+        viewState = ViewState.DEFAULT
+        mainViewController?.collapseSearchView()
+    }
+
+    private fun onBackPressedStateSearchResults() {
+        viewState = ViewState.SEARCH
+        mainViewController?.hideSearchResults()
+    }
+
+    private fun onBackPressedStateRoutePreview() {
+        viewState = ViewState.SEARCH_RESULTS
+        mainViewController?.hideRoutePreview()
+    }
+
+    private fun onBackPressedStateRouting() {
+        viewState = ViewState.ROUTE_PREVIEW
+        mainViewController?.hideRoutingMode()
+    }
+
+    private fun onBackPressedStateRouteDirectionList() {
+        viewState = ViewState.ROUTING
+        routeViewController?.collapseSlideLayout()
     }
 
     override fun onRoutingCircleClick(reverse: Boolean) {
         if (reverse) {
             mainViewController?.showDirectionList()
         } else {
-            if (destination is Feature) mainViewController?.showRoutingMode(destination!!)
+            mapzenLocation.initRouteLocationUpdates {
+                location: Location -> onLocationChanged(location)
+                if (BuildConfig.DEBUG) {
+                    System.out.println("onLocationChanged(Routing): " + location)
+                }
+            }
+            generateRoutingMode()
             viewState = ViewState.ROUTING
         }
     }
 
     override fun onResumeRouting() {
-        mainViewController?.centerMapOnCurrentLocation(MainPresenter.ROUTING_ZOOM)
+        val location = mapzenLocation.getLastLocation()
+        if (location is Location) {
+            mainViewController?.centerMapOnLocation(location, MainPresenter.ROUTING_ZOOM)
+        }
     }
 
     override fun onLocationChanged(location: Location) {
@@ -154,7 +189,7 @@ public class MainPresenterImpl() : MainPresenter {
     }
 
     override fun onSlidingPanelOpen() {
-        viewState = ViewState.ROUTING_DIRECTION_LIST
+        viewState = ViewState.ROUTE_DIRECTION_LIST
         routeViewController?.showDirectionList()
     }
 
@@ -169,9 +204,32 @@ public class MainPresenterImpl() : MainPresenter {
         mainViewController?.setMapRotation(Math.toRadians(instruction.bearing.toDouble()).toFloat())
     }
 
-    override fun onPause(mapzenLocation: MapzenLocation?) {
+    override fun onCreate() {
+        if (!initialized) {
+            mapzenLocation.connect()
+            val currentLocation = mapzenLocation.getLastLocation()
+            if (currentLocation is Location) {
+                mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
+            }
+            initialized = true
+        }
+    }
+
+    override fun onResume() {
         if (!isRouting() && !isRoutingDirectionList()) {
-            mapzenLocation?.disconnect()
+            mapzenLocation.connect()
+            mapzenLocation.initLocationUpdates {
+                location: Location -> onLocationChanged(location)
+                if (BuildConfig.DEBUG) {
+                    System.out.println("onLocationChanged: " + location)
+                }
+            }
+        }
+    }
+
+    override fun onPause() {
+        if (!isRouting() && !isRoutingDirectionList()) {
+            mapzenLocation.disconnect()
         }
     }
 
@@ -180,6 +238,32 @@ public class MainPresenterImpl() : MainPresenter {
     }
 
     private fun isRoutingDirectionList(): Boolean {
-        return viewState == ViewState.ROUTING_DIRECTION_LIST
+        return viewState == ViewState.ROUTE_DIRECTION_LIST
+    }
+
+    override fun onFindMeButtonClick() {
+        val currentLocation = mapzenLocation.getLastLocation()
+        if (currentLocation is Location) {
+            mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
+        }
+    }
+
+    override fun getPeliasLocationProvider(): PeliasLocationProvider {
+        return mapzenLocation
+    }
+
+    private fun generateRoutePreview() {
+        val location = mapzenLocation.getLastLocation()
+        val feature = destination
+        if (location is Location && feature is Feature) {
+            mainViewController?.showRoutePreview(location, feature)
+        }
+    }
+
+    private fun generateRoutingMode() {
+        val feature = destination
+        if (feature is Feature) {
+            mainViewController?.showRoutingMode(feature)
+        }
     }
 }

@@ -1,9 +1,9 @@
 package com.mapzen.erasermap.presenter
 
 import android.location.Location
-import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
+import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.valhalla.Instruction
@@ -42,5 +42,9 @@ public interface MainPresenter {
     public fun onSlidingPanelOpen()
     public fun onSlidingPanelCollapse()
     public fun onInstructionSelected(instruction: Instruction)
-    public fun onPause(mapzenLocation: MapzenLocation?)
+    public fun onCreate()
+    public fun onResume()
+    public fun onPause()
+    public fun onFindMeButtonClick()
+    public fun getPeliasLocationProvider(): PeliasLocationProvider
 }

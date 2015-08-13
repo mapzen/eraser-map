@@ -1,0 +1,313 @@
+package com.mapzen.erasermap.presenter
+
+import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
+import com.mapzen.erasermap.dummy.TestHelper.getTestInstruction
+import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
+import com.mapzen.erasermap.model.RoutePreviewEvent
+import com.mapzen.erasermap.model.TestMapzenLocation
+import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.DEFAULT
+import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.ROUTE_DIRECTION_LIST
+import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.ROUTE_PREVIEW
+import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.ROUTING
+import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.SEARCH
+import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.SEARCH_RESULTS
+import com.mapzen.erasermap.view.TestMainController
+import com.mapzen.erasermap.view.TestRouteController
+import com.mapzen.pelias.gson.Feature
+import com.mapzen.pelias.gson.Result
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
+import org.junit.Test
+import java.util.ArrayList
+
+public class MainPresenterTest {
+    private var mainController: TestMainController = TestMainController()
+    private var routeController: TestRouteController = TestRouteController()
+    private var mapzenLocation: TestMapzenLocation = TestMapzenLocation()
+    private var presenter: MainPresenterImpl = MainPresenterImpl(mapzenLocation)
+
+    @Before
+    public fun setUp() {
+        presenter.mainViewController = mainController
+        presenter.routeViewController = routeController
+    }
+
+    @Test
+    public fun shouldNotBeNull() {
+        assertThat(presenter).isNotNull()
+    }
+
+    @Test
+    public fun onSearchResultsAvailable_shouldShowSearchResults() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.setFeatures(features)
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.searchResults).isEqualTo(features)
+    }
+
+    @Test
+    public fun onReverseGeocodeResultsAvailable_shouldShowSearchResults() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.setFeatures(features)
+        presenter.onReverseGeocodeResultsAvailable(result)
+        assertThat(mainController.isReverseGeocodeVisible).isTrue()
+    }
+
+    @Test
+    public fun onRestoreViewState_shouldRestorePreviousSearchResults() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.setFeatures(features)
+        presenter.onSearchResultsAvailable(result)
+
+        val newController = TestMainController()
+        presenter.mainViewController = newController
+        presenter.onRestoreViewState()
+        assertThat(newController.searchResults).isEqualTo(features)
+    }
+
+    @Test
+    public fun onRestoreViewState_shouldRestoreRoutePreview() {
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        val newController = TestMainController()
+        presenter.mainViewController = newController
+        presenter.onRestoreViewState()
+        assertThat(newController.isRoutePreviewVisible).isTrue()
+    }
+
+    @Test
+    public fun onCollapseSearchView_shouldHideSearchResults() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.setFeatures(features)
+        presenter.onSearchResultsAvailable(result)
+        presenter.onCollapseSearchView()
+        assertThat(mainController.searchResults).isNull()
+    }
+
+    @Test
+    public fun onQuerySubmit_shouldShowProgress() {
+        presenter.onQuerySubmit()
+        assertThat(mainController.isProgressVisible).isTrue()
+    }
+
+    @Test
+    public fun onSearchResultsAvailable_shouldHideProgress() {
+        mainController.showProgress()
+        presenter.onSearchResultsAvailable(Result())
+        assertThat(mainController.isProgressVisible).isFalse()
+    }
+
+    @Test
+    public fun onExpandSearchView_shouldHideOverflowMenu() {
+        mainController.isOverflowVisible = true
+        presenter.onExpandSearchView()
+        assertThat(mainController.isOverflowVisible).isFalse()
+    }
+
+    @Test
+    public fun onCollapseSearchView_shouldShowOverflowMenu() {
+        mainController.isOverflowVisible = false
+        presenter.onCollapseSearchView()
+        assertThat(mainController.isOverflowVisible).isTrue()
+    }
+
+    @Test
+    public fun onSearchResultsAvailable_shouldShowActionViewAll() {
+        mainController.isViewAllVisible = false
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        features.add(Feature())
+        result.setFeatures(features)
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.isViewAllVisible).isTrue()
+    }
+
+    @Test
+    public fun onCollapseSearchView_shouldHideActionViewAll() {
+        mainController.isViewAllVisible = true
+        presenter.onCollapseSearchView()
+        assertThat(mainController.isViewAllVisible).isFalse()
+    }
+
+    @Test
+    public fun onRoutePreviewEvent_shouldCollapseSearchView() {
+        mainController.isSearchVisible = true
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        assertThat(mainController.isSearchVisible).isFalse()
+    }
+
+    @Test
+    public fun onRoutePreviewEvent_shouldShowRoutePreview() {
+        mainController.isRoutePreviewVisible = false
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        assertThat(mainController.isRoutePreviewVisible).isTrue()
+    }
+
+    @Test
+    public fun onBackPressed_shouldHideRoutePreview() {
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.onBackPressed()
+        assertThat(mainController.isRoutePreviewVisible).isFalse()
+    }
+
+    @Test
+    public fun onRoutingCircleClick_shouldMakeDirectionsVisible() {
+        presenter.onRoutingCircleClick(true)
+        assertThat(mainController.isDirectionListVisible).isTrue()
+    }
+
+    @Test
+    public fun onRoutingCircleClick_shouldMakeRoutingModeVisible() {
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.onRoutingCircleClick(false)
+        assertThat(mainController.isRoutingModeVisible).isTrue()
+    }
+
+    @Test
+    public fun onResumeRouting_shouldCenterMapOnCurrentLocation() {
+        presenter.onResumeRouting()
+        assertThat(mainController.location).isNotNull()
+        assertThat(mainController.zoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
+    }
+
+    @Test
+    public fun onLocationChanged_shouldNotifyRouteControllerIfRoutingIsEnabled() {
+        presenter.routingEnabled = false
+        presenter.onLocationChanged(getTestLocation())
+        assertThat(routeController.location).isNull()
+
+        presenter.routingEnabled = true
+        presenter.onLocationChanged(getTestLocation())
+        assertThat(routeController.location).isNotNull()
+    }
+
+    @Test
+    public fun onLocationChanged_shouldCenterMapIfRoutingIsEnabled() {
+        presenter.routingEnabled = false
+        presenter.onLocationChanged(getTestLocation())
+        assertThat(mainController.location).isNull()
+
+        presenter.routingEnabled = true
+        presenter.onLocationChanged(getTestLocation())
+        assertThat(mainController.location).isNotNull()
+    }
+
+    @Test
+    public fun onSearchResultSelected_shouldCenterOnCurrentFeature() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.setFeatures(features)
+        presenter.onSearchResultsAvailable(result)
+        presenter.onSearchResultSelected(0)
+        assertThat(mainController.isCenteredOnCurrentFeature).isTrue()
+    }
+
+    @Test
+    public fun onSlidingPanelOpen_shouldShowRouteDirectionList() {
+        presenter.onSlidingPanelOpen()
+        assertThat(routeController.isDirectionListVisible).isTrue()
+    }
+
+    @Test
+    public fun onSlidingPanelCollapse_shouldHideRouteDirectionList() {
+        routeController.isDirectionListVisible = true
+        presenter.onSlidingPanelCollapse()
+        assertThat(routeController.isDirectionListVisible).isFalse()
+    }
+
+    @Test
+    public fun onInstructionSelected_shouldCenterMapOnLocation() {
+        val instruction = getTestInstruction()
+        val location = getTestLocation()
+        instruction.location = location
+        presenter.onInstructionSelected(instruction)
+        assertThat(mainController.location).isEqualTo(location)
+    }
+
+    @Test
+    public fun onInstructionSelected_shouldSetMapTilt() {
+        val instruction = getTestInstruction()
+        val location = getTestLocation()
+        instruction.location = location
+        presenter.onInstructionSelected(instruction)
+        assertThat(mainController.tilt).isEqualTo(MainPresenter.ROUTING_TILT)
+    }
+
+    @Test
+    public fun onInstructionSelected_shouldSetMapRotation() {
+        val instruction = getTestInstruction()
+        val location = getTestLocation()
+        instruction.location = location
+        instruction.bearing = 180
+        presenter.onInstructionSelected(instruction)
+        assertThat(mainController.rotation).isEqualTo(Math.toRadians(180.0).toFloat())
+    }
+
+    @Test
+    public fun onPause_shouldDisconnectLocationUpdates() {
+        mapzenLocation.connect()
+        presenter.onPause()
+        assertThat(mapzenLocation.isConnected()).isFalse()
+    }
+
+    @Test
+    public fun onPause_shouldNotDisconnectLocationUpdatesWhileRouting() {
+        mapzenLocation.connect()
+        presenter.onRoutingCircleClick(false)
+        presenter.onSlidingPanelOpen()
+        presenter.onPause()
+        assertThat(mapzenLocation.isConnected()).isTrue()
+    }
+
+    @Test
+    public fun onResume_shouldReconnectLocationClientAndInitLocationUpdates() {
+        mapzenLocation.disconnect()
+        presenter.onResume()
+        assertThat(mapzenLocation.isConnected()).isTrue()
+        assertThat(mapzenLocation.callback).isNotNull()
+    }
+
+    @Test
+    public fun onResume_shouldNotReconnectClientAndInitUpdatesWhileRouting() {
+        mapzenLocation.disconnect()
+        presenter.onRoutingCircleClick(false)
+        mapzenLocation.callback = null
+        presenter.onResume()
+        assertThat(mapzenLocation.isConnected()).isFalse()
+        assertThat(mapzenLocation.callback).isNull()
+    }
+
+    @Test
+    public fun onBackPressed_shouldUpdateViewState() {
+        presenter.viewState = ROUTE_DIRECTION_LIST
+        presenter.onBackPressed()
+        assertThat(presenter.viewState).isEqualTo(ROUTING)
+        presenter.onBackPressed()
+        assertThat(presenter.viewState).isEqualTo(ROUTE_PREVIEW)
+        presenter.onBackPressed()
+        assertThat(presenter.viewState).isEqualTo(SEARCH_RESULTS)
+        presenter.onBackPressed()
+        assertThat(presenter.viewState).isEqualTo(SEARCH)
+        presenter.onBackPressed()
+        assertThat(presenter.viewState).isEqualTo(DEFAULT)
+    }
+
+    @Test
+    public fun onCreate_shouldSetMapLocationFirstTimeInvoked() {
+        presenter.onCreate()
+        assertThat(mainController.location).isNotNull()
+    }
+
+    @Test
+    public fun onCreate_shouldNotSetMapLocationSecondTimeInvoked() {
+        presenter.onCreate()
+        mainController.location = null
+        presenter.onCreate()
+        assertThat(mainController.location).isNull()
+    }
+}

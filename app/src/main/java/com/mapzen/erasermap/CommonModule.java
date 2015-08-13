@@ -1,8 +1,6 @@
 package com.mapzen.erasermap;
 
 import com.mapzen.erasermap.model.ManifestModel;
-import com.mapzen.erasermap.presenter.MainPresenter;
-import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.helpers.RouteEngine;
 import com.mapzen.pelias.SavedSearch;
 
@@ -17,10 +15,6 @@ import dagger.Provides;
 public class CommonModule {
     @Provides @Singleton SavedSearch provideSavedSearch() {
         return new SavedSearch();
-    }
-
-    @Provides @Singleton MainPresenter provideMainPresenter() {
-        return new MainPresenterImpl();
     }
 
     @Provides @Singleton Bus provideBus() {
