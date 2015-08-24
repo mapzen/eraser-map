@@ -184,7 +184,8 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
         if (routingEnabled) {
             routeViewController?.onLocationChanged(location)
             mainViewController?.centerMapOnLocation(location, MainPresenter.ROUTING_ZOOM)
-            mainViewController?.setMapTilt(MainPresenter.ROUTING_TILT)
+            // TODO: Re-enable routing tilt on Tangram update
+            // mainViewController?.setMapTilt(MainPresenter.ROUTING_TILT)
         }
     }
 
@@ -200,7 +201,8 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
 
     override fun onInstructionSelected(instruction: Instruction) {
         mainViewController?.centerMapOnLocation(instruction.location, MainPresenter.ROUTING_ZOOM)
-        mainViewController?.setMapTilt(MainPresenter.ROUTING_TILT)
+        // TODO: Re-enable routing tilt on Tangram update
+        // mainViewController?.setMapTilt(MainPresenter.ROUTING_TILT)
         mainViewController?.setMapRotation(Math.toRadians(instruction.bearing.toDouble()).toFloat())
     }
 

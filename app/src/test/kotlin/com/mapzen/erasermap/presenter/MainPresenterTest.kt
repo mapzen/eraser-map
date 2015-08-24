@@ -17,6 +17,7 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import java.util.ArrayList
 
@@ -229,7 +230,7 @@ public class MainPresenterTest {
         assertThat(mainController.location).isEqualTo(location)
     }
 
-    @Test
+    @Test @Ignore("Disabled until Tangram tilt feature is updated")
     public fun onInstructionSelected_shouldSetMapTilt() {
         val instruction = getTestInstruction()
         val location = getTestLocation()
