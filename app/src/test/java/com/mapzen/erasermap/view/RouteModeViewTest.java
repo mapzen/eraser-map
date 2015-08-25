@@ -185,6 +185,27 @@ public class RouteModeViewTest {
     }
 
     @Test
+    public void onRouteComplete_shouldHideRouteFooter() throws Exception {
+        routeModeView.getRouteListener().onRouteComplete();
+        assertThat(routeModeView.findViewById(R.id.footer_wrapper).getVisibility())
+                .isEqualTo(View.GONE);
+    }
+
+    @Test
+    public void onRouteComplete_shouldHideResumeButton() throws Exception {
+        routeModeView.getRouteListener().onRouteComplete();
+        assertThat(routeModeView.findViewById(R.id.resume).getVisibility())
+                .isEqualTo(View.GONE);
+    }
+
+    @Test
+    public void onRouteComplete_shouldHideInstructionList() throws Exception {
+        routeModeView.getRouteListener().onRouteComplete();
+        assertThat(routeModeView.findViewById(R.id.instruction_list).getVisibility())
+                .isEqualTo(View.GONE);
+    }
+
+    @Test
     public void shouldInjectRouteEngine() throws Exception {
         assertThat(routeModeView.getRouteEngine()).isNotNull();
     }

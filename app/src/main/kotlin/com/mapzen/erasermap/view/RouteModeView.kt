@@ -211,15 +211,15 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     private fun setCurrentPagerItemStyling(position : Int) {
         var lastItemIndex = (pager?.getAdapter() as InstructionAdapter).getCount() - 1
         var itemsUntilLastInstruction = (lastItemIndex - position)
-        if(itemsUntilLastInstruction ==  1) {
+        if (itemsUntilLastInstruction == 1) {
             (pager?.getAdapter() as InstructionAdapter)
                     .setBackgroundColorArrived(findViewByIndex(position + 1))
         }
-        if(autoPage) {
+        if (autoPage) {
             (pager?.getAdapter() as InstructionAdapter)
                     .setBackgroundColorActive(findViewByIndex(position))
         } else {
-            if(position == lastItemIndex) {
+            if (position == lastItemIndex) {
                 (pager?.getAdapter() as InstructionAdapter)
                         .setBackgroundColorArrived(findViewByIndex(position))
             } else {
@@ -268,6 +268,11 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
         override fun onRouteComplete() {
             log("[onRouteComplete]")
+            findViewById(R.id.footer_wrapper)?.setVisibility(View.GONE)
+            findViewById(R.id.resume)?.setVisibility(View.GONE)
+            findViewById(R.id.instruction_list)?.setVisibility(View.GONE)
+            (findViewById(R.id.sliding_layout) as SlidingUpPanelLayout).setShadowHeight(0)
+
         }
 
         private fun log(method: String, message: Any? = null) {
