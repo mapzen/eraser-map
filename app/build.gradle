@@ -18,6 +18,7 @@ android {
     targetSdkVersion 22
     versionCode 2
     versionName "0.3-SNAPSHOT"
+    multiDexEnabled true
   }
   buildTypes {
     debug {
@@ -77,6 +78,7 @@ dependencies {
   compile('com.mapzen.android:pelias-android-sdk:0.5-SNAPSHOT') {
     exclude group: 'javax.annotation:javax', module: 'javax.annotation-api'
   }
+  compile 'com.mapzen:leyndo-android-library:0.1-SNAPSHOT'
   compile 'com.google.dagger:dagger:2.0'
   compile 'com.google.dagger:dagger-compiler:2.0'
   compile 'javax.annotation:javax.annotation-api:1.2'

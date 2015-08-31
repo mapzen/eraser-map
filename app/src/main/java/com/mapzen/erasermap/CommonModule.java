@@ -1,6 +1,5 @@
 package com.mapzen.erasermap;
 
-import com.mapzen.erasermap.model.ManifestModel;
 import com.mapzen.helpers.RouteEngine;
 import com.mapzen.pelias.SavedSearch;
 
@@ -19,10 +18,6 @@ public class CommonModule {
 
     @Provides @Singleton Bus provideBus() {
         return new Bus();
-    }
-
-    @Provides @Singleton ManifestModel provideManifestModel() {
-        return new ManifestModel();
     }
 
     @Provides RouteEngine provideRouteEngine() {
