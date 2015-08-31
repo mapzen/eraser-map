@@ -21,7 +21,7 @@ import com.mapzen.erasermap.R
 import com.mapzen.erasermap.dummy.TestHelper.getFixture
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
-import com.mapzen.erasermap.model.ManifestDownLoader
+import com.mapzen.leyndo.ManifestDownLoader
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.widget.PeliasSearchView

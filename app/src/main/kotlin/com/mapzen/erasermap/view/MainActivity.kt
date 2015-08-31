@@ -149,7 +149,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun getApiKeys() {
         apiKeys = ManifestModel()
         var dl: ManifestDownLoader = ManifestDownLoader()
-        var minVersion =  dl.getManifestModel({}).getMinVersion();
         apiKeys = dl.getManifestModel( {
             if (apiKeys?.getValhallaApiKey() == null) {
                 apiKeys?.setValhallaApiKey(BuildConfig.VALHALLA_API_KEY)
