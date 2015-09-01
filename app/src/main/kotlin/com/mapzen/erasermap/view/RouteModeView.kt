@@ -261,8 +261,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             icon.setImageResource(DisplayHelper.getRouteDrawable(getContext(), 8))
         }
 
-        override fun onRecalculate(location: Location?) {
+        override fun onRecalculate(location: Location) {
             log("[onRecalculate]", location)
+            presenter?.onReroute(location)
         }
 
         override fun onApproachInstruction(index: Int) {
@@ -277,7 +278,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             findViewById(R.id.resume)?.setVisibility(View.GONE)
             findViewById(R.id.instruction_list)?.setVisibility(View.GONE)
             (findViewById(R.id.sliding_layout) as SlidingUpPanelLayout).setShadowHeight(0)
-
         }
 
         private fun log(method: String, message: Any? = null) {

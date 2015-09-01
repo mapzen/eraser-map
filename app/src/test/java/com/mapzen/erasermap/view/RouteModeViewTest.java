@@ -3,11 +3,14 @@ package com.mapzen.erasermap.view;
 import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
+import com.mapzen.erasermap.presenter.MainPresenter;
+import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.valhalla.Route;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
@@ -15,6 +18,7 @@ import org.robolectric.annotation.Config;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
 import android.os.Build;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -214,6 +218,15 @@ public class RouteModeViewTest {
         routeModeView.getRouteListener().onRouteComplete();
         assertThat(routeModeView.findViewById(R.id.instruction_list).getVisibility())
                 .isEqualTo(View.GONE);
+    }
+
+    @Test
+    public void onRecalculate_shouldNotifyPresenter() throws Exception {
+        MainPresenter presenter = Mockito.mock(MainPresenterImpl.class);
+        Location location = getTestLocation();
+        routeModeView.setPresenter(presenter);
+        routeModeView.getRouteListener().onRecalculate(location);
+        Mockito.verify(presenter, Mockito.times(1)).onReroute(location);
     }
 
     @Test

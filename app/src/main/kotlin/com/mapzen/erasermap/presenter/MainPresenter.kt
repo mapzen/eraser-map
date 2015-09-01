@@ -47,4 +47,5 @@ public interface MainPresenter {
     public fun onPause()
     public fun onFindMeButtonClick()
     public fun getPeliasLocationProvider(): PeliasLocationProvider
+    public fun onReroute(location: Location)
 }

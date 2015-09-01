@@ -15,7 +15,7 @@ import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 import java.util.ArrayList
 
-public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresenter {
+public open class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresenter {
     override var currentFeature: Feature? = null;
     override var route: Route? = null;
     override var routingEnabled : Boolean = false
@@ -252,6 +252,9 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
 
     override fun getPeliasLocationProvider(): PeliasLocationProvider {
         return mapzenLocation
+    }
+
+    override fun onReroute(location: Location) {
     }
 
     private fun generateRoutePreview() {
