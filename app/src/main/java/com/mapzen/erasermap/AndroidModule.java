@@ -3,6 +3,8 @@ package com.mapzen.erasermap;
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
+import com.mapzen.erasermap.model.RouterFactory;
+import com.mapzen.erasermap.model.ValhallaRouterFactory;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 
@@ -43,7 +45,12 @@ public class AndroidModule {
         return PreferenceManager.getDefaultSharedPreferences(application);
     }
 
-    @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation) {
-        return new MainPresenterImpl(mapzenLocation);
+    @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation,
+            RouterFactory routerFactory) {
+        return new MainPresenterImpl(mapzenLocation, routerFactory);
+    }
+
+    @Provides @Singleton RouterFactory provideRouterFactory() {
+        return new ValhallaRouterFactory();
     }
 }
