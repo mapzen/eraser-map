@@ -1,21 +1,28 @@
 package com.mapzen.erasermap.presenter
 
 import android.location.Location
+import android.util.Log
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RoutePreviewEvent
+import com.mapzen.erasermap.model.RouterFactory
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.BuildConfig
 import com.mapzen.pelias.PeliasLocationProvider
+import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
+import com.mapzen.valhalla.RouteCallback
+import com.mapzen.valhalla.Router
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 import java.util.ArrayList
 
-public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresenter {
+public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
+        val routerFactory: RouterFactory) : MainPresenter, RouteCallback {
+
     override var currentFeature: Feature? = null;
     override var route: Route? = null;
     override var routingEnabled : Boolean = false
@@ -252,6 +259,35 @@ public class MainPresenterImpl(val mapzenLocation: MapzenLocation) : MainPresent
 
     override fun getPeliasLocationProvider(): PeliasLocationProvider {
         return mapzenLocation
+    }
+
+    override fun onReroute(location: Location) {
+        mainViewController?.showProgress()
+        fetchNewRoute(location)
+    }
+
+    private fun fetchNewRoute(location: Location) {
+        val simpleFeature = SimpleFeature.fromFeature(destination)
+        val start: DoubleArray = doubleArrayOf(location.getLatitude(),
+                location.getLongitude())
+        val destination: DoubleArray = doubleArrayOf(simpleFeature.getLat(),
+                simpleFeature.getLon())
+        routerFactory.getInitializedRouter(Router.Type.DRIVING)
+                .setLocation(start)
+                .setLocation(destination)
+                .setCallback(this)
+                .fetch()
+    }
+
+    override fun failure(statusCode: Int) {
+        mainViewController?.hideProgress()
+        Log.e("MainPresenterImpl", "Error fetching new route: " + statusCode)
+    }
+
+    override fun success(route: Route) {
+        mainViewController?.hideProgress()
+        this.route = route
+        generateRoutingMode()
     }
 
     private fun generateRoutePreview() {

@@ -9,7 +9,6 @@ import com.mapzen.erasermap.R
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.valhalla.Route
 
-
 public class RoutePreviewView : RelativeLayout {
     public var reverse : Boolean = false
     public var destination: SimpleFeature? = null

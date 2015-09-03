@@ -10,12 +10,14 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.presenter.MainPresenter
+import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
@@ -187,7 +189,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     private fun setHeaderOrigins() {
         (findViewById(R.id.starting_point) as TextView).setText(R.string.current_location)
-        (findViewById(R.id.destination) as TextView).setText((findViewById(R.id.destination_name) as TextView).getText())
+        (findViewById(R.id.destination) as TextView).setText((findViewById(R.id.destination_name)
+                as TextView).getText())
         findViewById(R.id.starting_location_icon).setVisibility(View.VISIBLE)
         findViewById(R.id.destination_location_icon).setVisibility(View.GONE)
     }
@@ -254,16 +257,19 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
         override fun onInstructionComplete(index: Int) {
             log("[onInstructionComplete]", index)
-            currentInstructionIndex += 1
-            pager?.setCurrentItem(currentInstructionIndex)
+            val icon = findViewByIndex(index)?.findViewById(R.id.icon) as ImageView
+            icon.setImageResource(DisplayHelper.getRouteDrawable(getContext(), 8))
         }
 
-        override fun onRecalculate(location: Location?) {
+        override fun onRecalculate(location: Location) {
             log("[onRecalculate]", location)
+            presenter?.onReroute(location)
         }
 
         override fun onApproachInstruction(index: Int) {
             log("[onApproachInstruction]", index)
+            currentInstructionIndex = index
+            pager?.setCurrentItem(index)
         }
 
         override fun onRouteComplete() {
@@ -272,7 +278,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             findViewById(R.id.resume)?.setVisibility(View.GONE)
             findViewById(R.id.instruction_list)?.setVisibility(View.GONE)
             (findViewById(R.id.sliding_layout) as SlidingUpPanelLayout).setShadowHeight(0)
-
         }
 
         private fun log(method: String, message: Any? = null) {

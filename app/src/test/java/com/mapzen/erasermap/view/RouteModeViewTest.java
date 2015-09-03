@@ -3,17 +3,23 @@ package com.mapzen.erasermap.view;
 import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
+import com.mapzen.erasermap.presenter.MainPresenter;
+import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.valhalla.Route;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
+import android.os.Build;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
@@ -117,29 +123,29 @@ public class RouteModeViewTest {
         assertThat(rightArrow.getVisibility()).isEqualTo(View.VISIBLE);
     }
 
-    @Test
-    public void firstInstruction_shouldHaveFirstInstruction() throws Exception {
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP) @Test
+    public void firstInstruction_shouldHaveFirstStreetName() throws Exception {
         View view = (View) adapter.instantiateItem(viewGroup, 0);
         TextView instructionText = (TextView) view.findViewById(R.id.instruction_text);
         TextView distance = (TextView) view.findViewById(R.id.distance);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        assertThat(instructionText.getText().toString()).isEqualTo("Go north on Adalbertstraße.");
+        assertThat(instructionText.getText().toString()).isEqualTo("Adalbertstraße");
         assertThat(distance.getText().toString()).isEqualTo("0.2 mi");
         assertThat(icon.getDrawable()).isEqualTo(startActivity.getDrawable(R.drawable.ic_route_1));
     }
 
-    @Test
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP) @Test
     public void paging_ShouldSwitchInstruction() throws Exception {
         View view = (View) adapter.instantiateItem(viewGroup, 1);
         TextView instructionText = (TextView) view.findViewById(R.id.instruction_text);
         TextView distance = (TextView) view.findViewById(R.id.distance);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        assertThat(instructionText.getText().toString()).isEqualTo("Turn left onto Engeldamm.");
+        assertThat(instructionText.getText().toString()).isEqualTo("Engeldamm");
         assertThat(distance.getText().toString()).isEqualTo("0.1 mi");
         assertThat(icon.getDrawable()).isEqualTo(startActivity.getDrawable(R.drawable.ic_route_15));
     }
 
-    @Test
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP) @Test
     public void lastInstruction_shouldHaveFirstInstruction() throws Exception {
         View view = (View) adapter.instantiateItem(viewGroup,
                 routeModeView.getPager().getAdapter().getCount() - 1);
@@ -161,8 +167,17 @@ public class RouteModeViewTest {
     }
 
     @Test
-    public void onInstructionComplete_shouldAdvanceViewPager() throws Exception {
-        routeModeView.getRouteListener().onInstructionComplete(0);
+    public void onInstructionComplete_shouldUpdateIcon() throws Exception {
+        routeModeView.getRouteListener().onInstructionComplete(1);
+        ImageView icon = (ImageView) routeModeView.findViewByIndex(1).findViewById(R.id.icon);
+        assertThat(Shadows.shadowOf(icon).getImageResourceId())
+                .isEqualTo(application.getResources().getIdentifier("ic_route_8",
+                        "drawable", application.getPackageName()));
+    }
+
+    @Test
+    public void onApproachInstruction_shouldAdvanceViewPager() throws Exception {
+        routeModeView.getRouteListener().onApproachInstruction(1);
         assertThat(routeModeView.getPager().getCurrentItem()).isEqualTo(1);
     }
 
@@ -203,6 +218,15 @@ public class RouteModeViewTest {
         routeModeView.getRouteListener().onRouteComplete();
         assertThat(routeModeView.findViewById(R.id.instruction_list).getVisibility())
                 .isEqualTo(View.GONE);
+    }
+
+    @Test
+    public void onRecalculate_shouldNotifyPresenter() throws Exception {
+        MainPresenter presenter = Mockito.mock(MainPresenterImpl.class);
+        Location location = getTestLocation();
+        routeModeView.setPresenter(presenter);
+        routeModeView.getRouteListener().onRecalculate(location);
+        Mockito.verify(presenter, Mockito.times(1)).onReroute(location);
     }
 
     @Test

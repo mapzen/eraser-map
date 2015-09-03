@@ -25,7 +25,7 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
         var iconId: Int = DisplayHelper.getRouteDrawable(context,
                 instruction.getIntegerInstruction())
         distance.distanceInMeters = instruction.distance
-        title.setText(instruction.getHumanTurnInstruction())
+        title.setText(instruction.getName())
         icon.setImageResource(iconId)
         if (position == 0) {
             view.findViewById(R.id.left_arrow).setVisibility(View.INVISIBLE)

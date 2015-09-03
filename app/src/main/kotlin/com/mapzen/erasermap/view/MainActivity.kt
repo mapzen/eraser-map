@@ -25,6 +25,7 @@ import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.ManifestDownLoader
 import com.mapzen.erasermap.model.ManifestModel
+import com.mapzen.erasermap.model.RouterFactory
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
@@ -40,6 +41,7 @@ import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapView
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
+import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
 import com.squareup.otto.Bus
 import retrofit.Callback
@@ -48,7 +50,7 @@ import retrofit.client.Response
 import java.util.ArrayList
 import javax.inject.Inject
 
-public class MainActivity : AppCompatActivity(), MainViewController, Router.Callback,
+public class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         SearchResultsView.OnSearchResultSelectedListener {
 
     public val requestCodeSearchResults: Int = 0x01
@@ -64,6 +66,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
     var crashReportService: CrashReportService? = null
       @Inject set
     var apiKeys: ManifestModel? = null
+      @Inject set
+    var routerFactory: RouterFactory? = null
       @Inject set
 
     var app: EraserMapApplication? = null
@@ -152,9 +156,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
             if (apiKeys?.getVectorTileApiKeyReleaseProp() == null) {
                 apiKeys?.setVectorTileApiKeyReleaseProp(BuildConfig.VECTOR_TILE_API_KEY)
             }
-            if(apiKeys?.getMinVersion() != null) {
+            if (apiKeys?.getMinVersion() != null) {
                 checkIfUpdateNeeded()
             }
+            routerFactory?.apiKey = apiKeys?.getValhallaApiKey()
         })
     }
 
@@ -414,7 +419,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
     }
 
-    override fun success(route: Route?) {
+    override fun success(route: Route) {
         this.route = route;
         presenter?.route = route;
         runOnUiThread   ({
@@ -447,8 +452,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
                         simpleFeature.getLon())
                 val dest: DoubleArray = doubleArrayOf(location.getLatitude(),
                         location.getLongitude())
-                getInitializedRouter().setLocation(start).setLocation(dest)
-                        .setCallback(this).fetch()
+                routerFactory?.getInitializedRouter(type)
+                        ?.setLocation(start)
+                        ?.setLocation(dest)
+                        ?.setCallback(this)
+                        ?.fetch()
             }
         } else {
             if (location is Location) {
@@ -456,8 +464,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
                         location.getLongitude())
                 val dest: DoubleArray = doubleArrayOf(simpleFeature.getLat(),
                         simpleFeature.getLon())
-                getInitializedRouter().setLocation(start).setLocation(dest)
-                        .setCallback(this).fetch()
+                routerFactory?.getInitializedRouter(type)
+                        ?.setLocation(start)
+                        ?.setLocation(dest)
+                        ?.setCallback(this)
+                        ?.fetch()
             }
         }
     }
@@ -589,17 +600,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, Router.Call
         }
         getSupportActionBar()?.hide()
         routeModeView.route = null
-    }
-
-    private fun getInitializedRouter(): Router {
-        when(type) {
-            Router.Type.DRIVING -> return Router()
-                    .setApiKey(apiKeys?.getValhallaApiKey() as String).setDriving()
-            Router.Type.WALKING -> return Router()
-                    .setApiKey(apiKeys?.getValhallaApiKey() as String).setWalking()
-            Router.Type.BIKING -> return Router()
-                    .setApiKey(apiKeys?.getValhallaApiKey() as String).setBiking()
-        }
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {
