@@ -147,27 +147,32 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun getApiKeys() {
+        apiKeys = ManifestModel()
         try {
-            apiKeys = ManifestModel()
             var dl: ManifestDownLoader = ManifestDownLoader()
             apiKeys = dl.getManifestModel( {
-                if (apiKeys?.getValhallaApiKey() == null) {
-                    apiKeys?.setValhallaApiKey(BuildConfig.VALHALLA_API_KEY)
-                }
-                if (apiKeys?.getVectorTileApiKeyReleaseProp() == null) {
-                    apiKeys?.setVectorTileApiKeyReleaseProp(BuildConfig.VECTOR_TILE_API_KEY)
-                }
-                if (apiKeys?.getMinVersion() != null) {
-                    checkIfUpdateNeeded()
-                }
+                checkForNullKeys()
                 routerFactory?.apiKey = apiKeys?.getValhallaApiKey()
             })
         } catch (e: UnsatisfiedLinkError) {
+            checkForNullKeys()
             if ("Dalvik".equals(System.getProperty("java.vm.name"))) {
                 throw e;
             }
         }
 
+    }
+
+    private fun checkForNullKeys() {
+        if (apiKeys?.getValhallaApiKey() == null) {
+            apiKeys?.setValhallaApiKey(BuildConfig.VALHALLA_API_KEY)
+        }
+        if (apiKeys?.getVectorTileApiKeyReleaseProp() == null) {
+            apiKeys?.setVectorTileApiKeyReleaseProp(BuildConfig.VECTOR_TILE_API_KEY)
+        }
+        if (apiKeys?.getMinVersion() != null) {
+            checkIfUpdateNeeded()
+        }
     }
 
     public fun checkIfUpdateNeeded() {

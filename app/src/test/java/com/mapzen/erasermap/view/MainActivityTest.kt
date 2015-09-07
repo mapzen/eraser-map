@@ -21,15 +21,12 @@ import com.mapzen.erasermap.R
 import com.mapzen.erasermap.dummy.TestHelper.getFixture
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
-import com.mapzen.leyndo.ManifestDownLoader
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.mapzen.tangram.MapView
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
-import com.squareup.okhttp.mockwebserver.MockResponse
-import com.squareup.okhttp.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
 import org.json.JSONObject
 import org.junit.Before
@@ -377,9 +374,8 @@ public class MainActivityTest {
 
     @Test
     public fun onMinVersionGreaterThanCurrent_shouldLaunchUpdateDialog() {
-        var server: MockWebServer? = mockServerToMakeAppUpdate()
+        activity!!.apiKeys?.setMinVersion(101)
         activity!!.checkIfUpdateNeeded()
-        server?.shutdown()
         var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
         assertThat(dialog.isShowing()).isTrue()
         assertThat(shadowOf(dialog).getMessage())
@@ -388,9 +384,8 @@ public class MainActivityTest {
 
     @Test
     public fun onMinVersionGreaterThanCurrent_clickUpdateNowShouldOpenPlayStore() {
-        var server: MockWebServer? = mockServerToMakeAppUpdate()
+        activity!!.apiKeys?.setMinVersion(101)
         activity!!.checkIfUpdateNeeded()
-        server?.shutdown()
         var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
         assertThat(dialog.isShowing()).isTrue()
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick()
@@ -401,9 +396,8 @@ public class MainActivityTest {
 
     @Test
     public fun onMinVersionGreaterThanCurrent_clickExitShouldExitApp() {
-        var server: MockWebServer? = mockServerToMakeAppUpdate()
+        activity!!.apiKeys?.setMinVersion(101)
         activity!!.checkIfUpdateNeeded()
-        server?.shutdown()
         var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
         assertThat(dialog.isShowing()).isTrue()
         dialog.getButton(DialogInterface.BUTTON_NEGATIVE).performClick()
@@ -416,22 +410,6 @@ public class MainActivityTest {
         activity!!.onOptionsItemSelected(menuItem)
         assertThat(ShadowApplication.getInstance().getNextStartedActivity().getComponent())
                 .isEqualTo(ComponentName(activity, javaClass<SettingsActivity>()))
-    }
-
-    private fun mockServerToMakeAppUpdate(): MockWebServer? {
-        var downLoader: ManifestDownLoader? = ManifestDownLoader()
-        var server: MockWebServer? = MockWebServer()
-        server?.play()
-        downLoader?.host = server?.getUrl("/").toString()
-        var sampleResponse: String = "{\"minVersion\": 101.0,\r\n" +
-                "    \"vectorTileApiKeyReleaseProp\": \"vectorKey\",\r\n " +
-                "   \"valhallaApiKey\": \"routeKey\",\r\n    " +
-                "\"mintApiKey\": \"mintKey\",\r\n    " +
-                "\"peliasApiKey\": \"peliasKey\"}\r\n"
-        server?.enqueue(MockResponse().setBody(sampleResponse))
-        downLoader?.download(activity!!.apiKeys, {})
-        server?.takeRequest(1000, TimeUnit.MILLISECONDS);
-        return server
     }
 
     protected inner class RoboMenuWithGroup public constructor(public var group: Int,
