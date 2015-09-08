@@ -23,10 +23,10 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.model.ManifestDownLoader
-import com.mapzen.erasermap.model.ManifestModel
 import com.mapzen.erasermap.model.RouterFactory
 import com.mapzen.erasermap.presenter.MainPresenter
+import com.mapzen.leyndo.ManifestDownLoader
+import com.mapzen.leyndo.ManifestModel
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.SimpleFeature
@@ -65,11 +65,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
       @Inject set
     var crashReportService: CrashReportService? = null
       @Inject set
-    var apiKeys: ManifestModel? = null
-      @Inject set
     var routerFactory: RouterFactory? = null
       @Inject set
 
+    var apiKeys: ManifestModel? = null
     var app: EraserMapApplication? = null
     var mapController : MapController? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
@@ -148,19 +147,32 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun getApiKeys() {
-        var dl: ManifestDownLoader = ManifestDownLoader()
-        dl.download(apiKeys, {
-            if (apiKeys?.getValhallaApiKey() == null) {
-                apiKeys?.setValhallaApiKey(BuildConfig.VALHALLA_API_KEY)
+        apiKeys = ManifestModel()
+        try {
+            var dl: ManifestDownLoader = ManifestDownLoader()
+            apiKeys = dl.getManifestModel( {
+                checkForNullKeys()
+                routerFactory?.apiKey = apiKeys?.getValhallaApiKey()
+            })
+        } catch (e: UnsatisfiedLinkError) {
+            checkForNullKeys()
+            if ("Dalvik".equals(System.getProperty("java.vm.name"))) {
+                throw e;
             }
-            if (apiKeys?.getVectorTileApiKeyReleaseProp() == null) {
-                apiKeys?.setVectorTileApiKeyReleaseProp(BuildConfig.VECTOR_TILE_API_KEY)
-            }
-            if (apiKeys?.getMinVersion() != null) {
-                checkIfUpdateNeeded()
-            }
-            routerFactory?.apiKey = apiKeys?.getValhallaApiKey()
-        })
+        }
+
+    }
+
+    private fun checkForNullKeys() {
+        if (apiKeys?.getValhallaApiKey() == null) {
+            apiKeys?.setValhallaApiKey(BuildConfig.VALHALLA_API_KEY)
+        }
+        if (apiKeys?.getVectorTileApiKeyReleaseProp() == null) {
+            apiKeys?.setVectorTileApiKeyReleaseProp(BuildConfig.VECTOR_TILE_API_KEY)
+        }
+        if (apiKeys?.getMinVersion() != null) {
+            checkIfUpdateNeeded()
+        }
     }
 
     public fun checkIfUpdateNeeded() {
