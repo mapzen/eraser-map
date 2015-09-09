@@ -5,6 +5,7 @@ import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
+import com.mapzen.helpers.RouteEngine;
 import com.mapzen.valhalla.Route;
 
 import org.junit.Before;
@@ -177,6 +178,12 @@ public class RouteModeViewTest {
 
     @Test
     public void onApproachInstruction_shouldAdvanceViewPager() throws Exception {
+        routeModeView.getRouteListener().onMilestoneReached(1, RouteEngine.Milestone.ONE_MILE);
+        assertThat(routeModeView.getPager().getCurrentItem()).isEqualTo(1);
+    }
+
+    @Test
+    public void onAlertInstruction_shouldAdvanceViewPager() throws Exception {
         routeModeView.getRouteListener().onApproachInstruction(1);
         assertThat(routeModeView.getPager().getCurrentItem()).isEqualTo(1);
     }
@@ -184,6 +191,7 @@ public class RouteModeViewTest {
     @Test
     public void onUpdateDistance_shouldUpdateDistanceToNextInstruction() throws Exception {
         adapter.instantiateItem(routeModeView.getPager(), 0);
+        routeModeView.getRouteListener().onApproachInstruction(0);
         routeModeView.getRouteListener().onUpdateDistance(100, 500);
         DistanceView distanceView =
                 (DistanceView) routeModeView.findViewByIndex(0).findViewById(R.id.distance);

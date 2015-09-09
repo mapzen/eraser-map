@@ -75,8 +75,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var optionsMenu: Menu? = null
     var origin: Location? = null
     var destination: Feature? = null
-    var type : Router.Type = Router.Type.DRIVING
-    var reverse : Boolean = false;
+    var type: Router.Type = Router.Type.DRIVING
+    var reverse: Boolean = false;
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super<AppCompatActivity>.onCreate(savedInstanceState)
@@ -547,13 +547,17 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun showDirectionList() {
         val instructionStrings = ArrayList<String>()
-        val instructionType= ArrayList<Int>()
-        val instructionDistance= ArrayList<Int>()
-        for(instruction in route!!.getRouteInstructions() ) {
-            instructionStrings.add(instruction.getHumanTurnInstruction())
-            instructionType.add(instruction.turnInstruction)
-            instructionDistance.add(instruction.distance)
+        val instructionType = ArrayList<Int>()
+        val instructionDistance = ArrayList<Int>()
+        val instructions = route?.getRouteInstructions()
+        if (instructions != null) {
+            for(instruction in instructions) {
+                instructionStrings.add(instruction.getHumanTurnInstruction())
+                instructionType.add(instruction.turnInstruction)
+                instructionDistance.add(instruction.distance)
+            }
         }
+
         val simpleFeature = SimpleFeature.fromFeature(destination)
         val intent = Intent(this, javaClass<InstructionListActivity>())
         intent.putExtra("instruction_strings", instructionStrings)
@@ -589,9 +593,14 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val pager = findViewById(R.id.route_mode) as RouteModeView
         pager.route = this.route
         pager.routeEngine?.setRoute(route)
-        val adapter = InstructionAdapter(this, route!!.getRouteInstructions(), pager)
-        pager.setAdapter(adapter)
-        pager.setVisibility(View.VISIBLE)
+        pager.voiceNavigationController = VoiceNavigationController(this)
+
+        val instructions = route?.getRouteInstructions()
+        if (instructions != null) {
+            val adapter = InstructionAdapter(this, instructions, pager)
+            pager.setAdapter(adapter)
+            pager.setVisibility(View.VISIBLE)
+        }
 
         val firstInstruction = route?.getRouteInstructions()?.get(0)
         if (firstInstruction is Instruction) {
