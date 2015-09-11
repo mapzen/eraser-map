@@ -25,4 +25,5 @@ public interface MainViewController {
     public fun centerMapOnLocation(location: Location, zoom: Float)
     public fun setMapTilt(radians: Float)
     public fun setMapRotation(radians: Float)
+    public fun clearRouteLine()
 }

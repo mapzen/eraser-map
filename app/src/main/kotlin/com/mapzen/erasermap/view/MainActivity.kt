@@ -434,6 +434,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         (findViewById(R.id.route_preview) as RoutePreviewView).route = route
     }
 
+    override fun clearRouteLine() {
+        mapData?.clear()
+    }
+
     override fun success(route: Route) {
         this.route = route;
         presenter?.route = route;
