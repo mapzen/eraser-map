@@ -20,7 +20,7 @@ dependencies:
 
 test:
   override:
-    - ./gradlew -PvalhallaApiKey=$VALHALLA_API_KEY
+    - ./gradlew -PvalhallaApiKey=$VALHALLA_API_KEY --refresh-dependencies
     - ./gradlew checkstyle
 
 deployment:

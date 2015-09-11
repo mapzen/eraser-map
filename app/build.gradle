@@ -36,6 +36,7 @@ android {
   }
   sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
+    test.java.srcDirs += 'src/test/kotlin'
   }
   packagingOptions {
     exclude 'META-INF/LICENSE.txt'
@@ -90,6 +91,7 @@ dependencies {
   }
   compile 'com.splunk.mint:mint:4.2.1'
   compile 'com.squareup.okhttp:okhttp:2.4.0'
+  compile 'com.mapzen.android:speakerbox:1.1.0'
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.9.5'
   testCompile 'org.assertj:assertj-core:1.7.0'

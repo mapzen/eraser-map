@@ -17,6 +17,7 @@ import com.mapzen.erasermap.view.TestMainController
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
+import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 import org.assertj.core.api.Assertions.assertThat
 import org.json.JSONObject
@@ -160,6 +161,14 @@ public class MainPresenterTest {
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
         presenter.onBackPressed()
         assertThat(mainController.isRoutePreviewVisible).isFalse()
+    }
+
+    @Test
+    public fun onBackPressed_shouldClearRouteLine() {
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        mainController.routeLine = ArrayList<LngLat>()
+        presenter.onBackPressed()
+        assertThat(mainController.routeLine).isNull()
     }
 
     @Test

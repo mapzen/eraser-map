@@ -2,6 +2,7 @@ package com.mapzen.erasermap;
 
 import com.mapzen.erasermap.shadows.ShadowGLSurfaceView;
 import com.mapzen.erasermap.shadows.ShadowMapController;
+import com.mapzen.erasermap.shadows.ShadowMapData;
 import com.mapzen.erasermap.shadows.ShadowMapView;
 import com.mapzen.erasermap.shadows.ShadowPorterDuffColorFilter;
 
@@ -24,6 +25,7 @@ public class PrivateMapsTestRunner extends RobolectricGradleTestRunner {
                 .addShadowClass(ShadowMapController.class)
                 .addShadowClass(ShadowGLSurfaceView.class)
                 .addShadowClass(ShadowPorterDuffColorFilter.class)
+                .addShadowClass(ShadowMapData.class)
                 .build();
     }
 

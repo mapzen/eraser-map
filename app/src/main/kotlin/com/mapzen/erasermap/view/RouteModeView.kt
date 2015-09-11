@@ -19,6 +19,7 @@ import com.mapzen.erasermap.R
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.helpers.RouteEngine
+import com.mapzen.helpers.RouteListener
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
@@ -37,9 +38,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     var slideLayout: SlidingUpPanelLayout? = null
     var panelListener: SlidingUpPanelLayout.PanelSlideListener? = null
     var routeEngine: RouteEngine? = null
-    @Inject set
+        @Inject set
     var routeListener: RouteModeListener = RouteModeListener()
     var presenter: MainPresenter? = null
+    var voiceNavigationController: VoiceNavigationController? = null
 
     private var currentInstructionIndex: Int = 0
 
@@ -162,8 +164,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         val instructionStrings = ArrayList<String>()
         val instructionType= ArrayList<Int>()
         val instructionDistance= ArrayList<Int>()
-        if(route != null) {
-            for (instruction in route!!.getRouteInstructions() ) {
+
+        val instructions = route?.getRouteInstructions()
+        if (route is Route && instructions is ArrayList<Instruction>) {
+            for (instruction in  instructions) {
                 instructionStrings.add(instruction.getHumanTurnInstruction())
                 instructionType.add(instruction.turnInstruction)
                 instructionDistance.add(instruction.distance)
@@ -239,13 +243,46 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     /**
      * Route engine callback object
      */
-    inner class RouteModeListener : RouteEngine.RouteListener {
+    inner class RouteModeListener : RouteListener {
         private val TAG: String = "RouteListener"
         public var debug: Boolean = true
+
+        override fun onRecalculate(location: Location) {
+            log("[onRecalculate]", location)
+            presenter?.onReroute(location)
+        }
 
         override fun onSnapLocation(originalLocation: Location?, snapLocation: Location?) {
             log("[onSnapLocation]", "originalLocation = " + originalLocation
                     + " | " + "snapLocation = " + snapLocation)
+        }
+
+        override fun onMilestoneReached(index: Int, milestone: RouteEngine.Milestone) {
+            log("[onApproachInstruction]", index)
+            currentInstructionIndex = index
+            pager?.setCurrentItem(index)
+
+            val instruction = route?.getRouteInstructions()?.get(index)
+            if (instruction is Instruction) {
+                voiceNavigationController?.playMilestone(instruction, milestone)
+            }
+        }
+
+        override fun onApproachInstruction(index: Int) {
+            log("[onAlertInstruction]", index)
+            currentInstructionIndex = index
+            pager?.setCurrentItem(index)
+
+            val instruction = route?.getRouteInstructions()?.get(index)
+            if (instruction is Instruction) voiceNavigationController?.playPre(instruction)
+        }
+
+        override fun onInstructionComplete(index: Int) {
+            log("[onInstructionComplete]", index)
+            val icon = findViewByIndex(index)?.findViewById(R.id.icon) as ImageView
+            icon.setImageResource(DisplayHelper.getRouteDrawable(getContext(), 8))
+            val instruction = route?.getRouteInstructions()?.get(index)
+            if (instruction is Instruction) voiceNavigationController?.playPost(instruction)
         }
 
         override fun onUpdateDistance(distanceToNextInstruction: Int, distanceToDestination: Int) {
@@ -253,23 +290,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
                     + " | " + "distanceToDestination = " + distanceToDestination)
             setDistanceToNextInstruction(distanceToNextInstruction)
             setDistanceToDestination(distanceToDestination)
-        }
-
-        override fun onInstructionComplete(index: Int) {
-            log("[onInstructionComplete]", index)
-            val icon = findViewByIndex(index)?.findViewById(R.id.icon) as ImageView
-            icon.setImageResource(DisplayHelper.getRouteDrawable(getContext(), 8))
-        }
-
-        override fun onRecalculate(location: Location) {
-            log("[onRecalculate]", location)
-            presenter?.onReroute(location)
-        }
-
-        override fun onApproachInstruction(index: Int) {
-            log("[onApproachInstruction]", index)
-            currentInstructionIndex = index
-            pager?.setCurrentItem(index)
         }
 
         override fun onRouteComplete() {

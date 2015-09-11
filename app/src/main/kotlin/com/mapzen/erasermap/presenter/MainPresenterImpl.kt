@@ -153,6 +153,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     private fun onBackPressedStateRoutePreview() {
         viewState = ViewState.SEARCH_RESULTS
         mainViewController?.hideRoutePreview()
+        mainViewController?.clearRouteLine()
     }
 
     private fun onBackPressedStateRouting() {
