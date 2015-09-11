@@ -25,6 +25,8 @@ import com.mapzen.erasermap.shadows.ShadowMapData
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.widget.PeliasSearchView
+import com.mapzen.tangram.LngLat
+import com.mapzen.tangram.MapData
 import com.mapzen.tangram.MapView
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
@@ -248,6 +250,19 @@ public class MainActivityTest {
         Robolectric.flushForegroundThreadScheduler()
         assertThat((ShadowExtractor.extract(activity!!.mapData) as ShadowMapData).getLine())
                 .isNotNull()
+    }
+
+    @Test
+    public fun showRoutePreview_shouldClearPreviousRouteLine() {
+        val routeLine = ArrayList<LngLat>()
+        routeLine.add(LngLat())
+        activity!!.mapData = MapData("touch")
+        activity!!.mapData?.addLine(routeLine)
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
+        activity!!.success(Route(JSONObject()))
+        Robolectric.flushForegroundThreadScheduler()
+        assertThat((ShadowExtractor.extract(activity!!.mapData) as ShadowMapData).getLine())
+                .isNotEqualTo(routeLine)
     }
 
     @Test

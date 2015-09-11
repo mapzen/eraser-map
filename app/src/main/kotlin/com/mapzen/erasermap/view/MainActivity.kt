@@ -460,6 +460,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             mapData = MapData("touch")
         }
 
+        mapData?.clear()
         mapData?.addLine(mapGeometry)
     }
 
