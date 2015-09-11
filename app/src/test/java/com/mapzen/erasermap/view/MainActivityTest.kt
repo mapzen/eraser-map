@@ -21,6 +21,7 @@ import com.mapzen.erasermap.R
 import com.mapzen.erasermap.dummy.TestHelper.getFixture
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
+import com.mapzen.erasermap.shadows.ShadowMapData
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.widget.PeliasSearchView
@@ -37,6 +38,7 @@ import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.fakes.RoboMenu
 import org.robolectric.fakes.RoboMenuItem
+import org.robolectric.internal.ShadowExtractor
 import org.robolectric.shadows.ShadowAlertDialog
 import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowLocationManager
@@ -240,6 +242,15 @@ public class MainActivityTest {
     }
 
     @Test
+    public fun showRoutePreview_shouldDrawRouteLine() {
+        activity!!.showRoutePreview(getTestLocation(), getTestFeature())
+        activity!!.success(Route(JSONObject()))
+        Robolectric.flushForegroundThreadScheduler()
+        assertThat((ShadowExtractor.extract(activity!!.mapData) as ShadowMapData).getLine())
+                .isNotNull()
+    }
+
+    @Test
     public fun onRestoreViewState_shouldRestoreRoutingPreview() {
         activity!!.findViewById(R.id.route_preview).setVisibility(GONE)
         activity!!.showRoutePreview(getTestLocation(), getTestFeature())
@@ -317,8 +328,8 @@ public class MainActivityTest {
     @Test
     public fun centerMapOnLocation_shouldSetCoordinates() {
         activity!!.centerMapOnLocation(getTestLocation(100.0, 200.0), 10f)
-        assertThat(activity!!.mapController!!.getMapPosition()[0]).isEqualTo(100.0)
-        assertThat(activity!!.mapController!!.getMapPosition()[1]).isEqualTo(200.0)
+        assertThat(activity!!.mapController!!.getMapPosition().longitude).isEqualTo(100.0)
+        assertThat(activity!!.mapController!!.getMapPosition().latitude).isEqualTo(200.0)
     }
 
     @Test
@@ -334,8 +345,8 @@ public class MainActivityTest {
         featureList.add(getTestFeature(34.0, 43.0))
         activity!!.centerOnCurrentFeature(featureList)
         Robolectric.flushForegroundThreadScheduler()
-        assertThat(activity!!.mapController!!.getMapPosition()[0]).isEqualTo(43.0)
-        assertThat(activity!!.mapController!!.getMapPosition()[1]).isEqualTo(34.0)
+        assertThat(activity!!.mapController!!.getMapPosition().longitude).isEqualTo(43.0)
+        assertThat(activity!!.mapController!!.getMapPosition().latitude).isEqualTo(34.0)
     }
 
     @Test

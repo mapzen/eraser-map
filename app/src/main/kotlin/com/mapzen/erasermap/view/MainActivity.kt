@@ -37,7 +37,9 @@ import com.mapzen.pelias.gson.Result
 import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
+import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
+import com.mapzen.tangram.MapData
 import com.mapzen.tangram.MapView
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
@@ -77,6 +79,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var destination: Feature? = null
     var type: Router.Type = Router.Type.DRIVING
     var reverse: Boolean = false;
+    var mapData: MapData? = null;
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super<AppCompatActivity>.onCreate(savedInstanceState)
@@ -385,9 +388,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
         var coords  = mapController?.coordinatesAtScreenPosition(
                 event.getRawX().toDouble(), event.getRawY().toDouble())
-        presenter?.currentFeature = getGenericLocationFeature(coords?.get(1) as Double,
-                coords?.get(0) as Double)
-        pelias.reverse(coords?.get(1).toString(), coords?.get(0).toString(),
+        presenter?.currentFeature = getGenericLocationFeature(coords?.latitude as Double,
+                coords?.longitude as Double)
+        pelias.reverse(coords?.latitude.toString(), coords?.longitude.toString(),
                 ReversePeliasCallback())
         return true
     }
@@ -428,7 +431,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         route()
         (findViewById(R.id.route_preview) as RoutePreviewView).destination =
                 SimpleFeature.fromFeature(destination);
-        (findViewById(R.id.route_preview) as RoutePreviewView).route = route;
+        (findViewById(R.id.route_preview) as RoutePreviewView).route = route
     }
 
     override fun success(route: Route) {
@@ -441,6 +444,23 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             }
         })
         updateRoutePreview()
+        drawRouteLine(route)
+    }
+
+    private fun drawRouteLine(route: Route) {
+        val geometry: ArrayList<Location>? = route.getGeometry()
+        val mapGeometry: ArrayList<LngLat> = ArrayList()
+        if (geometry is ArrayList<Location>) {
+            for (location in geometry) {
+                mapGeometry.add(LngLat(location.getLongitude(), location.getLatitude()))
+            }
+        }
+
+        if (mapData == null) {
+            mapData = MapData("touch")
+        }
+
+        mapData?.addLine(mapGeometry)
     }
 
     override fun failure(statusCode: Int) {

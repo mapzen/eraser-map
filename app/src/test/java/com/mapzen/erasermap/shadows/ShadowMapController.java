@@ -1,5 +1,6 @@
 package com.mapzen.erasermap.shadows;
 
+import com.mapzen.tangram.LngLat;
 import com.mapzen.tangram.MapController;
 import com.mapzen.tangram.MapView;
 
@@ -10,7 +11,7 @@ import android.app.Activity;
 
 @Implements(MapController.class)
 public class ShadowMapController {
-    private double lon;
+    private double lng;
     private double lat;
     private float zoom;
 
@@ -18,14 +19,14 @@ public class ShadowMapController {
     }
 
     @Implementation
-    public void setMapPosition(double lon, double lat) {
-        this.lon = lon;
+    public void setMapPosition(double lng, double lat) {
+        this.lng = lng;
         this.lat = lat;
     }
 
     @Implementation
-    public double[] getMapPosition() {
-        return new double[] {lon, lat};
+    public LngLat getMapPosition() {
+        return new LngLat(lng, lat);
     }
 
     @Implementation
