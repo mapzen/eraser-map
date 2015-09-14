@@ -215,6 +215,9 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     }
 
     override fun onCreate() {
+    }
+
+    override fun onResume() {
         if (!initialized) {
             mapzenLocation.connect()
             val currentLocation = mapzenLocation.getLastLocation()
@@ -223,9 +226,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
             }
             initialized = true
         }
-    }
 
-    override fun onResume() {
         if (!isRouting() && !isRoutingDirectionList()) {
             mapzenLocation.connect()
             mapzenLocation.initLocationUpdates {
