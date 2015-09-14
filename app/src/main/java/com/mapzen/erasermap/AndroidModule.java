@@ -7,6 +7,9 @@ import com.mapzen.erasermap.model.RouterFactory;
 import com.mapzen.erasermap.model.ValhallaRouterFactory;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
+import com.mapzen.erasermap.presenter.RoutePresenter;
+import com.mapzen.erasermap.presenter.RoutePresenterImpl;
+import com.mapzen.helpers.RouteEngine;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -48,6 +51,10 @@ public class AndroidModule {
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation,
             RouterFactory routerFactory) {
         return new MainPresenterImpl(mapzenLocation, routerFactory);
+    }
+
+    @Provides @Singleton RoutePresenter provideRoutePresenter(RouteEngine routeEngine) {
+        return new RoutePresenterImpl(routeEngine);
     }
 
     @Provides @Singleton RouterFactory provideRouterFactory() {

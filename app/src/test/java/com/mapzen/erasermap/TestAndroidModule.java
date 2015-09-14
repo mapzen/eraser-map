@@ -7,6 +7,9 @@ import com.mapzen.erasermap.model.RouterFactory;
 import com.mapzen.erasermap.model.TestRouterFactory;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
+import com.mapzen.erasermap.presenter.RoutePresenter;
+import com.mapzen.erasermap.presenter.RoutePresenterImpl;
+import com.mapzen.helpers.RouteEngine;
 
 import org.mockito.Mockito;
 
@@ -50,6 +53,10 @@ public class TestAndroidModule {
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation,
             RouterFactory routerFactory) {
         return new MainPresenterImpl(mapzenLocation, routerFactory);
+    }
+
+    @Provides @Singleton RoutePresenter provideRoutePresenter(RouteEngine routeEngine) {
+        return new RoutePresenterImpl(routeEngine);
     }
 
     @Provides @Singleton RouterFactory provideRouterFactory() {

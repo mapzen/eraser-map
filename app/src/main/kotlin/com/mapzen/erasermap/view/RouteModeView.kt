@@ -17,6 +17,7 @@ import android.widget.TextView
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.presenter.MainPresenter
+import com.mapzen.erasermap.presenter.RoutePresenter
 import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.helpers.RouteListener
@@ -37,11 +38,11 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     var route: Route? = null
     var slideLayout: SlidingUpPanelLayout? = null
     var panelListener: SlidingUpPanelLayout.PanelSlideListener? = null
-    var routeEngine: RouteEngine? = null
-        @Inject set
     var routeListener: RouteModeListener = RouteModeListener()
     var presenter: MainPresenter? = null
     var voiceNavigationController: VoiceNavigationController? = null
+    var routePresenter: RoutePresenter? = null
+        @Inject set
 
     private var currentInstructionIndex: Int = 0
 
@@ -62,7 +63,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         (context.getApplicationContext() as EraserMapApplication).component()?.inject(this)
         (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_mode, this, true)
-        routeEngine?.setListener(routeListener)
+        routePresenter?.routeListener = routeListener
         (findViewById(R.id.resume) as ImageButton).setOnClickListener {
             presenter?.onResumeRouting()
             pager?.setCurrentItem(currentInstructionIndex)
@@ -279,8 +280,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
         override fun onInstructionComplete(index: Int) {
             log("[onInstructionComplete]", index)
-            val icon = findViewByIndex(index)?.findViewById(R.id.icon) as ImageView
-            icon.setImageResource(DisplayHelper.getRouteDrawable(getContext(), 8))
+            val icon = findViewByIndex(index)?.findViewById(R.id.icon)
+            if (icon is ImageView) {
+                icon.setImageResource(DisplayHelper.getRouteDrawable(getContext(), 8))
+            }
             val instruction = route?.getRouteInstructions()?.get(index)
             if (instruction is Instruction) voiceNavigationController?.playPost(instruction)
         }
@@ -330,7 +333,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun onLocationChanged(location: Location) {
         if (route != null) {
-            routeEngine?.onLocationChanged(location)
+            routePresenter?.onLocationChanged(location)
         }
     }
 }

@@ -608,16 +608,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         findViewById(R.id.route_mode).setVisibility(View.VISIBLE)
         (findViewById(R.id.route_mode) as RouteModeView).presenter = presenter
         presenter?.routeViewController = findViewById(R.id.route_mode) as RouteModeView
-
-        if(presenter?.route == null) {
-            route()
-        } else {
-            this.route = presenter?.route
-        }
-
+        this.route = presenter?.route
         val pager = findViewById(R.id.route_mode) as RouteModeView
         pager.route = this.route
-        pager.routeEngine?.setRoute(route)
+        pager.routePresenter?.setRoute(route)
         pager.voiceNavigationController = VoiceNavigationController(this)
 
         val instructions = route?.getRouteInstructions()

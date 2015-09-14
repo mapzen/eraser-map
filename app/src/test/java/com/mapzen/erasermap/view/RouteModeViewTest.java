@@ -238,8 +238,8 @@ public class RouteModeViewTest {
     }
 
     @Test
-    public void shouldInjectRouteEngine() throws Exception {
-        assertThat(routeModeView.getRouteEngine()).isNotNull();
+    public void shouldInjectRoutePresenter() throws Exception {
+        assertThat(routeModeView.getRoutePresenter()).isNotNull();
     }
 
     @Test

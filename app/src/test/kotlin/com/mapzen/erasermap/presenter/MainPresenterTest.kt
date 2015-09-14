@@ -86,6 +86,16 @@ public class MainPresenterTest {
     }
 
     @Test
+    public fun onRestoreViewState_shouldShowRoutingMode() {
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        val newController = TestMainController()
+        presenter.mainViewController = newController
+        presenter.routingEnabled = true
+        presenter.onRestoreViewState()
+        assertThat(newController.isRoutingModeVisible).isTrue()
+    }
+
+    @Test
     public fun onCollapseSearchView_shouldHideSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
