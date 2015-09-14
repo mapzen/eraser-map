@@ -80,6 +80,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var type: Router.Type = Router.Type.DRIVING
     var reverse: Boolean = false;
     var mapData: MapData? = null;
+    var mapData2: MapData? = null
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super<AppCompatActivity>.onCreate(savedInstanceState)
@@ -200,6 +201,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         mapController?.setMapZoom(zoom)
         mapController?.setMapRotation(0f)
         mapController?.setMapTilt(0f)
+
+        if (mapData2 == null) {
+            mapData2 = MapData("touchPoint")
+        }
+
+        mapData2?.addPoint(LngLat(location.getLongitude(), location.getLatitude()))
     }
 
     override fun setMapTilt(radians: Float) {
