@@ -20,7 +20,7 @@ public class CommonModule {
         return new Bus();
     }
 
-    @Provides RouteEngine provideRouteEngine() {
+    @Provides @Singleton RouteEngine provideRouteEngine() {
         return new RouteEngine();
     }
 }

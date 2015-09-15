@@ -23,8 +23,8 @@ import java.util.ArrayList
 public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         val routerFactory: RouterFactory) : MainPresenter, RouteCallback {
 
-    override var currentFeature: Feature? = null;
-    override var route: Route? = null;
+    override var currentFeature: Feature? = null
+    override var route: Route? = null
     override var routingEnabled : Boolean = false
     override var mainViewController: MainViewController? = null
     override var routeViewController: RouteViewController? = null
