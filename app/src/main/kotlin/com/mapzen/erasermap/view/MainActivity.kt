@@ -80,6 +80,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var type: Router.Type = Router.Type.DRIVING
     var reverse: Boolean = false;
     var mapData: MapData? = null;
+    var manifestRequestCount: Int = 0
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super<AppCompatActivity>.onCreate(savedInstanceState)
@@ -150,12 +151,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun getApiKeys() {
+        manifestRequestCount++;
         apiKeys = ManifestModel()
         try {
             var dl: ManifestDownLoader = ManifestDownLoader()
             apiKeys = dl.getManifestModel( {
                 checkForNullKeys()
-                routerFactory?.apiKey = apiKeys?.getValhallaApiKey()
             })
         } catch (e: UnsatisfiedLinkError) {
             checkForNullKeys()
@@ -167,14 +168,27 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun checkForNullKeys() {
-        if (apiKeys?.getValhallaApiKey() == null) {
-            apiKeys?.setValhallaApiKey(BuildConfig.VALHALLA_API_KEY)
-        }
-        if (apiKeys?.getVectorTileApiKeyReleaseProp() == null) {
-            apiKeys?.setVectorTileApiKeyReleaseProp(BuildConfig.VECTOR_TILE_API_KEY)
-        }
-        if (apiKeys?.getMinVersion() != null) {
-            checkIfUpdateNeeded()
+        if(apiKeys?.getValhallaApiKey().isNullOrEmpty() && manifestRequestCount < 2) {
+            getApiKeys()
+        } else if(apiKeys?.getValhallaApiKey().isNullOrEmpty()
+                .and(BuildConfig.VALHALLA_API_KEY.isNullOrEmpty())) {
+            var builder: AlertDialog.Builder = AlertDialog.Builder(this);
+            builder.setMessage(getString(R.string.manifest_error))
+                    .setNegativeButton(getString(R.string.decline_update),
+                            DialogInterface.OnClickListener { dialogInterface, i -> finish() })
+                    .setCancelable(false)
+            builder.create().show()
+        } else {
+            if (apiKeys?.getValhallaApiKey() == null) {
+                apiKeys?.setValhallaApiKey(BuildConfig.VALHALLA_API_KEY)
+            }
+            if (apiKeys?.getVectorTileApiKeyReleaseProp() == null) {
+                apiKeys?.setVectorTileApiKeyReleaseProp(BuildConfig.VECTOR_TILE_API_KEY)
+            }
+            if (apiKeys?.getMinVersion() != null) {
+                checkIfUpdateNeeded()
+            }
+            routerFactory?.apiKey = apiKeys?.getValhallaApiKey()
         }
     }
 
