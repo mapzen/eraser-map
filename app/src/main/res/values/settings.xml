@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Routing category -->
+    <string name="category_routing_title">Routing</string>
+
+    <!-- Distance units -->
+    <string name="distance_units_key">list_distance_units</string>
+    <string name="distance_units_title">Distance units</string>
+    <string name="distance_units_default">mi</string>
+
     <!-- Debug category -->
     <string name="category_debug_title">Debugging</string>
 

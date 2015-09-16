@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <PreferenceCategory android:title="@string/category_routing_title">
+
+        <ListPreference
+            android:key="@string/distance_units_key"
+            android:title="@string/distance_units_title"
+            android:entries="@array/distance_units_entries"
+            android:entryValues="@array/distance_units_values"
+            android:defaultValue="@string/distance_units_default" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/category_debug_title">
 
         <CheckBoxPreference
