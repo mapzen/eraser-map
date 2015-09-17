@@ -21,6 +21,7 @@ import com.mapzen.erasermap.R
 import com.mapzen.erasermap.dummy.TestHelper.getFixture
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
+import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.shadows.ShadowMapData
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.gson.Feature
@@ -45,7 +46,6 @@ import org.robolectric.shadows.ShadowAlertDialog
 import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowLocationManager
 import java.util.ArrayList
-import java.util.concurrent.TimeUnit
 
 @RunWith(PrivateMapsTestRunner::class)
 @Config(constants = BuildConfig::class, sdk=intArrayOf(21))
@@ -248,7 +248,7 @@ public class MainActivityTest {
         activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         activity!!.success(Route(JSONObject()))
         Robolectric.flushForegroundThreadScheduler()
-        assertThat((ShadowExtractor.extract(activity!!.mapData) as ShadowMapData).getLine())
+        assertThat((ShadowExtractor.extract(activity!!.routeLine) as ShadowMapData).getLine())
                 .isNotNull()
     }
 
@@ -256,13 +256,28 @@ public class MainActivityTest {
     public fun showRoutePreview_shouldClearPreviousRouteLine() {
         val routeLine = ArrayList<LngLat>()
         routeLine.add(LngLat())
-        activity!!.mapData = MapData("touch")
-        activity!!.mapData?.addLine(routeLine)
+        activity!!.routeLine = MapData("route")
+        activity!!.routeLine?.addLine(routeLine)
         activity!!.showRoutePreview(getTestLocation(), getTestFeature())
         activity!!.success(Route(JSONObject()))
         Robolectric.flushForegroundThreadScheduler()
-        assertThat((ShadowExtractor.extract(activity!!.mapData) as ShadowMapData).getLine())
-                .isNotEqualTo(routeLine)
+        assertThat((ShadowExtractor.extract(activity!!.routeLine) as ShadowMapData).getLine())
+                .isNotSameAs(routeLine)
+    }
+
+    @Test
+    public fun centerOnMapLocation_shouldAddPointToMap() {
+        activity!!.centerMapOnLocation(getTestLocation(), MainPresenter.DEFAULT_ZOOM)
+        val shadowFindMe = ShadowExtractor.extract(activity!!.findMe) as ShadowMapData
+        assertThat(shadowFindMe.getPoints()).isNotNull()
+    }
+
+    @Test
+    public fun centerOnMapLocation_shouldClearPreviousPoint() {
+        activity!!.centerMapOnLocation(getTestLocation(), MainPresenter.DEFAULT_ZOOM)
+        activity!!.centerMapOnLocation(getTestLocation(), MainPresenter.DEFAULT_ZOOM)
+        val shadowFindMe = ShadowExtractor.extract(activity!!.findMe) as ShadowMapData
+        assertThat(shadowFindMe.getPoints().size()).isEqualTo(1)
     }
 
     @Test
