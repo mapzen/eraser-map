@@ -64,6 +64,14 @@ layers:
                 sprite: sunburst
                 size: 20px
 
+    search:
+        data: { source: search }
+        draw:
+            icons:
+                priority: 1
+                sprite: museum
+                size: 20px
+
     earth:
         data: { source: osm }
         draw:

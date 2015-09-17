@@ -281,6 +281,29 @@ public class MainActivityTest {
     }
 
     @Test
+    public fun showSearchResults_shouldAddPointsToMap() {
+        val features = ArrayList<Feature>()
+        features.add(getTestFeature())
+        features.add(getTestFeature())
+        features.add(getTestFeature())
+        activity!!showSearchResults(features)
+        val shadowSearchResults = ShadowExtractor.extract(activity!!.searchResults) as ShadowMapData
+        assertThat(shadowSearchResults.getPoints()).hasSize(3)
+    }
+
+    @Test
+    public fun showSearchResults_shouldClearPreviousPoints() {
+        val features = ArrayList<Feature>()
+        features.add(getTestFeature())
+        features.add(getTestFeature())
+        features.add(getTestFeature())
+        activity!!showSearchResults(features)
+        activity!!showSearchResults(features)
+        val shadowSearchResults = ShadowExtractor.extract(activity!!.searchResults) as ShadowMapData
+        assertThat(shadowSearchResults.getPoints()).hasSize(3)
+    }
+
+    @Test
     public fun onRestoreViewState_shouldRestoreRoutingPreview() {
         activity!!.findViewById(R.id.route_preview).setVisibility(GONE)
         activity!!.showRoutePreview(getTestLocation(), getTestFeature())

@@ -81,6 +81,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var reverse: Boolean = false
     var routeLine: MapData? = null
     var findMe: MapData? = null
+    var searchResults: MapData? = null
     var manifestRequestCount: Int = 0
 
     override public fun onCreate(savedInstanceState: Bundle?) {
@@ -384,8 +385,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         pager.onSearchResultsSelectedListener = this
     }
 
-
-    override  fun showReverseGeocodeFeature(features: List<Feature>) {
+    override fun showReverseGeocodeFeature(features: List<Feature>) {
             val pager = findViewById(R.id.search_results) as SearchResultsView
             pager.setAdapter(SearchResultsAdapter(this, features.subList(0, 1)))
             pager.setVisibility(View.VISIBLE)
@@ -394,6 +394,17 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun addSearchResultsToMap(features: List<Feature>) {
         centerOnCurrentFeature(features)
+
+        if (searchResults == null) {
+            searchResults = MapData("search")
+        }
+
+        searchResults?.clear()
+        for (feature in features) {
+            val simpleFeature = SimpleFeature.fromFeature(feature)
+            val lngLat = LngLat(simpleFeature.getLon(), simpleFeature.getLat())
+            searchResults?.addPoint(lngLat)
+        }
     }
 
     override fun centerOnCurrentFeature(features: List<Feature>) {
@@ -420,6 +431,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun hideSearchResults() {
         hideSearchResultsPager()
+        searchResults?.clear()
     }
 
     private fun hideSearchResultsPager() {
