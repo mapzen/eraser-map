@@ -262,7 +262,7 @@ public class MainActivityTest {
         activity!!.success(Route(JSONObject()))
         Robolectric.flushForegroundThreadScheduler()
         assertThat((ShadowExtractor.extract(activity!!.routeLine) as ShadowMapData).getLine())
-                .isNotEqualTo(routeLine)
+                .isNotSameAs(routeLine)
     }
 
     @Test
@@ -274,9 +274,7 @@ public class MainActivityTest {
 
     @Test
     public fun centerOnMapLocation_shouldClearPreviousPoint() {
-        val point = LngLat()
-        activity!!.findMe = MapData("find_me")
-        activity!!.findMe?.addPoint(point)
+        activity!!.centerMapOnLocation(getTestLocation(), MainPresenter.DEFAULT_ZOOM)
         activity!!.centerMapOnLocation(getTestLocation(), MainPresenter.DEFAULT_ZOOM)
         val shadowFindMe = ShadowExtractor.extract(activity!!.findMe) as ShadowMapData
         assertThat(shadowFindMe.getPoints().size()).isEqualTo(1)

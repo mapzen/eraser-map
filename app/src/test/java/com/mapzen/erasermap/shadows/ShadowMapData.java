@@ -12,11 +12,12 @@ import java.util.List;
 
 @Implements(MapData.class)
 public class ShadowMapData {
-    @RealObject private MapData realMapData;
+    @RealObject
+    private MapData realMapData;
 
     private String name;
-    private List<LngLat> points;
-    private List<LngLat> line;
+    private List<LngLat> points = new ArrayList<>();
+    private List<LngLat> line = new ArrayList<>();
 
     public void __constructor__(String name) {
         this.name = name;
@@ -24,10 +25,6 @@ public class ShadowMapData {
 
     @Implementation
     public MapData addPoint(LngLat point) {
-        if (points == null) {
-            points = new ArrayList<>();
-        }
-
         points.add(point);
         return realMapData;
     }
@@ -35,6 +32,13 @@ public class ShadowMapData {
     @Implementation
     public MapData addLine(List<LngLat> line) {
         this.line = line;
+        return realMapData;
+    }
+
+    @Implementation
+    public MapData clear() {
+        points.clear();
+        line.clear();
         return realMapData;
     }
 
