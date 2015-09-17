@@ -49,19 +49,20 @@ sources:
         url:  http://vector.mapzen.com/osm/all/{z}/{x}/{y}.mvt
 
 layers:
-    touch:
-        data: { source: touch }
+    route:
+        data: { source: route }
         draw:
             lines:
                 color: 'purple'
                 order: 50
                 width: .03
-    touch2:
-        data: { source: touchPoint }
+    find_me:
+        data: { source: find_me }
         draw:
             icons:
                 priority: 1
                 sprite: sunburst
+                size: 20px
 
     earth:
         data: { source: osm }

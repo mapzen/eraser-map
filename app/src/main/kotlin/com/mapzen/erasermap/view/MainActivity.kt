@@ -78,8 +78,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var origin: Location? = null
     var destination: Feature? = null
     var type: Router.Type = Router.Type.DRIVING
-    var reverse: Boolean = false;
-    var mapData: MapData? = null;
+    var reverse: Boolean = false
+    var routeLine: MapData? = null
+    var findMe: MapData? = null
     var manifestRequestCount: Int = 0
 
     override public fun onCreate(savedInstanceState: Bundle?) {
@@ -214,6 +215,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         mapController?.setMapZoom(zoom)
         mapController?.setMapRotation(0f)
         mapController?.setMapTilt(0f)
+
+        if (findMe == null) {
+            findMe = MapData("find_me")
+        }
+
+        findMe?.clear()
+        findMe?.addPoint(LngLat(location.getLongitude(), location.getLatitude()))
     }
 
     override fun setMapTilt(radians: Float) {
@@ -302,8 +310,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun saveCurrentSearchTerm() {
         val menuItem = optionsMenu?.findItem(R.id.action_search)
-        val actionView = menuItem?.getActionView() as PeliasSearchView
-        if (menuItem!!.isActionViewExpanded()) {
+        val actionView = menuItem?.getActionView()
+        val isExpanded = menuItem?.isActionViewExpanded() ?: false
+        if (actionView is PeliasSearchView && isExpanded) {
             presenter?.currentSearchTerm = actionView.getQuery().toString()
         }
     }
@@ -449,7 +458,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun clearRouteLine() {
-        mapData?.clear()
+        routeLine?.clear()
     }
 
     override fun success(route: Route) {
@@ -474,12 +483,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             }
         }
 
-        if (mapData == null) {
-            mapData = MapData("touch")
+        if (routeLine == null) {
+            routeLine = MapData("route")
         }
 
-        mapData?.clear()
-        mapData?.addLine(mapGeometry)
+        routeLine?.clear()
+        routeLine?.addLine(mapGeometry)
     }
 
     override fun failure(statusCode: Int) {

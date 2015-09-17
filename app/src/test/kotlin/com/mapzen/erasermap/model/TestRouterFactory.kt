@@ -66,5 +66,9 @@ public class TestRouterFactory : RouterFactory {
         override fun setWalking(): Router {
             return this
         }
+
+        override fun setDistanceUnits(units: Router.DistanceUnits): Router {
+            return this
+        }
     }
 }
