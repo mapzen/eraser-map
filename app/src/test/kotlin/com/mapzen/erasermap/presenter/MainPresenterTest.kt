@@ -11,7 +11,6 @@ import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.DEFAULT
 import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.ROUTE_DIRECTION_LIST
 import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.ROUTE_PREVIEW
 import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.ROUTING
-import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.SEARCH
 import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.SEARCH_RESULTS
 import com.mapzen.erasermap.view.TestMainController
 import com.mapzen.erasermap.view.TestRouteController
@@ -318,7 +317,7 @@ public class MainPresenterTest {
         presenter.onBackPressed()
         assertThat(presenter.viewState).isEqualTo(SEARCH_RESULTS)
         presenter.onBackPressed()
-        assertThat(presenter.viewState).isEqualTo(SEARCH)
+        assertThat(presenter.viewState).isEqualTo(DEFAULT)
         presenter.onBackPressed()
         assertThat(presenter.viewState).isEqualTo(DEFAULT)
     }

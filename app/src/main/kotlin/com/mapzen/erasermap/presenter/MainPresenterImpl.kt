@@ -50,6 +50,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     var viewState: ViewState = ViewState.DEFAULT
 
     override fun onSearchResultsAvailable(searchResults: Result?) {
+        viewState = ViewState.SEARCH_RESULTS
         this.searchResults = searchResults
         mainViewController?.showSearchResults(searchResults?.getFeatures())
         mainViewController?.hideProgress()
@@ -94,10 +95,12 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     }
 
     override fun onExpandSearchView() {
+        viewState = ViewState.SEARCH
         mainViewController?.hideOverflowMenu()
     }
 
     override fun onCollapseSearchView() {
+        viewState = ViewState.DEFAULT
         searchResults = null;
         mainViewController?.hideSearchResults()
         mainViewController?.showOverflowMenu()
@@ -146,7 +149,8 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     }
 
     private fun onBackPressedStateSearchResults() {
-        viewState = ViewState.SEARCH
+        viewState = ViewState.DEFAULT
+        mainViewController?.collapseSearchView()
         mainViewController?.hideSearchResults()
     }
 
