@@ -9,6 +9,7 @@ import java.util.ArrayList
 public class TestRouterFactory : RouterFactory {
     public var locations: ArrayList<DoubleArray> = ArrayList()
     public var isFetching: Boolean = false
+    public var units: Router.DistanceUnits = Router.DistanceUnits.MILES
 
     override var apiKey: String = BuildConfig.VALHALLA_API_KEY
 
@@ -68,6 +69,7 @@ public class TestRouterFactory : RouterFactory {
         }
 
         override fun setDistanceUnits(units: Router.DistanceUnits): Router {
+            this@TestRouterFactory.units = units
             return this
         }
     }
