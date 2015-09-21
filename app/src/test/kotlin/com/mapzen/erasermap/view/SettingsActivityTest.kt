@@ -34,11 +34,10 @@ public class SettingsActivityTest {
     }
 
     @Test fun onCreate_shouldSetDistanceUnitsSummaryStoredValue() {
-        settingsFragment.getPreferenceManager()
-                .getSharedPreferences()
-                .edit()
-                .putString(getString(R.string.distance_units_key), "km")
-                .commit()
+        settingsFragment.prefs
+                ?.edit()
+                ?.putString(getString(R.string.distance_units_key), "km")
+                ?.commit()
 
         settingsFragment.onCreate(null)
         assertThat(findPreference(R.string.distance_units_key).getSummary()).isEqualTo("Kilometers")
