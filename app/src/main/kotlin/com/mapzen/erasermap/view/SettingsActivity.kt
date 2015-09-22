@@ -1,13 +1,12 @@
 package com.mapzen.erasermap.view
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.Preference
 import android.preference.PreferenceFragment
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AndroidAppSettings
-import com.mapzen.valhalla.Router
+import com.mapzen.erasermap.model.AppSettings
 import javax.inject.Inject
 
 public class SettingsActivity : HomeAsUpActivity() {
@@ -19,7 +18,7 @@ public class SettingsActivity : HomeAsUpActivity() {
     }
 
     class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceChangeListener {
-        var prefs: SharedPreferences? = null
+        var settings: AppSettings? = null
             @Inject set
 
         override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,10 +41,8 @@ public class SettingsActivity : HomeAsUpActivity() {
 
         private fun initDistanceUnitsPref() {
             val key = AndroidAppSettings.KEY_DISTANCE_UNITS
-            val value = prefs?.getString(key, Router.DistanceUnits.MILES.toString())
-                    ?: Router.DistanceUnits.MILES.toString()
-
-            updateDistanceUnitsPref(findPreference(key), value)
+            val value = settings?.distanceUnits
+            updateDistanceUnitsPref(findPreference(key), value.toString())
             findPreference(key).setOnPreferenceChangeListener(this)
         }
 

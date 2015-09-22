@@ -35,12 +35,7 @@ public class SettingsActivityTest {
     }
 
     @Test fun onCreate_shouldSetDistanceUnitsSummaryStoredValue() {
-        settingsFragment.prefs
-                ?.edit()
-                ?.putString(AndroidAppSettings.KEY_DISTANCE_UNITS,
-                        Router.DistanceUnits.KILOMETERS.toString())
-                ?.commit()
-
+        settingsFragment.settings?.distanceUnits = Router.DistanceUnits.KILOMETERS
         settingsFragment.onCreate(null)
         assertThat(findPreference(AndroidAppSettings.KEY_DISTANCE_UNITS).getSummary())
                 .isEqualTo("Kilometers")

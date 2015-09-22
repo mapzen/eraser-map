@@ -1,12 +1,10 @@
 package com.mapzen.erasermap.model
 
-import android.content.SharedPreferences
 import android.location.Location
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.erasermap.EraserMapApplication
-import java.io.File
 import javax.inject.Inject
 
 public class MapzenLocationImpl(val app: EraserMapApplication) : MapzenLocation {
@@ -15,7 +13,7 @@ public class MapzenLocationImpl(val app: EraserMapApplication) : MapzenLocation 
 
     var locationClient: LostApiClient? = null
         @Inject set
-    var prefs: SharedPreferences? = null
+    var settings: AppSettings? = null
         @Inject set
 
     init {
@@ -24,20 +22,15 @@ public class MapzenLocationImpl(val app: EraserMapApplication) : MapzenLocation 
 
     override fun connect() {
         locationClient?.connect()
-        val mockMode = prefs?.getBoolean(AndroidAppSettings.KEY_MOCK_LOCATION_ENABLED, false)
+        val mockMode = settings?.isMockLocationEnabled
         if (mockMode as Boolean) {
             initMockMode()
         }
     }
 
     private fun initMockMode() {
-        val rawValues = prefs?.getString(AndroidAppSettings.KEY_MOCK_LOCATION_VALUE, null)
-        val splitValues = rawValues?.split(",")
-        val location = Location("mock")
-        location.setLatitude(splitValues?.get(0)?.toDouble() as Double)
-        location.setLongitude(splitValues?.get(1)?.toDouble() as Double)
         LocationServices.FusedLocationApi?.setMockMode(true)
-        LocationServices.FusedLocationApi?.setMockLocation(location)
+        LocationServices.FusedLocationApi?.setMockLocation(settings?.mockLocation)
     }
 
     override fun disconnect() {
@@ -70,7 +63,7 @@ public class MapzenLocationImpl(val app: EraserMapApplication) : MapzenLocation 
             connect()
         }
 
-        val mockRoute = prefs?.getBoolean(AndroidAppSettings.KEY_MOCK_ROUTE_ENABLED, false)
+        val mockRoute = settings?.isMockRouteEnabled
         if (mockRoute as Boolean) {
             initMockRoute()
         }
@@ -79,10 +72,8 @@ public class MapzenLocationImpl(val app: EraserMapApplication) : MapzenLocation 
     }
 
     private fun initMockRoute() {
-        val filename = prefs?.getString(AndroidAppSettings.KEY_MOCK_ROUTE_VALUE, null)
-        val file = File(app.getExternalFilesDir(null), filename)
         LocationServices.FusedLocationApi?.setMockMode(true)
-        LocationServices.FusedLocationApi?.setMockTrace(file)
+        LocationServices.FusedLocationApi?.setMockTrace(settings?.mockRoute)
     }
 
     override fun getLastLocation(): Location? {

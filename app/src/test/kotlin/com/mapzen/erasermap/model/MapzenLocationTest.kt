@@ -55,10 +55,11 @@ public class MapzenLocationTest {
 
     @Test
     fun connect_shouldSetMockLocationIfMockModeEnabled() {
-        val editor = mapzenLocation.prefs!!.edit()
-        editor.putBoolean(AndroidAppSettings.KEY_MOCK_LOCATION_ENABLED, true)
-        editor.putString(AndroidAppSettings.KEY_MOCK_LOCATION_VALUE, "1.0, 2.0")
-        editor.commit()
+        val location = TestHelper.getTestLocation()
+        location.setLatitude(1.0)
+        location.setLongitude(2.0)
+        mapzenLocation.settings?.isMockLocationEnabled = true
+        mapzenLocation.settings?.mockLocation = location
         mapzenLocation.connect()
         assertThat(FusedLocationApi.getLastLocation().getLatitude()).isEqualTo(1.0)
         assertThat(FusedLocationApi.getLastLocation().getLongitude()).isEqualTo(2.0)
@@ -66,10 +67,11 @@ public class MapzenLocationTest {
 
     @Test
     fun connect_shouldNotSetMockLocationIfMockModeNotEnabled() {
-        val editor = mapzenLocation.prefs!!.edit()
-        editor.putBoolean(AndroidAppSettings.KEY_MOCK_LOCATION_ENABLED, false)
-        editor.putString(AndroidAppSettings.KEY_MOCK_LOCATION_VALUE, "1.0, 2.0")
-        editor.commit()
+        val location = TestHelper.getTestLocation()
+        location.setLatitude(1.0)
+        location.setLongitude(2.0)
+        mapzenLocation.settings?.isMockLocationEnabled = false
+        mapzenLocation.settings?.mockLocation = location
         mapzenLocation.connect()
         assertThat(FusedLocationApi.getLastLocation()).isNull()
     }
