@@ -6,6 +6,8 @@ import android.preference.Preference
 import android.preference.PreferenceFragment
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
+import com.mapzen.erasermap.model.AndroidAppSettings
+import com.mapzen.valhalla.Router
 import javax.inject.Inject
 
 public class SettingsActivity : HomeAsUpActivity() {
@@ -29,7 +31,7 @@ public class SettingsActivity : HomeAsUpActivity() {
 
         override fun onPreferenceChange(preference: Preference?, value: Any?): Boolean {
             if (preference is Preference && value is String) {
-                if (getString(R.string.distance_units_key).equals(preference.getKey())) {
+                if (AndroidAppSettings.KEY_DISTANCE_UNITS.equals(preference.getKey())) {
                     updateDistanceUnitsPref(preference, value)
                     return true
                 }
@@ -39,9 +41,9 @@ public class SettingsActivity : HomeAsUpActivity() {
         }
 
         private fun initDistanceUnitsPref() {
-            val key = getString(R.string.distance_units_key)
-            val value = prefs?.getString(key, getString(R.string.distance_units_default))
-                    ?: getString(R.string.distance_units_default)
+            val key = AndroidAppSettings.KEY_DISTANCE_UNITS
+            val value = prefs?.getString(key, Router.DistanceUnits.MILES.toString())
+                    ?: Router.DistanceUnits.MILES.toString()
 
             updateDistanceUnitsPref(findPreference(key), value)
             findPreference(key).setOnPreferenceChangeListener(this)

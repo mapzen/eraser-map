@@ -4,34 +4,29 @@
     <string name="category_routing_title">Routing</string>
 
     <!-- Distance units -->
-    <string name="distance_units_key">list_distance_units</string>
     <string name="distance_units_title">Distance units</string>
-    <string name="distance_units_default">mi</string>
+    <string name="distance_units_default">miles</string>
 
     <!-- Debug category -->
     <string name="category_debug_title">Debugging</string>
 
     <!-- Enable mock location -->
-    <string name="checkbox_mock_location_key">checkbox_mock_location</string>
     <string name="checkbox_mock_location_summary">Enable fixed debug location</string>
     <string name="checkbox_mock_location_title">Mock location</string>
 
     <!-- Set mock location -->
     <string name="edittext_mock_location_default_value">40.7443, -73.9903</string>
     <string name="edittext_mock_location_dialog_title">Set mock location (lat, lng)</string>
-    <string name="edittext_mock_location_key">edittext_mock_location</string>
     <string name="edittext_mock_location_summary">Set fixed debug location</string>
     <string name="edittext_mock_location_title">Set mock location</string>
 
     <!-- Enable mock route -->
-    <string name="checkbox_mock_route_key">checkbox_mock_route</string>
     <string name="checkbox_mock_route_summary">Replay debug locations in routing mode</string>
     <string name="checkbox_mock_route_title">Mock route</string>
 
     <!-- Set mock route -->
     <string name="edittext_mock_route_default_value">lost.gpx</string>
     <string name="edittext_mock_route_dialog_title">Set mock route</string>
-    <string name="edittext_mock_route_key">edittext_mock_route</string>
     <string name="edittext_mock_route_summary">Path to GPX trace file (SD card)</string>
     <string name="edittext_mock_route_title">Set mock route</string>
 </resources>

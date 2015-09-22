@@ -5,7 +5,7 @@
         <item>Kilometers</item>
     </string-array>
     <string-array name="distance_units_values">
-        <item>mi</item>
-        <item>km</item>
+        <item>miles</item>
+        <item>kilometers</item>
     </string-array>
 </resources>

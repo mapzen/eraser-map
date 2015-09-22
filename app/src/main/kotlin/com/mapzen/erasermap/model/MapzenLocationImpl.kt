@@ -6,7 +6,6 @@ import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.erasermap.EraserMapApplication
-import com.mapzen.erasermap.R
 import java.io.File
 import javax.inject.Inject
 
@@ -25,14 +24,14 @@ public class MapzenLocationImpl(val app: EraserMapApplication) : MapzenLocation 
 
     override fun connect() {
         locationClient?.connect()
-        val mockMode = prefs?.getBoolean(app.getString(R.string.checkbox_mock_location_key), false)
+        val mockMode = prefs?.getBoolean(AndroidAppSettings.KEY_MOCK_LOCATION_ENABLED, false)
         if (mockMode as Boolean) {
             initMockMode()
         }
     }
 
     private fun initMockMode() {
-        val rawValues = prefs?.getString(app.getString(R.string.edittext_mock_location_key), null)
+        val rawValues = prefs?.getString(AndroidAppSettings.KEY_MOCK_LOCATION_VALUE, null)
         val splitValues = rawValues?.split(",")
         val location = Location("mock")
         location.setLatitude(splitValues?.get(0)?.toDouble() as Double)
@@ -71,7 +70,7 @@ public class MapzenLocationImpl(val app: EraserMapApplication) : MapzenLocation 
             connect()
         }
 
-        val mockRoute = prefs?.getBoolean(app.getString(R.string.checkbox_mock_route_key), false)
+        val mockRoute = prefs?.getBoolean(AndroidAppSettings.KEY_MOCK_ROUTE_ENABLED, false)
         if (mockRoute as Boolean) {
             initMockRoute()
         }
@@ -80,7 +79,7 @@ public class MapzenLocationImpl(val app: EraserMapApplication) : MapzenLocation 
     }
 
     private fun initMockRoute() {
-        val filename = prefs?.getString(app.getString(R.string.edittext_mock_route_key), null)
+        val filename = prefs?.getString(AndroidAppSettings.KEY_MOCK_ROUTE_VALUE, null)
         val file = File(app.getExternalFilesDir(null), filename)
         LocationServices.FusedLocationApi?.setMockMode(true)
         LocationServices.FusedLocationApi?.setMockTrace(file)
