@@ -23,6 +23,7 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
+import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.RouterFactory
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.leyndo.ManifestDownLoader
@@ -60,15 +61,17 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private var route: Route? = null;
 
     var savedSearch: SavedSearch? = null
-      @Inject set
+        @Inject set
     var presenter: MainPresenter? = null
-      @Inject set
+        @Inject set
     var bus: Bus? = null
-      @Inject set
+        @Inject set
     var crashReportService: CrashReportService? = null
-      @Inject set
+        @Inject set
     var routerFactory: RouterFactory? = null
-      @Inject set
+        @Inject set
+    var settings: AppSettings? = null
+        @Inject set
 
     var apiKeys: ManifestModel? = null
     var app: EraserMapApplication? = null
@@ -524,9 +527,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                         simpleFeature.getLon())
                 val dest: DoubleArray = doubleArrayOf(location.getLatitude(),
                         location.getLongitude())
+                val units: Router.DistanceUnits = settings?.distanceUnits
+                        ?: Router.DistanceUnits.MILES
                 routerFactory?.getInitializedRouter(type)
                         ?.setLocation(start)
                         ?.setLocation(dest)
+                        ?.setDistanceUnits(units)
                         ?.setCallback(this)
                         ?.fetch()
             }
@@ -536,9 +542,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                         location.getLongitude())
                 val dest: DoubleArray = doubleArrayOf(simpleFeature.getLat(),
                         simpleFeature.getLon())
+                val units: Router.DistanceUnits = settings?.distanceUnits
+                        ?: Router.DistanceUnits.MILES
                 routerFactory?.getInitializedRouter(type)
                         ?.setLocation(start)
                         ?.setLocation(dest)
+                        ?.setDistanceUnits(units)
                         ?.setCallback(this)
                         ?.fetch()
             }

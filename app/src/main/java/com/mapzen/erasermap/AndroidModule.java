@@ -49,8 +49,8 @@ public class AndroidModule {
     }
 
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation,
-            RouterFactory routerFactory) {
-        return new MainPresenterImpl(mapzenLocation, routerFactory);
+            RouterFactory routerFactory, AppSettings settings) {
+        return new MainPresenterImpl(mapzenLocation, routerFactory, settings);
     }
 
     @Provides @Singleton RoutePresenter provideRoutePresenter(RouteEngine routeEngine) {
