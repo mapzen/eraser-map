@@ -16,6 +16,7 @@ import android.widget.ListView
 import android.widget.TextView
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
+import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.presenter.RoutePresenter
 import com.mapzen.erasermap.util.DisplayHelper
@@ -23,6 +24,7 @@ import com.mapzen.helpers.RouteEngine
 import com.mapzen.helpers.RouteListener
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
+import com.mapzen.valhalla.Router
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import java.util.ArrayList
 import javax.inject.Inject
@@ -42,6 +44,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     var presenter: MainPresenter? = null
     var voiceNavigationController: VoiceNavigationController? = null
     var routePresenter: RoutePresenter? = null
+        @Inject set
+    var settings: AppSettings? = null
         @Inject set
 
     private var currentInstructionIndex: Int = 0
@@ -265,7 +269,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
             val instruction = route?.getRouteInstructions()?.get(index)
             if (instruction is Instruction) {
-                voiceNavigationController?.playMilestone(instruction, milestone)
+                voiceNavigationController?.playMilestone(instruction, milestone,
+                        settings?.distanceUnits ?: Router.DistanceUnits.MILES)
             }
         }
 
