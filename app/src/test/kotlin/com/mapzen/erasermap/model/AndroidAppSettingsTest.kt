@@ -24,7 +24,7 @@ public class AndroidAppSettingsTest {
     }
 
     @Test fun distanceUnits_shouldReturnDefaultValue() {
-        assertThat(settings.distanceUnits).isEqualTo(Router.DistanceUnits.MILES)
+        assertThat(settings.distanceUnits).isEqualTo(AppSettings.DEFAULT_UNITS)
     }
 
     @Test fun distanceUnits_shouldReturnPreferenceValueMiles() {

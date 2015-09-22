@@ -5,7 +5,7 @@
 
     <!-- Distance units -->
     <string name="distance_units_title">Distance units</string>
-    <string name="distance_units_default">miles</string>
+    <string name="distance_units_default">kilometers</string>
 
     <!-- Debug category -->
     <string name="category_debug_title">Debugging</string>

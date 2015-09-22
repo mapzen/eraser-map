@@ -29,7 +29,7 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
                 Router.DistanceUnits.KILOMETERS.toString() -> return Router.DistanceUnits.KILOMETERS
             }
 
-            return Router.DistanceUnits.MILES
+            return AppSettings.DEFAULT_UNITS
         }
         set(value) {
             prefs.edit().putString(KEY_DISTANCE_UNITS, value.toString()).commit()
