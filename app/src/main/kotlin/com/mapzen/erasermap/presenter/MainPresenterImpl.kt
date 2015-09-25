@@ -2,6 +2,7 @@ package com.mapzen.erasermap.presenter
 
 import android.location.Location
 import android.util.Log
+import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.model.RouterFactory
@@ -21,7 +22,8 @@ import com.squareup.otto.Subscribe
 import java.util.ArrayList
 
 public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
-        val routerFactory: RouterFactory) : MainPresenter, RouteCallback {
+        val routerFactory: RouterFactory, val settings: AppSettings)
+        : MainPresenter, RouteCallback {
 
     override var currentFeature: Feature? = null
     override var route: Route? = null
@@ -280,6 +282,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         routerFactory.getInitializedRouter(Router.Type.DRIVING)
                 .setLocation(start)
                 .setLocation(destination)
+                .setDistanceUnits(settings.distanceUnits)
                 .setCallback(this)
                 .fetch()
     }

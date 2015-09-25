@@ -16,6 +16,7 @@ import android.widget.ListView
 import android.widget.TextView
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
+import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.presenter.RoutePresenter
 import com.mapzen.erasermap.util.DisplayHelper
@@ -31,6 +32,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     companion object {
         val VIEW_TAG: String = "Instruction_"
     }
+
     public val SLIDING_PANEL_OFFSET_OPEN: Float = 0.1f
 
     var pager: ViewPager? = null
@@ -42,6 +44,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     var presenter: MainPresenter? = null
     var voiceNavigationController: VoiceNavigationController? = null
     var routePresenter: RoutePresenter? = null
+        @Inject set
+    var settings: AppSettings? = null
         @Inject set
 
     private var currentInstructionIndex: Int = 0
@@ -265,7 +269,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
             val instruction = route?.getRouteInstructions()?.get(index)
             if (instruction is Instruction) {
-                voiceNavigationController?.playMilestone(instruction, milestone)
+                voiceNavigationController?.playMilestone(instruction, milestone,
+                        settings?.distanceUnits ?: AppSettings.DEFAULT_UNITS)
             }
         }
 

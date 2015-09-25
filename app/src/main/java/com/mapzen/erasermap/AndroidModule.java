@@ -1,6 +1,8 @@
 package com.mapzen.erasermap;
 
 import com.mapzen.android.lost.api.LostApiClient;
+import com.mapzen.erasermap.model.AndroidAppSettings;
+import com.mapzen.erasermap.model.AppSettings;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
 import com.mapzen.erasermap.model.RouterFactory;
@@ -12,8 +14,6 @@ import com.mapzen.erasermap.presenter.RoutePresenterImpl;
 import com.mapzen.helpers.RouteEngine;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import javax.inject.Singleton;
 
@@ -44,13 +44,13 @@ public class AndroidModule {
         return new MapzenLocationImpl(application);
     }
 
-    @Provides @Singleton SharedPreferences provideSharedPreferences() {
-        return PreferenceManager.getDefaultSharedPreferences(application);
+    @Provides @Singleton AppSettings provideAppSettings() {
+        return new AndroidAppSettings(application);
     }
 
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation,
-            RouterFactory routerFactory) {
-        return new MainPresenterImpl(mapzenLocation, routerFactory);
+            RouterFactory routerFactory, AppSettings settings) {
+        return new MainPresenterImpl(mapzenLocation, routerFactory, settings);
     }
 
     @Provides @Singleton RoutePresenter provideRoutePresenter(RouteEngine routeEngine) {

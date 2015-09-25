@@ -5,7 +5,6 @@ import com.mapzen.android.lost.api.LocationServices.FusedLocationApi
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.PrivateMapsTestRunner
-import com.mapzen.erasermap.R
 import com.mapzen.erasermap.dummy.TestHelper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -56,10 +55,11 @@ public class MapzenLocationTest {
 
     @Test
     fun connect_shouldSetMockLocationIfMockModeEnabled() {
-        val editor = mapzenLocation.prefs!!.edit()
-        editor.putBoolean(application.getString(R.string.checkbox_mock_location_key), true)
-        editor.putString(application.getString(R.string.edittext_mock_location_key), "1.0, 2.0")
-        editor.commit()
+        val location = TestHelper.getTestLocation()
+        location.setLatitude(1.0)
+        location.setLongitude(2.0)
+        mapzenLocation.settings?.isMockLocationEnabled = true
+        mapzenLocation.settings?.mockLocation = location
         mapzenLocation.connect()
         assertThat(FusedLocationApi.getLastLocation().getLatitude()).isEqualTo(1.0)
         assertThat(FusedLocationApi.getLastLocation().getLongitude()).isEqualTo(2.0)
@@ -67,10 +67,11 @@ public class MapzenLocationTest {
 
     @Test
     fun connect_shouldNotSetMockLocationIfMockModeNotEnabled() {
-        val editor = mapzenLocation.prefs!!.edit()
-        editor.putBoolean(application.getString(R.string.checkbox_mock_location_key), false)
-        editor.putString(application.getString(R.string.edittext_mock_location_key), "1.0, 2.0")
-        editor.commit()
+        val location = TestHelper.getTestLocation()
+        location.setLatitude(1.0)
+        location.setLongitude(2.0)
+        mapzenLocation.settings?.isMockLocationEnabled = false
+        mapzenLocation.settings?.mockLocation = location
         mapzenLocation.connect()
         assertThat(FusedLocationApi.getLastLocation()).isNull()
     }

@@ -5,6 +5,7 @@ import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestInstruction
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
 import com.mapzen.erasermap.model.RoutePreviewEvent
+import com.mapzen.erasermap.model.TestAppSettings
 import com.mapzen.erasermap.model.TestMapzenLocation
 import com.mapzen.erasermap.model.TestRouterFactory
 import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.DEFAULT
@@ -31,7 +32,9 @@ public class MainPresenterTest {
     private var routeController: TestRouteController = TestRouteController()
     private var mapzenLocation: TestMapzenLocation = TestMapzenLocation()
     private var routerFactory: TestRouterFactory = TestRouterFactory()
-    private var presenter: MainPresenterImpl = MainPresenterImpl(mapzenLocation, routerFactory)
+    private var settings: TestAppSettings = TestAppSettings()
+    private var presenter: MainPresenterImpl
+            = MainPresenterImpl(mapzenLocation, routerFactory, settings)
 
     @Before
     public fun setUp() {

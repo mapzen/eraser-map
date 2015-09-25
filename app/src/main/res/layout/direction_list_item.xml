@@ -28,7 +28,7 @@
         android:padding="8dp"
         android:textSize="@dimen/font_medium" />
 
-    <TextView
+    <com.mapzen.erasermap.view.DistanceView
         android:id="@+id/distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
