@@ -7,6 +7,7 @@ import com.mapzen.erasermap.PrivateMapsTestRunner
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.valhalla.Router
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RuntimeEnvironment.application
@@ -19,6 +20,10 @@ import java.util.Locale
 public class AndroidAppSettingsTest {
     private val settings: AppSettings = AndroidAppSettings(application as EraserMapApplication)
     private val prefs = PreferenceManager.getDefaultSharedPreferences(application)
+
+    @After fun tearDown() {
+        Locale.setDefault(Locale.US)
+    }
 
     @Test fun shouldNotBeNull() {
         assertThat(settings).isNotNull();
