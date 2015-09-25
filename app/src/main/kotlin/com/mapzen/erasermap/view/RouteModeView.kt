@@ -24,6 +24,7 @@ import com.mapzen.helpers.RouteEngine
 import com.mapzen.helpers.RouteListener
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
+import com.mapzen.valhalla.Router
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import java.util.ArrayList
 import javax.inject.Inject
@@ -272,9 +273,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             pager?.setCurrentItem(index)
 
             val instruction = route?.getRouteInstructions()?.get(index)
-            if (instruction is Instruction) {
-                voiceNavigationController?.playMilestone(instruction, milestone,
-                        settings?.distanceUnits ?: AppSettings.DEFAULT_UNITS)
+            val units = settings?.distanceUnits
+            if (instruction is Instruction && units is Router.DistanceUnits) {
+                voiceNavigationController?.playMilestone(instruction, milestone, units)
             }
         }
 
