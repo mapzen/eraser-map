@@ -68,11 +68,17 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         var features = ArrayList<Feature>()
         this.searchResults = searchResults
         if(searchResults?.getFeatures()?.isEmpty() as Boolean) {
-            features.add(currentFeature)
+            val current = currentFeature
+            if (current is Feature) {
+                features.add(current)
+            }
             mainViewController?.showReverseGeocodeFeature(features)
             searchResults?.setFeatures(features)
         } else {
-            features.add(searchResults?.getFeatures()?.get(0))
+            val current = searchResults?.getFeatures()?.get(0)
+            if (current is Feature) {
+                features.add(current)
+            }
             searchResults?.setFeatures(features)
             mainViewController?.showReverseGeocodeFeature(features)
         }

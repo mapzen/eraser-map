@@ -64,7 +64,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     private fun init(context: Context) {
-        (context.getApplicationContext() as EraserMapApplication).component()?.inject(this)
+        (context.getApplicationContext() as EraserMapApplication).component()
+                .inject(this@RouteModeView)
         (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_mode, this, true)
         routePresenter?.routeListener = routeListener
@@ -173,7 +174,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         val instructions = route?.getRouteInstructions()
         if (route is Route && instructions is ArrayList<Instruction>) {
             for (instruction in  instructions) {
-                instructionStrings.add(instruction.getHumanTurnInstruction())
+                val humanInstruction = instruction.getHumanTurnInstruction()
+                if (humanInstruction is String) {
+                    instructionStrings.add(humanInstruction)
+                }
                 instructionType.add(instruction.turnInstruction)
                 instructionDistance.add(instruction.distance)
             }
