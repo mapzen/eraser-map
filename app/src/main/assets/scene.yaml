@@ -55,7 +55,7 @@ layers:
             lines:
                 color: 'purple'
                 order: 50
-                width: .03
+                width: 5
     find_me:
         data: { source: find_me }
         draw:
