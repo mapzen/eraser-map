@@ -6,6 +6,7 @@ import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.valhalla.Router
 import java.io.File
+import java.util.Locale
 
 public class AndroidAppSettings(val application: EraserMapApplication) : AppSettings {
     companion object {
@@ -29,7 +30,7 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
                 Router.DistanceUnits.KILOMETERS.toString() -> return Router.DistanceUnits.KILOMETERS
             }
 
-            return AppSettings.DEFAULT_UNITS
+            return Router.DistanceUnits.KILOMETERS
         }
         set(value) {
             prefs.edit().putString(KEY_DISTANCE_UNITS, value.toString()).commit()
@@ -87,4 +88,16 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
         set(value) {
             prefs.edit().putString(KEY_MOCK_ROUTE_VALUE, value.getName()).commit()
         }
+
+    init {
+        val distanceUnitsPref = prefs.getString(KEY_DISTANCE_UNITS, null)
+        if (distanceUnitsPref == null) {
+            val locale = Locale.getDefault()
+            if (locale == Locale.US || locale == Locale.UK) {
+                this.distanceUnits = Router.DistanceUnits.MILES
+            } else {
+                this.distanceUnits = Router.DistanceUnits.KILOMETERS
+            }
+        }
+    }
 }

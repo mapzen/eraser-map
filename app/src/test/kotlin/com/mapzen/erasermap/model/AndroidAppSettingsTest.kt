@@ -7,11 +7,13 @@ import com.mapzen.erasermap.PrivateMapsTestRunner
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.valhalla.Router
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RuntimeEnvironment.application
 import org.robolectric.annotation.Config
 import java.io.File
+import java.util.Locale
 
 @RunWith(PrivateMapsTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(21))
@@ -19,12 +21,26 @@ public class AndroidAppSettingsTest {
     private val settings: AppSettings = AndroidAppSettings(application as EraserMapApplication)
     private val prefs = PreferenceManager.getDefaultSharedPreferences(application)
 
+    @After fun tearDown() {
+        Locale.setDefault(Locale.US)
+    }
+
     @Test fun shouldNotBeNull() {
         assertThat(settings).isNotNull();
     }
 
-    @Test fun distanceUnits_shouldReturnDefaultValue() {
-        assertThat(settings.distanceUnits).isEqualTo(AppSettings.DEFAULT_UNITS)
+    @Test fun distanceUnits_shouldSetDefaultValueToMilesInUsAndUk() {
+        prefs.edit().clear().commit()
+        Locale.setDefault(Locale.US)
+        val settings = AndroidAppSettings(application as EraserMapApplication)
+        assertThat(settings.distanceUnits).isEqualTo(Router.DistanceUnits.MILES)
+    }
+
+    @Test fun distanceUnits_shouldSetDefaultValueToKilometersEverywhereElse() {
+        prefs.edit().clear().commit()
+        Locale.setDefault(Locale.GERMANY)
+        val settings = AndroidAppSettings(application as EraserMapApplication)
+        assertThat(settings.distanceUnits).isEqualTo(Router.DistanceUnits.KILOMETERS)
     }
 
     @Test fun distanceUnits_shouldReturnPreferenceValueMiles() {

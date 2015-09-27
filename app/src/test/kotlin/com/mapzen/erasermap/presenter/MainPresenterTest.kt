@@ -22,7 +22,6 @@ import com.mapzen.valhalla.Route
 import org.assertj.core.api.Assertions.assertThat
 import org.json.JSONObject
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.mockito.Mockito
 import java.util.ArrayList
@@ -257,7 +256,7 @@ public class MainPresenterTest {
         assertThat(mainController.location).isEqualTo(location)
     }
 
-    @Test @Ignore("Disabled until Tangram tilt feature is updated")
+    @Test
     public fun onInstructionSelected_shouldSetMapTilt() {
         val instruction = getTestInstruction()
         val location = getTestLocation()

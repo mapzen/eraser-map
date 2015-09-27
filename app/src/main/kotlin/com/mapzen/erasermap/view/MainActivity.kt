@@ -276,7 +276,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun onActionSettings() {
-        startActivity(Intent(this, javaClass<SettingsActivity>()))
+        startActivity(Intent(this, SettingsActivity::class.java))
     }
 
     private fun onActionSearch() {
@@ -300,7 +300,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         val menuItem = optionsMenu?.findItem(R.id.action_search)
         val actionView = menuItem?.getActionView() as PeliasSearchView
-        val intent = Intent(this, javaClass<SearchResultsListActivity>())
+        val intent = Intent(this, SearchResultsListActivity::class.java)
         intent.putParcelableArrayListExtra("features", simpleFeatures)
         intent.putExtra("query", actionView.getQuery().toString())
         startActivityForResult(intent, requestCodeSearchResults)
@@ -445,11 +445,17 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun hideProgress() = findViewById(R.id.progress).setVisibility(View.GONE)
 
-    override fun showOverflowMenu() = optionsMenu?.setGroupVisible(R.id.menu_overflow, true)
+    override fun showOverflowMenu() {
+        optionsMenu?.setGroupVisible(R.id.menu_overflow, true)
+    }
 
-    override fun hideOverflowMenu() = optionsMenu?.setGroupVisible(R.id.menu_overflow, false)
+    override fun hideOverflowMenu() {
+        optionsMenu?.setGroupVisible(R.id.menu_overflow, false)
+    }
 
-    override fun onSearchResultSelected(position: Int) = presenter?.onSearchResultSelected(position)
+    override fun onSearchResultSelected(position: Int) {
+        presenter?.onSearchResultSelected(position)
+    }
 
     override fun showActionViewAll() {
         optionsMenu?.findItem(R.id.action_view_all)?.setVisible(true)
@@ -621,14 +627,17 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val instructions = route?.getRouteInstructions()
         if (instructions != null) {
             for(instruction in instructions) {
-                instructionStrings.add(instruction.getHumanTurnInstruction())
+                val humanInstruction = instruction.getHumanTurnInstruction()
+                if (humanInstruction is String) {
+                    instructionStrings.add(humanInstruction)
+                }
                 instructionType.add(instruction.turnInstruction)
                 instructionDistance.add(instruction.distance)
             }
         }
 
         val simpleFeature = SimpleFeature.fromFeature(destination)
-        val intent = Intent(this, javaClass<InstructionListActivity>())
+        val intent = Intent(this, InstructionListActivity::class.java)
         intent.putExtra("instruction_strings", instructionStrings)
         intent.putExtra("instruction_types", instructionType)
         intent.putExtra("instruction_distances", instructionDistance)

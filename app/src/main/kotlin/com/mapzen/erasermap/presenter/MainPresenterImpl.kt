@@ -68,11 +68,17 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         var features = ArrayList<Feature>()
         this.searchResults = searchResults
         if(searchResults?.getFeatures()?.isEmpty() as Boolean) {
-            features.add(currentFeature)
+            val current = currentFeature
+            if (current is Feature) {
+                features.add(current)
+            }
             mainViewController?.showReverseGeocodeFeature(features)
             searchResults?.setFeatures(features)
         } else {
-            features.add(searchResults?.getFeatures()?.get(0))
+            val current = searchResults?.getFeatures()?.get(0)
+            if (current is Feature) {
+                features.add(current)
+            }
             searchResults?.setFeatures(features)
             mainViewController?.showReverseGeocodeFeature(features)
         }
@@ -198,8 +204,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         if (routingEnabled) {
             routeViewController?.onLocationChanged(location)
             mainViewController?.centerMapOnLocation(location, MainPresenter.ROUTING_ZOOM)
-            // TODO: Re-enable routing tilt on Tangram update
-            // mainViewController?.setMapTilt(MainPresenter.ROUTING_TILT)
+            mainViewController?.setMapTilt(MainPresenter.ROUTING_TILT)
         }
     }
 
@@ -215,8 +220,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
 
     override fun onInstructionSelected(instruction: Instruction) {
         mainViewController?.centerMapOnLocation(instruction.location, MainPresenter.ROUTING_ZOOM)
-        // TODO: Re-enable routing tilt on Tangram update
-        // mainViewController?.setMapTilt(MainPresenter.ROUTING_TILT)
+        mainViewController?.setMapTilt(MainPresenter.ROUTING_TILT)
         mainViewController?.setMapRotation(Math.toRadians(instruction.bearing.toDouble()).toFloat())
     }
 

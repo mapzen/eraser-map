@@ -24,6 +24,7 @@ import com.mapzen.helpers.RouteEngine
 import com.mapzen.helpers.RouteListener
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
+import com.mapzen.valhalla.Router
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import java.util.ArrayList
 import javax.inject.Inject
@@ -64,7 +65,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     private fun init(context: Context) {
-        (context.getApplicationContext() as EraserMapApplication).component()?.inject(this)
+        (context.getApplicationContext() as EraserMapApplication).component()
+                .inject(this@RouteModeView)
         (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_mode, this, true)
         routePresenter?.routeListener = routeListener
@@ -173,7 +175,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         val instructions = route?.getRouteInstructions()
         if (route is Route && instructions is ArrayList<Instruction>) {
             for (instruction in  instructions) {
-                instructionStrings.add(instruction.getHumanTurnInstruction())
+                val humanInstruction = instruction.getHumanTurnInstruction()
+                if (humanInstruction is String) {
+                    instructionStrings.add(humanInstruction)
+                }
                 instructionType.add(instruction.turnInstruction)
                 instructionDistance.add(instruction.distance)
             }
@@ -268,9 +273,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             pager?.setCurrentItem(index)
 
             val instruction = route?.getRouteInstructions()?.get(index)
-            if (instruction is Instruction) {
-                voiceNavigationController?.playMilestone(instruction, milestone,
-                        settings?.distanceUnits ?: AppSettings.DEFAULT_UNITS)
+            val units = settings?.distanceUnits
+            if (instruction is Instruction && units is Router.DistanceUnits) {
+                voiceNavigationController?.playMilestone(instruction, milestone, units)
             }
         }
 

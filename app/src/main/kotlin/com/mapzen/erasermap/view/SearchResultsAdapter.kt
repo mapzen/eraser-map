@@ -18,10 +18,11 @@ public class SearchResultsAdapter(val context: Context, val features: List<Featu
         : PagerAdapter() {
 
     var bus: Bus? = null
-        [Inject] set
+        @Inject set
 
     init {
-        (context.getApplicationContext() as EraserMapApplication).component().inject(this)
+        (context.getApplicationContext() as EraserMapApplication).component()
+                .inject(this@SearchResultsAdapter)
     }
 
     override fun instantiateItem(container: ViewGroup?, position: Int): Any? {
