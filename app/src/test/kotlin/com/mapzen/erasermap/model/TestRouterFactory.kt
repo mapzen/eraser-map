@@ -64,13 +64,8 @@ public class TestRouterFactory : RouterFactory {
             return this
         }
 
-        override fun setLocation(point: DoubleArray, name: String): Router {
-            locations.add(point)
-            return this
-        }
-
-        override fun setLocation(point: kotlin.DoubleArray, name: kotlin.String,
-                street: kotlin.String, city: kotlin.String, state: kotlin.String): Router {
+        override fun setLocation(point: DoubleArray, name: String?,
+                street: String?, city: String?, state: String?): Router {
             locations.add(point)
             return this
         }

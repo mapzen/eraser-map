@@ -279,26 +279,18 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
 
     private fun fetchNewRoute(location: Location) {
         val simpleFeature = SimpleFeature.fromFeature(destination)
-        val start: DoubleArray = doubleArrayOf(location.getLatitude(),
-                location.getLongitude())
-        val dest: DoubleArray = doubleArrayOf(simpleFeature.getLat(),
-                simpleFeature.getLon())
+        val start: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
+        val dest: DoubleArray = doubleArrayOf(simpleFeature.lat, simpleFeature.lon)
         val name = destination?.properties?.name
-        if (name is String) {
-            routerFactory.getInitializedRouter(Router.Type.DRIVING)
-                    .setLocation(start)
-                    .setLocation(dest, name)
-                    .setDistanceUnits(settings.distanceUnits)
-                    .setCallback(this)
-                    .fetch()
-        } else {
-            routerFactory.getInitializedRouter(Router.Type.DRIVING)
-                    .setLocation(start)
-                    .setLocation(dest)
-                    .setDistanceUnits(settings.distanceUnits)
-                    .setCallback(this)
-                    .fetch()
-        }
+        val street = simpleFeature.title
+        val city = simpleFeature.city
+        val state = simpleFeature.admin
+        routerFactory.getInitializedRouter(Router.Type.DRIVING)
+                .setLocation(start)
+                .setLocation(dest, name, street, city, state)
+                .setDistanceUnits(settings.distanceUnits)
+                .setCallback(this)
+                .fetch()
     }
 
     override fun failure(statusCode: Int) {

@@ -550,21 +550,15 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 val dest: DoubleArray = doubleArrayOf(simpleFeature.lat, simpleFeature.lon)
                 val units: DistanceUnits = settings?.distanceUnits ?: DistanceUnits.MILES
                 val name = destination?.properties?.name
-                if (name is String) {
-                    routerFactory?.getInitializedRouter(Router.Type.DRIVING)
-                            ?.setLocation(start)
-                            ?.setLocation(dest, name)
-                            ?.setDistanceUnits(units)
-                            ?.setCallback(this)
-                            ?.fetch()
-                } else {
-                    routerFactory?.getInitializedRouter(Router.Type.DRIVING)
-                            ?.setLocation(start)
-                            ?.setLocation(dest)
-                            ?.setDistanceUnits(units)
-                            ?.setCallback(this)
-                            ?.fetch()
-                }
+                val street = simpleFeature.title
+                val city = simpleFeature.city
+                val state = simpleFeature.admin
+                routerFactory?.getInitializedRouter(Router.Type.DRIVING)
+                        ?.setLocation(start)
+                        ?.setLocation(dest, name, street, city, state)
+                        ?.setDistanceUnits(units)
+                        ?.setCallback(this)
+                        ?.fetch()
             }
         }
     }
