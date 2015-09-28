@@ -46,6 +46,7 @@ import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
+import com.mapzen.valhalla.Router.DistanceUnits
 import com.squareup.otto.Bus
 import retrofit.Callback
 import retrofit.RetrofitError
@@ -88,8 +89,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var manifestRequestCount: Int = 0
 
     override public fun onCreate(savedInstanceState: Bundle?) {
-        super<AppCompatActivity>.onCreate(savedInstanceState)
-        app = getApplication() as EraserMapApplication
+        super.onCreate(savedInstanceState)
+        app = application as EraserMapApplication
         app?.component()?.inject(this)
         initCrashReportService()
         setContentView(R.layout.activity_main)
@@ -105,23 +106,23 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override public fun onStart() {
-        super<AppCompatActivity>.onStart()
+        super.onStart()
         savedSearch?.deserialize(PreferenceManager.getDefaultSharedPreferences(this)
                 .getString(SavedSearch.TAG, null))
     }
 
     override public fun onResume() {
-        super<AppCompatActivity>.onResume()
+        super.onResume()
         presenter?.onResume()
     }
 
     override public fun onPause() {
-        super<AppCompatActivity>.onPause()
+        super.onPause()
         presenter?.onPause()
     }
 
     override public fun onStop() {
-        super<AppCompatActivity>.onStop()
+        super.onStop()
         PreferenceManager.getDefaultSharedPreferences(this)
                 .edit()
                 .putString(SavedSearch.TAG, savedSearch?.serialize())
@@ -129,7 +130,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override public fun onDestroy() {
-        super<AppCompatActivity>.onDestroy()
+        super.onDestroy()
         saveCurrentSearchTerm()
         bus?.unregister(presenter)
     }
@@ -173,9 +174,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun checkForNullKeys() {
-        if(apiKeys?.getValhallaApiKey().isNullOrEmpty() && manifestRequestCount < 2) {
+        if(apiKeys?.valhallaApiKey.isNullOrEmpty() && manifestRequestCount < 2) {
             getApiKeys()
-        } else if(apiKeys?.getValhallaApiKey().isNullOrEmpty()
+        } else if(apiKeys?.valhallaApiKey.isNullOrEmpty()
                 .and(BuildConfig.VALHALLA_API_KEY.isNullOrEmpty())) {
             var builder: AlertDialog.Builder = AlertDialog.Builder(this);
             builder.setMessage(getString(R.string.manifest_error))
@@ -184,27 +185,27 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                     .setCancelable(false)
             builder.create().show()
         } else {
-            if (apiKeys?.getValhallaApiKey() == null) {
-                apiKeys?.setValhallaApiKey(BuildConfig.VALHALLA_API_KEY)
+            if (apiKeys?.valhallaApiKey == null) {
+                apiKeys?.valhallaApiKey = BuildConfig.VALHALLA_API_KEY
             }
-            if (apiKeys?.getVectorTileApiKeyReleaseProp() == null) {
-                apiKeys?.setVectorTileApiKeyReleaseProp(BuildConfig.VECTOR_TILE_API_KEY)
+            if (apiKeys?.vectorTileApiKeyReleaseProp == null) {
+                apiKeys?.vectorTileApiKeyReleaseProp = BuildConfig.VECTOR_TILE_API_KEY
             }
-            if (apiKeys?.getMinVersion() != null) {
+            if (apiKeys?.minVersion != null) {
                 checkIfUpdateNeeded()
             }
-            routerFactory?.apiKey = apiKeys?.getValhallaApiKey()
+            routerFactory?.apiKey = apiKeys?.valhallaApiKey
         }
     }
 
     public fun checkIfUpdateNeeded() {
-        if(apiKeys?.getMinVersion() as Int > BuildConfig.VERSION_CODE ) {
+        if(apiKeys?.minVersion as Int > BuildConfig.VERSION_CODE ) {
             var builder: AlertDialog.Builder  = AlertDialog.Builder(this);
             builder.setMessage(getString(R.string.update_message))
                     .setPositiveButton(getString(R.string.accept_update),
                             DialogInterface.OnClickListener { dialogInterface, i ->
                             startActivity(Intent(Intent.ACTION_VIEW,
-                                    Uri.parse("market://details?id=" + getPackageName())))
+                                    Uri.parse("market://details?id=" + packageName)))
                             finish()
                          })
                     .setNegativeButton(getString(R.string.decline_update),
@@ -215,40 +216,40 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun centerMapOnLocation(location: Location, zoom: Float) {
-        mapController?.setMapPosition(location.getLongitude(), location.getLatitude())
-        mapController?.setMapZoom(zoom)
-        mapController?.setMapRotation(0f)
-        mapController?.setMapTilt(0f)
+        mapController?.setMapPosition(location.longitude, location.latitude)
+        mapController?.mapZoom = zoom
+        mapController?.mapRotation = 0f
+        mapController?.mapTilt = 0f
 
         if (findMe == null) {
             findMe = MapData("find_me")
         }
 
         findMe?.clear()
-        findMe?.addPoint(LngLat(location.getLongitude(), location.getLatitude()))
+        findMe?.addPoint(LngLat(location.longitude, location.latitude))
     }
 
     override fun setMapTilt(radians: Float) {
-        mapController?.setMapTilt(radians)
+        mapController?.mapTilt = radians
     }
 
     override fun setMapRotation(radians: Float) {
-        mapController?.setMapRotation(radians)
+        mapController?.mapRotation = radians
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        getMenuInflater().inflate(R.menu.menu_main, menu)
+        menuInflater.inflate(R.menu.menu_main, menu)
         optionsMenu = menu
 
         MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.action_search),
                 SearchOnActionExpandListener())
 
-        val searchView = menu.findItem(R.id.action_search).getActionView()
+        val searchView = menu.findItem(R.id.action_search).actionView
         val listView = findViewById(R.id.auto_complete) as AutoCompleteListView
         val emptyView = findViewById(android.R.id.empty)
 
         if (searchView is PeliasSearchView) {
-            listView.setAdapter(autoCompleteAdapter)
+            listView.adapter = autoCompleteAdapter
             val pelias = Pelias.getPelias()
             pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
             searchView.setAutoCompleteListView(listView)
@@ -256,7 +257,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             searchView.setPelias(Pelias.getPelias())
             searchView.setCallback(PeliasCallback())
             searchView.setOnSubmitListener({ presenter?.onQuerySubmit() })
-            listView.setEmptyView(emptyView)
+            listView.emptyView = emptyView
             restoreCurrentSearchTerm()
         }
 
@@ -264,7 +265,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.getItemId()
+        val id = item.itemId
         when (id) {
             R.id.action_settings -> { onActionSettings(); return true }
             R.id.action_search -> { onActionSearch(); return true }
@@ -272,7 +273,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             R.id.action_view_all -> { onActionViewAll(); return true }
         }
 
-        return super<AppCompatActivity>.onOptionsItemSelected(item)
+        return super.onOptionsItemSelected(item)
     }
 
     private fun onActionSettings() {
@@ -299,10 +300,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         }
 
         val menuItem = optionsMenu?.findItem(R.id.action_search)
-        val actionView = menuItem?.getActionView() as PeliasSearchView
+        val actionView = menuItem?.actionView as PeliasSearchView
         val intent = Intent(this, SearchResultsListActivity::class.java)
         intent.putParcelableArrayListExtra("features", simpleFeatures)
-        intent.putExtra("query", actionView.getQuery().toString())
+        intent.putExtra("query", actionView.query.toString())
         startActivityForResult(intent, requestCodeSearchResults)
     }
 
@@ -314,21 +315,21 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun saveCurrentSearchTerm() {
         val menuItem = optionsMenu?.findItem(R.id.action_search)
-        val actionView = menuItem?.getActionView()
-        val isExpanded = menuItem?.isActionViewExpanded() ?: false
+        val actionView = menuItem?.actionView
+        val isExpanded = menuItem?.isActionViewExpanded ?: false
         if (actionView is PeliasSearchView && isExpanded) {
-            presenter?.currentSearchTerm = actionView.getQuery().toString()
+            presenter?.currentSearchTerm = actionView.query.toString()
         }
     }
 
     private fun restoreCurrentSearchTerm() {
         val menuItem = optionsMenu?.findItem(R.id.action_search)
-        val actionView = menuItem?.getActionView() as PeliasSearchView
+        val actionView = menuItem?.actionView as PeliasSearchView
         val term = presenter?.currentSearchTerm
         if (term != null) {
             menuItem?.expandActionView()
             actionView.setQuery(term, false)
-            if (findViewById(R.id.search_results).getVisibility() == View.VISIBLE) {
+            if (findViewById(R.id.search_results).visibility == View.VISIBLE) {
                 actionView.clearFocus()
                 showActionViewAll()
             }
@@ -384,15 +385,15 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun showSearchResultsPager(features: List<Feature>) {
         val pager = findViewById(R.id.search_results) as SearchResultsView
         pager.setAdapter(SearchResultsAdapter(this, features))
-        pager.setVisibility(View.VISIBLE)
+        pager.visibility = View.VISIBLE
         pager.onSearchResultsSelectedListener = this
     }
 
     override fun showReverseGeocodeFeature(features: List<Feature>) {
-            val pager = findViewById(R.id.search_results) as SearchResultsView
-            pager.setAdapter(SearchResultsAdapter(this, features.subList(0, 1)))
-            pager.setVisibility(View.VISIBLE)
-            pager.onSearchResultsSelectedListener = this
+        val pager = findViewById(R.id.search_results) as SearchResultsView
+        pager.setAdapter(SearchResultsAdapter(this, features.subList(0, 1)))
+        pager.visibility = View.VISIBLE
+        pager.onSearchResultsSelectedListener = this
     }
 
     private fun addSearchResultsToMap(features: List<Feature>) {
@@ -405,18 +406,18 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         searchResults?.clear()
         for (feature in features) {
             val simpleFeature = SimpleFeature.fromFeature(feature)
-            val lngLat = LngLat(simpleFeature.getLon(), simpleFeature.getLat())
+            val lngLat = LngLat(simpleFeature.lon, simpleFeature.lat)
             searchResults?.addPoint(lngLat)
         }
     }
 
     override fun centerOnCurrentFeature(features: List<Feature>) {
-        Handler().postDelayed(Runnable {
+        Handler().postDelayed({
             val pager = findViewById(R.id.search_results) as SearchResultsView
             val position = pager.getCurrentItem()
             val feature = SimpleFeature.fromFeature(features.get(position))
-            mapController?.setMapPosition(feature.getLon() ,feature.getLat())
-            mapController?.setMapZoom(MainPresenter.DEFAULT_ZOOM)
+            mapController?.setMapPosition(feature.lon,feature.lat)
+            mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
         }, 100)
     }
 
@@ -424,7 +425,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val pelias = Pelias.getPelias()
         pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
         var coords  = mapController?.coordinatesAtScreenPosition(
-                event.getRawX().toDouble(), event.getRawY().toDouble())
+                event.rawX.toDouble(), event.rawY.toDouble())
         presenter?.currentFeature = getGenericLocationFeature(coords?.latitude as Double,
                 coords?.longitude as Double)
         pelias.reverse(coords?.latitude.toString(), coords?.longitude.toString(),
@@ -438,12 +439,16 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun hideSearchResultsPager() {
-        (findViewById(R.id.search_results) as SearchResultsView).setVisibility(View.GONE)
+        (findViewById(R.id.search_results) as SearchResultsView).visibility = View.GONE
     }
 
-    override fun showProgress() = findViewById(R.id.progress).setVisibility(View.VISIBLE)
+    override fun showProgress() {
+        findViewById(R.id.progress).visibility = View.VISIBLE
+    }
 
-    override fun hideProgress() = findViewById(R.id.progress).setVisibility(View.GONE)
+    override fun hideProgress() {
+        findViewById(R.id.progress).visibility = View.GONE
+    }
 
     override fun showOverflowMenu() {
         optionsMenu?.setGroupVisible(R.id.menu_overflow, true)
@@ -486,9 +491,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         this.route = route;
         presenter?.route = route;
         runOnUiThread   ({
-            if( findViewById(R.id.route_mode).getVisibility() != View.VISIBLE) {
-                getSupportActionBar()?.hide()
-                findViewById(R.id.route_preview).setVisibility(View.VISIBLE)
+            if( findViewById(R.id.route_mode).visibility != View.VISIBLE) {
+                supportActionBar?.hide()
+                findViewById(R.id.route_preview).visibility = View.VISIBLE
             }
         })
         updateRoutePreview()
@@ -500,7 +505,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val mapGeometry: ArrayList<LngLat> = ArrayList()
         if (geometry is ArrayList<Location>) {
             for (location in geometry) {
-                mapGeometry.add(LngLat(location.getLongitude(), location.getLatitude()))
+                mapGeometry.add(LngLat(location.longitude, location.latitude))
             }
         }
 
@@ -517,10 +522,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun hideRoutePreview() {
-        if((findViewById(R.id.route_mode) as RouteModeView).getVisibility() != View.VISIBLE) {
-            getSupportActionBar()?.show()
+        if((findViewById(R.id.route_mode) as RouteModeView).visibility != View.VISIBLE) {
+            supportActionBar?.show()
             reverse = false
-            findViewById(R.id.route_preview).setVisibility(View.GONE)
+            findViewById(R.id.route_preview).visibility = View.GONE
         }
     }
 
@@ -529,12 +534,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val location = origin
         if (reverse) {
             if (location is Location) {
-                val start: DoubleArray = doubleArrayOf(simpleFeature.getLat(),
-                        simpleFeature.getLon())
-                val dest: DoubleArray = doubleArrayOf(location.getLatitude(),
-                        location.getLongitude())
-                val units: Router.DistanceUnits = settings?.distanceUnits
-                        ?: Router.DistanceUnits.MILES
+                val start: DoubleArray = doubleArrayOf(simpleFeature.lat, simpleFeature.lon)
+                val dest: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
+                val units: DistanceUnits = settings?.distanceUnits ?: DistanceUnits.MILES
                 routerFactory?.getInitializedRouter(type)
                         ?.setLocation(start)
                         ?.setLocation(dest)
@@ -544,12 +546,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             }
         } else {
             if (location is Location) {
-                val start: DoubleArray = doubleArrayOf(location.getLatitude(),
-                        location.getLongitude())
-                val dest: DoubleArray = doubleArrayOf(simpleFeature.getLat(),
-                        simpleFeature.getLon())
-                val units: Router.DistanceUnits = settings?.distanceUnits
-                        ?: Router.DistanceUnits.MILES
+                val start: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
+                val dest: DoubleArray = doubleArrayOf(simpleFeature.lat, simpleFeature.lon)
+                val units: DistanceUnits = settings?.distanceUnits ?: DistanceUnits.MILES
                 val name = destination?.properties?.name
                 if (name is String) {
                     routerFactory?.getInitializedRouter(Router.Type.DRIVING)
@@ -606,20 +605,20 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         reverse = !reverse;
         (findViewById(R.id.route_preview) as RoutePreviewView).reverse = this.reverse
         if(reverse) {
-            findViewById(R.id.starting_location_icon).setVisibility(View.GONE)
-            findViewById(R.id.destination_location_icon).setVisibility(View.VISIBLE)
+            findViewById(R.id.starting_location_icon).visibility = View.GONE
+            findViewById(R.id.destination_location_icon).visibility = View.VISIBLE
         } else {
-            findViewById(R.id.starting_location_icon).setVisibility(View.VISIBLE)
-            findViewById(R.id.destination_location_icon).setVisibility(View.GONE)
+            findViewById(R.id.starting_location_icon).visibility = View.VISIBLE
+            findViewById(R.id.destination_location_icon).visibility = View.GONE
         }
         route()
     }
 
     private fun initReverseButton() {
-        (findViewById(R.id.route_reverse) as ImageButton).setOnClickListener({ reverse()})
-
-        (findViewById(R.id.routing_circle) as ImageButton).setOnClickListener (
-                {presenter?.onRoutingCircleClick(reverse)})
+        (findViewById(R.id.route_reverse) as ImageButton).setOnClickListener({ reverse() })
+        (findViewById(R.id.routing_circle) as ImageButton).setOnClickListener ({
+            presenter?.onRoutingCircleClick(reverse)
+        })
     }
 
     override fun onBackPressed() {
@@ -662,13 +661,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             centerMapOnLocation(startingLocation, MainPresenter.ROUTING_ZOOM)
         }
 
-        findViewById(R.id.find_me).setVisibility(View.GONE)
-        getSupportActionBar()?.hide()
+        findViewById(R.id.find_me).visibility = View.GONE
+        supportActionBar?.hide()
         presenter?.routingEnabled = true
         this.destination = feature
         reverse = false
-        findViewById(R.id.route_preview).setVisibility(View.GONE)
-        findViewById(R.id.route_mode).setVisibility(View.VISIBLE)
+        findViewById(R.id.route_preview).visibility = View.GONE
+        findViewById(R.id.route_mode).visibility = View.VISIBLE
         (findViewById(R.id.route_mode) as RouteModeView).presenter = presenter
         presenter?.routeViewController = findViewById(R.id.route_mode) as RouteModeView
         this.route = presenter?.route
@@ -681,7 +680,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         if (instructions != null) {
             val adapter = InstructionAdapter(this, instructions, pager)
             pager.setAdapter(adapter)
-            pager.setVisibility(View.VISIBLE)
+            pager.visibility = View.VISIBLE
         }
 
         val firstInstruction = route?.getRouteInstructions()?.get(0)
@@ -690,18 +689,18 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         }
 
         val simpleFeature = SimpleFeature.fromFeature(destination)
-        (findViewById(R.id.destination_name) as TextView).setText(simpleFeature.toString())
+        (findViewById(R.id.destination_name) as TextView).text = simpleFeature.toString()
     }
 
     override fun hideRoutingMode() {
         presenter?.routingEnabled = false
         val routeModeView = findViewById(R.id.route_mode) as RouteModeView
-        findViewById(R.id.route_mode).setVisibility(View.GONE)
-        findViewById(R.id.find_me).setVisibility(View.VISIBLE)
+        findViewById(R.id.route_mode).visibility = View.GONE
+        findViewById(R.id.find_me).visibility = View.VISIBLE
         if (origin is Location && destination is Feature) {
             showRoutePreview(origin as Location, destination as Feature)
         }
-        getSupportActionBar()?.hide()
+        supportActionBar?.hide()
         routeModeView.route = null
     }
 
@@ -710,16 +709,16 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val feature = Feature()
         val properties = Properties()
         if(lat.toString().length() > nameLength && lon.toString().length() > nameLength + 1) {
-            properties.setText( lat.toString().substring(0, nameLength) + "," + lon.toString()
-                    .substring(0, nameLength + 1))
+            properties.text = lat.toString().substring(0, nameLength) + "," + lon.toString()
+                    .substring(0, nameLength + 1)
         }
-        feature.setProperties(properties)
+        feature.properties = properties
         val geometry = Geometry()
         val coordinates = ArrayList<Double>()
         coordinates.add(lon)
         coordinates.add(lat)
-        geometry.setCoordinates(coordinates)
-        feature.setGeometry(geometry)
+        geometry.coordinates = coordinates
+        feature.geometry = geometry
         return feature
     }
 }
