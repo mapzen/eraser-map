@@ -550,12 +550,22 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                         simpleFeature.getLon())
                 val units: Router.DistanceUnits = settings?.distanceUnits
                         ?: Router.DistanceUnits.MILES
-                routerFactory?.getInitializedRouter(type)
-                        ?.setLocation(start)
-                        ?.setLocation(dest)
-                        ?.setDistanceUnits(units)
-                        ?.setCallback(this)
-                        ?.fetch()
+                val name = destination?.properties?.name
+                if (name is String) {
+                    routerFactory?.getInitializedRouter(Router.Type.DRIVING)
+                            ?.setLocation(start)
+                            ?.setLocation(dest, name)
+                            ?.setDistanceUnits(units)
+                            ?.setCallback(this)
+                            ?.fetch()
+                } else {
+                    routerFactory?.getInitializedRouter(Router.Type.DRIVING)
+                            ?.setLocation(start)
+                            ?.setLocation(dest)
+                            ?.setDistanceUnits(units)
+                            ?.setCallback(this)
+                            ?.fetch()
+                }
             }
         }
     }

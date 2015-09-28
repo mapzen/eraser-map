@@ -281,14 +281,24 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         val simpleFeature = SimpleFeature.fromFeature(destination)
         val start: DoubleArray = doubleArrayOf(location.getLatitude(),
                 location.getLongitude())
-        val destination: DoubleArray = doubleArrayOf(simpleFeature.getLat(),
+        val dest: DoubleArray = doubleArrayOf(simpleFeature.getLat(),
                 simpleFeature.getLon())
-        routerFactory.getInitializedRouter(Router.Type.DRIVING)
-                .setLocation(start)
-                .setLocation(destination)
-                .setDistanceUnits(settings.distanceUnits)
-                .setCallback(this)
-                .fetch()
+        val name = destination?.properties?.name
+        if (name is String) {
+            routerFactory.getInitializedRouter(Router.Type.DRIVING)
+                    .setLocation(start)
+                    .setLocation(dest, name)
+                    .setDistanceUnits(settings.distanceUnits)
+                    .setCallback(this)
+                    .fetch()
+        } else {
+            routerFactory.getInitializedRouter(Router.Type.DRIVING)
+                    .setLocation(start)
+                    .setLocation(dest)
+                    .setDistanceUnits(settings.distanceUnits)
+                    .setCallback(this)
+                    .fetch()
+        }
     }
 
     override fun failure(statusCode: Int) {

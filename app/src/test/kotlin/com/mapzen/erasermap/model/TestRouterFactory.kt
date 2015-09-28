@@ -64,6 +64,11 @@ public class TestRouterFactory : RouterFactory {
             return this
         }
 
+        override fun setLocation(point: DoubleArray, name: String): Router {
+            locations.add(point)
+            return this
+        }
+
         override fun setWalking(): Router {
             return this
         }
