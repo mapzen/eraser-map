@@ -21,7 +21,7 @@ public class EraserMapApplication extends Application {
         void inject(SearchResultsAdapter searchResultsAdapter);
         void inject(RouteModeView routeModeView);
         void inject(MapzenLocationImpl mapzenLocation);
-        void inject(SettingsActivity.SettingsFragment settingsFragment);
+        void inject(SettingsActivity settingsFragment);
         void inject(DistanceView distanceView);
     }
 

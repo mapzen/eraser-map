@@ -10,27 +10,27 @@ import com.mapzen.erasermap.model.AppSettings
 import javax.inject.Inject
 
 public class SettingsActivity : HomeAsUpActivity() {
+    var settings: AppSettings? = null
+        @Inject set
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        getFragmentManager().beginTransaction()
+        (application as EraserMapApplication).component()?.inject(this)
+        fragmentManager.beginTransaction()
                 .replace(android.R.id.content, SettingsFragment())
                 .commit()
     }
 
-    class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceChangeListener {
-        var settings: AppSettings? = null
-            @Inject set
-
+    inner class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceChangeListener {
         override fun onCreate(savedInstanceState: Bundle?) {
-            super<PreferenceFragment>.onCreate(savedInstanceState)
-            (getActivity().getApplication() as EraserMapApplication).component()?.inject(this)
+            super.onCreate(savedInstanceState)
             addPreferencesFromResource(R.xml.preferences)
             initDistanceUnitsPref()
         }
 
         override fun onPreferenceChange(preference: Preference?, value: Any?): Boolean {
             if (preference is Preference && value is String) {
-                if (AndroidAppSettings.KEY_DISTANCE_UNITS.equals(preference.getKey())) {
+                if (AndroidAppSettings.KEY_DISTANCE_UNITS.equals(preference.key)) {
                     updateDistanceUnitsPref(preference, value)
                     return true
                 }
@@ -43,13 +43,13 @@ public class SettingsActivity : HomeAsUpActivity() {
             val key = AndroidAppSettings.KEY_DISTANCE_UNITS
             val value = settings?.distanceUnits
             updateDistanceUnitsPref(findPreference(key), value.toString())
-            findPreference(key).setOnPreferenceChangeListener(this)
+            findPreference(key).onPreferenceChangeListener = this
         }
 
         private fun updateDistanceUnitsPref(preference: Preference, value: String) {
-            val index = getResources().getStringArray(R.array.distance_units_values).indexOf(value)
-            val text = getResources().getStringArray(R.array.distance_units_entries)[index]
-            preference.setSummary(text)
+            val index = resources.getStringArray(R.array.distance_units_values).indexOf(value)
+            val text = resources.getStringArray(R.array.distance_units_entries)[index]
+            preference.summary = text
         }
     }
 }
