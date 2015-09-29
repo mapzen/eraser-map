@@ -221,7 +221,9 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     override fun onInstructionSelected(instruction: Instruction) {
         mainViewController?.centerMapOnLocation(instruction.location, MainPresenter.ROUTING_ZOOM)
         mainViewController?.setMapTilt(MainPresenter.ROUTING_TILT)
-        mainViewController?.setMapRotation(Math.toRadians(instruction.bearing.toDouble()).toFloat())
+
+        val counterClockwiseRotationInRadians = Math.toRadians(360 - instruction.bearing.toDouble())
+        mainViewController?.setMapRotation(counterClockwiseRotationInRadians.toFloat())
     }
 
     override fun onCreate() {
@@ -265,6 +267,8 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         val currentLocation = mapzenLocation.getLastLocation()
         if (currentLocation is Location) {
             mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
+            mainViewController?.setMapTilt(0f)
+            mainViewController?.setMapRotation(0f)
         }
     }
 
