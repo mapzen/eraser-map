@@ -5,7 +5,7 @@ import com.mapzen.valhalla.Router
 import com.mapzen.valhalla.ValhallaRouter
 
 public class ValhallaRouterFactory : RouterFactory {
-    override var apiKey: String = BuildConfig.VALHALLA_API_KEY
+    override var apiKey: String = ""
 
     override fun getInitializedRouter(type: Router.Type): Router {
         val router = ValhallaRouter().setApiKey(apiKey)
