@@ -108,6 +108,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initReverseButton()
         presenter?.onCreate()
         presenter?.onRestoreViewState()
+        animate(0)
         getApiKeys()
     }
 
