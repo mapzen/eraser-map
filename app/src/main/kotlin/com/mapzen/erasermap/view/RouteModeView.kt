@@ -91,10 +91,11 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun onPageSelected(position: Int) {
         setCurrentPagerItemStyling(currentInstructionIndex);
-        val instruction = route?.getRouteInstructions()?.get(position)
-        if (instruction is Instruction) {
-            presenter?.onInstructionSelected(instruction)
-        }
+        // TODO: Set map position on manual pager swipe only.
+        // val instruction = route?.getRouteInstructions()?.get(position)
+        // if (instruction is Instruction) {
+        //     presenter?.onInstructionSelected(instruction)
+        // }
     }
 
     override fun onPageScrollStateChanged(state: Int) {
@@ -294,8 +295,12 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             if (icon is ImageView) {
                 icon.setImageResource(DisplayHelper.getRouteDrawable(getContext(), 8))
             }
+
             val instruction = route?.getRouteInstructions()?.get(index)
-            if (instruction is Instruction) voiceNavigationController?.playPost(instruction)
+            if (instruction is Instruction) {
+                voiceNavigationController?.playPost(instruction)
+                presenter?.onInstructionSelected(instruction)
+            }
         }
 
         override fun onUpdateDistance(distanceToNextInstruction: Int, distanceToDestination: Int) {

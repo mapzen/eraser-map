@@ -177,6 +177,13 @@ public class RouteModeViewTest {
     }
 
     @Test
+    public void onInstructionComplete_shouldRotateMap() throws Exception {
+        routeModeView.getRoute().getRouteInstructions().get(1).setBearing(180);
+        routeModeView.getRouteListener().onInstructionComplete(1);
+        assertThat(startActivity.getMapController().getMapRotation()).isEqualTo((float) Math.PI);
+    }
+
+    @Test
     public void onApproachInstruction_shouldAdvanceViewPager() throws Exception {
         routeModeView.getRouteListener().onMilestoneReached(1, RouteEngine.Milestone.ONE_MILE);
         assertThat(routeModeView.getPager().getCurrentItem()).isEqualTo(1);

@@ -14,6 +14,7 @@ public class ShadowMapController {
     private double lng;
     private double lat;
     private float zoom;
+    private float rotation;
 
     public void __constructor__(Activity mainApp, MapView view) {
     }
@@ -37,5 +38,15 @@ public class ShadowMapController {
     @Implementation
     public float getMapZoom() {
         return zoom;
+    }
+
+    @Implementation
+    public void setMapRotation(float radians) {
+        this.rotation = radians;
+    }
+
+    @Implementation
+    public float getMapRotation() {
+        return rotation;
     }
 }
