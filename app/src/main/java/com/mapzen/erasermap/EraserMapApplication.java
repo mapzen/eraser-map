@@ -7,13 +7,13 @@ import com.mapzen.erasermap.view.RouteModeView;
 import com.mapzen.erasermap.view.SearchResultsAdapter;
 import com.mapzen.erasermap.view.SettingsActivity;
 
-import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
 import javax.inject.Singleton;
 
 import dagger.Component;
 
-public class EraserMapApplication extends Application {
+public class EraserMapApplication extends MultiDexApplication {
     @Singleton
     @Component(modules = { AndroidModule.class, CommonModule.class })
     public interface ApplicationComponent {
