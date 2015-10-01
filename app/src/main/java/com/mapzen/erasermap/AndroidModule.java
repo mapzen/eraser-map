@@ -6,6 +6,7 @@ import com.mapzen.erasermap.model.AppSettings;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
 import com.mapzen.erasermap.model.RouterFactory;
+import com.mapzen.erasermap.model.TileHttpHandler;
 import com.mapzen.erasermap.model.ValhallaRouterFactory;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
@@ -59,5 +60,9 @@ public class AndroidModule {
 
     @Provides @Singleton RouterFactory provideRouterFactory() {
         return new ValhallaRouterFactory();
+    }
+
+    @Provides @Singleton TileHttpHandler provideTileHttpHandler() {
+        return new TileHttpHandler(application);
     }
 }

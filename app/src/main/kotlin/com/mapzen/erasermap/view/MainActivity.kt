@@ -25,6 +25,7 @@ import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.RouterFactory
+import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.leyndo.ManifestDownLoader
 import com.mapzen.leyndo.ManifestModel
@@ -72,6 +73,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var routerFactory: RouterFactory? = null
         @Inject set
     var settings: AppSettings? = null
+        @Inject set
+    var tileHttpHandler: TileHttpHandler? = null
         @Inject set
 
     var apiKeys: ManifestModel? = null
@@ -140,6 +143,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         mapController = MapController(this, mapView)
         mapController?.setLongPressListener(View.OnGenericMotionListener {
             view, motionEvent -> reverseGeolocate(motionEvent) })
+        mapController?.setHttpHandler(tileHttpHandler)
     }
 
     private fun initAutoCompleteAdapter() {
@@ -170,7 +174,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 throw e;
             }
         }
-
     }
 
     private fun checkForNullKeys() {
@@ -195,6 +198,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 checkIfUpdateNeeded()
             }
             routerFactory?.apiKey = apiKeys?.valhallaApiKey
+            tileHttpHandler?.apiKey = apiKeys?.vectorTileApiKeyReleaseProp
         }
     }
 
