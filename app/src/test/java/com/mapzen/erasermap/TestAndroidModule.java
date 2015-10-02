@@ -7,6 +7,7 @@ import com.mapzen.erasermap.model.MapzenLocationImpl;
 import com.mapzen.erasermap.model.RouterFactory;
 import com.mapzen.erasermap.model.TestAppSettings;
 import com.mapzen.erasermap.model.TestRouterFactory;
+import com.mapzen.erasermap.model.TileHttpHandler;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.erasermap.presenter.RoutePresenter;
@@ -61,5 +62,9 @@ public class TestAndroidModule {
 
     @Provides @Singleton RouterFactory provideRouterFactory() {
         return new TestRouterFactory();
+    }
+
+    @Provides @Singleton TileHttpHandler provideTileHttpHandler() {
+        return new TileHttpHandler(application);
     }
 }
