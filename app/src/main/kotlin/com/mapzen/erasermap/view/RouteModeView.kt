@@ -9,7 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.widget.ImageButton
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ListView
@@ -22,6 +22,7 @@ import com.mapzen.erasermap.presenter.RoutePresenter
 import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.helpers.RouteListener
+import com.mapzen.tangram.MapController
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
@@ -35,6 +36,13 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     public val SLIDING_PANEL_OFFSET_OPEN: Float = 0.1f
+
+    var mapController: MapController? = null
+        set(value) {
+            value?.setGenericMotionEventListener(View.OnGenericMotionListener {
+                view, event -> onMapMotionEvent()
+            })
+        }
 
     var pager: ViewPager? = null
     var autoPage: Boolean = true
@@ -69,8 +77,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
                 .inject(this@RouteModeView)
         (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_mode, this, true)
+        routePresenter?.routeController = this
         routePresenter?.routeListener = routeListener
-        (findViewById(R.id.resume) as ImageButton).setOnClickListener {
+        (findViewById(R.id.resume) as Button).setOnClickListener {
+            routePresenter?.onResumeButtonClick()
             presenter?.onResumeRouting()
             pager?.setCurrentItem(currentInstructionIndex)
         }
@@ -103,18 +113,18 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     public fun setAdapter(adapter: PagerAdapter) {
         pager = findViewById(R.id.instruction_pager) as ViewPager
-        pager?.setAdapter(adapter)
+        pager?.adapter = adapter
         pager?.addOnPageChangeListener(this)
         (findViewById(R.id.destination_distance) as DistanceView).distanceInMeters =
                 (route?.getRemainingDistanceToDestination() as Int)
     }
 
     public fun pageForward(position: Int) {
-        pager?.setCurrentItem(position + 1)
+        pager?.currentItem = position + 1
     }
 
     public fun pageBackwards(position: Int) {
-        pager?.setCurrentItem(position - 1)
+        pager?.currentItem = position - 1
     }
 
     public fun initSlideLayout(view: View) {
@@ -122,10 +132,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         slideLayout?.setDragView(view.findViewById(R.id.drag_area))
         panelListener = getPanelSlideListener(view)
         slideLayout?.setPanelSlideListener(panelListener)
-        slideLayout?.setTouchEnabled(false)
+        slideLayout?.isTouchEnabled = false
         findViewById(R.id.drag_area).setOnTouchListener(object: View.OnTouchListener {
             override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
-                slideLayout?.setTouchEnabled(true)
+                slideLayout?.isTouchEnabled = true
                 return true
             }
         })
@@ -221,7 +231,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     private fun resumeAutoPaging() {
-        pager?.setCurrentItem(currentInstructionIndex)
+        pager?.currentItem = currentInstructionIndex
         setCurrentPagerItemStyling(currentInstructionIndex)
         autoPage = true
     }
@@ -230,19 +240,20 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         var lastItemIndex = (pager?.getAdapter() as InstructionAdapter).getCount() - 1
         var itemsUntilLastInstruction = (lastItemIndex - position)
         if (itemsUntilLastInstruction == 1) {
-            (pager?.getAdapter() as InstructionAdapter)
+            (pager?.adapter as InstructionAdapter)
                     .setBackgroundColorArrived(findViewByIndex(position + 1))
         }
-        if (autoPage) {
-            (pager?.getAdapter() as InstructionAdapter)
-                    .setBackgroundColorActive(findViewByIndex(position))
-        } else {
-            if (position == lastItemIndex) {
-                (pager?.getAdapter() as InstructionAdapter)
-                        .setBackgroundColorArrived(findViewByIndex(position))
+
+        val adapter = pager?.adapter
+        if (adapter is InstructionAdapter) {
+            if (autoPage) {
+                adapter.setBackgroundColorActive(findViewByIndex(position))
             } else {
-                (pager?.getAdapter() as InstructionAdapter)
-                        .setBackgroundColorInactive(findViewByIndex(position))
+                if (position == lastItemIndex) {
+                    adapter.setBackgroundColorArrived(findViewByIndex(position))
+                } else {
+                    adapter.setBackgroundColorInactive(findViewByIndex(position))
+                }
             }
         }
     }
@@ -350,5 +361,18 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         if (route != null) {
             routePresenter?.onLocationChanged(location)
         }
+    }
+
+    private fun onMapMotionEvent(): Boolean {
+        routePresenter?.onMapGesture()
+        return false
+    }
+
+    override fun showResumeButton() {
+        findViewById(R.id.resume).visibility = View.VISIBLE
+    }
+
+    override fun hideResumeButton() {
+        findViewById(R.id.resume).visibility = View.GONE
     }
 }

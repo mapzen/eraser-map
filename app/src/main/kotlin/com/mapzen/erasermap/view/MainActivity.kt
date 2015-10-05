@@ -665,6 +665,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         findViewById(R.id.route_preview).visibility = View.GONE
         findViewById(R.id.route_mode).visibility = View.VISIBLE
         (findViewById(R.id.route_mode) as RouteModeView).presenter = presenter
+        (findViewById(R.id.route_mode) as RouteModeView).mapController = mapController
         presenter?.routeViewController = findViewById(R.id.route_mode) as RouteModeView
         this.route = presenter?.route
         val pager = findViewById(R.id.route_mode) as RouteModeView

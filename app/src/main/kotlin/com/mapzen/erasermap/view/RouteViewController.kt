@@ -4,7 +4,9 @@ import android.location.Location
 
 public interface RouteViewController {
     public fun onLocationChanged(location: Location)
+    public fun collapseSlideLayout()
     public fun showDirectionList()
     public fun hideDirectionList()
-    public fun collapseSlideLayout()
+    public fun showResumeButton()
+    public fun hideResumeButton()
 }

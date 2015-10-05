@@ -16,6 +16,7 @@
     <string name="accept_update">Update Now</string>
     <string name="decline_update">Exit Application</string>
     <string name="settings">Settings</string>
+    <string name="resume">Resume</string>
 
     <string name="milestone_one_mile">In one mile</string>
     <string name="milestone_quarter_mile">In a quarter mile</string>
