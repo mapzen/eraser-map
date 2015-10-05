@@ -14,6 +14,8 @@ import com.mapzen.erasermap.presenter.RoutePresenter;
 import com.mapzen.erasermap.presenter.RoutePresenterImpl;
 import com.mapzen.helpers.RouteEngine;
 
+import com.squareup.otto.Bus;
+
 import org.mockito.Mockito;
 
 import android.content.Context;
@@ -43,8 +45,9 @@ public class TestAndroidModule {
         return Mockito.mock(CrashReportService.class);
     }
 
-    @Provides @Singleton MapzenLocation provideMapzenLocation() {
-        return new MapzenLocationImpl(application);
+    @Provides @Singleton MapzenLocation provideMapzenLocation(LostApiClient locationClient,
+            AppSettings settings, Bus bus) {
+        return new MapzenLocationImpl(locationClient, settings, bus);
     }
 
     @Provides @Singleton AppSettings provideAppSettings() {
@@ -66,5 +69,9 @@ public class TestAndroidModule {
 
     @Provides @Singleton TileHttpHandler provideTileHttpHandler() {
         return new TileHttpHandler(application);
+    }
+
+    @Provides @Singleton Bus provideBus() {
+        return new Bus();
     }
 }

@@ -38,7 +38,6 @@ public interface MainPresenter {
     public fun onBackPressed()
     public fun onRestoreViewState()
     public fun onResumeRouting()
-    public fun onLocationChanged(location: Location)
     public fun onSlidingPanelOpen()
     public fun onSlidingPanelCollapse()
     public fun onInstructionSelected(instruction: Instruction)

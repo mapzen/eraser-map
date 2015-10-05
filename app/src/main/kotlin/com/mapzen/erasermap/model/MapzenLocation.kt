@@ -7,7 +7,7 @@ public interface MapzenLocation : PeliasLocationProvider {
     public fun connect()
     public fun disconnect()
     public fun isConnected(): Boolean
-    public fun initLocationUpdates(callback: (location: Location) -> Unit)
-    public fun initRouteLocationUpdates(callback: (location: Location) -> Unit)
+    public fun initLocationUpdates()
     public fun getLastLocation(): Location?
+    public fun initMockRoute()
 }

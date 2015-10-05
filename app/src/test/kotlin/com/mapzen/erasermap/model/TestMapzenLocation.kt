@@ -4,8 +4,8 @@ import android.location.Location
 import com.mapzen.erasermap.dummy.TestHelper
 
 public class TestMapzenLocation : MapzenLocation {
-    private var connected = false;
-    public var callback: ((Location) -> Unit)? = null
+    public var connected = false
+    public var updates = false
 
     override fun connect() {
         connected = true
@@ -13,22 +13,23 @@ public class TestMapzenLocation : MapzenLocation {
 
     override fun disconnect() {
         connected = false
+        updates = false
     }
 
     override fun isConnected(): Boolean {
         return connected
     }
 
-    override fun initLocationUpdates(callback: (Location) -> Unit) {
-        this.callback = callback
-    }
-
-    override fun initRouteLocationUpdates(callback: (Location) -> Unit) {
-        this.callback = callback
+    override fun initLocationUpdates() {
+        connected = true
+        updates = true
     }
 
     override fun getLastLocation(): Location? {
         return TestHelper.getTestLocation()
+    }
+
+    override fun initMockRoute() {
     }
 
     override fun getLon(): String? {
