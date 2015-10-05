@@ -9,5 +9,4 @@ public interface MapzenLocation : PeliasLocationProvider {
     public fun isConnected(): Boolean
     public fun initLocationUpdates()
     public fun getLastLocation(): Location?
-    public fun initMockRoute()
 }

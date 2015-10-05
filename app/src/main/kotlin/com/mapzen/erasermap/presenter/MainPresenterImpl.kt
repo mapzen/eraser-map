@@ -5,6 +5,7 @@ import android.util.Log
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.LocationChangeEvent
 import com.mapzen.erasermap.model.MapzenLocation
+import com.mapzen.erasermap.model.RouteEvent
 import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.model.RouterFactory
 import com.mapzen.erasermap.view.MainViewController
@@ -32,7 +33,8 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     override var routeViewController: RouteViewController? = null
     override var currentSearchTerm: String? = null
     override var bus: Bus? = null
-        set(bus) {
+        set(value) {
+            $bus = value
             bus?.register(this)
         }
 
@@ -182,12 +184,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         if (reverse) {
             mainViewController?.showDirectionList()
         } else {
-            // TODO: Hide mock mode. Initialize via RouteEvent
-            if (settings.isMockRouteEnabled) {
-                mapzenLocation.initMockRoute()
-            }
-
-            mapzenLocation.initLocationUpdates()
+            bus?.post(RouteEvent())
             generateRoutingMode()
             viewState = ViewState.ROUTING
         }

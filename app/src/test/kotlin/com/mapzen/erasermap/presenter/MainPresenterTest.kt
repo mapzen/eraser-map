@@ -5,6 +5,7 @@ import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestInstruction
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
 import com.mapzen.erasermap.model.LocationChangeEvent
+import com.mapzen.erasermap.model.RouteEvent
 import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.model.TestAppSettings
 import com.mapzen.erasermap.model.TestMapzenLocation
@@ -20,6 +21,8 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
+import com.squareup.otto.Bus
+import com.squareup.otto.Subscribe
 import org.assertj.core.api.Assertions.assertThat
 import org.json.JSONObject
 import org.junit.Before
@@ -33,6 +36,7 @@ public class MainPresenterTest {
     private var mapzenLocation: TestMapzenLocation = TestMapzenLocation()
     private var routerFactory: TestRouterFactory = TestRouterFactory()
     private var settings: TestAppSettings = TestAppSettings()
+    private var bus: Bus = Bus()
     private var presenter: MainPresenterImpl
             = MainPresenterImpl(mapzenLocation, routerFactory, settings)
 
@@ -40,6 +44,7 @@ public class MainPresenterTest {
     public fun setUp() {
         presenter.mainViewController = mainController
         presenter.routeViewController = routeController
+        presenter.bus = bus
     }
 
     @Test
@@ -194,6 +199,14 @@ public class MainPresenterTest {
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
         presenter.onRoutingCircleClick(false)
         assertThat(mainController.isRoutingModeVisible).isTrue()
+    }
+
+    @Test
+    public fun onRoutingCircleClick_shouldPublishRouteEvent() {
+        val subscriber = RouteEventSubscriber()
+        presenter.bus?.register(subscriber)
+        presenter.onRoutingCircleClick(false)
+        assertThat(subscriber.event).isNotNull()
     }
 
     @Test
@@ -384,5 +397,13 @@ public class MainPresenterTest {
         mainController.isRoutingModeVisible = false
         presenter.success(Route(JSONObject()))
         assertThat(mainController.isRoutingModeVisible).isTrue()
+    }
+
+    class RouteEventSubscriber {
+        public var event: RouteEvent? = null
+
+        @Subscribe fun onRouteEvent(event: RouteEvent) {
+            this.event = event
+        }
     }
 }

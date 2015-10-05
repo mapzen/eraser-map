@@ -29,9 +29,6 @@ public class TestMapzenLocation : MapzenLocation {
         return TestHelper.getTestLocation()
     }
 
-    override fun initMockRoute() {
-    }
-
     override fun getLon(): String? {
         return "0.0"
     }

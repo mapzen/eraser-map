@@ -6,6 +6,7 @@ import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
 import com.squareup.otto.Bus
+import com.squareup.otto.Subscribe
 
 public class MapzenLocationImpl(val locationClient: LostApiClient,
         val settings: AppSettings,
@@ -14,6 +15,10 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
     companion object {
         private val LOCATION_UPDATE_INTERVAL_IN_MS: Long = 1000L
         private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT: Float = 0f
+    }
+
+    init {
+        bus.register(this)
     }
 
     override fun connect() {
@@ -53,9 +58,12 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
         }
     }
 
-    override fun initMockRoute() {
-        LocationServices.FusedLocationApi?.setMockMode(true)
-        LocationServices.FusedLocationApi?.setMockTrace(settings.mockRoute)
+    @Subscribe public fun onRouteEvent(event: RouteEvent) {
+        if (settings.isMockRouteEnabled) {
+            LocationServices.FusedLocationApi?.setMockMode(true)
+            LocationServices.FusedLocationApi?.setMockTrace(settings.mockRoute)
+            initLocationUpdates()
+        }
     }
 
     override fun getLastLocation(): Location? {
