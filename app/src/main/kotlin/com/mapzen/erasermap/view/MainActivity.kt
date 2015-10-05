@@ -36,6 +36,7 @@ import com.mapzen.pelias.gson.Result
 import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
+import com.mapzen.pelias.BoundingBox
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapData
@@ -251,7 +252,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             listView.adapter = autoCompleteAdapter
             val pelias = Pelias.getPelias()
             pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
-            pelias.apiKey = apiKeys?.peliasApiKey
+            pelias.setApiKey(apiKeys?.peliasApiKey)
             searchView.setAutoCompleteListView(listView)
             searchView.setSavedSearch(savedSearch)
             searchView.setPelias(Pelias.getPelias())
@@ -710,8 +711,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         var mdisp : Display = getWindowManager().getDefaultDisplay();
         var minLatLon = mapController?.coordinatesAtScreenPosition(mdisp.width.toDouble(), mdisp.height.toDouble())
         var maxLatLon = mapController?.coordinatesAtScreenPosition(0.0, 0.0);
-        (menuItem?.actionView  as PeliasSearchView).setBoundingBox(minLatLon?.latitude.toString(), minLatLon?.longitude.toString(),
-                maxLatLon?.latitude.toString(), maxLatLon?.longitude.toString())
+        var bbox: BoundingBox = BoundingBox(minLatLon?.latitude as Double, minLatLon?.longitude as Double,
+                maxLatLon?.latitude as Double, maxLatLon?.longitude as Double)
+        (menuItem?.actionView  as PeliasSearchView).setBoundingBox(bbox)
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {
