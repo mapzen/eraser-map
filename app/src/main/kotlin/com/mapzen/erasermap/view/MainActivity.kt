@@ -301,13 +301,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         val menuItem = optionsMenu?.findItem(R.id.action_search)
         val actionView = menuItem?.actionView as PeliasSearchView
-        var mdisp : Display = getWindowManager().getDefaultDisplay();
-
-        var maxLatLon = mapController?.coordinatesAtScreenPosition(mdisp.width as Double, mdisp.height as Double)
-        var minLatLon = mapController?.coordinatesAtScreenPosition(0.0, 0.0);
-
-        (actionView as PeliasSearchView).setBoundingBox(maxLatLon?.longitude.toString(), maxLatLon?.latitude.toString(),
-                minLatLon?.longitude.toString(), minLatLon?.latitude.toString())
+        setBoundingBox()
         val intent = Intent(this, SearchResultsListActivity::class.java)
         intent.putParcelableArrayListExtra("features", simpleFeatures)
         intent.putExtra("query", actionView.query.toString())
@@ -374,6 +368,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     inner class SearchOnActionExpandListener : MenuItemCompat.OnActionExpandListener {
         override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+            setBoundingBox()
             presenter?.onExpandSearchView()
             return true
         }
@@ -708,6 +703,15 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         supportActionBar?.hide()
         routeModeView.route = null
         routeModeView.hideRouteIcon()
+    }
+
+    private fun setBoundingBox() {
+        val menuItem = optionsMenu?.findItem(R.id.action_search)
+        var mdisp : Display = getWindowManager().getDefaultDisplay();
+        var minLatLon = mapController?.coordinatesAtScreenPosition(mdisp.width.toDouble(), mdisp.height.toDouble())
+        var maxLatLon = mapController?.coordinatesAtScreenPosition(0.0, 0.0);
+        (menuItem?.actionView  as PeliasSearchView).setBoundingBox(minLatLon?.latitude.toString(), minLatLon?.longitude.toString(),
+                maxLatLon?.latitude.toString(), maxLatLon?.longitude.toString())
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {
