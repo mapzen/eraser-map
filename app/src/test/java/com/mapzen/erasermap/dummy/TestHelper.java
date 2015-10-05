@@ -35,10 +35,10 @@ public class TestHelper {
     public static Feature getTestFeature(double lat, double lon) {
         Feature feature = new Feature();
         Properties properties = new Properties();
-        properties.setText(TEST_TEXT);
+        properties.setLabel(TEST_TEXT);
         properties.setLocality(TEST_LOCALITY);
         properties.setLocalAdmin(TEST_LOCAL_ADMIN);
-        properties.setAdmin1Abbr(TEST_ADMIN1_ABBR);
+        properties.setRegion_a(TEST_ADMIN1_ABBR);
         feature.setProperties(properties);
         Geometry geometry = new Geometry();
         List<Double> coordinates = new ArrayList<>();
