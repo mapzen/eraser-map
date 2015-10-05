@@ -11,10 +11,7 @@ import android.preference.PreferenceManager
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.widget.ImageButton
 import android.widget.RadioButton
 import android.widget.TextView
@@ -254,6 +251,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             listView.adapter = autoCompleteAdapter
             val pelias = Pelias.getPelias()
             pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
+            pelias.apiKey = apiKeys?.peliasApiKey
             searchView.setAutoCompleteListView(listView)
             searchView.setSavedSearch(savedSearch)
             searchView.setPelias(Pelias.getPelias())
@@ -303,6 +301,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         val menuItem = optionsMenu?.findItem(R.id.action_search)
         val actionView = menuItem?.actionView as PeliasSearchView
+        var mdisp : Display = getWindowManager().getDefaultDisplay();
+
+        var maxLatLon = mapController?.coordinatesAtScreenPosition(mdisp.width as Double, mdisp.height as Double)
+        var minLatLon = mapController?.coordinatesAtScreenPosition(0.0, 0.0);
+
+        (actionView as PeliasSearchView).setBoundingBox(maxLatLon?.longitude.toString(), maxLatLon?.latitude.toString(),
+                minLatLon?.longitude.toString(), minLatLon?.latitude.toString())
         val intent = Intent(this, SearchResultsListActivity::class.java)
         intent.putParcelableArrayListExtra("features", simpleFeatures)
         intent.putExtra("query", actionView.query.toString())
@@ -710,7 +715,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val feature = Feature()
         val properties = Properties()
         if(lat.toString().length() > nameLength && lon.toString().length() > nameLength + 1) {
-            properties.text = lat.toString().substring(0, nameLength) + "," + lon.toString()
+            properties.label = lat.toString().substring(0, nameLength) + "," + lon.toString()
                     .substring(0, nameLength + 1)
         }
         feature.properties = properties
