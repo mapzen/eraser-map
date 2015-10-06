@@ -37,8 +37,7 @@ public class MainPresenterTest {
     private var routerFactory: TestRouterFactory = TestRouterFactory()
     private var settings: TestAppSettings = TestAppSettings()
     private var bus: Bus = Bus()
-    private var presenter: MainPresenterImpl
-            = MainPresenterImpl(mapzenLocation, routerFactory, settings)
+    private var presenter = MainPresenterImpl(mapzenLocation, routerFactory, settings)
 
     @Before
     public fun setUp() {
@@ -291,37 +290,33 @@ public class MainPresenterTest {
 
     @Test
     public fun onPause_shouldDisconnectLocationUpdates() {
-        mapzenLocation.connect()
         presenter.onPause()
-        assertThat(mapzenLocation.isConnected()).isFalse()
+        assertThat(mapzenLocation.connected).isFalse()
     }
 
     @Test
     public fun onPause_shouldNotDisconnectLocationUpdatesWhileRouting() {
-        mapzenLocation.connect()
+        mapzenLocation.connected = true
         presenter.onRoutingCircleClick(false)
         presenter.onSlidingPanelOpen()
         presenter.onPause()
-        assertThat(mapzenLocation.isConnected()).isTrue()
+        assertThat(mapzenLocation.connected).isTrue()
     }
 
     @Test
     public fun onResume_shouldReconnectLocationClientAndInitLocationUpdates() {
-        mapzenLocation.disconnect()
+        mapzenLocation.connected = false
         presenter.viewState = DEFAULT
         presenter.onResume()
-        assertThat(mapzenLocation.isConnected()).isTrue()
-        assertThat(mapzenLocation.updates).isTrue()
+        assertThat(mapzenLocation.connected).isTrue()
     }
 
     @Test
     public fun onResume_shouldNotReconnectClientAndInitUpdatesWhileRouting() {
-        mapzenLocation.disconnect()
+        mapzenLocation.connected = false
         presenter.onRoutingCircleClick(false)
-        mapzenLocation.updates = false
         presenter.onResume()
-        assertThat(mapzenLocation.isConnected()).isFalse()
-        assertThat(mapzenLocation.updates).isFalse()
+        assertThat(mapzenLocation.connected).isFalse()
     }
 
     @Test

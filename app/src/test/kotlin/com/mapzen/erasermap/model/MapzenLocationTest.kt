@@ -25,21 +25,8 @@ public class MapzenLocationTest {
         assertThat(mapzenLocation).isNotNull()
     }
 
-    @Test fun connect_shouldConnectLocationClient() {
-        mapzenLocation.connect()
-        assertThat(mapzenLocation.locationClient.isConnected).isTrue()
-    }
-
-    @Test fun disconnect_shouldDisconnectLocationClient() {
-        mapzenLocation.connect()
-        mapzenLocation.disconnect()
-        assertThat(mapzenLocation.locationClient.isConnected).isFalse()
-    }
-
     @Test fun initLocationUpdates_shouldConnectIfDisconnected() {
-        mapzenLocation.connect()
-        mapzenLocation.disconnect()
-        mapzenLocation.initLocationUpdates()
+        mapzenLocation.startLocationUpdates()
         assertThat(mapzenLocation.locationClient.isConnected).isTrue()
     }
 
@@ -47,31 +34,31 @@ public class MapzenLocationTest {
         val expected = TestHelper.getTestLocation()
         val subscriber = LocationChangeSubscriber()
         bus.register(subscriber)
-        mapzenLocation.initLocationUpdates()
+        mapzenLocation.startLocationUpdates()
         FusedLocationApi.setMockMode(true)
         FusedLocationApi.setMockLocation(expected)
         assertThat(subscriber.event?.location).isEqualTo(expected)
     }
 
-    @Test fun connect_shouldSetMockLocationIfMockModeEnabled() {
+    @Test fun getLastLocation_shouldReturnMockLocationIfMockModeEnabled() {
         val location = TestHelper.getTestLocation()
         location.latitude = 1.0
         location.longitude = 2.0
         mapzenLocation.settings.isMockLocationEnabled = true
         mapzenLocation.settings.mockLocation = location
-        mapzenLocation.connect()
-        assertThat(FusedLocationApi.lastLocation.latitude).isEqualTo(1.0)
-        assertThat(FusedLocationApi.lastLocation.longitude).isEqualTo(2.0)
+        mapzenLocation.locationClient.disconnect()
+        assertThat(mapzenLocation.getLastLocation()!!.latitude).isEqualTo(1.0)
+        assertThat(mapzenLocation.getLastLocation()!!.longitude).isEqualTo(2.0)
     }
 
-    @Test fun connect_shouldNotSetMockLocationIfMockModeNotEnabled() {
+    @Test fun getLastLocation_shouldNotReturnMockLocationIfMockModeNotEnabled() {
         val location = TestHelper.getTestLocation()
         location.latitude = 1.0
         location.longitude = 2.0
         mapzenLocation.settings.isMockLocationEnabled = false
         mapzenLocation.settings.mockLocation = location
-        mapzenLocation.connect()
-        assertThat(FusedLocationApi.lastLocation).isNull()
+        mapzenLocation.locationClient.disconnect()
+        assertThat(mapzenLocation.getLastLocation()).isNull()
     }
 
     class LocationChangeSubscriber {

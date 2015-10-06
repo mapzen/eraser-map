@@ -225,7 +225,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
 
     override fun onCreate() {
         if (!initialized) {
-            mapzenLocation.connect()
             val currentLocation = mapzenLocation.getLastLocation()
             if (currentLocation is Location) {
                 mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
@@ -236,13 +235,13 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
 
     override fun onResume() {
         if (!isRouting() && !isRoutingDirectionList()) {
-            mapzenLocation.initLocationUpdates()
+            mapzenLocation.startLocationUpdates()
         }
     }
 
     override fun onPause() {
         if (!isRouting() && !isRoutingDirectionList()) {
-            mapzenLocation.disconnect()
+            mapzenLocation.stopLocationUpdates()
         }
     }
 

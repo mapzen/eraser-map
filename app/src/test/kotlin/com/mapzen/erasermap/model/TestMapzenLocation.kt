@@ -5,24 +5,13 @@ import com.mapzen.erasermap.dummy.TestHelper
 
 public class TestMapzenLocation : MapzenLocation {
     public var connected = false
-    public var updates = false
 
-    override fun connect() {
+    override fun startLocationUpdates() {
         connected = true
     }
 
-    override fun disconnect() {
+    override fun stopLocationUpdates() {
         connected = false
-        updates = false
-    }
-
-    override fun isConnected(): Boolean {
-        return connected
-    }
-
-    override fun initLocationUpdates() {
-        connected = true
-        updates = true
     }
 
     override fun getLastLocation(): Location? {

@@ -21,31 +21,28 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
         bus.register(this)
     }
 
-    override fun connect() {
-        locationClient.connect()
+    private fun connect() {
+        if (!locationClient.isConnected) {
+            locationClient.connect()
+        }
+
         if (settings.isMockLocationEnabled) {
-            initMockMode()
+            LocationServices.FusedLocationApi?.setMockMode(true)
+            LocationServices.FusedLocationApi?.setMockLocation(settings.mockLocation)
         }
     }
 
-    private fun initMockMode() {
-        LocationServices.FusedLocationApi?.setMockMode(true)
-        LocationServices.FusedLocationApi?.setMockLocation(settings.mockLocation)
-    }
-
-    override fun disconnect() {
+    private fun disconnect() {
         locationClient.disconnect()
     }
 
-    override fun isConnected(): Boolean {
-        return locationClient.isConnected
+    override fun getLastLocation(): Location? {
+        connect()
+        return LocationServices.FusedLocationApi?.lastLocation
     }
 
-    override fun initLocationUpdates() {
-        if (!isConnected()) {
-            connect()
-        }
-
+    override fun startLocationUpdates() {
+        connect()
         val locationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
@@ -58,23 +55,25 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
         }
     }
 
+    override fun stopLocationUpdates() {
+        disconnect()
+    }
+
     @Subscribe public fun onRouteEvent(event: RouteEvent) {
         if (settings.isMockRouteEnabled) {
             LocationServices.FusedLocationApi?.setMockMode(true)
             LocationServices.FusedLocationApi?.setMockTrace(settings.mockRoute)
-            initLocationUpdates()
+            startLocationUpdates()
         }
     }
 
-    override fun getLastLocation(): Location? {
-        return LocationServices.FusedLocationApi?.lastLocation
-    }
-
     override fun getLon(): String {
+        connect()
         return LocationServices.FusedLocationApi?.lastLocation?.longitude.toString()
     }
 
     override fun getLat(): String {
+        connect()
         return LocationServices.FusedLocationApi?.lastLocation?.latitude.toString()
     }
 }
