@@ -24,11 +24,11 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
     private fun connect() {
         if (!locationClient.isConnected) {
             locationClient.connect()
-        }
 
-        if (settings.isMockLocationEnabled) {
-            LocationServices.FusedLocationApi?.setMockMode(true)
-            LocationServices.FusedLocationApi?.setMockLocation(settings.mockLocation)
+            if (settings.isMockLocationEnabled) {
+                LocationServices.FusedLocationApi?.setMockMode(true)
+                LocationServices.FusedLocationApi?.setMockLocation(settings.mockLocation)
+            }
         }
     }
 

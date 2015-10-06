@@ -193,8 +193,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     @Subscribe public fun onLocationChangeEvent(event: LocationChangeEvent) {
         if (routingEnabled) {
             routeViewController?.onLocationChanged(event.location)
-            mainViewController?.centerMapOnLocation(event.location, MainPresenter.ROUTING_ZOOM)
-            mainViewController?.setMapTilt(MainPresenter.ROUTING_TILT)
         }
     }
 

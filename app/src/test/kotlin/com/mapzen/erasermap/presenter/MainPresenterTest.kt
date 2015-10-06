@@ -207,7 +207,7 @@ public class MainPresenterTest {
         presenter.onRoutingCircleClick(false)
         assertThat(subscriber.event).isNotNull()
     }
-    
+
     @Test
     public fun onLocationChanged_shouldNotifyRouteControllerIfRoutingIsEnabled() {
         presenter.routingEnabled = false
@@ -217,17 +217,6 @@ public class MainPresenterTest {
         presenter.routingEnabled = true
         presenter.onLocationChangeEvent(LocationChangeEvent(getTestLocation()))
         assertThat(routeController.location).isNotNull()
-    }
-
-    @Test
-    public fun onLocationChanged_shouldCenterMapIfRoutingIsEnabled() {
-        presenter.routingEnabled = false
-        presenter.onLocationChangeEvent(LocationChangeEvent(getTestLocation()))
-        assertThat(mainController.location).isNull()
-
-        presenter.routingEnabled = true
-        presenter.onLocationChangeEvent(LocationChangeEvent(getTestLocation()))
-        assertThat(mainController.location).isNotNull()
     }
 
     @Test
