@@ -23,6 +23,7 @@ public interface MainViewController {
     public fun showRoutingMode(feature: Feature)
     public fun shutDown()
     public fun centerMapOnLocation(location: Location, zoom: Float)
+    public fun showCurrentLocation(location: Location)
     public fun setMapTilt(radians: Float)
     public fun setMapRotation(radians: Float)
     public fun clearRouteLine()

@@ -222,7 +222,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun centerMapOnLocation(location: Location, zoom: Float) {
         mapController?.setMapPosition(location.longitude, location.latitude)
         mapController?.mapZoom = zoom
+        showCurrentLocation(location)
+    }
 
+    override fun showCurrentLocation(location: Location) {
         if (findMe == null) {
             findMe = MapData("find_me")
         }
