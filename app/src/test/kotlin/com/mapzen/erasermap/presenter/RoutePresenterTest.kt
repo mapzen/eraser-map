@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.presenter
 
 import com.mapzen.erasermap.dummy.TestHelper.getFixture
+import com.mapzen.erasermap.model.TestMapzenLocation
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Route
@@ -10,7 +11,8 @@ import org.junit.Test
 
 public class RoutePresenterTest {
     val routeEngine = RouteEngine()
-    val routePresenter = RoutePresenterImpl(routeEngine)
+    val mapzenLocation = TestMapzenLocation()
+    val routePresenter = RoutePresenterImpl(routeEngine, mapzenLocation)
     val routeController = TestRouteController()
 
     @Before fun setUp() {

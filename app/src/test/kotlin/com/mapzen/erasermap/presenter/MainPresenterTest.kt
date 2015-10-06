@@ -207,14 +207,7 @@ public class MainPresenterTest {
         presenter.onRoutingCircleClick(false)
         assertThat(subscriber.event).isNotNull()
     }
-
-    @Test
-    public fun onResumeRouting_shouldCenterMapOnCurrentLocation() {
-        presenter.onResumeRouting()
-        assertThat(mainController.location).isNotNull()
-        assertThat(mainController.zoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
-    }
-
+    
     @Test
     public fun onLocationChanged_shouldNotifyRouteControllerIfRoutingIsEnabled() {
         presenter.routingEnabled = false

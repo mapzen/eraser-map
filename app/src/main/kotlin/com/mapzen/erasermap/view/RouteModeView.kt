@@ -22,6 +22,7 @@ import com.mapzen.erasermap.presenter.RoutePresenter
 import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.helpers.RouteListener
+import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
@@ -42,6 +43,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             value?.setGenericMotionEventListener(View.OnGenericMotionListener {
                 view, event -> onMapMotionEvent()
             })
+
+            $mapController = value
         }
 
     var pager: ViewPager? = null
@@ -81,7 +84,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         routePresenter?.routeListener = routeListener
         (findViewById(R.id.resume) as Button).setOnClickListener {
             routePresenter?.onResumeButtonClick()
-            presenter?.onResumeRouting()
             pager?.setCurrentItem(currentInstructionIndex)
         }
         initSlideLayout(findViewById(R.id.sliding_layout))
@@ -374,5 +376,12 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun hideResumeButton() {
         findViewById(R.id.resume).visibility = View.GONE
+    }
+
+    override fun centerMapOnLocation(location: Location, rotation: Float) {
+        mapController?.mapPosition = LngLat(location.longitude, location.latitude)
+        mapController?.mapRotation = rotation
+        mapController?.mapZoom = MainPresenter.ROUTING_ZOOM
+        mapController?.mapTilt = MainPresenter.ROUTING_TILT
     }
 }

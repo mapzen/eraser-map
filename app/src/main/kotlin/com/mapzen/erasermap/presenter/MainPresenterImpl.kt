@@ -190,13 +190,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         }
     }
 
-    override fun onResumeRouting() {
-        val location = mapzenLocation.getLastLocation()
-        if (location is Location) {
-            mainViewController?.centerMapOnLocation(location, MainPresenter.ROUTING_ZOOM)
-        }
-    }
-
     @Subscribe public fun onLocationChangeEvent(event: LocationChangeEvent) {
         if (routingEnabled) {
             routeViewController?.onLocationChanged(event.location)

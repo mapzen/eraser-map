@@ -59,8 +59,9 @@ public class TestAndroidModule {
         return new MainPresenterImpl(mapzenLocation, routerFactory, settings);
     }
 
-    @Provides @Singleton RoutePresenter provideRoutePresenter(RouteEngine routeEngine) {
-        return new RoutePresenterImpl(routeEngine);
+    @Provides @Singleton RoutePresenter provideRoutePresenter(RouteEngine routeEngine,
+            MapzenLocation mapzenLocation) {
+        return new RoutePresenterImpl(routeEngine, mapzenLocation);
     }
 
     @Provides @Singleton RouterFactory provideRouterFactory() {

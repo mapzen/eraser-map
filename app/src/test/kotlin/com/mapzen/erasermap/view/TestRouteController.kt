@@ -29,4 +29,7 @@ public class TestRouteController : RouteViewController {
     override fun hideResumeButton() {
         isResumeButtonVisible = false
     }
+
+    override fun centerMapOnLocation(location: Location, rotation: Float) {
+    }
 }

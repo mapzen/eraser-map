@@ -9,4 +9,5 @@ public interface RouteViewController {
     public fun hideDirectionList()
     public fun showResumeButton()
     public fun hideResumeButton()
+    public fun centerMapOnLocation(location: Location, rotation: Float)
 }
