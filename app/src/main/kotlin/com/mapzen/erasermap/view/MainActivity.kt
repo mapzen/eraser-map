@@ -140,7 +140,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun initMapController() {
         val mapView = findViewById(R.id.map) as MapView
-        mapController = MapController(this, mapView)
+        mapController = MapController(this, mapView, "eraser-map.yaml")
         mapController?.setLongPressListener(View.OnGenericMotionListener {
             view, motionEvent -> reverseGeolocate(motionEvent) })
         mapController?.setHttpHandler(tileHttpHandler)
