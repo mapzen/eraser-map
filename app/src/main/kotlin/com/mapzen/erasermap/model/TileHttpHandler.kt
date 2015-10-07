@@ -1,14 +1,21 @@
 package com.mapzen.erasermap.model
 
 import android.app.Application
+import android.os.Build
 import com.mapzen.tangram.HttpHandler
 import com.squareup.okhttp.Callback
 import java.io.File
 
 public class TileHttpHandler(application: Application) : HttpHandler() {
+    companion object {
+        @JvmStatic val KITKAT = 19
+    }
+
     init {
-        val httpCache = File(application.externalCacheDir.absolutePath + "/tile_cache")
-        setCache(httpCache, 30 * 1024 * 1024)
+        if (Build.VERSION.SDK_INT >= KITKAT) {
+            val httpCache = File(application.externalCacheDir.absolutePath + "/tile_cache")
+            setCache(httpCache, 30 * 1024 * 1024)
+        }
     }
 
     var apiKey: String? = null
