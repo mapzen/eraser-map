@@ -651,7 +651,7 @@ styles:
 
                 position: |
                     // Normalize the attribute position of a vertex
-                    v_pos = (a_position.xyz + vec3(1.)) * 0.5 * 4096;
+                    v_pos = (a_position.xyz + vec3(1.)) * 0.5 * 4096.;
     tools-aastep:
         shaders:
             extensions: OES_standard_derivatives
