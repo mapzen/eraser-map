@@ -222,7 +222,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun centerMapOnLocation(location: Location, zoom: Float) {
         mapController?.setMapPosition(location.longitude, location.latitude)
         mapController?.mapZoom = zoom
+        showCurrentLocation(location)
+    }
 
+    override fun showCurrentLocation(location: Location) {
         if (findMe == null) {
             findMe = MapData("find_me")
         }
@@ -665,6 +668,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         findViewById(R.id.route_preview).visibility = View.GONE
         findViewById(R.id.route_mode).visibility = View.VISIBLE
         (findViewById(R.id.route_mode) as RouteModeView).presenter = presenter
+        (findViewById(R.id.route_mode) as RouteModeView).mapController = mapController
         presenter?.routeViewController = findViewById(R.id.route_mode) as RouteModeView
         this.route = presenter?.route
         val pager = findViewById(R.id.route_mode) as RouteModeView

@@ -1,52 +1,48 @@
 package com.mapzen.erasermap.model
 
 import android.location.Location
+import android.util.Log
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
-import com.mapzen.erasermap.EraserMapApplication
-import javax.inject.Inject
+import com.squareup.otto.Bus
+import com.squareup.otto.Subscribe
 
-public class MapzenLocationImpl(val app: EraserMapApplication) : MapzenLocation {
-    private val LOCATION_UPDATE_INTERVAL_IN_MS: Long = 1000L
-    private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT: Float = 0f
+public class MapzenLocationImpl(val locationClient: LostApiClient,
+        val settings: AppSettings,
+        val bus: Bus) : MapzenLocation {
 
-    var locationClient: LostApiClient? = null
-        @Inject set
-    var settings: AppSettings? = null
-        @Inject set
+    companion object {
+        private val LOCATION_UPDATE_INTERVAL_IN_MS: Long = 1000L
+        private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT: Float = 0f
+    }
 
     init {
-        app.component()?.inject(this)
+        bus.register(this)
     }
 
-    override fun connect() {
-        locationClient?.connect()
-        val mockMode = settings?.isMockLocationEnabled
-        if (mockMode as Boolean) {
-            initMockMode()
+    private fun connect() {
+        if (!locationClient.isConnected) {
+            locationClient.connect()
+
+            if (settings.isMockLocationEnabled) {
+                LocationServices.FusedLocationApi?.setMockMode(true)
+                LocationServices.FusedLocationApi?.setMockLocation(settings.mockLocation)
+            }
         }
     }
 
-    private fun initMockMode() {
-        LocationServices.FusedLocationApi?.setMockMode(true)
-        LocationServices.FusedLocationApi?.setMockLocation(settings?.mockLocation)
+    private fun disconnect() {
+        locationClient.disconnect()
     }
 
-    override fun disconnect() {
-        locationClient?.disconnect()
+    override fun getLastLocation(): Location? {
+        connect()
+        return LocationServices.FusedLocationApi?.lastLocation
     }
 
-    override fun isConnected(): Boolean {
-        val isConnected = locationClient?.isConnected()
-        if (isConnected is Boolean) return isConnected else return false
-    }
-
-    override fun initLocationUpdates(callback: (location: Location) -> Unit) {
-        if (!isConnected()) {
-            connect()
-        }
-
+    override fun startLocationUpdates() {
+        connect()
         val locationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
@@ -54,37 +50,30 @@ public class MapzenLocationImpl(val app: EraserMapApplication) : MapzenLocation 
                 .setSmallestDisplacement(LOCATION_UPDATE_SMALLEST_DISPLACEMENT)
 
         LocationServices.FusedLocationApi?.requestLocationUpdates(locationRequest) {
-            location: Location -> callback(location)
+            location: Location -> bus.post(LocationChangeEvent(location))
+            Log.d("MapzenLocation", "onLocationChanged: " + location)
         }
     }
 
-    override fun initRouteLocationUpdates(callback: (location: Location) -> Unit) {
-        if (!isConnected()) {
-            connect()
+    override fun stopLocationUpdates() {
+        disconnect()
+    }
+
+    @Subscribe public fun onRouteEvent(event: RouteEvent) {
+        if (settings.isMockRouteEnabled) {
+            LocationServices.FusedLocationApi?.setMockMode(true)
+            LocationServices.FusedLocationApi?.setMockTrace(settings.mockRoute)
+            startLocationUpdates()
         }
-
-        val mockRoute = settings?.isMockRouteEnabled
-        if (mockRoute as Boolean) {
-            initMockRoute()
-        }
-
-        initLocationUpdates(callback)
     }
 
-    private fun initMockRoute() {
-        LocationServices.FusedLocationApi?.setMockMode(true)
-        LocationServices.FusedLocationApi?.setMockTrace(settings?.mockRoute)
+    override fun getLon(): String {
+        connect()
+        return LocationServices.FusedLocationApi?.lastLocation?.longitude.toString()
     }
 
-    override fun getLastLocation(): Location? {
-        return LocationServices.FusedLocationApi?.getLastLocation()
-    }
-
-    override fun getLon(): String? {
-        return LocationServices.FusedLocationApi?.getLastLocation()?.getLongitude().toString()
-    }
-
-    override fun getLat(): String? {
-        return LocationServices.FusedLocationApi?.getLastLocation()?.getLatitude().toString()
+    override fun getLat(): String {
+        connect()
+        return LocationServices.FusedLocationApi?.lastLocation?.latitude.toString()
     }
 }

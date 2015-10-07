@@ -1,6 +1,5 @@
 package com.mapzen.erasermap;
 
-import com.mapzen.erasermap.model.MapzenLocationImpl;
 import com.mapzen.erasermap.view.DistanceView;
 import com.mapzen.erasermap.view.MainActivity;
 import com.mapzen.erasermap.view.RouteModeView;
@@ -20,7 +19,6 @@ public class EraserMapApplication extends MultiDexApplication {
         void inject(MainActivity mainActivity);
         void inject(SearchResultsAdapter searchResultsAdapter);
         void inject(RouteModeView routeModeView);
-        void inject(MapzenLocationImpl mapzenLocation);
         void inject(SettingsActivity settingsFragment);
         void inject(DistanceView distanceView);
     }

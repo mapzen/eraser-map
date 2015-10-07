@@ -14,6 +14,8 @@ import com.mapzen.erasermap.presenter.RoutePresenter;
 import com.mapzen.erasermap.presenter.RoutePresenterImpl;
 import com.mapzen.helpers.RouteEngine;
 
+import com.squareup.otto.Bus;
+
 import android.content.Context;
 
 import javax.inject.Singleton;
@@ -41,8 +43,9 @@ public class AndroidModule {
         return new CrashReportService();
     }
 
-    @Provides @Singleton MapzenLocation provideMapzenLocation() {
-        return new MapzenLocationImpl(application);
+    @Provides @Singleton MapzenLocation provideMapzenLocation(LostApiClient locationClient,
+            AppSettings settings, Bus bus) {
+        return new MapzenLocationImpl(locationClient, settings, bus);
     }
 
     @Provides @Singleton AppSettings provideAppSettings() {
@@ -54,8 +57,9 @@ public class AndroidModule {
         return new MainPresenterImpl(mapzenLocation, routerFactory, settings);
     }
 
-    @Provides @Singleton RoutePresenter provideRoutePresenter(RouteEngine routeEngine) {
-        return new RoutePresenterImpl(routeEngine);
+    @Provides @Singleton RoutePresenter provideRoutePresenter(RouteEngine routeEngine,
+            MapzenLocation mapzenLocation) {
+        return new RoutePresenterImpl(routeEngine, mapzenLocation);
     }
 
     @Provides @Singleton RouterFactory provideRouterFactory() {
@@ -64,5 +68,9 @@ public class AndroidModule {
 
     @Provides @Singleton TileHttpHandler provideTileHttpHandler() {
         return new TileHttpHandler(application);
+    }
+
+    @Provides @Singleton Bus provideBus() {
+        return new Bus();
     }
 }

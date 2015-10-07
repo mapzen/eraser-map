@@ -4,6 +4,8 @@ import android.location.Location
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestInstruction
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
+import com.mapzen.erasermap.model.LocationChangeEvent
+import com.mapzen.erasermap.model.RouteEvent
 import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.model.TestAppSettings
 import com.mapzen.erasermap.model.TestMapzenLocation
@@ -19,6 +21,8 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
+import com.squareup.otto.Bus
+import com.squareup.otto.Subscribe
 import org.assertj.core.api.Assertions.assertThat
 import org.json.JSONObject
 import org.junit.Before
@@ -32,13 +36,14 @@ public class MainPresenterTest {
     private var mapzenLocation: TestMapzenLocation = TestMapzenLocation()
     private var routerFactory: TestRouterFactory = TestRouterFactory()
     private var settings: TestAppSettings = TestAppSettings()
-    private var presenter: MainPresenterImpl
-            = MainPresenterImpl(mapzenLocation, routerFactory, settings)
+    private var bus: Bus = Bus()
+    private var presenter = MainPresenterImpl(mapzenLocation, routerFactory, settings)
 
     @Before
     public fun setUp() {
         presenter.mainViewController = mainController
         presenter.routeViewController = routeController
+        presenter.bus = bus
     }
 
     @Test
@@ -196,32 +201,22 @@ public class MainPresenterTest {
     }
 
     @Test
-    public fun onResumeRouting_shouldCenterMapOnCurrentLocation() {
-        presenter.onResumeRouting()
-        assertThat(mainController.location).isNotNull()
-        assertThat(mainController.zoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
+    public fun onRoutingCircleClick_shouldPublishRouteEvent() {
+        val subscriber = RouteEventSubscriber()
+        presenter.bus?.register(subscriber)
+        presenter.onRoutingCircleClick(false)
+        assertThat(subscriber.event).isNotNull()
     }
 
     @Test
     public fun onLocationChanged_shouldNotifyRouteControllerIfRoutingIsEnabled() {
         presenter.routingEnabled = false
-        presenter.onLocationChanged(getTestLocation())
+        presenter.onLocationChangeEvent(LocationChangeEvent(getTestLocation()))
         assertThat(routeController.location).isNull()
 
         presenter.routingEnabled = true
-        presenter.onLocationChanged(getTestLocation())
+        presenter.onLocationChangeEvent(LocationChangeEvent(getTestLocation()))
         assertThat(routeController.location).isNotNull()
-    }
-
-    @Test
-    public fun onLocationChanged_shouldCenterMapIfRoutingIsEnabled() {
-        presenter.routingEnabled = false
-        presenter.onLocationChanged(getTestLocation())
-        assertThat(mainController.location).isNull()
-
-        presenter.routingEnabled = true
-        presenter.onLocationChanged(getTestLocation())
-        assertThat(mainController.location).isNotNull()
     }
 
     @Test
@@ -277,36 +272,33 @@ public class MainPresenterTest {
 
     @Test
     public fun onPause_shouldDisconnectLocationUpdates() {
-        mapzenLocation.connect()
         presenter.onPause()
-        assertThat(mapzenLocation.isConnected()).isFalse()
+        assertThat(mapzenLocation.connected).isFalse()
     }
 
     @Test
     public fun onPause_shouldNotDisconnectLocationUpdatesWhileRouting() {
-        mapzenLocation.connect()
+        mapzenLocation.connected = true
         presenter.onRoutingCircleClick(false)
         presenter.onSlidingPanelOpen()
         presenter.onPause()
-        assertThat(mapzenLocation.isConnected()).isTrue()
+        assertThat(mapzenLocation.connected).isTrue()
     }
 
     @Test
     public fun onResume_shouldReconnectLocationClientAndInitLocationUpdates() {
-        mapzenLocation.disconnect()
+        mapzenLocation.connected = false
+        presenter.viewState = DEFAULT
         presenter.onResume()
-        assertThat(mapzenLocation.isConnected()).isTrue()
-        assertThat(mapzenLocation.callback).isNotNull()
+        assertThat(mapzenLocation.connected).isTrue()
     }
 
     @Test
     public fun onResume_shouldNotReconnectClientAndInitUpdatesWhileRouting() {
-        mapzenLocation.disconnect()
+        mapzenLocation.connected = false
         presenter.onRoutingCircleClick(false)
-        mapzenLocation.callback = null
         presenter.onResume()
-        assertThat(mapzenLocation.isConnected()).isFalse()
-        assertThat(mapzenLocation.callback).isNull()
+        assertThat(mapzenLocation.connected).isFalse()
     }
 
     @Test
@@ -382,5 +374,13 @@ public class MainPresenterTest {
         mainController.isRoutingModeVisible = false
         presenter.success(Route(JSONObject()))
         assertThat(mainController.isRoutingModeVisible).isTrue()
+    }
+
+    class RouteEventSubscriber {
+        public var event: RouteEvent? = null
+
+        @Subscribe fun onRouteEvent(event: RouteEvent) {
+            this.event = event
+        }
     }
 }

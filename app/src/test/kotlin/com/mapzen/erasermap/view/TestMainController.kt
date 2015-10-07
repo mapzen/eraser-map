@@ -93,6 +93,9 @@ public class TestMainController : MainViewController {
         this.zoom = zoom
     }
 
+    override fun showCurrentLocation(location: Location) {
+    }
+
     override fun setMapTilt(radians: Float) {
         tilt = radians
     }

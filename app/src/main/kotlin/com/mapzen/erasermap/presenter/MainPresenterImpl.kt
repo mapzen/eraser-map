@@ -3,12 +3,13 @@ package com.mapzen.erasermap.presenter
 import android.location.Location
 import android.util.Log
 import com.mapzen.erasermap.model.AppSettings
+import com.mapzen.erasermap.model.LocationChangeEvent
 import com.mapzen.erasermap.model.MapzenLocation
+import com.mapzen.erasermap.model.RouteEvent
 import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.model.RouterFactory
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
-import com.mapzen.pelias.BuildConfig
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
@@ -32,7 +33,8 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     override var routeViewController: RouteViewController? = null
     override var currentSearchTerm: String? = null
     override var bus: Bus? = null
-        set(bus) {
+        set(value) {
+            $bus = value
             bus?.register(this)
         }
 
@@ -182,29 +184,16 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         if (reverse) {
             mainViewController?.showDirectionList()
         } else {
-            mapzenLocation.initRouteLocationUpdates {
-                location: Location -> onLocationChanged(location)
-                if (BuildConfig.DEBUG) {
-                    System.out.println("onLocationChanged(Routing): " + location)
-                }
-            }
+            bus?.post(RouteEvent())
             generateRoutingMode()
             viewState = ViewState.ROUTING
         }
     }
 
-    override fun onResumeRouting() {
-        val location = mapzenLocation.getLastLocation()
-        if (location is Location) {
-            mainViewController?.centerMapOnLocation(location, MainPresenter.ROUTING_ZOOM)
-        }
-    }
-
-    override fun onLocationChanged(location: Location) {
+    @Subscribe public fun onLocationChangeEvent(event: LocationChangeEvent) {
         if (routingEnabled) {
-            routeViewController?.onLocationChanged(location)
-            mainViewController?.centerMapOnLocation(location, MainPresenter.ROUTING_ZOOM)
-            mainViewController?.setMapTilt(MainPresenter.ROUTING_TILT)
+            routeViewController?.onLocationChanged(event.location)
+            mainViewController?.showCurrentLocation(event.location)
         }
     }
 
@@ -228,7 +217,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
 
     override fun onCreate() {
         if (!initialized) {
-            mapzenLocation.connect()
             val currentLocation = mapzenLocation.getLastLocation()
             if (currentLocation is Location) {
                 mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
@@ -239,19 +227,13 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
 
     override fun onResume() {
         if (!isRouting() && !isRoutingDirectionList()) {
-            mapzenLocation.connect()
-            mapzenLocation.initLocationUpdates {
-                location: Location -> onLocationChanged(location)
-                if (BuildConfig.DEBUG) {
-                    System.out.println("onLocationChanged: " + location)
-                }
-            }
+            mapzenLocation.startLocationUpdates()
         }
     }
 
     override fun onPause() {
         if (!isRouting() && !isRoutingDirectionList()) {
-            mapzenLocation.disconnect()
+            mapzenLocation.stopLocationUpdates()
         }
     }
 

@@ -1,26 +1,45 @@
 package com.mapzen.erasermap.presenter
 
 import com.mapzen.erasermap.dummy.TestHelper.getFixture
+import com.mapzen.erasermap.model.TestMapzenLocation
+import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Route
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 
 public class RoutePresenterTest {
-    private val routeEngine = RouteEngine()
-    private val routePresenter = RoutePresenterImpl(routeEngine)
+    val routeEngine = RouteEngine()
+    val mapzenLocation = TestMapzenLocation()
+    val routePresenter = RoutePresenterImpl(routeEngine, mapzenLocation)
+    val routeController = TestRouteController()
 
-    @Test
-    public fun shouldNotBeNull() {
+    @Before fun setUp() {
+        routePresenter.routeController = routeController
+    }
+
+    @Test fun shouldNotBeNull() {
         assertThat(routePresenter).isNotNull()
     }
 
-    @Test
-    public fun setRoute_shouldNotResetRouteEngineWhileRouting() {
+    @Test fun setRoute_shouldNotResetRouteEngineWhileRouting() {
         val route1 = Route(getFixture("valhalla_route"))
         val route2 = Route(getFixture("valhalla_route"))
-        routeEngine.setRoute(route1)
-        routePresenter.setRoute(route2)
-        assertThat(routeEngine.getRoute()).isEqualTo(route1)
+        routeEngine.route = route1
+        routePresenter setRoute route2
+        assertThat(routeEngine.route).isEqualTo(route1)
+    }
+
+    @Test fun onMapGesture_shouldShowResumeButton() {
+        routeController.isResumeButtonVisible = false
+        routePresenter.onMapGesture()
+        assertThat(routeController.isResumeButtonVisible).isTrue()
+    }
+
+    @Test fun onResumeButtonClick_shouldShowResumeButton() {
+        routeController.isResumeButtonVisible = true
+        routePresenter.onResumeButtonClick()
+        assertThat(routeController.isResumeButtonVisible).isFalse()
     }
 }
