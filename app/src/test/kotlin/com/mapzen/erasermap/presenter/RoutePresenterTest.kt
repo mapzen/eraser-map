@@ -11,8 +11,9 @@ import org.junit.Test
 
 public class RoutePresenterTest {
     val routeEngine = RouteEngine()
+    val routeListener = RouteEngineListener()
     val mapzenLocation = TestMapzenLocation()
-    val routePresenter = RoutePresenterImpl(routeEngine, mapzenLocation)
+    val routePresenter = RoutePresenterImpl(routeEngine, routeListener, mapzenLocation)
     val routeController = TestRouteController()
 
     @Before fun setUp() {

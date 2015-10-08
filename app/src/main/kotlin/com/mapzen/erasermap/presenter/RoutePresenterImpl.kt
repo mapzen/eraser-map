@@ -4,18 +4,13 @@ import android.location.Location
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.helpers.RouteEngine
-import com.mapzen.helpers.RouteListener
 import com.mapzen.valhalla.Route
 
-public class RoutePresenterImpl(val routeEngine: RouteEngine,
-        val mapzenLocation: MapzenLocation) : RoutePresenter {
+public class RoutePresenterImpl(private val routeEngine: RouteEngine,
+        private val routeEngineListener: RouteEngineListener,
+        private val mapzenLocation: MapzenLocation) : RoutePresenter {
 
     override var routeController: RouteViewController? = null
-
-    override var routeListener: RouteListener? = null
-        set(value) {
-            routeEngine.setListener(value)
-        }
 
     private var route: Route? = null
     private var isTrackingCurrentLocation: Boolean = true
@@ -31,6 +26,7 @@ public class RoutePresenterImpl(val routeEngine: RouteEngine,
         if (routeEngine.route == null) {
             this.route = route
             routeEngine.route = route
+            routeEngine.setListener(routeEngineListener)
         }
     }
 

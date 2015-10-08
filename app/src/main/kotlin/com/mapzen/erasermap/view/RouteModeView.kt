@@ -5,7 +5,6 @@ import android.location.Location
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -21,7 +20,6 @@ import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.presenter.RoutePresenter
 import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.helpers.RouteEngine
-import com.mapzen.helpers.RouteListener
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
 import com.mapzen.valhalla.Instruction
@@ -52,8 +50,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     var route: Route? = null
     var slideLayout: SlidingUpPanelLayout? = null
     var panelListener: SlidingUpPanelLayout.PanelSlideListener? = null
-    var routeListener: RouteModeListener = RouteModeListener()
-    var presenter: MainPresenter? = null
+    var mainPresenter: MainPresenter? = null
     var voiceNavigationController: VoiceNavigationController? = null
     var routePresenter: RoutePresenter? = null
         @Inject set
@@ -76,21 +73,19 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     private fun init(context: Context) {
-        (context.getApplicationContext() as EraserMapApplication).component()
-                .inject(this@RouteModeView)
+        (context.applicationContext as EraserMapApplication).component().inject(this@RouteModeView)
         (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_mode, this, true)
         routePresenter?.routeController = this
-        routePresenter?.routeListener = routeListener
         (findViewById(R.id.resume) as Button).setOnClickListener {
             routePresenter?.onResumeButtonClick()
-            pager?.setCurrentItem(currentInstructionIndex)
+            pager?.currentItem = currentInstructionIndex
         }
         initSlideLayout(findViewById(R.id.sliding_layout))
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-        if(pager?.getCurrentItem() == currentInstructionIndex) {
+        if(pager?.currentItem == currentInstructionIndex) {
             setCurrentPagerItemStyling(currentInstructionIndex);
             if(!autoPage) {
                 resumeAutoPaging()
@@ -143,33 +138,33 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         })
         findViewById(R.id.instruction_route_header).setOnTouchListener(object: View.OnTouchListener {
             override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
-                slideLayout?.setTouchEnabled(true)
+                slideLayout?.isTouchEnabled = true
                 return true
             }
         })
     }
 
-    public fun getPanelSlideListener(view : View):SlidingUpPanelLayout.PanelSlideListener {
+    public fun getPanelSlideListener(view: View): SlidingUpPanelLayout.PanelSlideListener {
         return (object:SlidingUpPanelLayout.PanelSlideListener {
 
             public override fun onPanelSlide(panel:View, slideOffset:Float) {
                 if (slideOffset >=  SLIDING_PANEL_OFFSET_OPEN) {
-                    presenter?.onSlidingPanelOpen()
+                    mainPresenter?.onSlidingPanelOpen()
                 }
 
                 if (slideOffset <  SLIDING_PANEL_OFFSET_OPEN) {
-                    presenter?.onSlidingPanelCollapse()
+                    mainPresenter?.onSlidingPanelCollapse()
                 }
 
                 if (slideOffset == SLIDING_PANEL_OFFSET_OPEN) {
-                    slideLayout?.setTouchEnabled(false)
+                    slideLayout?.isTouchEnabled = false
                 }
             }
 
             public override fun onPanelExpanded(panel:View) { }
 
             public override fun onPanelCollapsed(panel: View) {
-                slideLayout?.setTouchEnabled(false)
+                slideLayout?.isTouchEnabled = false
             }
 
             public override fun onPanelAnchored(panel:View) { }
@@ -179,7 +174,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun showDirectionList()  {
-        findViewById(R.id.footer).setVisibility(View.GONE)
+        findViewById(R.id.footer).visibility = View.GONE
         val listView = findViewById(R.id.instruction_list_view) as ListView
         val instructionStrings = ArrayList<String>()
         val instructionType= ArrayList<Int>()
@@ -195,41 +190,40 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
                 instructionType.add(instruction.turnInstruction)
                 instructionDistance.add(instruction.distance)
             }
-            listView.setAdapter(
-                    DirectionListAdapter(listView.getContext(),
-                            instructionStrings,
-                            instructionType, instructionDistance, false))
+
+            listView.adapter = DirectionListAdapter(listView.context, instructionStrings,
+                    instructionType, instructionDistance, false)
         }
         listView.setOnItemClickListener { adapterView, view, i, l ->
             collapseSlideLayout()
-            pager?.setCurrentItem(i - 1)
+            pager?.currentItem = i - 1
         }
-        findViewById(R.id.route_reverse).setVisibility(View.GONE)
+        findViewById(R.id.route_reverse).visibility = View.GONE
         slideLayout?.setDragView(slideLayout?.findViewById(R.id.instruction_route_header))
         setHeaderOrigins()
     }
 
     override fun hideDirectionList() {
-        findViewById(R.id.footer).setVisibility(View.VISIBLE)
+        findViewById(R.id.footer).visibility = View.VISIBLE
         slideLayout?.setDragView(slideLayout?.findViewById(R.id.drag_area))
     }
 
     private fun setHeaderOrigins() {
         (findViewById(R.id.starting_point) as TextView).setText(R.string.current_location)
-        (findViewById(R.id.destination) as TextView).setText((findViewById(R.id.destination_name)
-                as TextView).getText())
-        findViewById(R.id.starting_location_icon).setVisibility(View.VISIBLE)
-        findViewById(R.id.destination_location_icon).setVisibility(View.GONE)
+        (findViewById(R.id.destination) as TextView).text =
+                (findViewById(R.id.destination_name) as TextView).text
+        findViewById(R.id.starting_location_icon).visibility = View.VISIBLE
+        findViewById(R.id.destination_location_icon).visibility = View.GONE
     }
 
     override fun collapseSlideLayout() {
         if (slideLayoutIsExpanded()) {
-            slideLayout?.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            slideLayout?.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED;
         }
     }
 
     public fun slideLayoutIsExpanded() : Boolean {
-        return slideLayout?.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED;
+        return slideLayout?.panelState == SlidingUpPanelLayout.PanelState.EXPANDED;
     }
 
     private fun resumeAutoPaging() {
@@ -239,7 +233,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     private fun setCurrentPagerItemStyling(position : Int) {
-        var lastItemIndex = (pager?.getAdapter() as InstructionAdapter).getCount() - 1
+        var lastItemIndex = (pager?.adapter as InstructionAdapter).count - 1
         var itemsUntilLastInstruction = (lastItemIndex - position)
         if (itemsUntilLastInstruction == 1) {
             (pager?.adapter as InstructionAdapter)
@@ -262,101 +256,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     public fun findViewByIndex(index: Int): View? {
         return pager?.findViewWithTag(VIEW_TAG + index)
-    }
-
-    /**
-     * Route engine callback object
-     */
-    inner class RouteModeListener : RouteListener {
-        private val TAG: String = "RouteListener"
-        public var debug: Boolean = true
-
-        override fun onRecalculate(location: Location) {
-            log("[onRecalculate]", location)
-            presenter?.onReroute(location)
-        }
-
-        override fun onSnapLocation(originalLocation: Location?, snapLocation: Location?) {
-            log("[onSnapLocation]", "originalLocation = " + originalLocation
-                    + " | " + "snapLocation = " + snapLocation)
-        }
-
-        override fun onMilestoneReached(index: Int, milestone: RouteEngine.Milestone) {
-            log("[onApproachInstruction]", index)
-            currentInstructionIndex = index
-            pager?.setCurrentItem(index)
-
-            val instruction = route?.getRouteInstructions()?.get(index)
-            val units = settings?.distanceUnits
-            if (instruction is Instruction && units is Router.DistanceUnits) {
-                voiceNavigationController?.playMilestone(instruction, milestone, units)
-            }
-        }
-
-        override fun onApproachInstruction(index: Int) {
-            log("[onAlertInstruction]", index)
-            currentInstructionIndex = index
-            pager?.setCurrentItem(index)
-
-            val instruction = route?.getRouteInstructions()?.get(index)
-            if (instruction is Instruction) voiceNavigationController?.playPre(instruction)
-        }
-
-        override fun onInstructionComplete(index: Int) {
-            log("[onInstructionComplete]", index)
-            val icon = findViewByIndex(index)?.findViewById(R.id.icon)
-            if (icon is ImageView) {
-                icon.setImageResource(DisplayHelper.getRouteDrawable(getContext(), 8))
-            }
-
-            val instruction = route?.getRouteInstructions()?.get(index)
-            if (instruction is Instruction) {
-                voiceNavigationController?.playPost(instruction)
-                presenter?.onInstructionSelected(instruction)
-            }
-        }
-
-        override fun onUpdateDistance(distanceToNextInstruction: Int, distanceToDestination: Int) {
-            log("[onUpdateDistance]", "distanceToNextInstruction = " + distanceToNextInstruction
-                    + " | " + "distanceToDestination = " + distanceToDestination)
-            setDistanceToNextInstruction(distanceToNextInstruction)
-            setDistanceToDestination(distanceToDestination)
-        }
-
-        override fun onRouteComplete() {
-            log("[onRouteComplete]")
-            findViewById(R.id.footer_wrapper)?.setVisibility(View.GONE)
-            findViewById(R.id.resume)?.setVisibility(View.GONE)
-            findViewById(R.id.instruction_list)?.setVisibility(View.GONE)
-            (findViewById(R.id.sliding_layout) as SlidingUpPanelLayout).setShadowHeight(0)
-        }
-
-        private fun log(method: String, message: Any? = null) {
-            if (debug) {
-                var output = String()
-                output += method
-                if (message != null) {
-                    output += " " + message
-                }
-
-                Log.d(TAG, output)
-            }
-        }
-    }
-
-    private fun setDistanceToDestination(distanceToDestination: Int) {
-        val distanceToDestinationView = findViewById(R.id.destination_distance)
-        if (distanceToDestinationView is DistanceView) {
-            distanceToDestinationView.distanceInMeters = distanceToDestination
-        }
-    }
-
-    private fun setDistanceToNextInstruction(distanceToNextInstruction: Int) {
-        val currentInstructionView = findViewByIndex(currentInstructionIndex)
-        val distanceToNextView = currentInstructionView?.findViewById(R.id.distance)
-        if (distanceToNextView is DistanceView) {
-            distanceToNextView.distanceInMeters = distanceToNextInstruction
-        }
     }
 
     override fun onLocationChanged(location: Location) {
@@ -383,5 +282,62 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         mapController?.mapRotation = rotation
         mapController?.mapZoom = MainPresenter.ROUTING_ZOOM
         mapController?.mapTilt = MainPresenter.ROUTING_TILT
+    }
+
+    override fun setCurrentInstruction(index: Int) {
+        currentInstructionIndex = index
+        pager?.currentItem = index
+    }
+
+    override fun setMilestone(index: Int, milestone: RouteEngine.Milestone) {
+        val instruction = route?.getRouteInstructions()?.get(index)
+        val units = settings?.distanceUnits
+        if (instruction is Instruction && units is Router.DistanceUnits) {
+            voiceNavigationController?.playMilestone(instruction, milestone, units)
+        }
+    }
+
+    override fun playPreInstructionAlert(index: Int) {
+        val instruction = route?.getRouteInstructions()?.get(index)
+        if (instruction is Instruction) voiceNavigationController?.playPre(instruction)
+    }
+
+    override fun playPostInstructionAlert(index: Int) {
+        val icon = findViewByIndex(index)?.findViewById(R.id.icon)
+        if (icon is ImageView) {
+            icon.setImageResource(DisplayHelper.getRouteDrawable(getContext(), 8))
+        }
+
+        val instruction = route?.getRouteInstructions()?.get(index)
+        if (instruction is Instruction) {
+            voiceNavigationController?.playPost(instruction)
+            mainPresenter?.onInstructionSelected(instruction)
+        }
+    }
+
+    override fun updateDistanceToNextInstruction(meters: Int) {
+        val currentInstructionView = findViewByIndex(currentInstructionIndex)
+        val distanceToNextView = currentInstructionView?.findViewById(R.id.distance)
+        if (distanceToNextView is DistanceView) {
+            distanceToNextView.distanceInMeters = meters
+        }
+    }
+
+    override fun updateDistanceToDestination(meters: Int) {
+        val distanceToDestinationView = findViewById(R.id.destination_distance)
+        if (distanceToDestinationView is DistanceView) {
+            distanceToDestinationView.distanceInMeters = meters
+        }
+    }
+
+    override fun showRouteComplete() {
+        findViewById(R.id.footer_wrapper)?.visibility = View.GONE
+        findViewById(R.id.resume)?.visibility = View.GONE
+        findViewById(R.id.instruction_list)?.visibility = View.GONE
+        (findViewById(R.id.sliding_layout) as SlidingUpPanelLayout).shadowHeight = 0
+    }
+
+    override fun showReroute(location: Location) {
+        mainPresenter?.onReroute(location)
     }
 }
