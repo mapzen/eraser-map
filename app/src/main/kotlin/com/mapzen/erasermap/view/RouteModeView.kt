@@ -58,6 +58,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         @Inject set
 
     private var currentInstructionIndex: Int = 0
+    private var currentSnapLocation: Location? = null
+
+    override var isTrackingCurrentLocation: Boolean = true
 
     public constructor(context: Context) : super(context) {
         init(context)
@@ -277,11 +280,21 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         findViewById(R.id.resume).visibility = View.GONE
     }
 
-    override fun centerMapOnLocation(location: Location, rotation: Float) {
-        mapController?.mapPosition = LngLat(location.longitude, location.latitude)
-        mapController?.mapRotation = rotation
-        mapController?.mapZoom = MainPresenter.ROUTING_ZOOM
-        mapController?.mapTilt = MainPresenter.ROUTING_TILT
+    override fun centerMapOnCurrentLocation() {
+        val location = currentSnapLocation
+        if (location is Location) {
+            centerMapOnLocation(location)
+        }
+    }
+
+    override fun centerMapOnLocation(location: Location) {
+        currentSnapLocation = location
+        if (isTrackingCurrentLocation) {
+            mapController?.mapPosition = LngLat(location.longitude, location.latitude)
+            mapController?.mapRotation = getBearingInRadians(location)
+            mapController?.mapZoom = MainPresenter.ROUTING_ZOOM
+            mapController?.mapTilt = MainPresenter.ROUTING_TILT
+        }
     }
 
     override fun setCurrentInstruction(index: Int) {
@@ -339,5 +352,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun showReroute(location: Location) {
         mainPresenter?.onReroute(location)
+    }
+
+    private fun getBearingInRadians(location: Location): Float {
+        return Math.toRadians(360 - location.bearing.toDouble()).toFloat()
     }
 }

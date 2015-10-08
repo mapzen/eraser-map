@@ -4,13 +4,16 @@ import android.location.Location
 import com.mapzen.helpers.RouteEngine
 
 public interface RouteViewController {
+    public var isTrackingCurrentLocation: Boolean
+
     public fun onLocationChanged(location: Location)
     public fun collapseSlideLayout()
     public fun showDirectionList()
     public fun hideDirectionList()
     public fun showResumeButton()
     public fun hideResumeButton()
-    public fun centerMapOnLocation(location: Location, rotation: Float)
+    public fun centerMapOnCurrentLocation()
+    public fun centerMapOnLocation(location: Location)
     public fun setCurrentInstruction(index: Int)
     public fun setMilestone(index: Int, milestone: RouteEngine.Milestone)
     public fun playPreInstructionAlert(index: Int)

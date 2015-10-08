@@ -8,6 +8,8 @@ public class TestRouteController : RouteViewController {
     public var isDirectionListVisible: Boolean = false
     public var isResumeButtonVisible: Boolean = false
 
+    override var isTrackingCurrentLocation: Boolean = true
+
     override fun onLocationChanged(location: Location) {
         this.location = location
     }
@@ -31,7 +33,10 @@ public class TestRouteController : RouteViewController {
         isResumeButtonVisible = false
     }
 
-    override fun centerMapOnLocation(location: Location, rotation: Float) {
+    override fun centerMapOnCurrentLocation() {
+    }
+
+    override fun centerMapOnLocation(location: Location) {
     }
 
     override fun setCurrentInstruction(index: Int) {
