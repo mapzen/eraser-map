@@ -465,9 +465,9 @@ public class MainActivityTest {
     @Test
     public fun showRoutingMode_shouldHideFindMeIcon() {
         activity.showCurrentLocation(getTestLocation())
+        val shadowMapData = ShadowExtractor.extract(activity.findMe) as ShadowMapData
         activity.success(Route(JSONObject()))
         activity.showRoutingMode(getTestFeature())
-        val shadowMapData = ShadowExtractor.extract(activity.findMe) as ShadowMapData
         assertThat(shadowMapData.getPoints()).isNullOrEmpty()
     }
 
