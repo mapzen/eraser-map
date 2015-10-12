@@ -22,6 +22,7 @@ import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
+import com.mapzen.tangram.MapData
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
@@ -59,6 +60,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     private var currentInstructionIndex: Int = 0
     private var currentSnapLocation: Location? = null
+    private var routeIcon: MapData? = null
 
     override var isTrackingCurrentLocation: Boolean = true
 
@@ -295,6 +297,13 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             mapController?.mapZoom = MainPresenter.ROUTING_ZOOM
             mapController?.mapTilt = MainPresenter.ROUTING_TILT
         }
+
+        if (routeIcon == null) {
+            routeIcon = MapData("route_icon")
+        }
+
+        routeIcon?.clear()
+        routeIcon?.addPoint(LngLat(location.longitude, location.latitude))
     }
 
     override fun setCurrentInstruction(index: Int) {
