@@ -1,11 +1,14 @@
 package com.mapzen.erasermap.view
 
 import android.location.Location
+import com.mapzen.helpers.RouteEngine
 
 public class TestRouteController : RouteViewController {
     public var location: Location? = null
     public var isDirectionListVisible: Boolean = false
     public var isResumeButtonVisible: Boolean = false
+
+    override var isTrackingCurrentLocation: Boolean = true
 
     override fun onLocationChanged(location: Location) {
         this.location = location
@@ -30,6 +33,33 @@ public class TestRouteController : RouteViewController {
         isResumeButtonVisible = false
     }
 
-    override fun centerMapOnLocation(location: Location, rotation: Float) {
+    override fun centerMapOnCurrentLocation() {
+    }
+
+    override fun centerMapOnLocation(location: Location) {
+    }
+
+    override fun setCurrentInstruction(index: Int) {
+    }
+
+    override fun setMilestone(index: Int, milestone: RouteEngine.Milestone) {
+    }
+
+    override fun playPreInstructionAlert(index: Int) {
+    }
+
+    override fun playPostInstructionAlert(index: Int) {
+    }
+
+    override fun updateDistanceToNextInstruction(meters: Int) {
+    }
+
+    override fun updateDistanceToDestination(meters: Int) {
+    }
+
+    override fun showRouteComplete() {
+    }
+
+    override fun showReroute(location: Location) {
     }
 }

@@ -5,7 +5,6 @@ import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
-import com.mapzen.helpers.RouteEngine;
 import com.mapzen.valhalla.Route;
 
 import org.junit.Before;
@@ -37,13 +36,14 @@ import static org.robolectric.RuntimeEnvironment.application;
 @RunWith(PrivateMapsTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class RouteModeViewTest {
-    InstructionAdapter adapter;
-    RouteModeView routeModeView;
-    private static MainActivity startActivity = Robolectric.setupActivity(MainActivity.class);
+    private RouteModeView routeModeView;
+    private InstructionAdapter adapter;
+    private MainActivity startActivity;
     private ViewGroup viewGroup;
 
     @Before
     public void setUp() throws Exception {
+        startActivity = Robolectric.setupActivity(MainActivity.class);
         startActivity.setReverse(false);
         startActivity.showRoutePreview(getTestLocation(), getTestFeature());
         startActivity.success(new Route(getFixture("valhalla_route")));
@@ -168,79 +168,71 @@ public class RouteModeViewTest {
     }
 
     @Test
-    public void onInstructionComplete_shouldUpdateIcon() throws Exception {
-        routeModeView.getRouteListener().onInstructionComplete(1);
+    public void playPostInstructionAlert_shouldUpdateIcon() throws Exception {
+        routeModeView.playPostInstructionAlert(1);
         ImageView icon = (ImageView) routeModeView.findViewByIndex(1).findViewById(R.id.icon);
-        assertThat(Shadows.shadowOf(icon).getImageResourceId())
-                .isEqualTo(application.getResources().getIdentifier("ic_route_8",
-                        "drawable", application.getPackageName()));
+        assertThat(Shadows.shadowOf(icon).getImageResourceId()).isEqualTo(application.getResources()
+                .getIdentifier("ic_route_8", "drawable", application.getPackageName()));
     }
 
     @Test
-    public void onInstructionComplete_shouldRotateMap() throws Exception {
+    public void playPostInstructionAlert_shouldRotateMap() throws Exception {
         routeModeView.getRoute().getRouteInstructions().get(1).setBearing(180);
-        routeModeView.getRouteListener().onInstructionComplete(1);
+        routeModeView.playPostInstructionAlert(1);
         assertThat(startActivity.getMapController().getMapRotation()).isEqualTo((float) Math.PI);
     }
 
     @Test
-    public void onApproachInstruction_shouldAdvanceViewPager() throws Exception {
-        routeModeView.getRouteListener().onMilestoneReached(1, RouteEngine.Milestone.ONE_MILE);
+    public void setCurrentInstruction_shouldAdvanceViewPager() throws Exception {
+        routeModeView.setCurrentInstruction(1);
         assertThat(routeModeView.getPager().getCurrentItem()).isEqualTo(1);
     }
 
     @Test
-    public void onAlertInstruction_shouldAdvanceViewPager() throws Exception {
-        routeModeView.getRouteListener().onApproachInstruction(1);
-        assertThat(routeModeView.getPager().getCurrentItem()).isEqualTo(1);
-    }
-
-    @Test
-    public void onUpdateDistance_shouldUpdateDistanceToNextInstruction() throws Exception {
+    public void updateDistanceToNextInstruction_shouldUpdateDistance() throws Exception {
         adapter.instantiateItem(routeModeView.getPager(), 0);
-        routeModeView.getRouteListener().onApproachInstruction(0);
-        routeModeView.getRouteListener().onUpdateDistance(100, 500);
+        routeModeView.updateDistanceToNextInstruction(100);
         DistanceView distanceView =
                 (DistanceView) routeModeView.findViewByIndex(0).findViewById(R.id.distance);
         assertThat(distanceView.getDistanceInMeters()).isEqualTo(100);
     }
 
     @Test
-    public void onUpdateDistance_shouldUpdateDistanceToDestination() throws Exception {
+    public void updateDistanceToDestination_shouldUpdateDistance() throws Exception {
         adapter.instantiateItem(routeModeView.getPager(), 0);
-        routeModeView.getRouteListener().onUpdateDistance(100, 500);
+        routeModeView.updateDistanceToDestination(500);
         DistanceView distanceView =
                 (DistanceView) routeModeView.findViewById(R.id.destination_distance);
         assertThat(distanceView.getDistanceInMeters()).isEqualTo(500);
     }
 
     @Test
-    public void onRouteComplete_shouldHideRouteFooter() throws Exception {
-        routeModeView.getRouteListener().onRouteComplete();
+    public void showRouteComplete_shouldHideRouteFooter() throws Exception {
+        routeModeView.showRouteComplete();
         assertThat(routeModeView.findViewById(R.id.footer_wrapper).getVisibility())
                 .isEqualTo(View.GONE);
     }
 
     @Test
-    public void onRouteComplete_shouldHideResumeButton() throws Exception {
-        routeModeView.getRouteListener().onRouteComplete();
+    public void showRouteComplete_shouldHideResumeButton() throws Exception {
+        routeModeView.showRouteComplete();
         assertThat(routeModeView.findViewById(R.id.resume).getVisibility())
                 .isEqualTo(View.GONE);
     }
 
     @Test
-    public void onRouteComplete_shouldHideInstructionList() throws Exception {
-        routeModeView.getRouteListener().onRouteComplete();
+    public void showRouteComplete_shouldHideInstructionList() throws Exception {
+        routeModeView.showRouteComplete();
         assertThat(routeModeView.findViewById(R.id.instruction_list).getVisibility())
                 .isEqualTo(View.GONE);
     }
 
     @Test
-    public void onRecalculate_shouldNotifyPresenter() throws Exception {
+    public void showReroute_shouldNotifyPresenter() throws Exception {
         MainPresenter presenter = Mockito.mock(MainPresenterImpl.class);
         Location location = getTestLocation();
-        routeModeView.setPresenter(presenter);
-        routeModeView.getRouteListener().onRecalculate(location);
+        routeModeView.setMainPresenter(presenter);
+        routeModeView.showReroute(location);
         Mockito.verify(presenter, Mockito.times(1)).onReroute(location);
     }
 

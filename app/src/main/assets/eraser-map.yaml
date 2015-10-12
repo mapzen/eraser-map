@@ -946,6 +946,13 @@ layers:
                 priority: 1
                 sprite: capital-xl
                 size: 18px
+    route_icon:
+        data: { source: route_icon }
+        draw:
+            icons:
+                priority: 1
+                sprite: airport
+                size: 18px
     search:
         data: { source: search }
         draw:

@@ -10,9 +10,6 @@ import com.mapzen.erasermap.model.TestRouterFactory;
 import com.mapzen.erasermap.model.TileHttpHandler;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
-import com.mapzen.erasermap.presenter.RoutePresenter;
-import com.mapzen.erasermap.presenter.RoutePresenterImpl;
-import com.mapzen.helpers.RouteEngine;
 
 import com.squareup.otto.Bus;
 
@@ -57,11 +54,6 @@ public class TestAndroidModule {
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation,
             RouterFactory routerFactory, AppSettings settings) {
         return new MainPresenterImpl(mapzenLocation, routerFactory, settings);
-    }
-
-    @Provides @Singleton RoutePresenter provideRoutePresenter(RouteEngine routeEngine,
-            MapzenLocation mapzenLocation) {
-        return new RoutePresenterImpl(routeEngine, mapzenLocation);
     }
 
     @Provides @Singleton RouterFactory provideRouterFactory() {

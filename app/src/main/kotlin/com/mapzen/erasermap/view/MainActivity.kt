@@ -153,6 +153,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun initFindMeButton() {
+        findMe = MapData("find_me")
         findViewById(R.id.find_me).setOnClickListener({ presenter?.onFindMeButtonClick() })
     }
 
@@ -226,10 +227,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showCurrentLocation(location: Location) {
-        if (findMe == null) {
-            findMe = MapData("find_me")
-        }
-
         findMe?.clear()
         findMe?.addPoint(LngLat(location.longitude, location.latitude))
     }
@@ -655,6 +652,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showRoutingMode(feature: Feature) {
+        findMe?.clear()
+        findMe = null
         val startingLocation = route?.getRouteInstructions()?.get(0)?.location
         if (startingLocation is Location) {
             centerMapOnLocation(startingLocation, MainPresenter.ROUTING_ZOOM)
@@ -667,7 +666,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         reverse = false
         findViewById(R.id.route_preview).visibility = View.GONE
         findViewById(R.id.route_mode).visibility = View.VISIBLE
-        (findViewById(R.id.route_mode) as RouteModeView).presenter = presenter
+        (findViewById(R.id.route_mode) as RouteModeView).mainPresenter = presenter
         (findViewById(R.id.route_mode) as RouteModeView).mapController = mapController
         presenter?.routeViewController = findViewById(R.id.route_mode) as RouteModeView
         this.route = presenter?.route
@@ -693,6 +692,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun hideRoutingMode() {
+        initFindMeButton()
         presenter?.routingEnabled = false
         val routeModeView = findViewById(R.id.route_mode) as RouteModeView
         findViewById(R.id.route_mode).visibility = View.GONE
@@ -702,6 +702,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         }
         supportActionBar?.hide()
         routeModeView.route = null
+        routeModeView.hideRouteIcon()
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {
