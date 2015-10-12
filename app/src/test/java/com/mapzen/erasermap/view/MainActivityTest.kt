@@ -462,6 +462,15 @@ public class MainActivityTest {
                 .isEqualTo(ComponentName(activity, javaClass<SettingsActivity>()))
     }
 
+    @Test
+    public fun showRoutingMode_shouldHideFindMeIcon() {
+        activity.showCurrentLocation(getTestLocation())
+        activity.success(Route(JSONObject()))
+        activity.showRoutingMode(getTestFeature())
+        val shadowMapData = ShadowExtractor.extract(activity.findMe) as ShadowMapData
+        assertThat(shadowMapData.getPoints()).isNullOrEmpty()
+    }
+
     protected inner class RoboMenuWithGroup public constructor(public var group: Int,
             public var visible: Boolean) : RoboMenu() {
 

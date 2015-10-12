@@ -366,4 +366,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     private fun getBearingInRadians(location: Location): Float {
         return Math.toRadians(360 - location.bearing.toDouble()).toFloat()
     }
+
+    fun hideRouteIcon() {
+        routeIcon?.clear()
+    }
 }
