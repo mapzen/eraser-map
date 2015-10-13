@@ -709,8 +709,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun setBoundingBox() {
         val menuItem = optionsMenu?.findItem(R.id.action_search)
         var mdisp : Display = getWindowManager().getDefaultDisplay();
-        var minLatLon = mapController?.coordinatesAtScreenPosition(mdisp.width.toDouble(), mdisp.height.toDouble())
-        var maxLatLon = mapController?.coordinatesAtScreenPosition(0.0, 0.0);
+        var minLatLon = mapController?.coordinatesAtScreenPosition(mdisp.width.toDouble(), 0.0 )
+        var maxLatLon = mapController?.coordinatesAtScreenPosition(0.0, mdisp.height.toDouble());
         var bbox: BoundingBox = BoundingBox(minLatLon?.latitude as Double, minLatLon?.longitude as Double,
                 maxLatLon?.latitude as Double, maxLatLon?.longitude as Double)
         (menuItem?.actionView  as PeliasSearchView).setBoundingBox(bbox)
