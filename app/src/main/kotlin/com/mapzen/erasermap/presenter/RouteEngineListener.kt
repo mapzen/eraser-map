@@ -16,7 +16,7 @@ class RouteEngineListener : RouteListener {
 
     override fun onSnapLocation(originalLocation: Location, snapLocation: Location) {
         log("[onSnapLocation]", "original = $originalLocation | snap = $snapLocation")
-        controller?.centerMapOnLocation(snapLocation);
+        controller?.updateSnapLocation(snapLocation);
     }
 
     override fun onMilestoneReached(index: Int, milestone: RouteEngine.Milestone) {

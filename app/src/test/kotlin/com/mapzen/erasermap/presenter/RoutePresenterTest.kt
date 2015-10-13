@@ -1,5 +1,6 @@
 package com.mapzen.erasermap.presenter
 
+import android.location.Location
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getFixture
 import com.mapzen.erasermap.view.TestRouteController
@@ -38,9 +39,10 @@ public class RoutePresenterTest {
     }
 
     @Test fun onMapGesture_shouldDisableLocationTracking() {
-        routeController.isTrackingCurrentLocation = true
+        routePresenter.onResumeButtonClick()
         routePresenter.onMapGesture()
-        assertThat(routeController.isTrackingCurrentLocation).isFalse()
+        routePresenter.onUpdateSnapLocation(Location("test"))
+        assertThat(routeController.mapLocation).isNull()
     }
 
     @Test fun onResumeButtonClick_shouldHideResumeButton() {
@@ -50,9 +52,10 @@ public class RoutePresenterTest {
     }
 
     @Test fun onResumeButtonClick_shouldEnableLocationTracking() {
-        routeController.isTrackingCurrentLocation = false
+        routePresenter.onMapGesture()
         routePresenter.onResumeButtonClick()
-        assertThat(routeController.isTrackingCurrentLocation).isTrue()
+        routePresenter.onUpdateSnapLocation(Location("test"))
+        assertThat(routeController.mapLocation).isNotNull()
     }
 
     @Test fun onInstructionPagerTouch_shouldShowResumeButton() {
@@ -62,15 +65,17 @@ public class RoutePresenterTest {
     }
 
     @Test fun onInstructionPagerTouch_shouldDisableLocationTracking() {
-        routeController.isTrackingCurrentLocation = true
+        routePresenter.onResumeButtonClick()
         routePresenter.onInstructionPagerTouch()
-        assertThat(routeController.isTrackingCurrentLocation).isFalse()
+        routePresenter.onUpdateSnapLocation(Location("test"))
+        assertThat(routeController.mapLocation).isNull()
     }
 
     @Test fun onInstructionSelected_shouldCenterMapOnLocation() {
         val instruction = TestHelper.getTestInstruction()
         val location = TestHelper.getTestLocation()
         instruction.location = location
+        routePresenter.onInstructionPagerTouch()
         routePresenter.onInstructionSelected(instruction)
         assertThat(routeController.mapLocation).isEqualTo(location)
     }
