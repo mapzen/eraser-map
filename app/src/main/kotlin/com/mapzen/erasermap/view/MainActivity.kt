@@ -15,6 +15,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.view.Display
 import android.widget.ImageButton
 import android.widget.RadioButton
 import android.widget.TextView
@@ -39,6 +40,7 @@ import com.mapzen.pelias.gson.Result
 import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
+import com.mapzen.pelias.BoundingBox
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapData
@@ -254,6 +256,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             listView.adapter = autoCompleteAdapter
             val pelias = Pelias.getPelias()
             pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
+            pelias.setApiKey(apiKeys?.peliasApiKey)
             searchView.setAutoCompleteListView(listView)
             searchView.setSavedSearch(savedSearch)
             searchView.setPelias(Pelias.getPelias())
@@ -303,6 +306,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         val menuItem = optionsMenu?.findItem(R.id.action_search)
         val actionView = menuItem?.actionView as PeliasSearchView
+        setBoundingBox()
         val intent = Intent(this, SearchResultsListActivity::class.java)
         intent.putParcelableArrayListExtra("features", simpleFeatures)
         intent.putExtra("query", actionView.query.toString())
@@ -369,6 +373,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     inner class SearchOnActionExpandListener : MenuItemCompat.OnActionExpandListener {
         override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+            setBoundingBox()
             presenter?.onExpandSearchView()
             return true
         }
@@ -415,11 +420,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun centerOnCurrentFeature(features: List<Feature>) {
         Handler().postDelayed({
-            val pager = findViewById(R.id.search_results) as SearchResultsView
-            val position = pager.getCurrentItem()
-            val feature = SimpleFeature.fromFeature(features.get(position))
-            mapController?.setMapPosition(feature.lon,feature.lat)
-            mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
+            if(features.size() > 0) {
+                val pager = findViewById(R.id.search_results) as SearchResultsView
+                val position = pager.getCurrentItem()
+                val feature = SimpleFeature.fromFeature(features.get(position))
+                mapController?.setMapPosition(feature.lon, feature.lat)
+                mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
+            }
         }, 100)
     }
 
@@ -705,12 +712,22 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         routeModeView.hideRouteIcon()
     }
 
+    private fun setBoundingBox() {
+        val menuItem = optionsMenu?.findItem(R.id.action_search)
+        var mdisp : Display = getWindowManager().getDefaultDisplay();
+        var minLatLon = mapController?.coordinatesAtScreenPosition(0.0, mdisp.height.toDouble())
+        var maxLatLon = mapController?.coordinatesAtScreenPosition(mdisp.width.toDouble(), 0.0);
+        var bbox: BoundingBox = BoundingBox(minLatLon?.latitude as Double, minLatLon?.longitude as Double,
+                maxLatLon?.latitude as Double, maxLatLon?.longitude as Double)
+        (menuItem?.actionView  as PeliasSearchView).setBoundingBox(bbox)
+    }
+
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {
         var nameLength: Int = 6;
         val feature = Feature()
         val properties = Properties()
         if(lat.toString().length() > nameLength && lon.toString().length() > nameLength + 1) {
-            properties.text = lat.toString().substring(0, nameLength) + "," + lon.toString()
+            properties.label = lat.toString().substring(0, nameLength) + "," + lon.toString()
                     .substring(0, nameLength + 1)
         }
         feature.properties = properties
