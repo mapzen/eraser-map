@@ -416,11 +416,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun centerOnCurrentFeature(features: List<Feature>) {
         Handler().postDelayed({
-            val pager = findViewById(R.id.search_results) as SearchResultsView
-            val position = pager.getCurrentItem()
-            val feature = SimpleFeature.fromFeature(features.get(position))
-            mapController?.setMapPosition(feature.lon,feature.lat)
-            mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
+            if(features.size() > 0) {
+                val pager = findViewById(R.id.search_results) as SearchResultsView
+                val position = pager.getCurrentItem()
+                val feature = SimpleFeature.fromFeature(features.get(position))
+                mapController?.setMapPosition(feature.lon, feature.lat)
+                mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
+            }
         }, 100)
     }
 
@@ -709,8 +711,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun setBoundingBox() {
         val menuItem = optionsMenu?.findItem(R.id.action_search)
         var mdisp : Display = getWindowManager().getDefaultDisplay();
-        var minLatLon = mapController?.coordinatesAtScreenPosition(mdisp.width.toDouble(), 0.0 )
-        var maxLatLon = mapController?.coordinatesAtScreenPosition(0.0, mdisp.height.toDouble());
+        var minLatLon = mapController?.coordinatesAtScreenPosition(0.0, mdisp.height.toDouble())
+        var maxLatLon = mapController?.coordinatesAtScreenPosition(mdisp.width.toDouble(), 0.0);
         var bbox: BoundingBox = BoundingBox(minLatLon?.latitude as Double, minLatLon?.longitude as Double,
                 maxLatLon?.latitude as Double, maxLatLon?.longitude as Double)
         (menuItem?.actionView  as PeliasSearchView).setBoundingBox(bbox)
