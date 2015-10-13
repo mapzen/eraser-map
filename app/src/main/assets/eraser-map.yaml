@@ -971,6 +971,10 @@ layers:
             icons:
                 priority: 1
                 sprite: capital-xl
+                collide: false
+                transition:
+                    [show, hide]:
+                        time: 0s
                 size: 18px
     route_icon:
         data: { source: route_icon }
