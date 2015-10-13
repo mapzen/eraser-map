@@ -993,6 +993,10 @@ layers:
             icons:
                 priority: 2
                 sprite: ice-cream-shop
+                collide: false
+                transition:
+                    [show, hide]:
+                        time: 0s
                 size: 18px
 
     # Basemap styling
