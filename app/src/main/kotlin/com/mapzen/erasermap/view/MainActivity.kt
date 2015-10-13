@@ -684,7 +684,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         val firstInstruction = route?.getRouteInstructions()?.get(0)
         if (firstInstruction is Instruction) {
-            presenter?.onInstructionSelected(firstInstruction)
+            pager.routePresenter?.onInstructionSelected(firstInstruction)
         }
 
         val simpleFeature = SimpleFeature.fromFeature(destination)

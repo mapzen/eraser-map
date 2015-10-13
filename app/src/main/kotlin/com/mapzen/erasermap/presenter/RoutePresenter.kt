@@ -2,6 +2,7 @@ package com.mapzen.erasermap.presenter
 
 import android.location.Location
 import com.mapzen.erasermap.view.RouteViewController
+import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 
 public interface RoutePresenter {
@@ -11,4 +12,6 @@ public interface RoutePresenter {
     public fun setRoute(route: Route?)
     public fun onMapGesture()
     public fun onResumeButtonClick()
+    public fun onInstructionPagerTouch()
+    public fun onInstructionSelected(instruction: Instruction)
 }

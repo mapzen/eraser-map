@@ -6,7 +6,6 @@ import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
-import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.squareup.otto.Bus
 
@@ -39,7 +38,6 @@ public interface MainPresenter {
     public fun onRestoreViewState()
     public fun onSlidingPanelOpen()
     public fun onSlidingPanelCollapse()
-    public fun onInstructionSelected(instruction: Instruction)
     public fun onCreate()
     public fun onResume()
     public fun onPause()

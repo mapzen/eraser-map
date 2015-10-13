@@ -5,6 +5,7 @@ import com.mapzen.helpers.RouteEngine
 
 public class TestRouteController : RouteViewController {
     public var location: Location? = null
+    public var mapLocation: Location? = null
     public var isDirectionListVisible: Boolean = false
     public var isResumeButtonVisible: Boolean = false
 
@@ -37,6 +38,7 @@ public class TestRouteController : RouteViewController {
     }
 
     override fun centerMapOnLocation(location: Location) {
+        mapLocation = location
     }
 
     override fun setCurrentInstruction(index: Int) {

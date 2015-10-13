@@ -73,7 +73,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     public constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
-    : super(context, attrs, defStyleAttr) {
+            : super(context, attrs, defStyleAttr) {
         init(context)
     }
 
@@ -90,9 +90,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-        if(pager?.currentItem == currentInstructionIndex) {
+        if (pager?.currentItem == currentInstructionIndex) {
             setCurrentPagerItemStyling(currentInstructionIndex);
-            if(!autoPage) {
+            if (!autoPage) {
                 resumeAutoPaging()
             }
         } else {
@@ -103,11 +103,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun onPageSelected(position: Int) {
         setCurrentPagerItemStyling(currentInstructionIndex);
-        // TODO: Set map position on manual pager swipe only.
-        // val instruction = route?.getRouteInstructions()?.get(position)
-        // if (instruction is Instruction) {
-        //     presenter?.onInstructionSelected(instruction)
-        // }
+        val instruction = route?.getRouteInstructions()?.get(position)
+        if (instruction is Instruction) {
+            routePresenter?.onInstructionSelected(instruction)
+        }
     }
 
     override fun onPageScrollStateChanged(state: Int) {
@@ -119,6 +118,12 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         pager?.addOnPageChangeListener(this)
         (findViewById(R.id.destination_distance) as DistanceView).distanceInMeters =
                 (route?.getRemainingDistanceToDestination() as Int)
+        pager?.setOnTouchListener({ view, motionEvent -> onPagerTouch() })
+    }
+
+    private fun onPagerTouch(): Boolean {
+        routePresenter?.onInstructionPagerTouch()
+        return false
     }
 
     public fun pageForward(position: Int) {
@@ -333,7 +338,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         val instruction = route?.getRouteInstructions()?.get(index)
         if (instruction is Instruction) {
             voiceNavigationController?.playPost(instruction)
-            mainPresenter?.onInstructionSelected(instruction)
+            routePresenter?.onInstructionSelected(instruction)
         }
     }
 
