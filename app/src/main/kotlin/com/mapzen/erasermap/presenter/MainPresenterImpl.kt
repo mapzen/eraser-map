@@ -14,7 +14,6 @@ import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
-import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
@@ -204,14 +203,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     override fun onSlidingPanelCollapse() {
         viewState = ViewState.ROUTING
         routeViewController?.hideDirectionList()
-    }
-
-    override fun onInstructionSelected(instruction: Instruction) {
-        mainViewController?.centerMapOnLocation(instruction.location, MainPresenter.ROUTING_ZOOM)
-        mainViewController?.setMapTilt(MainPresenter.ROUTING_TILT)
-
-        val counterClockwiseRotationInRadians = Math.toRadians(360 - instruction.bearing.toDouble())
-        mainViewController?.setMapRotation(counterClockwiseRotationInRadians.toFloat())
     }
 
     override fun onCreate() {

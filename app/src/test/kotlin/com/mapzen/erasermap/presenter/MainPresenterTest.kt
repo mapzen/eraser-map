@@ -2,7 +2,6 @@ package com.mapzen.erasermap.presenter
 
 import android.location.Location
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
-import com.mapzen.erasermap.dummy.TestHelper.getTestInstruction
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
 import com.mapzen.erasermap.model.LocationChangeEvent
 import com.mapzen.erasermap.model.RouteEvent
@@ -240,34 +239,6 @@ public class MainPresenterTest {
         routeController.isDirectionListVisible = true
         presenter.onSlidingPanelCollapse()
         assertThat(routeController.isDirectionListVisible).isFalse()
-    }
-
-    @Test
-    public fun onInstructionSelected_shouldCenterMapOnLocation() {
-        val instruction = getTestInstruction()
-        val location = getTestLocation()
-        instruction.location = location
-        presenter.onInstructionSelected(instruction)
-        assertThat(mainController.location).isEqualTo(location)
-    }
-
-    @Test
-    public fun onInstructionSelected_shouldSetMapTilt() {
-        val instruction = getTestInstruction()
-        val location = getTestLocation()
-        instruction.location = location
-        presenter.onInstructionSelected(instruction)
-        assertThat(mainController.tilt).isEqualTo(MainPresenter.ROUTING_TILT)
-    }
-
-    @Test
-    public fun onInstructionSelected_shouldSetMapRotation() {
-        val instruction = getTestInstruction()
-        val location = getTestLocation()
-        instruction.location = location
-        instruction.bearing = 180
-        presenter.onInstructionSelected(instruction)
-        assertThat(mainController.rotation).isEqualTo(Math.toRadians(180.0).toFloat())
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.mapzen.erasermap.presenter
 import android.location.Location
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.helpers.RouteEngine
+import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 
 public class RoutePresenterImpl(private val routeEngine: RouteEngine,
@@ -15,6 +16,7 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
         }
 
     private var route: Route? = null
+    private var isTrackingCurrentLocation: Boolean = true
 
     override fun onLocationChanged(location: Location) {
         routeEngine.onLocationChanged(location)
@@ -29,13 +31,31 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
     }
 
     override fun onMapGesture() {
-        routeController?.isTrackingCurrentLocation = false
+        isTrackingCurrentLocation = false
         routeController?.showResumeButton()
     }
 
     override fun onResumeButtonClick() {
-        routeController?.isTrackingCurrentLocation = true
+        isTrackingCurrentLocation = true
         routeController?.hideResumeButton()
         routeController?.centerMapOnCurrentLocation()
+    }
+
+    override fun onInstructionPagerTouch() {
+        isTrackingCurrentLocation = false
+        routeController?.showResumeButton()
+    }
+
+    override fun onInstructionSelected(instruction: Instruction) {
+        if (!isTrackingCurrentLocation) {
+            routeController?.centerMapOnLocation(instruction.location)
+        }
+    }
+
+    override fun onUpdateSnapLocation(location: Location) {
+        routeController?.showRouteIcon(location)
+        if (isTrackingCurrentLocation) {
+            routeController?.centerMapOnLocation(location)
+        }
     }
 }

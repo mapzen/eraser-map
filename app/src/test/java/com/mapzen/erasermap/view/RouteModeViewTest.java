@@ -176,13 +176,6 @@ public class RouteModeViewTest {
     }
 
     @Test
-    public void playPostInstructionAlert_shouldRotateMap() throws Exception {
-        routeModeView.getRoute().getRouteInstructions().get(1).setBearing(180);
-        routeModeView.playPostInstructionAlert(1);
-        assertThat(startActivity.getMapController().getMapRotation()).isEqualTo((float) Math.PI);
-    }
-
-    @Test
     public void setCurrentInstruction_shouldAdvanceViewPager() throws Exception {
         routeModeView.setCurrentInstruction(1);
         assertThat(routeModeView.getPager().getCurrentItem()).isEqualTo(1);

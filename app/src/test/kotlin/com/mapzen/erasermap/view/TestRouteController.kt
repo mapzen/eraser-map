@@ -5,10 +5,9 @@ import com.mapzen.helpers.RouteEngine
 
 public class TestRouteController : RouteViewController {
     public var location: Location? = null
+    public var mapLocation: Location? = null
     public var isDirectionListVisible: Boolean = false
     public var isResumeButtonVisible: Boolean = false
-
-    override var isTrackingCurrentLocation: Boolean = true
 
     override fun onLocationChanged(location: Location) {
         this.location = location
@@ -33,10 +32,14 @@ public class TestRouteController : RouteViewController {
         isResumeButtonVisible = false
     }
 
+    override fun showRouteIcon(location: Location) {
+    }
+
     override fun centerMapOnCurrentLocation() {
     }
 
     override fun centerMapOnLocation(location: Location) {
+        mapLocation = location
     }
 
     override fun setCurrentInstruction(index: Int) {
@@ -61,5 +64,8 @@ public class TestRouteController : RouteViewController {
     }
 
     override fun showReroute(location: Location) {
+    }
+
+    override fun updateSnapLocation(location: Location) {
     }
 }
