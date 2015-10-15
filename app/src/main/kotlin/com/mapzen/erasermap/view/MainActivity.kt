@@ -11,11 +11,7 @@ import android.preference.PreferenceManager
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.view.MotionEvent
-import android.view.View
-import android.view.Display
+import android.view.*
 import android.widget.ImageButton
 import android.widget.RadioButton
 import android.widget.TextView
@@ -30,6 +26,7 @@ import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.leyndo.ManifestDownLoader
 import com.mapzen.leyndo.ManifestModel
+import com.mapzen.pelias.BoundingBox
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.SimpleFeature
@@ -40,7 +37,6 @@ import com.mapzen.pelias.gson.Result
 import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
-import com.mapzen.pelias.BoundingBox
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapData
@@ -54,7 +50,7 @@ import com.squareup.otto.Bus
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
-import java.util.ArrayList
+import java.util.*
 import javax.inject.Inject
 
 public class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
@@ -62,7 +58,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     public val requestCodeSearchResults: Int = 0x01
 
-    private var route: Route? = null;
+    private var route: Route? = null
 
     var savedSearch: SavedSearch? = null
         @Inject set
@@ -164,7 +160,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun getApiKeys() {
-        manifestRequestCount++;
+        manifestRequestCount++
         apiKeys = ManifestModel()
         try {
             var dl: ManifestDownLoader = ManifestDownLoader()
@@ -174,7 +170,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         } catch (e: UnsatisfiedLinkError) {
             checkForNullKeys()
             if ("Dalvik".equals(System.getProperty("java.vm.name"))) {
-                throw e;
+                throw e
             }
         }
     }
@@ -184,7 +180,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             getApiKeys()
         } else if(apiKeys?.valhallaApiKey.isNullOrEmpty()
                 .and(BuildConfig.VALHALLA_API_KEY.isNullOrEmpty())) {
-            var builder: AlertDialog.Builder = AlertDialog.Builder(this);
+            var builder: AlertDialog.Builder = AlertDialog.Builder(this)
             builder.setMessage(getString(R.string.manifest_error))
                     .setNegativeButton(getString(R.string.decline_update),
                             DialogInterface.OnClickListener { dialogInterface, i -> finish() })
@@ -207,7 +203,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     public fun checkIfUpdateNeeded() {
         if(apiKeys?.minVersion as Int > BuildConfig.VERSION_CODE ) {
-            var builder: AlertDialog.Builder  = AlertDialog.Builder(this);
+            var builder: AlertDialog.Builder  = AlertDialog.Builder(this)
             builder.setMessage(getString(R.string.update_message))
                     .setPositiveButton(getString(R.string.accept_update),
                             DialogInterface.OnClickListener { dialogInterface, i ->
@@ -488,7 +484,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         this.destination = feature
         route()
         (findViewById(R.id.route_preview) as RoutePreviewView).destination =
-                SimpleFeature.fromFeature(destination);
+                SimpleFeature.fromFeature(destination)
         (findViewById(R.id.route_preview) as RoutePreviewView).route = route
     }
 
@@ -497,8 +493,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun success(route: Route) {
-        this.route = route;
-        presenter?.route = route;
+        this.route = route
+        presenter?.route = route
         runOnUiThread   ({
             if( findViewById(R.id.route_mode).visibility != View.VISIBLE) {
                 supportActionBar?.hide()
@@ -605,7 +601,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun reverse() {
-        reverse = !reverse;
+        reverse = !reverse
         (findViewById(R.id.route_preview) as RoutePreviewView).reverse = this.reverse
         if(reverse) {
             findViewById(R.id.starting_location_icon).visibility = View.GONE
@@ -714,16 +710,16 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun setBoundingBox() {
         val menuItem = optionsMenu?.findItem(R.id.action_search)
-        var mdisp : Display = getWindowManager().getDefaultDisplay();
+        var mdisp : Display = getWindowManager().getDefaultDisplay()
         var minLatLon = mapController?.coordinatesAtScreenPosition(0.0, mdisp.height.toDouble())
-        var maxLatLon = mapController?.coordinatesAtScreenPosition(mdisp.width.toDouble(), 0.0);
+        var maxLatLon = mapController?.coordinatesAtScreenPosition(mdisp.width.toDouble(), 0.0)
         var bbox: BoundingBox = BoundingBox(minLatLon?.latitude as Double, minLatLon?.longitude as Double,
                 maxLatLon?.latitude as Double, maxLatLon?.longitude as Double)
         (menuItem?.actionView  as PeliasSearchView).setBoundingBox(bbox)
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {
-        var nameLength: Int = 6;
+        var nameLength: Int = 6
         val feature = Feature()
         val properties = Properties()
         if(lat.toString().length() > nameLength && lon.toString().length() > nameLength + 1) {
