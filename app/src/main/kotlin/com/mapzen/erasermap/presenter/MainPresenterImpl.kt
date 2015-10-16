@@ -2,12 +2,7 @@ package com.mapzen.erasermap.presenter
 
 import android.location.Location
 import android.util.Log
-import com.mapzen.erasermap.model.AppSettings
-import com.mapzen.erasermap.model.LocationChangeEvent
-import com.mapzen.erasermap.model.MapzenLocation
-import com.mapzen.erasermap.model.RouteEvent
-import com.mapzen.erasermap.model.RoutePreviewEvent
-import com.mapzen.erasermap.model.RouterFactory
+import com.mapzen.erasermap.model.*
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
@@ -19,7 +14,7 @@ import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
-import java.util.ArrayList
+import java.util.*
 
 public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         val routerFactory: RouterFactory, val settings: AppSettings)
@@ -289,6 +284,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     }
 
     private fun generateRoutingMode() {
+        routingEnabled = true
         val feature = destination
         if (feature is Feature) {
             mainViewController?.showRoutingMode(feature)

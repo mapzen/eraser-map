@@ -8,11 +8,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ListView
-import android.widget.TextView
+import android.widget.*
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AppSettings
@@ -20,6 +16,8 @@ import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.presenter.RoutePresenter
 import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.helpers.RouteEngine
+import com.mapzen.pelias.SimpleFeature
+import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapData
@@ -27,7 +25,7 @@ import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
-import java.util.ArrayList
+import java.util.*
 import javax.inject.Inject
 
 public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener {
@@ -376,5 +374,34 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     fun hideRouteIcon() {
         routeIcon?.clear()
+    }
+
+    public fun startRoute(destination: Feature, route: Route?) {
+        this.route = route
+        routePresenter?.onRouteStart(route)
+        initStartLocation()
+        initDestination(destination)
+        initInstructionAdapter()
+        this.visibility = View.VISIBLE
+    }
+
+    private fun initStartLocation() {
+        val startingLocation = route?.getRouteInstructions()?.get(0)?.location
+        if (startingLocation is Location) {
+            centerMapOnLocation(startingLocation)
+        }
+    }
+
+    private fun initDestination(destination: Feature) {
+        val simpleFeature = SimpleFeature.fromFeature(destination)
+        (findViewById(R.id.destination_name) as TextView).text = simpleFeature.toString()
+    }
+
+    private fun initInstructionAdapter() {
+        val instructions = route?.getRouteInstructions()
+        if (instructions != null) {
+            val adapter = InstructionAdapter(context, instructions, this)
+            setAdapter(adapter)
+        }
     }
 }

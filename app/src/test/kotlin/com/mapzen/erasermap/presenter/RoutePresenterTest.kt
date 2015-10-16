@@ -28,7 +28,7 @@ public class RoutePresenterTest {
         val route1 = Route(getFixture("valhalla_route"))
         val route2 = Route(getFixture("valhalla_route"))
         routeEngine.route = route1
-        routePresenter setRoute route2
+        routePresenter onRouteStart route2
         assertThat(routeEngine.route).isEqualTo(route1)
     }
 

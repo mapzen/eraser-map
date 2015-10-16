@@ -22,7 +22,7 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
         routeEngine.onLocationChanged(location)
     }
 
-    override fun setRoute(route: Route?) {
+    override fun onRouteStart(route: Route?) {
         if (routeEngine.route == null) {
             this.route = route
             routeEngine.route = route

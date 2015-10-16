@@ -9,7 +9,7 @@ public interface RoutePresenter {
     public var routeController: RouteViewController?
 
     public fun onLocationChanged(location: Location)
-    public fun setRoute(route: Route?)
+    public fun onRouteStart(route: Route?)
     public fun onMapGesture()
     public fun onResumeButtonClick()
     public fun onInstructionPagerTouch()
