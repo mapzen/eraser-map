@@ -1,5 +1,17 @@
 package com.mapzen.erasermap.view;
 
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
+import android.os.Build;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
@@ -14,18 +26,6 @@ import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import android.location.Location;
-import android.os.Build;
-import android.support.v4.view.ViewPager;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
@@ -47,7 +47,7 @@ public class RouteModeViewTest {
         startActivity.setReverse(false);
         startActivity.showRoutePreview(getTestLocation(), getTestFeature());
         startActivity.success(new Route(getFixture("valhalla_route")));
-        startActivity.showRoutingMode(getTestFeature());
+        startActivity.startRoutingMode(getTestFeature());
         routeModeView = (RouteModeView) startActivity.findViewById(R.id.route_mode);
         adapter = (InstructionAdapter) ((ViewPager) startActivity
                 .findViewById(R.id.instruction_pager)).getAdapter();

@@ -15,6 +15,8 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
             routeEngineListener.controller = value
         }
 
+    override var currentInstructionIndex: Int = 0
+
     private var route: Route? = null
     private var isTrackingCurrentLocation: Boolean = true
 
@@ -23,11 +25,15 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
     }
 
     override fun onRouteStart(route: Route?) {
-        if (routeEngine.route == null) {
-            this.route = route
-            routeEngine.route = route
-            routeEngine.setListener(routeEngineListener)
-        }
+        this.route = route
+        routeEngine.route = route
+        routeEngine.setListener(routeEngineListener)
+        currentInstructionIndex = 0
+        routeController?.setCurrentInstruction(0)
+    }
+
+    override fun onRouteResume(route: Route?) {
+        routeController?.setCurrentInstruction(currentInstructionIndex)
     }
 
     override fun onMapGesture() {

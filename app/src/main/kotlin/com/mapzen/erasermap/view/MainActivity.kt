@@ -11,7 +11,11 @@ import android.preference.PreferenceManager
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.*
+import android.view.Display
+import android.view.Menu
+import android.view.MenuItem
+import android.view.MotionEvent
+import android.view.View
 import android.widget.ImageButton
 import android.widget.RadioButton
 import android.widget.Toast
@@ -48,7 +52,7 @@ import com.squareup.otto.Bus
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
-import java.util.*
+import java.util.ArrayList
 import javax.inject.Inject
 
 public class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
@@ -85,6 +89,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var searchResults: MapData? = null
     var manifestRequestCount: Int = 0
 
+    private var findMeButton: ImageButton? = null
     private var routePreviewView: RoutePreviewView? = null
     private var routeModeView: RouteModeView? = null
 
@@ -107,6 +112,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun initViewProperties() {
+        findMeButton = findViewById(R.id.find_me) as ImageButton?
         routePreviewView = findViewById(R.id.route_preview) as RoutePreviewView?
         routeModeView = findViewById(R.id.route_mode) as RouteModeView?
     }
@@ -157,7 +163,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun initFindMeButton() {
         findMe = MapData("find_me")
-        findViewById(R.id.find_me).setOnClickListener({ presenter?.onFindMeButtonClick() })
+        findMeButton?.visibility = View.VISIBLE
+        findMeButton?.setOnClickListener({ presenter?.onFindMeButtonClick() })
     }
 
     private fun initCrashReportService() {
@@ -657,7 +664,17 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         startActivityForResult(intent, requestCodeSearchResults)
     }
 
-    override fun showRoutingMode(feature: Feature) {
+    override fun startRoutingMode(feature: Feature) {
+        showRoutingMode(feature)
+        routeModeView?.startRoute(feature, presenter?.route)
+    }
+
+    override fun resumeRoutingMode(feature: Feature) {
+        showRoutingMode(feature)
+        routeModeView?.resumeRoute(feature, presenter?.route)
+    }
+
+    private fun showRoutingMode(feature: Feature) {
         hideFindMe()
         supportActionBar?.hide()
         this.destination = feature
@@ -667,21 +684,18 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         routeModeView?.mapController = mapController
         presenter?.routeViewController = routeModeView
         routeModeView?.voiceNavigationController = VoiceNavigationController(this)
-        routeModeView?.startRoute(feature, presenter?.route)
     }
 
     override fun hideRoutingMode() {
         initFindMeButton()
         presenter?.routingEnabled = false
-        val routeModeView = findViewById(R.id.route_mode) as RouteModeView
-        findViewById(R.id.route_mode).visibility = View.GONE
-        findViewById(R.id.find_me).visibility = View.VISIBLE
+        routeModeView?.visibility = View.GONE
         if (origin is Location && destination is Feature) {
             showRoutePreview(origin as Location, destination as Feature)
         }
         supportActionBar?.hide()
-        routeModeView.route = null
-        routeModeView.hideRouteIcon()
+        routeModeView?.route = null
+        routeModeView?.hideRouteIcon()
     }
 
     private fun setBoundingBox() {

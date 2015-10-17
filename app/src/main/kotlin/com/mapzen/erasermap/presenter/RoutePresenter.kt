@@ -7,9 +7,11 @@ import com.mapzen.valhalla.Route
 
 public interface RoutePresenter {
     public var routeController: RouteViewController?
+    public var currentInstructionIndex: Int
 
     public fun onLocationChanged(location: Location)
     public fun onRouteStart(route: Route?)
+    public fun onRouteResume(route: Route?)
     public fun onMapGesture()
     public fun onResumeButtonClick()
     public fun onInstructionPagerTouch()

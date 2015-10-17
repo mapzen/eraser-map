@@ -347,10 +347,10 @@ public class MainActivityTest {
     }
 
     @Test
-    public fun showRoutingMode_shouldSetRoute() {
+    public fun startRoutingMode_shouldSetRoute() {
         activity.destination = getTestFeature()
         activity.success(Route(getFixture("valhalla_route")))
-        activity.showRoutingMode(getTestFeature())
+        activity.startRoutingMode(getTestFeature())
         val routeModeView = activity.findViewById(R.id.route_mode) as RouteModeView
         assertThat(routeModeView.route).isNotNull()
     }
@@ -389,10 +389,10 @@ public class MainActivityTest {
     }
 
     @Test
-    public fun showRoutingMode_shouldHideFindMeButton() {
+    public fun startRoutingMode_shouldHideFindMeButton() {
         activity.destination = getTestFeature()
         activity.success(Route(getFixture("valhalla_route")))
-        activity.showRoutingMode(getTestFeature())
+        activity.startRoutingMode(getTestFeature())
         assertThat(activity.findViewById(R.id.find_me).getVisibility()).isEqualTo(View.GONE)
     }
 
@@ -463,11 +463,11 @@ public class MainActivityTest {
     }
 
     @Test
-    public fun showRoutingMode_shouldHideFindMeIcon() {
+    public fun startRoutingMode_shouldHideFindMeIcon() {
         activity.showCurrentLocation(getTestLocation())
         val shadowMapData = ShadowExtractor.extract(activity.findMe) as ShadowMapData
         activity.success(Route(JSONObject()))
-        activity.showRoutingMode(getTestFeature())
+        activity.startRoutingMode(getTestFeature())
         assertThat(shadowMapData.getPoints()).isNullOrEmpty()
     }
 

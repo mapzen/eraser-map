@@ -84,7 +84,11 @@ public class TestMainController : MainViewController {
         isRoutingModeVisible = false
     }
 
-    override fun showRoutingMode(feature: Feature) {
+    override fun startRoutingMode(feature: Feature) {
+        isRoutingModeVisible = true
+    }
+
+    override fun resumeRoutingMode(feature: Feature) {
         isRoutingModeVisible = true
     }
 
