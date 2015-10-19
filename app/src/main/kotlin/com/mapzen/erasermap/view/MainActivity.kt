@@ -11,14 +11,13 @@ import android.preference.PreferenceManager
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.Display
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
-import android.view.Display
 import android.widget.ImageButton
 import android.widget.RadioButton
-import android.widget.TextView
 import android.widget.Toast
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
@@ -30,6 +29,7 @@ import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.leyndo.ManifestDownLoader
 import com.mapzen.leyndo.ManifestModel
+import com.mapzen.pelias.BoundingBox
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.SimpleFeature
@@ -40,12 +40,10 @@ import com.mapzen.pelias.gson.Result
 import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
-import com.mapzen.pelias.BoundingBox
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapData
 import com.mapzen.tangram.MapView
-import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
@@ -61,8 +59,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         SearchResultsView.OnSearchResultSelectedListener {
 
     public val requestCodeSearchResults: Int = 0x01
-
-    private var route: Route? = null;
 
     var savedSearch: SavedSearch? = null
         @Inject set
@@ -93,12 +89,17 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var searchResults: MapData? = null
     var manifestRequestCount: Int = 0
 
+    private var findMeButton: ImageButton? = null
+    private var routePreviewView: RoutePreviewView? = null
+    private var routeModeView: RouteModeView? = null
+
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         app = application as EraserMapApplication
         app?.component()?.inject(this)
         initCrashReportService()
         setContentView(R.layout.activity_main)
+        initViewProperties()
         presenter?.mainViewController = this
         presenter?.bus = bus
         initMapController()
@@ -108,6 +109,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         presenter?.onCreate()
         presenter?.onRestoreViewState()
         getApiKeys()
+    }
+
+    private fun initViewProperties() {
+        findMeButton = findViewById(R.id.find_me) as ImageButton?
+        routePreviewView = findViewById(R.id.route_preview) as RoutePreviewView?
+        routeModeView = findViewById(R.id.route_mode) as RouteModeView?
     }
 
     override public fun onStart() {
@@ -156,7 +163,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun initFindMeButton() {
         findMe = MapData("find_me")
-        findViewById(R.id.find_me).setOnClickListener({ presenter?.onFindMeButtonClick() })
+        findMeButton?.visibility = View.VISIBLE
+        findMeButton?.setOnClickListener({ presenter?.onFindMeButtonClick() })
     }
 
     private fun initCrashReportService() {
@@ -164,7 +172,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun getApiKeys() {
-        manifestRequestCount++;
+        manifestRequestCount++
         apiKeys = ManifestModel()
         try {
             var dl: ManifestDownLoader = ManifestDownLoader()
@@ -174,7 +182,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         } catch (e: UnsatisfiedLinkError) {
             checkForNullKeys()
             if ("Dalvik".equals(System.getProperty("java.vm.name"))) {
-                throw e;
+                throw e
             }
         }
     }
@@ -184,7 +192,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             getApiKeys()
         } else if(apiKeys?.valhallaApiKey.isNullOrEmpty()
                 .and(BuildConfig.VALHALLA_API_KEY.isNullOrEmpty())) {
-            var builder: AlertDialog.Builder = AlertDialog.Builder(this);
+            var builder: AlertDialog.Builder = AlertDialog.Builder(this)
             builder.setMessage(getString(R.string.manifest_error))
                     .setNegativeButton(getString(R.string.decline_update),
                             DialogInterface.OnClickListener { dialogInterface, i -> finish() })
@@ -207,7 +215,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     public fun checkIfUpdateNeeded() {
         if(apiKeys?.minVersion as Int > BuildConfig.VERSION_CODE ) {
-            var builder: AlertDialog.Builder  = AlertDialog.Builder(this);
+            var builder: AlertDialog.Builder  = AlertDialog.Builder(this)
             builder.setMessage(getString(R.string.update_message))
                     .setPositiveButton(getString(R.string.accept_update),
                             DialogInterface.OnClickListener { dialogInterface, i ->
@@ -487,9 +495,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         this.origin = location
         this.destination = feature
         route()
-        (findViewById(R.id.route_preview) as RoutePreviewView).destination =
-                SimpleFeature.fromFeature(destination);
-        (findViewById(R.id.route_preview) as RoutePreviewView).route = route
+        routePreviewView?.destination = SimpleFeature.fromFeature(destination)
+        routePreviewView?.route = presenter?.route
     }
 
     override fun clearRouteLine() {
@@ -497,12 +504,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun success(route: Route) {
-        this.route = route;
-        presenter?.route = route;
-        runOnUiThread   ({
-            if( findViewById(R.id.route_mode).visibility != View.VISIBLE) {
+        presenter?.route = route
+        runOnUiThread ({
+            if (routeModeView?.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
-                findViewById(R.id.route_preview).visibility = View.VISIBLE
+                routePreviewView?.visibility = View.VISIBLE
             }
         })
         updateRoutePreview()
@@ -605,8 +611,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun reverse() {
-        reverse = !reverse;
-        (findViewById(R.id.route_preview) as RoutePreviewView).reverse = this.reverse
+        reverse = !reverse
+        routePreviewView?.reverse = this.reverse
         if(reverse) {
             findViewById(R.id.starting_location_icon).visibility = View.GONE
             findViewById(R.id.destination_location_icon).visibility = View.VISIBLE
@@ -636,7 +642,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val instructionStrings = ArrayList<String>()
         val instructionType = ArrayList<Int>()
         val instructionDistance = ArrayList<Int>()
-        val instructions = route?.getRouteInstructions()
+        val instructions = presenter?.route?.getRouteInstructions()
         if (instructions != null) {
             for(instruction in instructions) {
                 val humanInstruction = instruction.getHumanTurnInstruction()
@@ -658,72 +664,54 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         startActivityForResult(intent, requestCodeSearchResults)
     }
 
-    override fun showRoutingMode(feature: Feature) {
-        findMe?.clear()
-        findMe = null
-        val startingLocation = route?.getRouteInstructions()?.get(0)?.location
-        if (startingLocation is Location) {
-            centerMapOnLocation(startingLocation, MainPresenter.ROUTING_ZOOM)
-        }
+    override fun startRoutingMode(feature: Feature) {
+        showRoutingMode(feature)
+        routeModeView?.startRoute(feature, presenter?.route)
+    }
 
-        findViewById(R.id.find_me).visibility = View.GONE
+    override fun resumeRoutingMode(feature: Feature) {
+        showRoutingMode(feature)
+        routeModeView?.resumeRoute(feature, presenter?.route)
+    }
+
+    private fun showRoutingMode(feature: Feature) {
+        hideFindMe()
         supportActionBar?.hide()
-        presenter?.routingEnabled = true
         this.destination = feature
         reverse = false
-        findViewById(R.id.route_preview).visibility = View.GONE
-        findViewById(R.id.route_mode).visibility = View.VISIBLE
-        (findViewById(R.id.route_mode) as RouteModeView).mainPresenter = presenter
-        (findViewById(R.id.route_mode) as RouteModeView).mapController = mapController
-        presenter?.routeViewController = findViewById(R.id.route_mode) as RouteModeView
-        this.route = presenter?.route
-        val pager = findViewById(R.id.route_mode) as RouteModeView
-        pager.route = this.route
-        pager.routePresenter?.setRoute(route)
-        pager.voiceNavigationController = VoiceNavigationController(this)
-
-        val instructions = route?.getRouteInstructions()
-        if (instructions != null) {
-            val adapter = InstructionAdapter(this, instructions, pager)
-            pager.setAdapter(adapter)
-            pager.visibility = View.VISIBLE
-        }
-
-        val firstInstruction = route?.getRouteInstructions()?.get(0)
-        if (firstInstruction is Instruction) {
-            pager.routePresenter?.onInstructionSelected(firstInstruction)
-        }
-
-        val simpleFeature = SimpleFeature.fromFeature(destination)
-        (findViewById(R.id.destination_name) as TextView).text = simpleFeature.toString()
+        routePreviewView?.visibility = View.GONE
+        routeModeView?.mainPresenter = presenter
+        routeModeView?.mapController = mapController
+        presenter?.routeViewController = routeModeView
+        routeModeView?.voiceNavigationController = VoiceNavigationController(this)
     }
 
     override fun hideRoutingMode() {
         initFindMeButton()
         presenter?.routingEnabled = false
-        val routeModeView = findViewById(R.id.route_mode) as RouteModeView
-        findViewById(R.id.route_mode).visibility = View.GONE
-        findViewById(R.id.find_me).visibility = View.VISIBLE
+        routeModeView?.visibility = View.GONE
         if (origin is Location && destination is Feature) {
             showRoutePreview(origin as Location, destination as Feature)
         }
         supportActionBar?.hide()
-        routeModeView.route = null
-        routeModeView.hideRouteIcon()
+        routeModeView?.route = null
+        routeModeView?.hideRouteIcon()
     }
 
     private fun setBoundingBox() {
         val menuItem = optionsMenu?.findItem(R.id.action_search)
-        var mdisp : Display = getWindowManager().getDefaultDisplay();
+        var mdisp : Display = getWindowManager().getDefaultDisplay()
         var minLatLon = mapController?.coordinatesAtScreenPosition(0.0, mdisp.height.toDouble())
-        var maxLatLon = mapController?.coordinatesAtScreenPosition(mdisp.width.toDouble(), 0.0);
-        var bbox: BoundingBox = BoundingBox(minLatLon?.latitude as Double, minLatLon?.longitude as Double,
-                maxLatLon?.latitude as Double, maxLatLon?.longitude as Double)
+        var maxLatLon = mapController?.coordinatesAtScreenPosition(mdisp.width.toDouble(), 0.0)
+        var bbox: BoundingBox = BoundingBox(minLatLon?.latitude as Double,
+                minLatLon?.longitude as Double,
+                maxLatLon?.latitude as Double,
+                maxLatLon?.longitude as Double)
         (menuItem?.actionView  as PeliasSearchView).setBoundingBox(bbox)
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {
-        var nameLength: Int = 6;
+        var nameLength: Int = 6
         val feature = Feature()
         val properties = Properties()
         if(lat.toString().length() > nameLength && lon.toString().length() > nameLength + 1) {
@@ -738,5 +726,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         geometry.coordinates = coordinates
         feature.geometry = geometry
         return feature
+    }
+
+    private fun hideFindMe() {
+        findMe?.clear()
+        findMe = null
+        findViewById(R.id.find_me).visibility = View.GONE
     }
 }

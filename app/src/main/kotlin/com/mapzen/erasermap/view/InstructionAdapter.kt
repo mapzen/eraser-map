@@ -9,12 +9,10 @@ import android.widget.TextView
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.valhalla.Instruction
-import java.util.ArrayList
+import java.util.*
 
 public class InstructionAdapter(val context: Context, val instructions: ArrayList<Instruction>,
         val pager: RouteModeView) : PagerAdapter() {
-
-    var instructionPager: RouteModeView = pager
 
     override fun instantiateItem(container: ViewGroup?, position: Int): Any? {
         val instruction = instructions.get(position)
@@ -53,10 +51,10 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
 
     private fun initArrowOnClickListeners(view: View, position: Int) {
         view.findViewById(R.id.right_arrow).setOnClickListener({
-            instructionPager.pageForward(position)
+            pager.pageForward(position)
         })
         view.findViewById(R.id.left_arrow).setOnClickListener({
-            instructionPager.pageBackwards(position)
+            pager.pageBackwards(position)
         })
     }
 

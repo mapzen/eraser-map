@@ -88,7 +88,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     override fun onRestoreViewState() {
         if (destination != null) {
             if(routingEnabled) {
-                generateRoutingMode()
+                resumeRoutingMode()
             } else {
                 generateRoutePreview()
             }
@@ -289,9 +289,18 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     }
 
     private fun generateRoutingMode() {
+        routingEnabled = true
         val feature = destination
         if (feature is Feature) {
-            mainViewController?.showRoutingMode(feature)
+            mainViewController?.startRoutingMode(feature)
+        }
+    }
+
+    private fun resumeRoutingMode() {
+        routingEnabled = true
+        val feature = destination
+        if (feature is Feature) {
+            mainViewController?.resumeRoutingMode(feature)
         }
     }
 }

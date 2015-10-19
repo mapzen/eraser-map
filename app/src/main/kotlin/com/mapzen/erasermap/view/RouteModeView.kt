@@ -20,6 +20,8 @@ import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.presenter.RoutePresenter
 import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.helpers.RouteEngine
+import com.mapzen.pelias.SimpleFeature
+import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapData
@@ -58,7 +60,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     var settings: AppSettings? = null
         @Inject set
 
-    private var currentInstructionIndex: Int = 0
     private var currentSnapLocation: Location? = null
     private var routeIcon: MapData? = null
 
@@ -82,14 +83,14 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         routePresenter?.routeController = this
         (findViewById(R.id.resume) as Button).setOnClickListener {
             routePresenter?.onResumeButtonClick()
-            pager?.currentItem = currentInstructionIndex
+            pager?.currentItem = routePresenter?.currentInstructionIndex
         }
         initSlideLayout(findViewById(R.id.sliding_layout))
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-        if (pager?.currentItem == currentInstructionIndex) {
-            setCurrentPagerItemStyling(currentInstructionIndex);
+        if (pager?.currentItem == routePresenter?.currentInstructionIndex) {
+            setCurrentPagerItemStyling(routePresenter?.currentInstructionIndex ?: 0);
             if (!autoPage) {
                 resumeAutoPaging()
             }
@@ -100,7 +101,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun onPageSelected(position: Int) {
-        setCurrentPagerItemStyling(currentInstructionIndex);
+        setCurrentPagerItemStyling(routePresenter?.currentInstructionIndex ?: 0);
         val instruction = route?.getRouteInstructions()?.get(position)
         if (instruction is Instruction) {
             routePresenter?.onInstructionSelected(instruction)
@@ -235,8 +236,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     private fun resumeAutoPaging() {
-        pager?.currentItem = currentInstructionIndex
-        setCurrentPagerItemStyling(currentInstructionIndex)
+        pager?.currentItem = routePresenter?.currentInstructionIndex
+        setCurrentPagerItemStyling(routePresenter?.currentInstructionIndex ?:0)
         autoPage = true
     }
 
@@ -314,7 +315,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun setCurrentInstruction(index: Int) {
-        currentInstructionIndex = index
+        routePresenter?.currentInstructionIndex = index
         pager?.currentItem = index
     }
 
@@ -345,7 +346,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun updateDistanceToNextInstruction(meters: Int) {
-        val currentInstructionView = findViewByIndex(currentInstructionIndex)
+        val currentInstructionView = findViewByIndex(routePresenter?.currentInstructionIndex ?: 0)
         val distanceToNextView = currentInstructionView?.findViewById(R.id.distance)
         if (distanceToNextView is DistanceView) {
             distanceToNextView.distanceInMeters = meters
@@ -376,5 +377,42 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     fun hideRouteIcon() {
         routeIcon?.clear()
+    }
+
+    public fun startRoute(destination: Feature, route: Route?) {
+        this.route = route
+        initStartLocation()
+        initDestination(destination)
+        initInstructionAdapter()
+        this.visibility = View.VISIBLE
+        routePresenter?.onRouteStart(route)
+    }
+
+    public fun resumeRoute(destination: Feature, route: Route?) {
+        this.route = route
+        initDestination(destination)
+        initInstructionAdapter()
+        this.visibility = View.VISIBLE
+        routePresenter?.onRouteResume(route)
+    }
+
+    private fun initStartLocation() {
+        val startingLocation = route?.getRouteInstructions()?.get(0)?.location
+        if (startingLocation is Location) {
+            centerMapOnLocation(startingLocation)
+        }
+    }
+
+    private fun initDestination(destination: Feature) {
+        val simpleFeature = SimpleFeature.fromFeature(destination)
+        (findViewById(R.id.destination_name) as TextView).text = simpleFeature.toString()
+    }
+
+    private fun initInstructionAdapter() {
+        val instructions = route?.getRouteInstructions()
+        if (instructions != null) {
+            val adapter = InstructionAdapter(context, instructions, this)
+            setAdapter(adapter)
+        }
     }
 }
