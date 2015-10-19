@@ -5,27 +5,32 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.RelativeLayout
 import android.widget.TextView
+import butterknife.bindView
 import com.mapzen.erasermap.R
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.valhalla.Route
 
 public class RoutePreviewView : RelativeLayout {
+    val startView: TextView by bindView(R.id.starting_point)
+    val destinationView: TextView by bindView(R.id.destination)
+
     public var reverse : Boolean = false
+
     public var destination: SimpleFeature? = null
         set (destination) {
             if(reverse) {
-                (findViewById(R.id.starting_point) as TextView).setText(destination?.getTitle())
+                startView.text = destination?.getTitle()
             } else {
-                (findViewById(R.id.destination) as TextView).setText(destination?.getTitle())
+                destinationView.text = destination?.getTitle()
             }
         }
 
     public var route: Route? = null
         set (route) {
             if(reverse) {
-                (findViewById(R.id.destination) as TextView).setText(R.string.current_location)
+                destinationView.setText(R.string.current_location)
             } else {
-                (findViewById(R.id.starting_point) as TextView).setText(R.string.current_location)
+                startView.setText(R.string.current_location)
             }
         }
 

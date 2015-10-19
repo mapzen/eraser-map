@@ -562,13 +562,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun reverse() {
         reverse = !reverse
         routePreviewView.reverse = this.reverse
-        if(reverse) {
-            findViewById(R.id.starting_location_icon).visibility = View.GONE
-            findViewById(R.id.destination_location_icon).visibility = View.VISIBLE
-        } else {
-            findViewById(R.id.starting_location_icon).visibility = View.VISIBLE
-            findViewById(R.id.destination_location_icon).visibility = View.GONE
-        }
         route()
     }
 
