@@ -11,19 +11,11 @@
         android:id="@+id/options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/top_row"
+        android:layout_alignParentBottom="true"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:background="@color/transparent_white"
         android:divider="@color/dark_gray">
-
-        <include layout="@layout/list_header_divider"
-            android:id="@+id/location_divider"
-            android:layout_below="@id/top_row"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_marginLeft="8dp" />
 
         <RadioGroup
             android:id="@+id/routing_mode"
@@ -48,16 +40,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            style="?android:attr/buttonBarStyle">
+
+            <Button
+                android:id="@+id/view_list"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/view_list"
+                style="?android:attr/buttonBarButtonStyle" />
+
+            <Button
+                android:id="@+id/start_navigation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/start_navigation"
+                style="?android:attr/buttonBarButtonStyle" />
+
+        </LinearLayout>
     </LinearLayout>
-
-
-    <ImageButton
-        android:id="@+id/routing_circle"
-        android:src="@drawable/ic_start_car_normal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:background="@android:color/transparent"
-        android:paddingBottom="@dimen/padding_vertical_default"/>
 </RelativeLayout>

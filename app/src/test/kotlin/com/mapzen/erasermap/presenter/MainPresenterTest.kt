@@ -187,23 +187,23 @@ public class MainPresenterTest {
     }
 
     @Test
-    public fun onRoutingCircleClick_shouldMakeDirectionsVisible() {
-        presenter.onRoutingCircleClick(true)
+    public fun onClickViewList_shouldMakeDirectionsVisible() {
+        presenter.onClickViewList()
         assertThat(mainController.isDirectionListVisible).isTrue()
     }
 
     @Test
-    public fun onRoutingCircleClick_shouldMakeRoutingModeVisible() {
+    public fun onClickStartNavigation_shouldMakeRoutingModeVisible() {
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
-        presenter.onRoutingCircleClick(false)
+        presenter.onClickStartNavigation()
         assertThat(mainController.isRoutingModeVisible).isTrue()
     }
 
     @Test
-    public fun onRoutingCircleClick_shouldPublishRouteEvent() {
+    public fun onClickStartNavigation_shouldPublishRouteEvent() {
         val subscriber = RouteEventSubscriber()
         presenter.bus?.register(subscriber)
-        presenter.onRoutingCircleClick(false)
+        presenter.onClickStartNavigation()
         assertThat(subscriber.event).isNotNull()
     }
 
@@ -250,7 +250,7 @@ public class MainPresenterTest {
     @Test
     public fun onPause_shouldNotDisconnectLocationUpdatesWhileRouting() {
         mapzenLocation.connected = true
-        presenter.onRoutingCircleClick(false)
+        presenter.onClickStartNavigation()
         presenter.onSlidingPanelOpen()
         presenter.onPause()
         assertThat(mapzenLocation.connected).isTrue()
@@ -267,7 +267,7 @@ public class MainPresenterTest {
     @Test
     public fun onResume_shouldNotReconnectClientAndInitUpdatesWhileRouting() {
         mapzenLocation.connected = false
-        presenter.onRoutingCircleClick(false)
+        presenter.onClickStartNavigation()
         presenter.onResume()
         assertThat(mapzenLocation.connected).isFalse()
     }

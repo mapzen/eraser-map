@@ -16,6 +16,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.RadioButton
 import android.widget.Toast
@@ -91,6 +92,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private var findMeButton: ImageButton? = null
     private var routePreviewView: RoutePreviewView? = null
     private var routeModeView: RouteModeView? = null
+    private var reverseButton: ImageButton? = null
+    private var viewListButton: Button? = null
+    private var startNavigationButton: Button? = null
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,6 +118,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         findMeButton = findViewById(R.id.find_me) as ImageButton?
         routePreviewView = findViewById(R.id.route_preview) as RoutePreviewView?
         routeModeView = findViewById(R.id.route_mode) as RouteModeView?
+        reverseButton = findViewById(R.id.route_reverse) as ImageButton?
+        viewListButton = findViewById(R.id.view_list) as Button?
+        startNavigationButton = findViewById(R.id.start_navigation) as Button?
     }
 
     override public fun onStart() {
@@ -541,8 +548,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             if (b) {
                 type = Router.Type.DRIVING
                 route()
-                (findViewById(R.id.routing_circle) as ImageButton)
-                        .setImageResource(R.drawable.ic_start_car_normal)
             }
         }
 
@@ -551,8 +556,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             if (b) {
                 type = Router.Type.WALKING
                 route()
-                (findViewById(R.id.routing_circle) as ImageButton)
-                        .setImageResource(R.drawable.ic_start_walk_normal)
             }
         }
 
@@ -561,8 +564,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             if (b) {
                 type = Router.Type.BIKING
                 route()
-                (findViewById(R.id.routing_circle) as ImageButton)
-                        .setImageResource(R.drawable.ic_start_bike_normal)
             }
         }
     }
@@ -581,10 +582,20 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun initReverseButton() {
-        (findViewById(R.id.route_reverse) as ImageButton).setOnClickListener({ reverse() })
-        (findViewById(R.id.routing_circle) as ImageButton).setOnClickListener ({
-            presenter?.onRoutingCircleClick(reverse)
-        })
+        val reverseButton = reverseButton
+        if (reverseButton is ImageButton) {
+            reverseButton.setOnClickListener({ reverse() })
+        }
+
+        val viewListButton = viewListButton
+        if (viewListButton is Button) {
+            viewListButton.setOnClickListener( {presenter?.onClickViewList() })
+        }
+
+        val startNavigationButton = startNavigationButton
+        if (startNavigationButton is Button) {
+            startNavigationButton.setOnClickListener( {presenter?.onClickStartNavigation() })
+        }
     }
 
     override fun onBackPressed() {

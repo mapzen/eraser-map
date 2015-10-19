@@ -179,14 +179,14 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         routeViewController?.collapseSlideLayout()
     }
 
-    override fun onRoutingCircleClick(reverse: Boolean) {
-        if (reverse) {
-            mainViewController?.showDirectionList()
-        } else {
-            bus?.post(RouteEvent())
-            generateRoutingMode()
-            viewState = ViewState.ROUTING
-        }
+    override fun onClickViewList() {
+        mainViewController?.showDirectionList()
+    }
+
+    override fun onClickStartNavigation() {
+        bus?.post(RouteEvent())
+        generateRoutingMode()
+        viewState = ViewState.ROUTING
     }
 
     @Subscribe public fun onLocationChangeEvent(event: LocationChangeEvent) {
