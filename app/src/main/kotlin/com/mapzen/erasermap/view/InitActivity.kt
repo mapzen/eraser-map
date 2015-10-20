@@ -148,11 +148,12 @@ public class InitActivity : AppCompatActivity() {
 
     public fun startMainActivity() {
         if(apiKeyFetchComplete) {
-            var intent = Intent(applicationContext, MainActivity::class.java)
             apiKeys?.peliasApiKey = tempKeys?.peliasApiKey
             apiKeys?.valhallaApiKey = tempKeys?.valhallaApiKey
             apiKeys?.vectorTileApiKeyReleaseProp = tempKeys?.vectorTileApiKeyReleaseProp
             apiKeys?.minVersion = tempKeys?.minVersion
+
+            var intent = Intent(applicationContext, MainActivity::class.java)
             startActivity(intent)
             finish()
         } else {

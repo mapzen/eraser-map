@@ -1,6 +1,7 @@
 package com.mapzen.erasermap;
 
 import com.mapzen.android.lost.api.LostApiClient;
+import com.mapzen.leyndo.ManifestModel;
 import com.mapzen.erasermap.model.AppSettings;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
@@ -10,6 +11,7 @@ import com.mapzen.erasermap.model.TestRouterFactory;
 import com.mapzen.erasermap.model.TileHttpHandler;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
+
 
 import com.squareup.otto.Bus;
 
@@ -62,6 +64,10 @@ public class TestAndroidModule {
 
     @Provides @Singleton TileHttpHandler provideTileHttpHandler() {
         return new TileHttpHandler(application);
+    }
+
+    @Provides @Singleton ManifestModel provideManifestModel() {
+        return new ManifestModel();
     }
 
     @Provides @Singleton Bus provideBus() {

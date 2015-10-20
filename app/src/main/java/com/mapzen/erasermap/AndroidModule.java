@@ -32,6 +32,10 @@ public class AndroidModule {
         return application;
     }
 
+    @Provides @Singleton ManifestModel provideManifestModel() {
+        return new ManifestModel();
+    }
+
     @Provides @Singleton LostApiClient provideLocationClient() {
         return new LostApiClient.Builder(application).build();
     }
@@ -56,10 +60,6 @@ public class AndroidModule {
 
     @Provides @Singleton RouterFactory provideRouterFactory() {
         return new ValhallaRouterFactory();
-    }
-
-    @Provides @Singleton ManifestModel provideManifestModel() {
-        return new ManifestModel();
     }
 
     @Provides @Singleton TileHttpHandler provideTileHttpHandler() {
