@@ -14,8 +14,36 @@
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:background="@color/transparent_white"
-        android:divider="@color/dark_gray">
+        android:background="@color/transparent_white">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/distance_preview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/font_small"
+                android:text="6.2 miles" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/font_small"
+                android:text=" | " />
+
+            <TextView
+                android:id="@+id/time_preview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/font_small"
+                android:text="46 mins" />
+        </LinearLayout>
 
         <RadioGroup
             android:id="@+id/routing_mode"

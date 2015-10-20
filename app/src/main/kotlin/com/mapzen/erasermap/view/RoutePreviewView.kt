@@ -13,15 +13,17 @@ import com.mapzen.valhalla.Route
 public class RoutePreviewView : RelativeLayout {
     val startView: TextView by bindView(R.id.starting_point)
     val destinationView: TextView by bindView(R.id.destination)
+    val distancePreview: TextView by bindView(R.id.distance_preview)
+    val timePreview: TextView by bindView(R.id.time_preview)
 
     public var reverse : Boolean = false
 
     public var destination: SimpleFeature? = null
         set (destination) {
             if(reverse) {
-                startView.text = destination?.getTitle()
+                startView.text = destination?.title
             } else {
-                destinationView.text = destination?.getTitle()
+                destinationView.text = destination?.title
             }
         }
 
@@ -32,6 +34,9 @@ public class RoutePreviewView : RelativeLayout {
             } else {
                 startView.setText(R.string.current_location)
             }
+
+            distancePreview.text = route?.getTotalDistance().toString()
+            timePreview.text = route?.getTotalTime().toString()
         }
 
     public constructor(context: Context) : super(context) {
