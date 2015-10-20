@@ -165,5 +165,4 @@ public class InitActivity : AppCompatActivity() {
     private fun initCrashReportService() {
         crashReportService?.initAndStartSession(this)
     }
-
 }
