@@ -7,7 +7,6 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
@@ -45,26 +44,6 @@ public class InitActivity : AppCompatActivity() {
         tempKeys = ManifestModel()
         getApiKeys()
         animate(0)
-    }
-
-    override public fun onStart() {
-        super.onStart()
-    }
-
-    override public fun onResume() {
-        super.onResume()
-    }
-
-    override public fun onPause() {
-        super.onPause()
-    }
-
-    override public fun onStop() {
-        super.onStop()
-    }
-
-    override public fun onDestroy() {
-        super.onDestroy()
     }
 
     private fun getApiKeys() {

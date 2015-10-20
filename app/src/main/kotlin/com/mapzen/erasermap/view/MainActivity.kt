@@ -16,7 +16,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
-import android.view.Display
 import android.widget.ImageButton
 import android.widget.RadioButton
 import android.widget.Toast
@@ -28,7 +27,6 @@ import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.RouterFactory
 import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
-import com.mapzen.leyndo.ManifestDownLoader
 import com.mapzen.leyndo.ManifestModel
 import com.mapzen.pelias.BoundingBox
 import com.mapzen.pelias.Pelias
