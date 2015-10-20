@@ -10,7 +10,7 @@ import com.mapzen.erasermap.model.TileHttpHandler;
 import com.mapzen.erasermap.model.ValhallaRouterFactory;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
-
+import com.mapzen.leyndo.ManifestModel;
 import com.squareup.otto.Bus;
 
 import android.content.Context;
@@ -30,6 +30,10 @@ public class AndroidModule {
 
     @Provides @Singleton @ForApplication Context provideApplicationContext() {
         return application;
+    }
+
+    @Provides @Singleton ManifestModel provideManifestModel() {
+        return new ManifestModel();
     }
 
     @Provides @Singleton LostApiClient provideLocationClient() {
