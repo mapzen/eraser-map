@@ -102,14 +102,4 @@ dependencies {
     exclude group: 'commons-logging', module: 'commons-logging'
     exclude group: 'org.apache.httpcomponents', module: 'httpclient'
   }
-  compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-}
-buildscript {
-  ext.kotlin_version = '0.13.1514'
-  repositories {
-    mavenCentral()
-  }
-  dependencies {
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-  }
 }

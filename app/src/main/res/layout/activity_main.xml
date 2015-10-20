@@ -5,14 +5,6 @@
     android:focusableInTouchMode="true"
     tools:context=".MainActivity">
 
-    <include layout="@layout/splash_screen"/>
-
-    <RelativeLayout
-        android:id="@+id/mapView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
-
         <com.mapzen.tangram.MapView
             android:id="@+id/map"
             android:layout_width="match_parent"
@@ -27,7 +19,6 @@
             android:layout_marginBottom="16dp"
             android:layout_marginRight="16dp"
             android:src="@android:drawable/ic_menu_compass" />
-    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/progress"

@@ -1,10 +1,12 @@
 package com.mapzen.erasermap;
 
 import com.mapzen.erasermap.view.DistanceView;
+import com.mapzen.erasermap.view.InitActivity;
 import com.mapzen.erasermap.view.MainActivity;
 import com.mapzen.erasermap.view.RouteModeView;
 import com.mapzen.erasermap.view.SearchResultsAdapter;
 import com.mapzen.erasermap.view.SettingsActivity;
+import com.mapzen.leyndo.ManifestModel;
 
 import android.support.multidex.MultiDexApplication;
 
@@ -17,6 +19,7 @@ public class EraserMapApplication extends MultiDexApplication {
     @Component(modules = { AndroidModule.class, CommonModule.class })
     public interface ApplicationComponent {
         void inject(MainActivity mainActivity);
+        void inject(InitActivity initActivity);
         void inject(SearchResultsAdapter searchResultsAdapter);
         void inject(RouteModeView routeModeView);
         void inject(SettingsActivity settingsFragment);

@@ -10,7 +10,7 @@ import com.mapzen.erasermap.model.TileHttpHandler;
 import com.mapzen.erasermap.model.ValhallaRouterFactory;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
-
+import com.mapzen.leyndo.ManifestModel;
 import com.squareup.otto.Bus;
 
 import android.content.Context;
@@ -56,6 +56,10 @@ public class AndroidModule {
 
     @Provides @Singleton RouterFactory provideRouterFactory() {
         return new ValhallaRouterFactory();
+    }
+
+    @Provides @Singleton ManifestModel provideManifestModel() {
+        return new ManifestModel();
     }
 
     @Provides @Singleton TileHttpHandler provideTileHttpHandler() {

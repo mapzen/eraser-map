@@ -16,6 +16,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.view.Display
 import android.widget.ImageButton
 import android.widget.RadioButton
 import android.widget.Toast
@@ -74,8 +75,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         @Inject set
     var tileHttpHandler: TileHttpHandler? = null
         @Inject set
-
     var apiKeys: ManifestModel? = null
+        @Inject set
+
     var app: EraserMapApplication? = null
     var mapController : MapController? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
@@ -87,7 +89,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var routeLine: MapData? = null
     var findMe: MapData? = null
     var searchResults: MapData? = null
-    var manifestRequestCount: Int = 0
 
     private var findMeButton: ImageButton? = null
     private var routePreviewView: RoutePreviewView? = null
@@ -106,10 +107,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initAutoCompleteAdapter()
         initFindMeButton()
         initReverseButton()
+        checkIfUpdateNeeded()
         presenter?.onCreate()
         presenter?.onRestoreViewState()
-        animate(0)
-        getApiKeys()
     }
 
     private fun initViewProperties() {
@@ -170,48 +170,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun initCrashReportService() {
         crashReportService?.initAndStartSession(this)
-    }
-
-    private fun getApiKeys() {
-        manifestRequestCount++
-        apiKeys = ManifestModel()
-        try {
-            var dl: ManifestDownLoader = ManifestDownLoader()
-            apiKeys = dl.getManifestModel( {
-                checkForNullKeys()
-            })
-        } catch (e: UnsatisfiedLinkError) {
-            checkForNullKeys()
-            if ("Dalvik".equals(System.getProperty("java.vm.name"))) {
-                throw e
-            }
-        }
-    }
-
-    private fun checkForNullKeys() {
-        if(apiKeys?.valhallaApiKey.isNullOrEmpty() && manifestRequestCount < 2) {
-            getApiKeys()
-        } else if(apiKeys?.valhallaApiKey.isNullOrEmpty()
-                .and(BuildConfig.VALHALLA_API_KEY.isNullOrEmpty())) {
-            var builder: AlertDialog.Builder = AlertDialog.Builder(this)
-            builder.setMessage(getString(R.string.manifest_error))
-                    .setNegativeButton(getString(R.string.decline_update),
-                            DialogInterface.OnClickListener { dialogInterface, i -> finish() })
-                    .setCancelable(false)
-            builder.create().show()
-        } else {
-            if (apiKeys?.valhallaApiKey == null) {
-                apiKeys?.valhallaApiKey = BuildConfig.VALHALLA_API_KEY
-            }
-            if (apiKeys?.vectorTileApiKeyReleaseProp == null) {
-                apiKeys?.vectorTileApiKeyReleaseProp = BuildConfig.VECTOR_TILE_API_KEY
-            }
-            if (apiKeys?.minVersion != null) {
-                checkIfUpdateNeeded()
-            }
-            routerFactory?.apiKey = apiKeys?.valhallaApiKey
-            tileHttpHandler?.apiKey = apiKeys?.vectorTileApiKeyReleaseProp
-        }
     }
 
     public fun checkIfUpdateNeeded() {
