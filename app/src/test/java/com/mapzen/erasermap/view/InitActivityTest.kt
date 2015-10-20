@@ -61,20 +61,12 @@ public class InitActivityTest {
     }
 
     @Test
-    public fun onValhallaApiKeyNull_shouldIndicateAppFailure() {
-        activity.apiKeys?.valhallaApiKey = null
-        activity.checkForNullKeys()
-        var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
-        assertThat(dialog.isShowing()).isTrue()
-    }
-
-    @Test
     public fun onApiKeyFetchComplete_shouldLaunchMainActivity() {
         activity.apiKeyFetchComplete = true
         activity.startMainActivity()
         var startedIntent: Intent = shadowOf(activity).getNextStartedActivity();
-        assertThat(startedIntent.getData().toString())
-                .isEqualTo("market://details?id=com.mapzen.erasermap");
+            assertThat(startedIntent.getComponent().toString())
+                    .isEqualTo("ComponentInfo{com.mapzen.erasermap/com.mapzen.erasermap.view.MainActivity}");
       }
     }
 

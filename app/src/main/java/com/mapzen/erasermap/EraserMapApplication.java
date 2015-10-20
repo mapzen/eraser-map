@@ -6,7 +6,6 @@ import com.mapzen.erasermap.view.MainActivity;
 import com.mapzen.erasermap.view.RouteModeView;
 import com.mapzen.erasermap.view.SearchResultsAdapter;
 import com.mapzen.erasermap.view.SettingsActivity;
-import com.mapzen.leyndo.ManifestModel;
 
 import android.support.multidex.MultiDexApplication;
 
