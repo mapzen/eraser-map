@@ -24,4 +24,6 @@
     <string name="milestone_quarter_mile">In a quarter mile</string>
     <string name="milestone_one_and_a_half_km">In one and a half kilometers</string>
     <string name="milestone_half_km">In a half kilometer</string>
+
+    <string name="less_than_one_minute">&lt;1 min</string>
 </resources>
