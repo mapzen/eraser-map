@@ -13,8 +13,8 @@ import com.mapzen.valhalla.Route
 public class RoutePreviewView : RelativeLayout {
     val startView: TextView by bindView(R.id.starting_point)
     val destinationView: TextView by bindView(R.id.destination)
-    val distancePreview: TextView by bindView(R.id.distance_preview)
-    val timePreview: TextView by bindView(R.id.time_preview)
+    val distancePreview: DistanceView by bindView(R.id.distance_preview)
+    val timePreview: TimeView by bindView(R.id.time_preview)
 
     public var reverse : Boolean = false
 
@@ -35,8 +35,11 @@ public class RoutePreviewView : RelativeLayout {
                 startView.setText(R.string.current_location)
             }
 
-            distancePreview.text = route?.getTotalDistance().toString()
-            timePreview.text = route?.getTotalTime().toString()
+            val distance = route?.getTotalDistance() ?: 0
+            distancePreview.distanceInMeters =  distance
+
+            val time = route?.getTotalTime() ?: 0
+            timePreview.timeInMinutes = time / 60
         }
 
     public constructor(context: Context) : super(context) {
@@ -53,7 +56,7 @@ public class RoutePreviewView : RelativeLayout {
     }
 
     private fun init() {
-        (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
+        (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_preview, this, true)
     }
 }

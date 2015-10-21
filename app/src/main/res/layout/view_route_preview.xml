@@ -24,12 +24,11 @@
             android:orientation="horizontal"
             android:padding="8dp">
 
-            <TextView
+            <com.mapzen.erasermap.view.DistanceView
                 android:id="@+id/distance_preview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/font_small"
-                android:text="6.2 miles" />
+                android:textSize="@dimen/font_small" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -37,12 +36,11 @@
                 android:textSize="@dimen/font_small"
                 android:text=" | " />
 
-            <TextView
+            <com.mapzen.erasermap.view.TimeView
                 android:id="@+id/time_preview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/font_small"
-                android:text="46 mins" />
+                android:textSize="@dimen/font_small" />
         </LinearLayout>
 
         <RadioGroup

@@ -26,7 +26,7 @@ public class RoutePreviewViewTest {
     public void setUp() throws Exception {
         route = mock(Route.class);
         when(route.getTotalDistance()).thenReturn(1609);
-        when(route.getTotalTime()).thenReturn(5);
+        when(route.getTotalTime()).thenReturn(300);
         routePreview = new RoutePreviewView(application);
     }
 
@@ -50,12 +50,12 @@ public class RoutePreviewViewTest {
     @Test
     public void setRoute_shouldPopulateDistancePreview() throws Exception {
         routePreview.setRoute(route);
-        assertThat(routePreview.getDistancePreview().getText()).isEqualTo("1609");
+        assertThat(routePreview.getDistancePreview().getText()).isEqualTo("1 mi");
     }
 
     @Test
     public void setRoute_shouldPopulateTimePreview() throws Exception {
         routePreview.setRoute(route);
-        assertThat(routePreview.getTimePreview().getText()).isEqualTo("5");
+        assertThat(routePreview.getTimePreview().getText()).isEqualTo("5 mins");
     }
 }
