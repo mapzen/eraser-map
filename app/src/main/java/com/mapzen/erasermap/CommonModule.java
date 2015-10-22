@@ -3,6 +3,7 @@ package com.mapzen.erasermap;
 import com.mapzen.erasermap.presenter.RouteEngineListener;
 import com.mapzen.erasermap.presenter.RoutePresenter;
 import com.mapzen.erasermap.presenter.RoutePresenterImpl;
+import com.mapzen.erasermap.presenter.ViewStateManager;
 import com.mapzen.helpers.RouteEngine;
 import com.mapzen.pelias.SavedSearch;
 
@@ -28,5 +29,9 @@ public class CommonModule {
     @Provides @Singleton RoutePresenter provideRoutePresenter(RouteEngine routeEngine,
             RouteEngineListener routeEngineListener) {
         return new RoutePresenterImpl(routeEngine, routeEngineListener);
+    }
+
+    @Provides @Singleton ViewStateManager provideViewStateManager() {
+        return new ViewStateManager();
     }
 }

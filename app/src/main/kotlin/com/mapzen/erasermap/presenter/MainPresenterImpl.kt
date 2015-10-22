@@ -22,7 +22,7 @@ import com.squareup.otto.Subscribe
 import java.util.ArrayList
 
 public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
-        val routerFactory: RouterFactory, val settings: AppSettings)
+        val routerFactory: RouterFactory, val settings: AppSettings, val vsm: ViewStateManager)
         : MainPresenter, RouteCallback {
 
     override var currentFeature: Feature? = null
@@ -41,19 +41,8 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     private var destination: Feature? = null
     private var initialized = false
 
-    enum class ViewState {
-        DEFAULT,
-        SEARCH,
-        SEARCH_RESULTS,
-        ROUTE_PREVIEW,
-        ROUTING,
-        ROUTE_DIRECTION_LIST
-    }
-
-    var viewState: ViewState = ViewState.DEFAULT
-
     override fun onSearchResultsAvailable(searchResults: Result?) {
-        viewState = ViewState.SEARCH_RESULTS
+        vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
         this.searchResults = searchResults
         mainViewController?.showSearchResults(searchResults?.getFeatures())
         mainViewController?.hideProgress()
@@ -98,19 +87,19 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
             }
         }
 
-        if (viewState == ViewState.ROUTE_DIRECTION_LIST) {
+        if (vsm.viewState == ViewStateManager.ViewState.ROUTE_DIRECTION_LIST) {
             routeViewController?.showDirectionList()
         }
     }
 
     override fun onExpandSearchView() {
-        viewState = ViewState.SEARCH
+        vsm.viewState = ViewStateManager.ViewState.SEARCH
         mainViewController?.hideOverflowMenu()
     }
 
     override fun onCollapseSearchView() {
-        if (viewState != ViewState.ROUTE_PREVIEW) {
-            viewState = ViewState.DEFAULT
+        if (vsm.viewState != ViewStateManager.ViewState.ROUTE_PREVIEW) {
+            vsm.viewState = ViewStateManager.ViewState.DEFAULT
         }
 
         searchResults = null
@@ -134,20 +123,20 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     }
 
     @Subscribe public fun onRoutePreviewEvent(event: RoutePreviewEvent) {
-        viewState = ViewState.ROUTE_PREVIEW
+        vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
         destination = event.destination
         mainViewController?.collapseSearchView()
         generateRoutePreview()
     }
 
     override fun onBackPressed() {
-        when (viewState) {
-            ViewState.DEFAULT -> onBackPressedStateDefault()
-            ViewState.SEARCH -> onBackPressedStateSearch()
-            ViewState.SEARCH_RESULTS -> onBackPressedStateSearchResults()
-            ViewState.ROUTE_PREVIEW -> onBackPressedStateRoutePreview()
-            ViewState.ROUTING -> onBackPressedStateRouting()
-            ViewState.ROUTE_DIRECTION_LIST -> onBackPressedStateRouteDirectionList()
+        when (vsm.viewState) {
+            ViewStateManager.ViewState.DEFAULT -> onBackPressedStateDefault()
+            ViewStateManager.ViewState.SEARCH -> onBackPressedStateSearch()
+            ViewStateManager.ViewState.SEARCH_RESULTS -> onBackPressedStateSearchResults()
+            ViewStateManager.ViewState.ROUTE_PREVIEW -> onBackPressedStateRoutePreview()
+            ViewStateManager.ViewState.ROUTING -> onBackPressedStateRouting()
+            ViewStateManager.ViewState.ROUTE_DIRECTION_LIST -> onBackPressedStateRouteDirectionList()
         }
     }
 
@@ -156,29 +145,29 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     }
 
     private fun onBackPressedStateSearch() {
-        viewState = ViewState.DEFAULT
+        vsm.viewState = ViewStateManager.ViewState.DEFAULT
         mainViewController?.collapseSearchView()
     }
 
     private fun onBackPressedStateSearchResults() {
-        viewState = ViewState.DEFAULT
+        vsm.viewState = ViewStateManager.ViewState.DEFAULT
         mainViewController?.collapseSearchView()
         mainViewController?.hideSearchResults()
     }
 
     private fun onBackPressedStateRoutePreview() {
-        viewState = ViewState.SEARCH_RESULTS
+        vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
         mainViewController?.hideRoutePreview()
         mainViewController?.clearRouteLine()
     }
 
     private fun onBackPressedStateRouting() {
-        viewState = ViewState.ROUTE_PREVIEW
+        vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
         mainViewController?.hideRoutingMode()
     }
 
     private fun onBackPressedStateRouteDirectionList() {
-        viewState = ViewState.ROUTING
+        vsm.viewState = ViewStateManager.ViewState.ROUTING
         routeViewController?.collapseSlideLayout()
     }
 
@@ -189,7 +178,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     override fun onClickStartNavigation() {
         bus?.post(RouteEvent())
         generateRoutingMode()
-        viewState = ViewState.ROUTING
+        vsm.viewState = ViewStateManager.ViewState.ROUTING
     }
 
     @Subscribe public fun onLocationChangeEvent(event: LocationChangeEvent) {
@@ -199,12 +188,12 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     }
 
     override fun onSlidingPanelOpen() {
-        viewState = ViewState.ROUTE_DIRECTION_LIST
+        vsm.viewState = ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
         routeViewController?.showDirectionList()
     }
 
     override fun onSlidingPanelCollapse() {
-        viewState = ViewState.ROUTING
+        vsm.viewState = ViewStateManager.ViewState.ROUTING
         routeViewController?.hideDirectionList()
     }
 
@@ -231,11 +220,11 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     }
 
     private fun isRouting(): Boolean {
-        return viewState == ViewState.ROUTING
+        return vsm.viewState == ViewStateManager.ViewState.ROUTING
     }
 
     private fun isRoutingDirectionList(): Boolean {
-        return viewState == ViewState.ROUTE_DIRECTION_LIST
+        return vsm.viewState == ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
     }
 
     override fun onFindMeButtonClick() {

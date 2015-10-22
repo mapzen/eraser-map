@@ -1,5 +1,7 @@
 package com.mapzen.erasermap;
 
+import android.content.Context;
+
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.leyndo.ManifestModel;
 import com.mapzen.erasermap.model.AppSettings;
@@ -11,13 +13,11 @@ import com.mapzen.erasermap.model.TestRouterFactory;
 import com.mapzen.erasermap.model.TileHttpHandler;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
-
+import com.mapzen.erasermap.presenter.ViewStateManager;
 
 import com.squareup.otto.Bus;
 
 import org.mockito.Mockito;
-
-import android.content.Context;
 
 import javax.inject.Singleton;
 
@@ -54,8 +54,8 @@ public class TestAndroidModule {
     }
 
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation,
-            RouterFactory routerFactory, AppSettings settings) {
-        return new MainPresenterImpl(mapzenLocation, routerFactory, settings);
+            RouterFactory routerFactory, AppSettings settings, ViewStateManager vsm) {
+        return new MainPresenterImpl(mapzenLocation, routerFactory, settings, vsm);
     }
 
     @Provides @Singleton RouterFactory provideRouterFactory() {

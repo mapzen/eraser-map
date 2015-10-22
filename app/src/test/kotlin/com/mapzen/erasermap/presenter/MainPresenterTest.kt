@@ -9,11 +9,11 @@ import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.model.TestAppSettings
 import com.mapzen.erasermap.model.TestMapzenLocation
 import com.mapzen.erasermap.model.TestRouterFactory
-import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.DEFAULT
-import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.ROUTE_DIRECTION_LIST
-import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.ROUTE_PREVIEW
-import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.ROUTING
-import com.mapzen.erasermap.presenter.MainPresenterImpl.ViewState.SEARCH_RESULTS
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.DEFAULT
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_PREVIEW
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTING
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
 import com.mapzen.erasermap.view.TestMainController
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.pelias.gson.Feature
@@ -30,13 +30,14 @@ import org.mockito.Mockito
 import java.util.ArrayList
 
 public class MainPresenterTest {
-    private var mainController: TestMainController = TestMainController()
-    private var routeController: TestRouteController = TestRouteController()
-    private var mapzenLocation: TestMapzenLocation = TestMapzenLocation()
-    private var routerFactory: TestRouterFactory = TestRouterFactory()
-    private var settings: TestAppSettings = TestAppSettings()
-    private var bus: Bus = Bus()
-    private var presenter = MainPresenterImpl(mapzenLocation, routerFactory, settings)
+    private val mainController: TestMainController = TestMainController()
+    private val routeController: TestRouteController = TestRouteController()
+    private val mapzenLocation: TestMapzenLocation = TestMapzenLocation()
+    private val routerFactory: TestRouterFactory = TestRouterFactory()
+    private val settings: TestAppSettings = TestAppSettings()
+    private val bus: Bus = Bus()
+    private val vsm: ViewStateManager = ViewStateManager()
+    private val presenter = MainPresenterImpl(mapzenLocation, routerFactory, settings, vsm)
 
     @Before fun setUp() {
         presenter.mainViewController = mainController
@@ -231,7 +232,7 @@ public class MainPresenterTest {
 
     @Test fun onResume_shouldReconnectLocationClientAndInitLocationUpdates() {
         mapzenLocation.connected = false
-        presenter.viewState = DEFAULT
+        vsm.viewState = DEFAULT
         presenter.onResume()
         assertThat(mapzenLocation.connected).isTrue()
     }
@@ -244,17 +245,17 @@ public class MainPresenterTest {
     }
 
     @Test fun onBackPressed_shouldUpdateViewState() {
-        presenter.viewState = ROUTE_DIRECTION_LIST
+        vsm.viewState = ROUTE_DIRECTION_LIST
         presenter.onBackPressed()
-        assertThat(presenter.viewState).isEqualTo(ROUTING)
+        assertThat(vsm.viewState).isEqualTo(ROUTING)
         presenter.onBackPressed()
-        assertThat(presenter.viewState).isEqualTo(ROUTE_PREVIEW)
+        assertThat(vsm.viewState).isEqualTo(ROUTE_PREVIEW)
         presenter.onBackPressed()
-        assertThat(presenter.viewState).isEqualTo(SEARCH_RESULTS)
+        assertThat(vsm.viewState).isEqualTo(SEARCH_RESULTS)
         presenter.onBackPressed()
-        assertThat(presenter.viewState).isEqualTo(DEFAULT)
+        assertThat(vsm.viewState).isEqualTo(DEFAULT)
         presenter.onBackPressed()
-        assertThat(presenter.viewState).isEqualTo(DEFAULT)
+        assertThat(vsm.viewState).isEqualTo(DEFAULT)
     }
 
     @Test fun onCreate_shouldSetMapLocationFirstTimeInvoked() {
