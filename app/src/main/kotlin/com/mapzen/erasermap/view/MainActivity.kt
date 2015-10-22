@@ -468,6 +468,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         })
         updateRoutePreview()
         drawRouteLine(route)
+        hideProgress()
     }
 
     private fun drawRouteLine(route: Route) {
@@ -488,6 +489,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun failure(statusCode: Int) {
+        hideProgress()
         Toast.makeText(this@MainActivity, "No route found", Toast.LENGTH_LONG).show()
     }
 
@@ -500,6 +502,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun route() {
+        showProgress()
         val simpleFeature = SimpleFeature.fromFeature(destination)
         val location = origin
         if (reverse) {
