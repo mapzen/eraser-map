@@ -109,8 +109,11 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     }
 
     override fun onCollapseSearchView() {
-        viewState = ViewState.DEFAULT
-        searchResults = null;
+        if (viewState != ViewState.ROUTE_PREVIEW) {
+            viewState = ViewState.DEFAULT
+        }
+
+        searchResults = null
         mainViewController?.hideSearchResults()
         mainViewController?.showOverflowMenu()
         mainViewController?.hideActionViewAll()
@@ -132,7 +135,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
 
     @Subscribe public fun onRoutePreviewEvent(event: RoutePreviewEvent) {
         viewState = ViewState.ROUTE_PREVIEW
-        destination = event.destination;
+        destination = event.destination
         mainViewController?.collapseSearchView()
         generateRoutePreview()
     }
