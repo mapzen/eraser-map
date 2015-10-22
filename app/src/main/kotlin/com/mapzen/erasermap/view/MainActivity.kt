@@ -471,6 +471,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun success(route: Route) {
+        routePreviewView.route = route
         presenter?.route = route
         runOnUiThread ({
             if (routeModeView.visibility != View.VISIBLE) {
