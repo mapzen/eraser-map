@@ -97,6 +97,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     val reverseButton: ImageButton by bindView(R.id.route_reverse)
     val viewListButton: Button by bindView(R.id.view_list)
     val startNavigationButton: Button by bindView(R.id.start_navigation)
+    val byCar: RadioButton by bindView(R.id.by_car)
+    val byBike: RadioButton by bindView(R.id.by_bike)
+    val byFoot: RadioButton by bindView(R.id.by_foot)
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -543,7 +546,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 val street = simpleFeature.title
                 val city = simpleFeature.city
                 val state = simpleFeature.admin
-                routerFactory?.getInitializedRouter(Router.Type.DRIVING)
+                routerFactory?.getInitializedRouter(type)
                         ?.setLocation(start)
                         ?.setLocation(dest, name, street, city, state)
                         ?.setDistanceUnits(units)
@@ -554,26 +557,23 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun updateRoutePreview() {
-        (findViewById(R.id.by_car) as RadioButton)
-                .setOnCheckedChangeListener { compoundButton, b ->
-            if (b) {
+        byCar.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
                 type = Router.Type.DRIVING
                 route()
             }
         }
 
-        (findViewById(R.id.by_foot) as RadioButton)
-                .setOnCheckedChangeListener { compoundButton, b ->
-            if (b) {
-                type = Router.Type.WALKING
+        byBike.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                type = Router.Type.BIKING
                 route()
             }
         }
 
-        (findViewById(R.id.by_bike) as RadioButton)
-                .setOnCheckedChangeListener { compoundButton, b ->
-            if (b) {
-                type = Router.Type.BIKING
+        byFoot.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                type = Router.Type.WALKING
                 route()
             }
         }
