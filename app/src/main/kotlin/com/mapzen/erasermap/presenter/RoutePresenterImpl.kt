@@ -11,7 +11,7 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
 
     override var routeController: RouteViewController? = null
         set(value) {
-            $routeController = value
+            field = value
             routeEngineListener.controller = value
         }
 

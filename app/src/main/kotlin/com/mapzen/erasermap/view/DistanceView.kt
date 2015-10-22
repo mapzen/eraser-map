@@ -6,7 +6,6 @@ import android.widget.TextView
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.helpers.DistanceFormatter
-import javax.inject.Inject
 
 public class DistanceView(context: Context, attrs: AttributeSet) : TextView(context, attrs) {
     init {
@@ -15,7 +14,7 @@ public class DistanceView(context: Context, attrs: AttributeSet) : TextView(cont
 
     public var distanceInMeters: Int = 0
         set (value) {
-            $distanceInMeters = value
+            field = value
             text = DistanceFormatter.format(value, true, settings?.distanceUnits)
         }
 

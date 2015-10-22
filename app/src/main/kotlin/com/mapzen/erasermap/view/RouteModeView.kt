@@ -30,7 +30,6 @@ import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import java.util.ArrayList
-import javax.inject.Inject
 
 public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener {
     companion object {
@@ -45,7 +44,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
                 view, event -> onMapMotionEvent()
             })
 
-            $mapController = value
+            field = value
         }
 
     var pager: ViewPager? = null
