@@ -10,13 +10,13 @@ import javax.inject.Inject
 
 public class DistanceView(context: Context, attrs: AttributeSet) : TextView(context, attrs) {
     init {
-        (context.getApplicationContext() as EraserMapApplication).component().inject(this)
+        (context.applicationContext as EraserMapApplication).component().inject(this)
     }
 
     public var distanceInMeters: Int = 0
         set (value) {
-            $distanceInMeters = value
-            setText(DistanceFormatter.format(value, true, settings?.distanceUnits))
+            field = value
+            text = DistanceFormatter.format(value, true, settings?.distanceUnits)
         }
 
     public var settings: AppSettings? = null

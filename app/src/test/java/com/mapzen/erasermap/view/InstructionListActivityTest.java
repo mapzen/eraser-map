@@ -1,5 +1,12 @@
 package com.mapzen.erasermap.view;
 
+import android.content.Intent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+
 import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
@@ -13,13 +20,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
-
-import android.content.Intent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
@@ -38,7 +38,7 @@ public class InstructionListActivityTest {
         startActivity.setReverse(true);
         startActivity.showRoutePreview(getTestLocation(), getTestFeature());
         startActivity.success(new Route(getFixture("valhalla_route")));
-        startActivity.findViewById(R.id.routing_circle).performClick();
+        startActivity.findViewById(R.id.view_list).performClick();
         ShadowActivity shadowActivity = shadowOf(startActivity);
         Intent startedIntent = shadowActivity.getNextStartedActivity();
         activity = Robolectric.buildActivity(InstructionListActivity.class)

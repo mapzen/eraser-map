@@ -16,9 +16,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.RadioButton
 import android.widget.Toast
+import butterknife.bindView
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
@@ -88,9 +90,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var findMe: MapData? = null
     var searchResults: MapData? = null
 
-    private var findMeButton: ImageButton? = null
-    private var routePreviewView: RoutePreviewView? = null
-    private var routeModeView: RouteModeView? = null
+    val findMeButton: ImageButton by bindView(R.id.find_me)
+    val routePreviewView: RoutePreviewView by bindView(R.id.route_preview)
+    val routeModeView: RouteModeView by bindView(R.id.route_mode)
+    val reverseButton: ImageButton by bindView(R.id.route_reverse)
+    val viewListButton: Button by bindView(R.id.view_list)
+    val startNavigationButton: Button by bindView(R.id.start_navigation)
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +103,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         app?.component()?.inject(this)
         initCrashReportService()
         setContentView(R.layout.activity_main)
-        initViewProperties()
         presenter?.mainViewController = this
         presenter?.bus = bus
         initMapController()
@@ -108,12 +112,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         checkIfUpdateNeeded()
         presenter?.onCreate()
         presenter?.onRestoreViewState()
-    }
-
-    private fun initViewProperties() {
-        findMeButton = findViewById(R.id.find_me) as ImageButton?
-        routePreviewView = findViewById(R.id.route_preview) as RoutePreviewView?
-        routeModeView = findViewById(R.id.route_mode) as RouteModeView?
     }
 
     override public fun onStart() {
@@ -162,8 +160,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun initFindMeButton() {
         findMe = MapData("find_me")
-        findMeButton?.visibility = View.VISIBLE
-        findMeButton?.setOnClickListener({ presenter?.onFindMeButtonClick() })
+        findMeButton.visibility = View.VISIBLE
+        findMeButton.setOnClickListener({ presenter?.onFindMeButtonClick() })
     }
 
     private fun initCrashReportService() {
@@ -452,8 +450,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         this.origin = location
         this.destination = feature
         route()
-        routePreviewView?.destination = SimpleFeature.fromFeature(destination)
-        routePreviewView?.route = presenter?.route
+        routePreviewView.destination = SimpleFeature.fromFeature(destination)
+        routePreviewView.route = presenter?.route
     }
 
     override fun clearRouteLine() {
@@ -463,13 +461,14 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun success(route: Route) {
         presenter?.route = route
         runOnUiThread ({
-            if (routeModeView?.visibility != View.VISIBLE) {
+            if (routeModeView.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
-                routePreviewView?.visibility = View.VISIBLE
+                routePreviewView.visibility = View.VISIBLE
             }
         })
         updateRoutePreview()
         drawRouteLine(route)
+        hideProgress()
     }
 
     private fun drawRouteLine(route: Route) {
@@ -490,6 +489,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun failure(statusCode: Int) {
+        hideProgress()
         Toast.makeText(this@MainActivity, "No route found", Toast.LENGTH_LONG).show()
     }
 
@@ -502,6 +502,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun route() {
+        showProgress()
         val simpleFeature = SimpleFeature.fromFeature(destination)
         val location = origin
         if (reverse) {
@@ -541,8 +542,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             if (b) {
                 type = Router.Type.DRIVING
                 route()
-                (findViewById(R.id.routing_circle) as ImageButton)
-                        .setImageResource(R.drawable.ic_start_car_normal)
             }
         }
 
@@ -551,8 +550,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             if (b) {
                 type = Router.Type.WALKING
                 route()
-                (findViewById(R.id.routing_circle) as ImageButton)
-                        .setImageResource(R.drawable.ic_start_walk_normal)
             }
         }
 
@@ -561,30 +558,20 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             if (b) {
                 type = Router.Type.BIKING
                 route()
-                (findViewById(R.id.routing_circle) as ImageButton)
-                        .setImageResource(R.drawable.ic_start_bike_normal)
             }
         }
     }
 
     private fun reverse() {
         reverse = !reverse
-        routePreviewView?.reverse = this.reverse
-        if(reverse) {
-            findViewById(R.id.starting_location_icon).visibility = View.GONE
-            findViewById(R.id.destination_location_icon).visibility = View.VISIBLE
-        } else {
-            findViewById(R.id.starting_location_icon).visibility = View.VISIBLE
-            findViewById(R.id.destination_location_icon).visibility = View.GONE
-        }
+        routePreviewView.reverse = this.reverse
         route()
     }
 
     private fun initReverseButton() {
-        (findViewById(R.id.route_reverse) as ImageButton).setOnClickListener({ reverse() })
-        (findViewById(R.id.routing_circle) as ImageButton).setOnClickListener ({
-            presenter?.onRoutingCircleClick(reverse)
-        })
+        reverseButton.setOnClickListener({ reverse() })
+        viewListButton.setOnClickListener({ presenter?.onClickViewList() })
+        startNavigationButton.setOnClickListener({ presenter?.onClickStartNavigation() })
     }
 
     override fun onBackPressed() {
@@ -623,12 +610,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun startRoutingMode(feature: Feature) {
         showRoutingMode(feature)
-        routeModeView?.startRoute(feature, presenter?.route)
+        routeModeView.startRoute(feature, presenter?.route)
     }
 
     override fun resumeRoutingMode(feature: Feature) {
         showRoutingMode(feature)
-        routeModeView?.resumeRoute(feature, presenter?.route)
+        routeModeView.resumeRoute(feature, presenter?.route)
     }
 
     private fun showRoutingMode(feature: Feature) {
@@ -636,23 +623,23 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         supportActionBar?.hide()
         this.destination = feature
         reverse = false
-        routePreviewView?.visibility = View.GONE
-        routeModeView?.mainPresenter = presenter
-        routeModeView?.mapController = mapController
+        routePreviewView.visibility = View.GONE
+        routeModeView.mainPresenter = presenter
+        routeModeView.mapController = mapController
         presenter?.routeViewController = routeModeView
-        routeModeView?.voiceNavigationController = VoiceNavigationController(this)
+        routeModeView.voiceNavigationController = VoiceNavigationController(this)
     }
 
     override fun hideRoutingMode() {
         initFindMeButton()
         presenter?.routingEnabled = false
-        routeModeView?.visibility = View.GONE
+        routeModeView.visibility = View.GONE
         if (origin is Location && destination is Feature) {
             showRoutePreview(origin as Location, destination as Feature)
         }
         supportActionBar?.hide()
-        routeModeView?.route = null
-        routeModeView?.hideRouteIcon()
+        routeModeView.route = null
+        routeModeView.hideRouteIcon()
     }
 
     private fun setBoundingBox() {

@@ -2,29 +2,31 @@ package com.mapzen.erasermap.view;
 
 import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
-import com.mapzen.erasermap.R;
 import com.mapzen.erasermap.dummy.TestHelper;
 import com.mapzen.valhalla.Route;
 
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import android.widget.TextView;
-
 import static com.mapzen.erasermap.dummy.TestHelper.getTestSimpleFeature;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.robolectric.RuntimeEnvironment.application;
 
 @RunWith(PrivateMapsTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class RoutePreviewViewTest {
     private RoutePreviewView routePreview;
+    private Route route;
 
     @Before
     public void setUp() throws Exception {
+        route = mock(Route.class);
+        when(route.getTotalDistance()).thenReturn(1609);
+        when(route.getTotalTime()).thenReturn(300);
         routePreview = new RoutePreviewView(application);
     }
 
@@ -36,15 +38,24 @@ public class RoutePreviewViewTest {
     @Test
     public void setDestination_shouldPopulateTextView() throws Exception {
         routePreview.setDestination(getTestSimpleFeature());
-        assertThat(((TextView) routePreview.findViewById(R.id.destination)).getText())
-                .isEqualTo(TestHelper.TEST_TEXT);
+        assertThat(routePreview.getDestinationView().getText()).isEqualTo(TestHelper.TEST_TEXT);
     }
 
     @Test
-    public void onStart_shouldHaveCurrentLocation() throws Exception {
-        routePreview.setRoute(new Route(new JSONObject()));
-        TextView textView = (TextView) routePreview.findViewById(R.id.starting_point);
-        assertThat(textView).isNotNull();
-        assertThat(textView.getText().toString()).isEqualTo("Current Location");
+    public void setRoute_shouldPopulateCurrentLocation() throws Exception {
+        routePreview.setRoute(route);
+        assertThat(routePreview.getStartView().getText().toString()).isEqualTo("Current Location");
+    }
+
+    @Test
+    public void setRoute_shouldPopulateDistancePreview() throws Exception {
+        routePreview.setRoute(route);
+        assertThat(routePreview.getDistancePreview().getText()).isEqualTo("1 mi");
+    }
+
+    @Test
+    public void setRoute_shouldPopulateTimePreview() throws Exception {
+        routePreview.setRoute(route);
+        assertThat(routePreview.getTimePreview().getText()).isEqualTo("5 mins");
     }
 }

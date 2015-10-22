@@ -339,7 +339,7 @@ public class MainActivityTest {
         activity.reverse = true
         activity.showRoutePreview(getTestLocation(), getTestFeature())
         activity.success(Route(getFixture("valhalla_route")))
-        activity.findViewById(R.id.routing_circle).performClick()
+        activity.findViewById(R.id.view_list).performClick()
         val shadowActivity = shadowOf(activity)
         val startedIntent = shadowActivity.getNextStartedActivity()
         val shadowIntent = shadowOf(startedIntent)

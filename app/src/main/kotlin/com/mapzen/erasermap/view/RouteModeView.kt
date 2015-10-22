@@ -45,7 +45,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
                 view, event -> onMapMotionEvent()
             })
 
-            $mapController = value
+            field = value
         }
 
     var pager: ViewPager? = null
@@ -221,8 +221,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         (findViewById(R.id.starting_point) as TextView).setText(R.string.current_location)
         (findViewById(R.id.destination) as TextView).text =
                 (findViewById(R.id.destination_name) as TextView).text
-        findViewById(R.id.starting_location_icon).visibility = View.VISIBLE
-        findViewById(R.id.destination_location_icon).visibility = View.GONE
     }
 
     override fun collapseSlideLayout() {

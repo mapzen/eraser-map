@@ -1,5 +1,7 @@
 package com.mapzen.erasermap;
 
+import android.content.Context;
+
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.AndroidAppSettings;
 import com.mapzen.erasermap.model.AppSettings;
@@ -11,9 +13,9 @@ import com.mapzen.erasermap.model.ValhallaRouterFactory;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.leyndo.ManifestModel;
-import com.squareup.otto.Bus;
+import com.mapzen.erasermap.presenter.ViewStateManager;
 
-import android.content.Context;
+import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;
 
@@ -54,8 +56,8 @@ public class AndroidModule {
     }
 
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation,
-            RouterFactory routerFactory, AppSettings settings) {
-        return new MainPresenterImpl(mapzenLocation, routerFactory, settings);
+            RouterFactory routerFactory, AppSettings settings, ViewStateManager vsm) {
+        return new MainPresenterImpl(mapzenLocation, routerFactory, settings, vsm);
     }
 
     @Provides @Singleton RouterFactory provideRouterFactory() {

@@ -1,3 +1,13 @@
+buildscript {
+  ext.kotlin_version = '1.0.0-beta-1038'
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+  }
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.neenbedankt.android-apt'
@@ -73,7 +83,8 @@ repositories {
 
 dependencies {
   compile 'com.android.support:appcompat-v7:22.2.0'
-  compile 'org.jetbrains.kotlin:kotlin-stdlib:0.13.1514'
+  compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
   compile 'com.mapzen.tangram:tangram:0.1-SNAPSHOT'
   compile 'com.mapzen.android:lost:1.0.1'
   compile('com.mapzen.android:pelias-android-sdk:0.6-SNAPSHOT') {
@@ -93,7 +104,7 @@ dependencies {
   compile 'com.squareup.okhttp:okhttp:2.4.0'
   compile 'com.mapzen.android:speakerbox:1.1.0'
   compile 'com.android.support:multidex:1.0.1'
-  compile 'org.jetbrains.kotlin:kotlin-reflect:0.13.1514'
+  compile 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
 
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.9.5'

@@ -35,13 +35,9 @@ public class InstructionListActivity : AppCompatActivity() {
         if (reverse == true) {
             (findViewById(R.id.starting_point) as TextView).setText(bundle?.getString("destination"))
             (findViewById(R.id.destination) as TextView).setText(R.string.current_location)
-            findViewById(R.id.starting_location_icon).setVisibility(View.GONE)
-            findViewById(R.id.destination_location_icon).setVisibility(View.VISIBLE)
         } else {
             (findViewById(R.id.starting_point) as TextView).setText(R.string.current_location)
             (findViewById(R.id.destination) as TextView).setText(bundle?.getString("destination"))
-            findViewById(R.id.starting_location_icon).setVisibility(View.VISIBLE)
-            findViewById(R.id.destination_location_icon).setVisibility(View.GONE)
         }
     }
 
