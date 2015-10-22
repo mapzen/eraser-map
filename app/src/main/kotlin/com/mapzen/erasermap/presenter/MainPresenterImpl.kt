@@ -17,6 +17,8 @@ import com.mapzen.pelias.gson.Result
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
+import com.squareup.otto.Bus
+import com.squareup.otto.Subscribe
 import java.util.ArrayList
 
 public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
