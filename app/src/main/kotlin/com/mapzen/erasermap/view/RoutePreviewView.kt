@@ -17,28 +17,31 @@ public class RoutePreviewView : RelativeLayout {
     val timePreview: TimeView by bindView(R.id.time_preview)
 
     public var reverse : Boolean = false
-
-    public var destination: SimpleFeature? = null
-        set (destination) {
-            if(reverse) {
+        set (value) {
+            field = value
+            if (value) {
                 startView.text = destination?.title
+                destinationView.setText(R.string.current_location)
             } else {
+                startView.setText(R.string.current_location)
                 destinationView.text = destination?.title
             }
         }
 
-    public var route: Route? = null
-        set (route) {
-            if(reverse) {
-                destinationView.setText(R.string.current_location)
-            } else {
-                startView.setText(R.string.current_location)
-            }
+    public var destination: SimpleFeature? = null
+        set (value) {
+            field = value
+            startView.setText(R.string.current_location)
+            destinationView.text = value?.title
+        }
 
-            val distance = route?.getTotalDistance() ?: 0
+    public var route: Route? = null
+        set (value) {
+            field = value
+            val distance = value?.getTotalDistance() ?: 0
             distancePreview.distanceInMeters =  distance
 
-            val time = route?.getTotalTime() ?: 0
+            val time = value?.getTotalTime() ?: 0
             timePreview.timeInMinutes = time / 60
         }
 
