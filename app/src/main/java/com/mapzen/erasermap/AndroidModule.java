@@ -59,8 +59,8 @@ public class AndroidModule {
         return new MainPresenterImpl(mapzenLocation, routeManager, settings, vsm);
     }
 
-    @Provides @Singleton RouteManager provideRouteManager() {
-        return new ValhallaRouteManager();
+    @Provides @Singleton RouteManager provideRouteManager(AppSettings settings) {
+        return new ValhallaRouteManager(settings);
     }
 
     @Provides @Singleton TileHttpHandler provideTileHttpHandler() {

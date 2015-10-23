@@ -1,6 +1,5 @@
 package com.mapzen.erasermap.presenter
 
-import android.location.Location
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
 import com.mapzen.erasermap.model.LocationChangeEvent
@@ -22,18 +21,17 @@ import org.assertj.core.api.Assertions.assertThat
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito
 import java.util.ArrayList
 
 public class MainPresenterTest {
     private val mainController: TestMainController = TestMainController()
     private val routeController: TestRouteController = TestRouteController()
     private val mapzenLocation: TestMapzenLocation = TestMapzenLocation()
-    private val routerFactory: TestRouteManager = TestRouteManager()
+    private val routeManager: TestRouteManager = TestRouteManager()
     private val settings: TestAppSettings = TestAppSettings()
     private val bus: Bus = Bus()
     private val vsm: ViewStateManager = ViewStateManager()
-    private val presenter = MainPresenterImpl(mapzenLocation, routerFactory, settings, vsm)
+    private val presenter = MainPresenterImpl(mapzenLocation, routeManager, settings, vsm)
 
     @Before fun setUp() {
         presenter.mainViewController = mainController
@@ -267,25 +265,19 @@ public class MainPresenterTest {
     }
 
     @Test fun onReroute_shouldShowProgress() {
-        routerFactory.reset()
+        routeManager.reset()
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
         presenter.onReroute(getTestLocation())
         assertThat(mainController.isProgressVisible).isTrue()
     }
 
     @Test fun onReroute_shouldFetchRoute() {
-        val location = Mockito.mock(javaClass<Location>())
-        Mockito.`when`(location.getLatitude()).thenReturn(1.0)
-        Mockito.`when`(location.getLongitude()).thenReturn(2.0)
-
-        routerFactory.reset()
-        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature(3.0, 4.0)))
-        presenter.onReroute(location)
-        assertThat(routerFactory.locations.get(0)[0]).isEqualTo(1.0)
-        assertThat(routerFactory.locations.get(0)[1]).isEqualTo(2.0)
-        assertThat(routerFactory.locations.get(1)[0]).isEqualTo(3.0)
-        assertThat(routerFactory.locations.get(1)[1]).isEqualTo(4.0)
-        assertThat(routerFactory.isFetching).isTrue()
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        routeManager.reset()
+        presenter.onReroute(getTestLocation())
+        assertThat(routeManager.origin).isNotNull()
+        assertThat(routeManager.destination).isNotNull()
+        assertThat(routeManager.route).isNotNull()
     }
 
     @Test fun onRouteFailure_shouldHideProgress() {

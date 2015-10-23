@@ -49,7 +49,6 @@ import com.mapzen.tangram.Tangram
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
-import com.mapzen.valhalla.Router.DistanceUnits
 import com.squareup.otto.Bus
 import retrofit.Callback
 import retrofit.RetrofitError
@@ -523,37 +522,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun route() {
         showProgress()
-        val simpleFeature = SimpleFeature.fromFeature(destination)
-        val location = origin
-        if (reverse) {
-            if (location is Location) {
-                val start: DoubleArray = doubleArrayOf(simpleFeature.lat, simpleFeature.lon)
-                val dest: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
-                val units: DistanceUnits = settings?.distanceUnits ?: DistanceUnits.MILES
-                routeManager?.getInitializedRouter(type)
-                        ?.setLocation(start)
-                        ?.setLocation(dest)
-                        ?.setDistanceUnits(units)
-                        ?.setCallback(this)
-                        ?.fetch()
-            }
-        } else {
-            if (location is Location) {
-                val start: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
-                val dest: DoubleArray = doubleArrayOf(simpleFeature.lat, simpleFeature.lon)
-                val units: DistanceUnits = settings?.distanceUnits ?: DistanceUnits.MILES
-                val name = destination?.properties?.name
-                val street = simpleFeature.title
-                val city = simpleFeature.city
-                val state = simpleFeature.admin
-                routeManager?.getInitializedRouter(type)
-                        ?.setLocation(start)
-                        ?.setLocation(dest, name, street, city, state)
-                        ?.setDistanceUnits(units)
-                        ?.setCallback(this)
-                        ?.fetch()
-            }
-        }
+        routeManager?.origin = origin
+        routeManager?.destination = destination
+        routeManager?.type = type
+        routeManager?.reverse = reverse
+        routeManager?.fetchRoute(this)
     }
 
     private fun updateRoutePreview() {

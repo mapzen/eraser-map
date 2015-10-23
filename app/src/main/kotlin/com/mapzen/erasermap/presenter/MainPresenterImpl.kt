@@ -11,12 +11,10 @@ import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
-import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
-import com.mapzen.valhalla.Router
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 import java.util.ArrayList
@@ -246,19 +244,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     }
 
     private fun fetchNewRoute(location: Location) {
-        val simpleFeature = SimpleFeature.fromFeature(destination)
-        val start: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
-        val dest: DoubleArray = doubleArrayOf(simpleFeature.lat, simpleFeature.lon)
-        val name = destination?.properties?.name
-        val street = simpleFeature.title
-        val city = simpleFeature.city
-        val state = simpleFeature.admin
-        routeManager.getInitializedRouter(Router.Type.DRIVING)
-                .setLocation(start)
-                .setLocation(dest, name, street, city, state)
-                .setDistanceUnits(settings.distanceUnits)
-                .setCallback(this)
-                .fetch()
+        routeManager.origin = location
+        routeManager.destination = destination
+        routeManager.reverse = false
+        routeManager.fetchRoute(this)
     }
 
     override fun failure(statusCode: Int) {
