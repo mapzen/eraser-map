@@ -1,6 +1,5 @@
 package com.mapzen.erasermap.model
 
-import com.mapzen.erasermap.BuildConfig
 import com.mapzen.valhalla.Router
 import com.mapzen.valhalla.ValhallaRouter
 

@@ -213,7 +213,7 @@ public class MainActivityTest {
     public fun showRoutePreview_shouldHideActionBar() {
         activity.getSupportActionBar()!!.show()
         activity.showRoutePreview(getTestLocation(), getTestFeature())
-        activity.success(Route(JSONObject()))
+        activity.success(TestRoute())
         Robolectric.flushForegroundThreadScheduler()
         assertThat(activity.getSupportActionBar()!!.isShowing()).isFalse()
     }
@@ -222,7 +222,7 @@ public class MainActivityTest {
     public fun showRoutePreview_shouldShowRoutePreviewView() {
         activity.findViewById(R.id.route_preview).setVisibility(GONE)
         activity.showRoutePreview(getTestLocation(), getTestFeature())
-        activity.success(Route(JSONObject()))
+        activity.success(TestRoute())
         Robolectric.flushForegroundThreadScheduler()
         assertThat(activity.findViewById(R.id.route_preview).getVisibility()).isEqualTo(VISIBLE)
     }
@@ -230,7 +230,7 @@ public class MainActivityTest {
     @Test
     public fun showRoutePreview_shouldDrawRouteLine() {
         activity.showRoutePreview(getTestLocation(), getTestFeature())
-        activity.success(Route(JSONObject()))
+        activity.success(TestRoute())
         Robolectric.flushForegroundThreadScheduler()
         assertThat((ShadowExtractor.extract(activity.routeLine) as ShadowMapData).getLine())
                 .isNotNull()
@@ -245,7 +245,7 @@ public class MainActivityTest {
         activity.routeLine = MapData("route")
         activity.routeLine?.addLine(properties, routeLine)
         activity.showRoutePreview(getTestLocation(), getTestFeature())
-        activity.success(Route(JSONObject()))
+        activity.success(TestRoute())
         Robolectric.flushForegroundThreadScheduler()
         assertThat((ShadowExtractor.extract(activity.routeLine) as ShadowMapData).getLine())
                 .isNotSameAs(routeLine)
@@ -293,7 +293,7 @@ public class MainActivityTest {
     public fun onRestoreViewState_shouldRestoreRoutingPreview() {
         activity.findViewById(R.id.route_preview).setVisibility(GONE)
         activity.showRoutePreview(getTestLocation(), getTestFeature())
-        activity.success(Route(JSONObject()))
+        activity.success(TestRoute())
         Robolectric.flushForegroundThreadScheduler()
         activity.presenter!!.onRestoreViewState()
         assertThat(activity.findViewById(R.id.route_preview).getVisibility()).isEqualTo(VISIBLE)
@@ -459,14 +459,14 @@ public class MainActivityTest {
         val menuItem = RoboMenuItem(R.id.action_settings)
         activity.onOptionsItemSelected(menuItem)
         assertThat(ShadowApplication.getInstance().getNextStartedActivity().getComponent())
-                .isEqualTo(ComponentName(activity, javaClass<SettingsActivity>()))
+                .isEqualTo(ComponentName(activity, SettingsActivity::class.java))
     }
 
     @Test
     public fun startRoutingMode_shouldHideFindMeIcon() {
         activity.showCurrentLocation(getTestLocation())
         val shadowMapData = ShadowExtractor.extract(activity.findMe) as ShadowMapData
-        activity.success(Route(JSONObject()))
+        activity.success(TestRoute())
         activity.startRoutingMode(getTestFeature())
         assertThat(shadowMapData.getPoints()).isNullOrEmpty()
     }
@@ -483,5 +483,15 @@ public class MainActivityTest {
     private fun getLongPressMotionEvent(): MotionEvent {
         return MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis() + 501,
                 MotionEvent.ACTION_DOWN, 30.0f, 30.0f, 1.0f, 1.0f, 1, 1.0f, 1.0f, 0, 0)
+    }
+
+    private class TestRoute : Route(JSONObject()) {
+        override fun getTotalDistance(): Int {
+            return 0;
+        }
+
+        override fun getTotalTime(): Int {
+            return 0;
+        }
     }
 }
