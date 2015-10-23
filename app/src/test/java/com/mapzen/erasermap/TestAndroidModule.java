@@ -3,18 +3,17 @@ package com.mapzen.erasermap;
 import android.content.Context;
 
 import com.mapzen.android.lost.api.LostApiClient;
-import com.mapzen.leyndo.ManifestModel;
 import com.mapzen.erasermap.model.AppSettings;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
-import com.mapzen.erasermap.model.RouterFactory;
+import com.mapzen.erasermap.model.RouteManager;
 import com.mapzen.erasermap.model.TestAppSettings;
-import com.mapzen.erasermap.model.TestRouterFactory;
+import com.mapzen.erasermap.model.TestRouteManager;
 import com.mapzen.erasermap.model.TileHttpHandler;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.erasermap.presenter.ViewStateManager;
-
+import com.mapzen.leyndo.ManifestModel;
 import com.squareup.otto.Bus;
 
 import org.mockito.Mockito;
@@ -54,12 +53,12 @@ public class TestAndroidModule {
     }
 
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation,
-            RouterFactory routerFactory, AppSettings settings, ViewStateManager vsm) {
-        return new MainPresenterImpl(mapzenLocation, routerFactory, settings, vsm);
+            RouteManager routeManager, AppSettings settings, ViewStateManager vsm) {
+        return new MainPresenterImpl(mapzenLocation, routeManager, settings, vsm);
     }
 
-    @Provides @Singleton RouterFactory provideRouterFactory() {
-        return new TestRouterFactory();
+    @Provides @Singleton RouteManager provideRouteManager() {
+        return new TestRouteManager();
     }
 
     @Provides @Singleton TileHttpHandler provideTileHttpHandler() {

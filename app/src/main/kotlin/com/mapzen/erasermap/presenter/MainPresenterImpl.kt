@@ -6,8 +6,8 @@ import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.LocationChangeEvent
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteEvent
+import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.RoutePreviewEvent
-import com.mapzen.erasermap.model.RouterFactory
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
@@ -22,7 +22,7 @@ import com.squareup.otto.Subscribe
 import java.util.ArrayList
 
 public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
-        val routerFactory: RouterFactory, val settings: AppSettings, val vsm: ViewStateManager)
+        val routeManager: RouteManager, val settings: AppSettings, val vsm: ViewStateManager)
         : MainPresenter, RouteCallback {
 
     override var currentFeature: Feature? = null
@@ -253,7 +253,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         val street = simpleFeature.title
         val city = simpleFeature.city
         val state = simpleFeature.admin
-        routerFactory.getInitializedRouter(Router.Type.DRIVING)
+        routeManager.getInitializedRouter(Router.Type.DRIVING)
                 .setLocation(start)
                 .setLocation(dest, name, street, city, state)
                 .setDistanceUnits(settings.distanceUnits)

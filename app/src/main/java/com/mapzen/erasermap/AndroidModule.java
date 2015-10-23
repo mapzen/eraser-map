@@ -7,14 +7,13 @@ import com.mapzen.erasermap.model.AndroidAppSettings;
 import com.mapzen.erasermap.model.AppSettings;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
-import com.mapzen.erasermap.model.RouterFactory;
+import com.mapzen.erasermap.model.RouteManager;
 import com.mapzen.erasermap.model.TileHttpHandler;
-import com.mapzen.erasermap.model.ValhallaRouterFactory;
+import com.mapzen.erasermap.model.ValhallaRouteManager;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
-import com.mapzen.leyndo.ManifestModel;
 import com.mapzen.erasermap.presenter.ViewStateManager;
-
+import com.mapzen.leyndo.ManifestModel;
 import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;
@@ -56,12 +55,12 @@ public class AndroidModule {
     }
 
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation,
-            RouterFactory routerFactory, AppSettings settings, ViewStateManager vsm) {
-        return new MainPresenterImpl(mapzenLocation, routerFactory, settings, vsm);
+            RouteManager routeManager, AppSettings settings, ViewStateManager vsm) {
+        return new MainPresenterImpl(mapzenLocation, routeManager, settings, vsm);
     }
 
-    @Provides @Singleton RouterFactory provideRouterFactory() {
-        return new ValhallaRouterFactory();
+    @Provides @Singleton RouteManager provideRouteManager() {
+        return new ValhallaRouteManager();
     }
 
     @Provides @Singleton TileHttpHandler provideTileHttpHandler() {

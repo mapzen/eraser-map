@@ -8,12 +8,8 @@ import com.mapzen.erasermap.model.RouteEvent
 import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.model.TestAppSettings
 import com.mapzen.erasermap.model.TestMapzenLocation
-import com.mapzen.erasermap.model.TestRouterFactory
-import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.DEFAULT
-import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
-import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_PREVIEW
-import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTING
-import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
+import com.mapzen.erasermap.model.TestRouteManager
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.*
 import com.mapzen.erasermap.view.TestMainController
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.pelias.gson.Feature
@@ -33,7 +29,7 @@ public class MainPresenterTest {
     private val mainController: TestMainController = TestMainController()
     private val routeController: TestRouteController = TestRouteController()
     private val mapzenLocation: TestMapzenLocation = TestMapzenLocation()
-    private val routerFactory: TestRouterFactory = TestRouterFactory()
+    private val routerFactory: TestRouteManager = TestRouteManager()
     private val settings: TestAppSettings = TestAppSettings()
     private val bus: Bus = Bus()
     private val vsm: ViewStateManager = ViewStateManager()

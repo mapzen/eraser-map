@@ -26,7 +26,7 @@ import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AppSettings
-import com.mapzen.erasermap.model.RouterFactory
+import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.leyndo.ManifestModel
@@ -70,7 +70,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         @Inject set
     var crashReportService: CrashReportService? = null
         @Inject set
-    var routerFactory: RouterFactory? = null
+    var routeManager: RouteManager? = null
         @Inject set
     var settings: AppSettings? = null
         @Inject set
@@ -530,7 +530,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 val start: DoubleArray = doubleArrayOf(simpleFeature.lat, simpleFeature.lon)
                 val dest: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
                 val units: DistanceUnits = settings?.distanceUnits ?: DistanceUnits.MILES
-                routerFactory?.getInitializedRouter(type)
+                routeManager?.getInitializedRouter(type)
                         ?.setLocation(start)
                         ?.setLocation(dest)
                         ?.setDistanceUnits(units)
@@ -546,7 +546,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 val street = simpleFeature.title
                 val city = simpleFeature.city
                 val state = simpleFeature.admin
-                routerFactory?.getInitializedRouter(type)
+                routeManager?.getInitializedRouter(type)
                         ?.setLocation(start)
                         ?.setLocation(dest, name, street, city, state)
                         ?.setDistanceUnits(units)

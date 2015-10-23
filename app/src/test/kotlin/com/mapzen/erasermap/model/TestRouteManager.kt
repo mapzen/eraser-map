@@ -6,7 +6,7 @@ import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
 import java.util.ArrayList
 
-public class TestRouterFactory : RouterFactory {
+public class TestRouteManager : RouteManager {
     public var locations: ArrayList<DoubleArray> = ArrayList()
     public var isFetching: Boolean = false
     public var units: Router.DistanceUnits = Router.DistanceUnits.MILES
@@ -75,7 +75,7 @@ public class TestRouterFactory : RouterFactory {
         }
 
         override fun setDistanceUnits(units: Router.DistanceUnits): Router {
-            this@TestRouterFactory.units = units
+            this@TestRouteManager.units = units
             return this
         }
     }

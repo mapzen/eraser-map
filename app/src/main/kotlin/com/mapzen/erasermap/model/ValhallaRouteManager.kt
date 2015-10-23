@@ -3,7 +3,7 @@ package com.mapzen.erasermap.model
 import com.mapzen.valhalla.Router
 import com.mapzen.valhalla.ValhallaRouter
 
-public class ValhallaRouterFactory : RouterFactory {
+public class ValhallaRouteManager : RouteManager {
     override var apiKey: String = ""
 
     override fun getInitializedRouter(type: Router.Type): Router {

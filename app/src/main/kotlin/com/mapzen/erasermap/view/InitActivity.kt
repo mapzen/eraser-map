@@ -12,7 +12,7 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.model.RouterFactory
+import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.leyndo.ManifestDownLoader
 import com.mapzen.leyndo.ManifestModel
@@ -24,7 +24,7 @@ public class InitActivity : AppCompatActivity() {
         @Inject set
     var crashReportService: CrashReportService? = null
         @Inject set
-    var routerFactory: RouterFactory? = null
+    var routeManager: RouteManager? = null
         @Inject set
     var tileHttpHandler: TileHttpHandler? = null
         @Inject set
@@ -79,7 +79,7 @@ public class InitActivity : AppCompatActivity() {
             if (apiKeys?.vectorTileApiKeyReleaseProp == null) {
                 apiKeys?.vectorTileApiKeyReleaseProp = BuildConfig.VECTOR_TILE_API_KEY
             }
-            routerFactory?.apiKey = apiKeys?.valhallaApiKey
+            routeManager?.apiKey = apiKeys?.valhallaApiKey
             tileHttpHandler?.apiKey = apiKeys?.vectorTileApiKeyReleaseProp
             apiKeyFetchComplete = true;
         }
