@@ -147,21 +147,21 @@ public class MainActivityTest {
 
         activity.presenter!!.currentSearchTerm = "query"
         activity.onCreateOptionsMenu(menu)
-        val searchView = menu.findItem(R.id.action_search).getActionView() as SearchView
-        assertThat(searchView.getQuery()).isEqualTo("query")
+        val searchView = menu.findItem(R.id.action_search).actionView as SearchView
+        assertThat(searchView.query).isEqualTo("query")
     }
 
     @Test
     public fun showProgress_shouldSetProgressViewVisible() {
         activity.showProgress()
-        assertThat(activity.findViewById(R.id.progress).getVisibility()).isEqualTo(VISIBLE)
+        assertThat(activity.findViewById(R.id.progress).visibility).isEqualTo(VISIBLE)
     }
 
     @Test
     public fun hideProgress_shouldSetProgressViewGone() {
         activity.showProgress()
         activity.hideProgress()
-        assertThat(activity.findViewById(R.id.progress).getVisibility()).isEqualTo(GONE)
+        assertThat(activity.findViewById(R.id.progress).visibility).isEqualTo(GONE)
     }
 
     @Test
@@ -188,7 +188,7 @@ public class MainActivityTest {
         activity.onCreateOptionsMenu(menu)
         menu.findItem(R.id.action_view_all).setVisible(false)
         activity.showActionViewAll()
-        assertThat(menu.findItem(R.id.action_view_all).isVisible()).isTrue()
+        assertThat(menu.findItem(R.id.action_view_all).isVisible).isTrue()
     }
 
     @Test
@@ -197,25 +197,25 @@ public class MainActivityTest {
         activity.onCreateOptionsMenu(menu)
         menu.findItem(R.id.action_view_all).setVisible(true)
         activity.hideActionViewAll()
-        assertThat(menu.findItem(R.id.action_view_all).isVisible()).isFalse()
+        assertThat(menu.findItem(R.id.action_view_all).isVisible).isFalse()
     }
 
     @Test
     public fun showAllSearchResults_shouldStartSearchResultsActivityForResult() {
         activity.showAllSearchResults(ArrayList<Feature>())
-        assertThat(shadowOf(activity).peekNextStartedActivityForResult().intent.getComponent()
-                .getClassName()).isEqualTo(javaClass<SearchResultsListActivity>().getName())
+        assertThat(shadowOf(activity).peekNextStartedActivityForResult().intent.component
+                .className).isEqualTo(SearchResultsListActivity::class.java.name)
         assertThat(shadowOf(activity).peekNextStartedActivityForResult().requestCode)
                 .isEqualTo(activity.requestCodeSearchResults)
     }
 
     @Test
     public fun showRoutePreview_shouldHideActionBar() {
-        activity.getSupportActionBar()!!.show()
+        activity.supportActionBar!!.show()
         activity.showRoutePreview(getTestLocation(), getTestFeature())
         activity.success(TestRoute())
         Robolectric.flushForegroundThreadScheduler()
-        assertThat(activity.getSupportActionBar()!!.isShowing()).isFalse()
+        assertThat(activity.supportActionBar!!.isShowing).isFalse()
     }
 
     @Test
@@ -224,7 +224,7 @@ public class MainActivityTest {
         activity.showRoutePreview(getTestLocation(), getTestFeature())
         activity.success(TestRoute())
         Robolectric.flushForegroundThreadScheduler()
-        assertThat(activity.findViewById(R.id.route_preview).getVisibility()).isEqualTo(VISIBLE)
+        assertThat(activity.findViewById(R.id.route_preview).visibility).isEqualTo(VISIBLE)
     }
 
     @Test
@@ -232,8 +232,7 @@ public class MainActivityTest {
         activity.showRoutePreview(getTestLocation(), getTestFeature())
         activity.success(TestRoute())
         Robolectric.flushForegroundThreadScheduler()
-        assertThat((ShadowExtractor.extract(activity.routeLine) as ShadowMapData).getLine())
-                .isNotNull()
+        assertThat((ShadowExtractor.extract(activity.routeLine) as ShadowMapData).line).isNotNull()
     }
 
     @Test
@@ -247,7 +246,7 @@ public class MainActivityTest {
         activity.showRoutePreview(getTestLocation(), getTestFeature())
         activity.success(TestRoute())
         Robolectric.flushForegroundThreadScheduler()
-        assertThat((ShadowExtractor.extract(activity.routeLine) as ShadowMapData).getLine())
+        assertThat((ShadowExtractor.extract(activity.routeLine) as ShadowMapData).line)
                 .isNotSameAs(routeLine)
     }
 
@@ -255,7 +254,7 @@ public class MainActivityTest {
     public fun centerOnMapLocation_shouldAddPointToMap() {
         activity.centerMapOnLocation(getTestLocation(), MainPresenter.DEFAULT_ZOOM)
         val shadowFindMe = ShadowExtractor.extract(activity.findMe) as ShadowMapData
-        assertThat(shadowFindMe.getPoints()).isNotNull()
+        assertThat(shadowFindMe.points).isNotNull()
     }
 
     @Test
@@ -263,7 +262,7 @@ public class MainActivityTest {
         activity.centerMapOnLocation(getTestLocation(), MainPresenter.DEFAULT_ZOOM)
         activity.centerMapOnLocation(getTestLocation(), MainPresenter.DEFAULT_ZOOM)
         val shadowFindMe = ShadowExtractor.extract(activity.findMe) as ShadowMapData
-        assertThat(shadowFindMe.getPoints().size()).isEqualTo(1)
+        assertThat(shadowFindMe.points.size).isEqualTo(1)
     }
 
     @Test
@@ -274,7 +273,7 @@ public class MainActivityTest {
         features.add(getTestFeature())
         activity.showSearchResults(features)
         val shadowSearchResults = ShadowExtractor.extract(activity.searchResults) as ShadowMapData
-        assertThat(shadowSearchResults.getPoints()).hasSize(3)
+        assertThat(shadowSearchResults.points).hasSize(3)
     }
 
     @Test
@@ -286,24 +285,24 @@ public class MainActivityTest {
         activity.showSearchResults(features)
         activity.showSearchResults(features)
         val shadowSearchResults = ShadowExtractor.extract(activity.searchResults) as ShadowMapData
-        assertThat(shadowSearchResults.getPoints()).hasSize(3)
+        assertThat(shadowSearchResults.points).hasSize(3)
     }
 
     @Test
     public fun onRestoreViewState_shouldRestoreRoutingPreview() {
-        activity.findViewById(R.id.route_preview).setVisibility(GONE)
+        activity.findViewById(R.id.route_preview).visibility = GONE
         activity.showRoutePreview(getTestLocation(), getTestFeature())
         activity.success(TestRoute())
         Robolectric.flushForegroundThreadScheduler()
         activity.presenter!!.onRestoreViewState()
-        assertThat(activity.findViewById(R.id.route_preview).getVisibility()).isEqualTo(VISIBLE)
+        assertThat(activity.findViewById(R.id.route_preview).visibility).isEqualTo(VISIBLE)
     }
 
     @Test
     public fun hideRoutePreview_shouldShowActionBar() {
         activity.getSupportActionBar()!!.hide()
         activity.hideRoutePreview()
-        assertThat(activity.getSupportActionBar()!!.isShowing()).isTrue()
+        assertThat(activity.supportActionBar!!.isShowing).isTrue()
     }
 
     @Test
@@ -411,8 +410,8 @@ public class MainActivityTest {
         activity.showReverseGeocodeFeature(features)
         assertThat(activity.findViewById(R.id.search_results).getVisibility()).isEqualTo(
                 View.VISIBLE)
-        assertThat(((activity.findViewById(R.id.search_results).findViewById(
-                R.id.title)) as TextView).getText()).isEqualTo("Text")
+        assertThat(((activity.findViewById(R.id.search_results).findViewById(R.id.title))
+                as TextView).getText()).isEqualTo("Text")
     }
 
     @Test
@@ -439,26 +438,26 @@ public class MainActivityTest {
         var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
         assertThat(dialog.isShowing()).isTrue()
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick()
-        var startedIntent: Intent = shadowOf(activity).getNextStartedActivity();
-        assertThat(startedIntent.getData().toString())
+        var startedIntent: Intent = shadowOf(activity).nextStartedActivity;
+        assertThat(startedIntent.data.toString())
                 .isEqualTo("market://details?id=com.mapzen.erasermap");
     }
 
     @Test
     public fun onMinVersionGreaterThanCurrent_clickExitShouldExitApp() {
-        activity.apiKeys?.setMinVersion(101)
+        activity.apiKeys?.minVersion = 101
         activity.checkIfUpdateNeeded()
         var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
-        assertThat(dialog.isShowing()).isTrue()
+        assertThat(dialog.isShowing).isTrue()
         dialog.getButton(DialogInterface.BUTTON_NEGATIVE).performClick()
-        assertThat(shadowOf(activity).isFinishing()).isTrue()
+        assertThat(shadowOf(activity).isFinishing).isTrue()
     }
 
     @Test
     public fun onOptionsItemSelected_settingsShouldStartSettingsFragment() {
         val menuItem = RoboMenuItem(R.id.action_settings)
         activity.onOptionsItemSelected(menuItem)
-        assertThat(ShadowApplication.getInstance().getNextStartedActivity().getComponent())
+        assertThat(ShadowApplication.getInstance().nextStartedActivity.component)
                 .isEqualTo(ComponentName(activity, SettingsActivity::class.java))
     }
 
@@ -468,7 +467,7 @@ public class MainActivityTest {
         val shadowMapData = ShadowExtractor.extract(activity.findMe) as ShadowMapData
         activity.success(TestRoute())
         activity.startRoutingMode(getTestFeature())
-        assertThat(shadowMapData.getPoints()).isNullOrEmpty()
+        assertThat(shadowMapData.points).isNullOrEmpty()
     }
 
     protected inner class RoboMenuWithGroup public constructor(public var group: Int,
