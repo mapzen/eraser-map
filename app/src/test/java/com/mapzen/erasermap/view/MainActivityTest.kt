@@ -336,7 +336,7 @@ public class MainActivityTest {
     @Test
     public fun onViewListButtonClick_shouldOpenDirectionListActivity() {
         activity.showRoutePreview(getTestLocation(), getTestFeature())
-        activity.success(Route(getFixture("valhalla_route")))
+        activity.success(TestRoute())
         activity.findViewById(R.id.view_list).performClick()
         val shadowActivity = shadowOf(activity)
         val startedIntent = shadowActivity.nextStartedActivity

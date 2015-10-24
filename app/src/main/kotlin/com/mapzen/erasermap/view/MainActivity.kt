@@ -141,6 +141,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         super.onDestroy()
         saveCurrentSearchTerm()
         bus?.unregister(presenter)
+        clearRouteLine()
     }
 
     private fun initMapController() {
@@ -459,9 +460,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun showRoutePreview(location: Location, feature: Feature) {
         routeManager?.origin = location
         routeManager?.destination = feature
-        route()
         routePreviewView.destination = SimpleFeature.fromFeature(feature)
-        routePreviewView.route = presenter?.route
+        route()
     }
 
     override fun clearRouteLine() {
@@ -469,8 +469,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun success(route: Route) {
+        routeManager?.route = route
         routePreviewView.route = route
-        presenter?.route = route
         runOnUiThread ({
             if (routeModeView.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
@@ -568,7 +568,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val instructionStrings = ArrayList<String>()
         val instructionType = ArrayList<Int>()
         val instructionDistance = ArrayList<Int>()
-        val instructions = presenter?.route?.getRouteInstructions()
+        val instructions = routeManager?.route?.getRouteInstructions()
         if (instructions != null) {
             for(instruction in instructions) {
                 val humanInstruction = instruction.getHumanTurnInstruction()
@@ -592,12 +592,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun startRoutingMode(feature: Feature) {
         showRoutingMode(feature)
-        routeModeView.startRoute(feature, presenter?.route)
+        routeModeView.startRoute(feature, routeManager?.route)
     }
 
     override fun resumeRoutingMode(feature: Feature) {
         showRoutingMode(feature)
-        routeModeView.resumeRoute(feature, presenter?.route)
+        routeModeView.resumeRoute(feature, routeManager?.route)
     }
 
     private fun showRoutingMode(feature: Feature) {

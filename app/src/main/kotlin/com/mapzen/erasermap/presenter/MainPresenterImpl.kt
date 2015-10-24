@@ -24,7 +24,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         : MainPresenter, RouteCallback {
 
     override var currentFeature: Feature? = null
-    override var route: Route? = null
     override var routingEnabled : Boolean = false
     override var mainViewController: MainViewController? = null
     override var routeViewController: RouteViewController? = null
@@ -255,9 +254,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         Log.e("MainPresenterImpl", "Error fetching new route: " + statusCode)
     }
 
+
     override fun success(route: Route) {
         mainViewController?.hideProgress()
-        this.route = route
+        routeManager.route = route
         generateRoutingMode()
     }
 
