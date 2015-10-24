@@ -672,9 +672,11 @@ styles:
                     //
                     // Get the coordinates in tile space
                     // ================================
-                    vec2 getTileCoords () {
-                        return fract(v_pos.xy);
-                    }
+                    #ifdef TANGRAM_FRAGMENT_SHADER
+                        vec2 getTileCoords () {
+                            return fract(v_pos.xy);
+                        }
+                    #endif
 
                 position: |
                     v_pos = modelPosition().xyz;
@@ -724,23 +726,25 @@ styles:
         shaders:
             blocks: 
                 global: |
-                    float TileDots(float scale, float size) {
-                        vec2 IN = brick(getTileCoords()*scale,2.);
-                        float A = circleDF(vec2(0.5)-IN)*1.8;
-                        float d = 0.0;
-                        if (u_map_position.z < 18.) {
-                            vec2 OUT = fract(getTileCoords()*scale*2.);
-                            float B = circleDF(vec2(0.25)-OUT)*7.;
-                            B = min(B, circleDF(vec2(0.75,0.25)-OUT)*7.);
-                            B = min(B, circleDF(vec2(0.5,0.75)-OUT)*7.);
-                            B = min(B, circleDF(vec2(0.,0.75)-OUT)*7.);
-                            B = min(B, circleDF(vec2(1.,0.75)-OUT)*7.);
-                            d = mix(A, B, pow(fract(u_map_position.z),10.));
-                        } else {
-                            d = A;
+                    #ifdef TANGRAM_FRAGMENT_SHADER
+                        float TileDots(float scale, float size) {
+                            vec2 IN = brick(getTileCoords()*scale,2.);
+                            float A = circleDF(vec2(0.5)-IN)*1.8;
+                            float d = 0.0;
+                            if (u_map_position.z < 18.) {
+                                vec2 OUT = fract(getTileCoords()*scale*2.);
+                                float B = circleDF(vec2(0.25)-OUT)*7.;
+                                B = min(B, circleDF(vec2(0.75,0.25)-OUT)*7.);
+                                B = min(B, circleDF(vec2(0.5,0.75)-OUT)*7.);
+                                B = min(B, circleDF(vec2(0.,0.75)-OUT)*7.);
+                                B = min(B, circleDF(vec2(1.,0.75)-OUT)*7.);
+                                d = mix(A, B, pow(fract(u_map_position.z),10.));
+                            } else {
+                                d = A;
+                            }
+                            return aastep(size,d);
                         }
-                        return aastep(size,d);
-                    }
+                    #endif
 
     dots2:
         mix: pattern-dots
