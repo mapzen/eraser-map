@@ -82,10 +82,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var mapController : MapController? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
     var optionsMenu: Menu? = null
-    var origin: Location? = null
-    var destination: Feature? = null
-    var type: Router.Type = Router.Type.DRIVING
-    var reverse: Boolean = false
     var routeLine: MapData? = null
     var findMe: MapData? = null
     var searchResults: MapData? = null
@@ -461,10 +457,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showRoutePreview(location: Location, feature: Feature) {
-        this.origin = location
-        this.destination = feature
+        routeManager?.origin = location
+        routeManager?.destination = feature
         route()
-        routePreviewView.destination = SimpleFeature.fromFeature(destination)
+        routePreviewView.destination = SimpleFeature.fromFeature(feature)
         routePreviewView.route = presenter?.route
     }
 
@@ -515,46 +511,42 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun hideRoutePreview() {
         if((findViewById(R.id.route_mode) as RouteModeView).visibility != View.VISIBLE) {
             supportActionBar?.show()
-            reverse = false
+            routeManager?.reverse = false
             findViewById(R.id.route_preview).visibility = View.GONE
         }
     }
 
     private fun route() {
         showProgress()
-        routeManager?.origin = origin
-        routeManager?.destination = destination
-        routeManager?.type = type
-        routeManager?.reverse = reverse
         routeManager?.fetchRoute(this)
     }
 
     private fun updateRoutePreview() {
         byCar.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                type = Router.Type.DRIVING
+                routeManager?.type = Router.Type.DRIVING
                 route()
             }
         }
 
         byBike.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                type = Router.Type.BIKING
+                routeManager?.type = Router.Type.BIKING
                 route()
             }
         }
 
         byFoot.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                type = Router.Type.WALKING
+                routeManager?.type = Router.Type.WALKING
                 route()
             }
         }
     }
 
     private fun reverse() {
-        reverse = !reverse
-        routePreviewView.reverse = this.reverse
+        routeManager?.toggleReverse()
+        routePreviewView.reverse = routeManager?.reverse ?: false
         route()
     }
 
@@ -588,13 +580,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             }
         }
 
-        val simpleFeature = SimpleFeature.fromFeature(destination)
+        val simpleFeature = SimpleFeature.fromFeature(routeManager?.destination)
         val intent = Intent(this, InstructionListActivity::class.java)
         intent.putExtra("instruction_strings", instructionStrings)
         intent.putExtra("instruction_types", instructionType)
         intent.putExtra("instruction_distances", instructionDistance)
         intent.putExtra("destination", simpleFeature.toString())
-        intent.putExtra("reverse", this.reverse)
+        intent.putExtra("reverse", routeManager?.reverse)
         startActivityForResult(intent, requestCodeSearchResults)
     }
 
@@ -611,8 +603,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun showRoutingMode(feature: Feature) {
         hideFindMe()
         supportActionBar?.hide()
-        this.destination = feature
-        reverse = false
+        routeManager?.destination = feature
+        routeManager?.reverse = false
         routePreviewView.visibility = View.GONE
         routeModeView.mainPresenter = presenter
         routeModeView.mapController = mapController
@@ -624,8 +616,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initFindMeButton()
         presenter?.routingEnabled = false
         routeModeView.visibility = View.GONE
-        if (origin is Location && destination is Feature) {
-            showRoutePreview(origin as Location, destination as Feature)
+        val location = routeManager?.origin
+        val feature = routeManager?.destination
+        if (location is Location && feature is Feature) {
+            showRoutePreview(location, feature)
         }
         supportActionBar?.hide()
         routeModeView.route = null

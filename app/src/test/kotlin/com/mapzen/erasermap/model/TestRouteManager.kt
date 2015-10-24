@@ -21,6 +21,10 @@ public class TestRouteManager : RouteManager {
         route = TestRoute()
     }
 
+    override fun toggleReverse() {
+        reverse = !reverse
+    }
+
     public var locations: ArrayList<DoubleArray> = ArrayList()
     public var isFetching: Boolean = false
     public var units: Router.DistanceUnits = Router.DistanceUnits.MILES

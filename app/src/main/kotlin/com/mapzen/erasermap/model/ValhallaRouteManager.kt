@@ -24,6 +24,10 @@ public class ValhallaRouteManager(val settings: AppSettings) : RouteManager {
         }
     }
 
+    override fun toggleReverse() {
+        this.reverse = !reverse
+    }
+
     private fun fetchForwardRoute(callback: RouteCallback) {
         val location = origin
         val simpleFeature = SimpleFeature.fromFeature(destination)

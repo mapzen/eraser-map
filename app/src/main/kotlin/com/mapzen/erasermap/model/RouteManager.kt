@@ -14,4 +14,5 @@ public interface RouteManager {
     public var reverse: Boolean
     public var route: Route?
     public fun fetchRoute(callback: RouteCallback)
+    public fun toggleReverse()
 }

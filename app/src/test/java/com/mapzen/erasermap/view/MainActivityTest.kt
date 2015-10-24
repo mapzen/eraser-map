@@ -317,37 +317,36 @@ public class MainActivityTest {
         activity.showRoutePreview(getTestLocation(), getTestFeature())
         activity.success(Route(getFixture("valhalla_route")))
         activity.findViewById(R.id.route_preview).findViewById(R.id.by_bike).performClick()
-        assertThat(activity.type).isEqualTo(Router.Type.BIKING)
+        assertThat(activity.routeManager?.type).isEqualTo(Router.Type.BIKING)
         activity.findViewById(R.id.route_preview).findViewById(R.id.by_foot).performClick()
-        assertThat(activity.type).isEqualTo(Router.Type.WALKING)
+        assertThat(activity.routeManager?.type).isEqualTo(Router.Type.WALKING)
         activity.findViewById(R.id.route_preview).findViewById(R.id.by_car).performClick()
-        assertThat(activity.type).isEqualTo(Router.Type.DRIVING)
+        assertThat(activity.routeManager?.type).isEqualTo(Router.Type.DRIVING)
     }
 
     @Test
     public fun onReverseClick_shouldSetReverse() {
         activity.showRoutePreview(getTestLocation(), getTestFeature())
         activity.success(Route(getFixture("valhalla_route")))
-        assertThat(activity.reverse).isFalse()
+        assertThat(activity.routeManager?.reverse).isFalse()
         activity.findViewById(R.id.route_preview).findViewById(R.id.route_reverse).performClick()
-        assertThat(activity.reverse).isTrue()
+        assertThat(activity.routeManager?.reverse).isTrue()
     }
 
     @Test
-    public fun onRoutingCircleClick_shouldOpenDirectionListActivity() {
-        activity.reverse = true
+    public fun onViewListButtonClick_shouldOpenDirectionListActivity() {
         activity.showRoutePreview(getTestLocation(), getTestFeature())
         activity.success(Route(getFixture("valhalla_route")))
         activity.findViewById(R.id.view_list).performClick()
         val shadowActivity = shadowOf(activity)
-        val startedIntent = shadowActivity.getNextStartedActivity()
+        val startedIntent = shadowActivity.nextStartedActivity
         val shadowIntent = shadowOf(startedIntent)
-        assertThat(shadowIntent.getComponent().getClassName()).contains("InstructionListActivity")
+        assertThat(shadowIntent.component.className).contains("InstructionListActivity")
     }
 
     @Test
     public fun startRoutingMode_shouldSetRoute() {
-        activity.destination = getTestFeature()
+        activity.routeManager?.destination = getTestFeature()
         activity.success(Route(getFixture("valhalla_route")))
         activity.startRoutingMode(getTestFeature())
         val routeModeView = activity.findViewById(R.id.route_mode) as RouteModeView
@@ -389,7 +388,7 @@ public class MainActivityTest {
 
     @Test
     public fun startRoutingMode_shouldHideFindMeButton() {
-        activity.destination = getTestFeature()
+        activity.routeManager?.destination = getTestFeature()
         activity.success(Route(getFixture("valhalla_route")))
         activity.startRoutingMode(getTestFeature())
         assertThat(activity.findViewById(R.id.find_me).getVisibility()).isEqualTo(View.GONE)
@@ -397,7 +396,7 @@ public class MainActivityTest {
 
     @Test
     public fun hideRoutingMode_shouldShowFindMeButton() {
-        activity.destination = getTestFeature()
+        activity.routeManager?.destination = getTestFeature()
         activity.findViewById(R.id.find_me).setVisibility(View.GONE)
         activity.hideRoutingMode()
         assertThat(activity.findViewById(R.id.find_me).getVisibility()).isEqualTo(View.VISIBLE)
