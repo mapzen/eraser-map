@@ -9,12 +9,33 @@
     android:layout_marginTop="8dp"
     android:gravity="center"
     android:paddingLeft="8dp"
-    android:background="@color/transparent_white">
+    android:background="@drawable/bg_route_header">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_start_1" />
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_end" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/places"
         android:layout_weight="3"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
@@ -63,12 +84,13 @@
 
     <ImageButton
         android:id="@+id/route_reverse"
-        android:paddingRight="4dp"
-        android:layout_gravity="center_horizontal|center_vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
         android:src="@drawable/ic_switch"
-        android:background="@android:color/transparent"
-        android:contentDescription="reverse" />
+        android:contentDescription="Reverse"
+        style="?android:attr/buttonBarButtonStyle"/>
 
 </LinearLayout>

@@ -14,7 +14,7 @@
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:background="@color/transparent_white">
+        android:background="@android:color/white">
 
         <LinearLayout
             android:layout_width="wrap_content"
