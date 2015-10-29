@@ -18,9 +18,7 @@ import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.PrivateMapsTestRunner
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.dummy.TestHelper.getFixture
-import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
-import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
+import com.mapzen.erasermap.dummy.TestHelper.*
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.shadows.ShadowMapData
 import com.mapzen.pelias.SavedSearch
@@ -240,10 +238,12 @@ public class MainActivityTest {
 
     @Test
     public fun showRoutePreview_shouldClearPreviousRouteLine() {
+        val properties = com.mapzen.tangram.Properties()
+        properties.add("type", "line");
         val routeLine = ArrayList<LngLat>()
         routeLine.add(LngLat())
         activity.routeLine = MapData("route")
-        activity.routeLine?.addLine(routeLine)
+        activity.routeLine?.addLine(properties, routeLine)
         activity.showRoutePreview(getTestLocation(), getTestFeature())
         activity.success(Route(JSONObject()))
         Robolectric.flushForegroundThreadScheduler()

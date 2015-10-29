@@ -2,6 +2,7 @@ package com.mapzen.erasermap.shadows;
 
 import com.mapzen.tangram.LngLat;
 import com.mapzen.tangram.MapData;
+import com.mapzen.tangram.Properties;
 
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -24,13 +25,13 @@ public class ShadowMapData {
     }
 
     @Implementation
-    public MapData addPoint(LngLat point) {
+    public MapData addPoint(Properties properties, LngLat point) {
         points.add(point);
         return realMapData;
     }
 
     @Implementation
-    public MapData addLine(List<LngLat> line) {
+    public MapData addLine(Properties properties, List<LngLat> line) {
         this.line = line;
         return realMapData;
     }
