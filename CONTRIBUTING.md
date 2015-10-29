@@ -10,6 +10,7 @@ Give your issue a descriptive name.
 
 Then in the "Leave a comment" section, copy-paste the following text and fill out the details.
 
+```
 * **Device name:** 
 * **Android Version:** 
 * **App build number:**
@@ -18,17 +19,21 @@ Then in the "Leave a comment" section, copy-paste the following text and fill ou
 * **Steps to reproduce:**
 * **Attach a screenshot**
 * **Attach device logs**
+```
 
 If something happened while you were **routing**, share with us:
 
+```
 * **Where were you?**
 * **Routing from origin:**
 * **Routing to destination:**
+```
 
 If something happened while you were **searching**, share with us:
 
+```
 * **Where were you?**
-
+```
 
 #### Example bug report
 
