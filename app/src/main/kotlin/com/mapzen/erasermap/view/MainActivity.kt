@@ -192,8 +192,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showCurrentLocation(location: Location) {
+        val currentLocation = LngLat(location.longitude, location.latitude)
+        val properties = com.mapzen.tangram.Properties()
+        properties.add("type", "point");
+
         findMe?.clear()
-        findMe?.addPoint(LngLat(location.longitude, location.latitude))
+        findMe?.addPoint(properties, currentLocation)
     }
 
     override fun setMapTilt(radians: Float) {
@@ -377,7 +381,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         for (feature in features) {
             val simpleFeature = SimpleFeature.fromFeature(feature)
             val lngLat = LngLat(simpleFeature.lon, simpleFeature.lat)
-            searchResults?.addPoint(lngLat)
+            val properties = com.mapzen.tangram.Properties()
+            properties.add("type", "point");
+
+            searchResults?.addPoint(properties, lngLat)
         }
     }
 
@@ -472,6 +479,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun drawRouteLine(route: Route) {
+        val properties = com.mapzen.tangram.Properties()
+        properties.add("type", "line");
         val geometry: ArrayList<Location>? = route.getGeometry()
         val mapGeometry: ArrayList<LngLat> = ArrayList()
         if (geometry is ArrayList<Location>) {
@@ -485,7 +494,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         }
 
         routeLine?.clear()
-        routeLine?.addLine(mapGeometry)
+        routeLine?.addLine(properties, mapGeometry)
     }
 
     override fun failure(statusCode: Int) {
