@@ -54,6 +54,11 @@ android {
   testOptions {
     unitTests.returnDefaultValues = true
   }
+  signingConfigs {
+    debug {
+      storeFile file("debug.keystore")
+    }
+  }
 }
 
 tasks.withType(Test) {
