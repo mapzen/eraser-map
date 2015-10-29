@@ -45,6 +45,7 @@ import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapData
 import com.mapzen.tangram.MapView
+import com.mapzen.tangram.Tangram
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
@@ -160,6 +161,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun initFindMeButton() {
         findMe = MapData("find_me")
+        Tangram.addDataSource(findMe);
         findMeButton.visibility = View.VISIBLE
         findMeButton.setOnClickListener({ presenter?.onFindMeButtonClick() })
     }
@@ -198,6 +200,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         findMe?.clear()
         findMe?.addPoint(properties, currentLocation)
+        findMe?.update();
     }
 
     override fun setMapTilt(radians: Float) {
@@ -375,6 +378,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         if (searchResults == null) {
             searchResults = MapData("search")
+            Tangram.addDataSource(searchResults);
         }
 
         searchResults?.clear()
@@ -385,6 +389,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             properties.add("type", "point");
 
             searchResults?.addPoint(properties, lngLat)
+            searchResults?.update();
         }
     }
 
@@ -491,10 +496,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         if (routeLine == null) {
             routeLine = MapData("route")
+            Tangram.addDataSource(routeLine);
         }
 
         routeLine?.clear()
         routeLine?.addLine(properties, mapGeometry)
+        routeLine?.update();
     }
 
     override fun failure(statusCode: Int) {
