@@ -6,27 +6,24 @@ import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.LocationChangeEvent
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteEvent
+import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.RoutePreviewEvent
-import com.mapzen.erasermap.model.RouterFactory
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
-import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
-import com.mapzen.valhalla.Router
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 import java.util.ArrayList
 
 public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
-        val routerFactory: RouterFactory, val settings: AppSettings, val vsm: ViewStateManager)
+        val routeManager: RouteManager, val settings: AppSettings, val vsm: ViewStateManager)
         : MainPresenter, RouteCallback {
 
     override var currentFeature: Feature? = null
-    override var route: Route? = null
     override var routingEnabled : Boolean = false
     override var mainViewController: MainViewController? = null
     override var routeViewController: RouteViewController? = null
@@ -246,19 +243,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     }
 
     private fun fetchNewRoute(location: Location) {
-        val simpleFeature = SimpleFeature.fromFeature(destination)
-        val start: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
-        val dest: DoubleArray = doubleArrayOf(simpleFeature.lat, simpleFeature.lon)
-        val name = destination?.properties?.name
-        val street = simpleFeature.title
-        val city = simpleFeature.city
-        val state = simpleFeature.admin
-        routerFactory.getInitializedRouter(Router.Type.DRIVING)
-                .setLocation(start)
-                .setLocation(dest, name, street, city, state)
-                .setDistanceUnits(settings.distanceUnits)
-                .setCallback(this)
-                .fetch()
+        routeManager.origin = location
+        routeManager.destination = destination
+        routeManager.reverse = false
+        routeManager.fetchRoute(this)
     }
 
     override fun failure(statusCode: Int) {
@@ -266,9 +254,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
         Log.e("MainPresenterImpl", "Error fetching new route: " + statusCode)
     }
 
+
     override fun success(route: Route) {
         mainViewController?.hideProgress()
-        this.route = route
+        routeManager.route = route
         generateRoutingMode()
     }
 

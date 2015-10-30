@@ -2,5 +2,5 @@
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:state_checked="true" android:drawable="@drawable/ic_bike_checked" />
-    <item android:drawable="@drawable/ic_bike" />
+    <item android:drawable="@drawable/ic_bike_normal" />
 </selector>

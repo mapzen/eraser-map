@@ -14,7 +14,7 @@
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:background="@color/transparent_white">
+        android:background="@android:color/white">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -28,11 +28,13 @@
                 android:id="@+id/distance_preview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#88C092"
                 android:textSize="@dimen/font_small" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#88C092"
                 android:textSize="@dimen/font_small"
                 android:text=" | " />
 
@@ -40,31 +42,45 @@
                 android:id="@+id/time_preview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#88C092"
                 android:textSize="@dimen/font_small" />
         </LinearLayout>
 
         <RadioGroup
             android:id="@+id/routing_mode"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:background="@android:color/transparent"
             android:orientation="horizontal">
             <RadioButton
                 android:id="@+id/by_car"
                 android:checked="true"
-                android:button="@drawable/radio_button_car"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:background="@drawable/radio_button_car"
+                android:button="@android:color/transparent"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
             <RadioButton
                 android:id="@+id/by_bike"
-                android:button="@drawable/radio_button_bike"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:background="@drawable/radio_button_bike"
+                android:button="@android:color/transparent"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
             <RadioButton
                 android:id="@+id/by_foot"
-                android:button="@drawable/radio_button_walk"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:background="@drawable/radio_button_walk"
+                android:button="@android:color/transparent"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
         </RadioGroup>
 
         <LinearLayout

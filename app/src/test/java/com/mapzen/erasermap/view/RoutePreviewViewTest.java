@@ -2,7 +2,6 @@ package com.mapzen.erasermap.view;
 
 import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
-import com.mapzen.erasermap.dummy.TestHelper;
 import com.mapzen.valhalla.Route;
 
 import org.junit.Before;
@@ -10,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import static com.mapzen.erasermap.dummy.TestHelper.TEST_TEXT;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestSimpleFeature;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -38,13 +38,13 @@ public class RoutePreviewViewTest {
     @Test
     public void setDestination_shouldPopulateTextView() throws Exception {
         routePreview.setDestination(getTestSimpleFeature());
-        assertThat(routePreview.getDestinationView().getText()).isEqualTo(TestHelper.TEST_TEXT);
+        assertThat(routePreview.getDestinationView().getText()).isEqualTo(TEST_TEXT);
     }
 
     @Test
-    public void setRoute_shouldPopulateCurrentLocation() throws Exception {
-        routePreview.setRoute(route);
-        assertThat(routePreview.getStartView().getText().toString()).isEqualTo("Current Location");
+    public void setDestination_shouldPopulateCurrentLocation() throws Exception {
+        routePreview.setDestination(getTestSimpleFeature());
+        assertThat(routePreview.getStartView().getText()).isEqualTo("Current Location");
     }
 
     @Test
@@ -57,5 +57,14 @@ public class RoutePreviewViewTest {
     public void setRoute_shouldPopulateTimePreview() throws Exception {
         routePreview.setRoute(route);
         assertThat(routePreview.getTimePreview().getText()).isEqualTo("5 mins");
+    }
+
+    @Test
+    public void reverse_shouldSwapStartAndDestination() throws Exception {
+        routePreview.setDestination(getTestSimpleFeature());
+        routePreview.setRoute(route);
+        routePreview.setReverse(true);
+        assertThat(routePreview.getStartView().getText().toString()).isEqualTo(TEST_TEXT);
+        assertThat(routePreview.getDestinationView().getText()).isEqualTo("Current Location");
     }
 }

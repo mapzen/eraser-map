@@ -44,7 +44,6 @@ public class RouteModeViewTest {
     @Before
     public void setUp() throws Exception {
         startActivity = Robolectric.setupActivity(MainActivity.class);
-        startActivity.setReverse(false);
         startActivity.showRoutePreview(getTestLocation(), getTestFeature());
         startActivity.success(new Route(getFixture("valhalla_route")));
         startActivity.startRoutingMode(getTestFeature());

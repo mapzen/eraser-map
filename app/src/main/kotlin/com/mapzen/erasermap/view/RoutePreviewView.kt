@@ -3,7 +3,10 @@ package com.mapzen.erasermap.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.widget.Button
 import android.widget.RelativeLayout
+import android.widget.RelativeLayout.GONE
+import android.widget.RelativeLayout.VISIBLE
 import android.widget.TextView
 import butterknife.bindView
 import com.mapzen.erasermap.R
@@ -15,30 +18,38 @@ public class RoutePreviewView : RelativeLayout {
     val destinationView: TextView by bindView(R.id.destination)
     val distancePreview: DistanceView by bindView(R.id.distance_preview)
     val timePreview: TimeView by bindView(R.id.time_preview)
+    val viewListButton: Button by bindView(R.id.view_list)
+    val startNavigationButton: Button by bindView(R.id.start_navigation)
 
     public var reverse : Boolean = false
-
-    public var destination: SimpleFeature? = null
-        set (destination) {
-            if(reverse) {
+        set (value) {
+            field = value
+            if (value) {
                 startView.text = destination?.title
+                destinationView.setText(R.string.current_location)
+                startNavigationButton.visibility = GONE
             } else {
+                startView.setText(R.string.current_location)
                 destinationView.text = destination?.title
+                startNavigationButton.visibility = VISIBLE
+
             }
         }
 
-    public var route: Route? = null
-        set (route) {
-            if(reverse) {
-                destinationView.setText(R.string.current_location)
-            } else {
-                startView.setText(R.string.current_location)
-            }
+    public var destination: SimpleFeature? = null
+        set (value) {
+            field = value
+            startView.setText(R.string.current_location)
+            destinationView.text = value?.title
+        }
 
-            val distance = route?.getTotalDistance() ?: 0
+    public var route: Route? = null
+        set (value) {
+            field = value
+            val distance = value?.getTotalDistance() ?: 0
             distancePreview.distanceInMeters =  distance
 
-            val time = route?.getTotalTime() ?: 0
+            val time = value?.getTotalTime() ?: 0
             timePreview.timeInMinutes = time / 60
         }
 

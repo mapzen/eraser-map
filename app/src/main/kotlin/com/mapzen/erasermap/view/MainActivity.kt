@@ -26,7 +26,7 @@ import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AppSettings
-import com.mapzen.erasermap.model.RouterFactory
+import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.leyndo.ManifestModel
@@ -49,7 +49,6 @@ import com.mapzen.tangram.Tangram
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
-import com.mapzen.valhalla.Router.DistanceUnits
 import com.squareup.otto.Bus
 import retrofit.Callback
 import retrofit.RetrofitError
@@ -70,7 +69,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         @Inject set
     var crashReportService: CrashReportService? = null
         @Inject set
-    var routerFactory: RouterFactory? = null
+    var routeManager: RouteManager? = null
         @Inject set
     var settings: AppSettings? = null
         @Inject set
@@ -83,10 +82,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var mapController : MapController? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
     var optionsMenu: Menu? = null
-    var origin: Location? = null
-    var destination: Feature? = null
-    var type: Router.Type = Router.Type.DRIVING
-    var reverse: Boolean = false
     var routeLine: MapData? = null
     var findMe: MapData? = null
     var searchResults: MapData? = null
@@ -97,6 +92,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     val reverseButton: ImageButton by bindView(R.id.route_reverse)
     val viewListButton: Button by bindView(R.id.view_list)
     val startNavigationButton: Button by bindView(R.id.start_navigation)
+    val byCar: RadioButton by bindView(R.id.by_car)
+    val byBike: RadioButton by bindView(R.id.by_bike)
+    val byFoot: RadioButton by bindView(R.id.by_foot)
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,6 +141,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         super.onDestroy()
         saveCurrentSearchTerm()
         bus?.unregister(presenter)
+        clearRouteLine()
     }
 
     private fun initMapController() {
@@ -459,11 +458,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showRoutePreview(location: Location, feature: Feature) {
-        this.origin = location
-        this.destination = feature
+        routeManager?.origin = location
+        routeManager?.destination = feature
+        routePreviewView.destination = SimpleFeature.fromFeature(feature)
         route()
-        routePreviewView.destination = SimpleFeature.fromFeature(destination)
-        routePreviewView.route = presenter?.route
     }
 
     override fun clearRouteLine() {
@@ -471,7 +469,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun success(route: Route) {
-        presenter?.route = route
+        routeManager?.route = route
+        routePreviewView.route = route
         runOnUiThread ({
             if (routeModeView.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
@@ -512,75 +511,42 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun hideRoutePreview() {
         if((findViewById(R.id.route_mode) as RouteModeView).visibility != View.VISIBLE) {
             supportActionBar?.show()
-            reverse = false
+            routeManager?.reverse = false
             findViewById(R.id.route_preview).visibility = View.GONE
         }
     }
 
     private fun route() {
         showProgress()
-        val simpleFeature = SimpleFeature.fromFeature(destination)
-        val location = origin
-        if (reverse) {
-            if (location is Location) {
-                val start: DoubleArray = doubleArrayOf(simpleFeature.lat, simpleFeature.lon)
-                val dest: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
-                val units: DistanceUnits = settings?.distanceUnits ?: DistanceUnits.MILES
-                routerFactory?.getInitializedRouter(type)
-                        ?.setLocation(start)
-                        ?.setLocation(dest)
-                        ?.setDistanceUnits(units)
-                        ?.setCallback(this)
-                        ?.fetch()
-            }
-        } else {
-            if (location is Location) {
-                val start: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
-                val dest: DoubleArray = doubleArrayOf(simpleFeature.lat, simpleFeature.lon)
-                val units: DistanceUnits = settings?.distanceUnits ?: DistanceUnits.MILES
-                val name = destination?.properties?.name
-                val street = simpleFeature.title
-                val city = simpleFeature.city
-                val state = simpleFeature.admin
-                routerFactory?.getInitializedRouter(Router.Type.DRIVING)
-                        ?.setLocation(start)
-                        ?.setLocation(dest, name, street, city, state)
-                        ?.setDistanceUnits(units)
-                        ?.setCallback(this)
-                        ?.fetch()
-            }
-        }
+        routeManager?.fetchRoute(this)
     }
 
     private fun updateRoutePreview() {
-        (findViewById(R.id.by_car) as RadioButton)
-                .setOnCheckedChangeListener { compoundButton, b ->
-            if (b) {
-                type = Router.Type.DRIVING
+        byCar.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                routeManager?.type = Router.Type.DRIVING
                 route()
             }
         }
 
-        (findViewById(R.id.by_foot) as RadioButton)
-                .setOnCheckedChangeListener { compoundButton, b ->
-            if (b) {
-                type = Router.Type.WALKING
+        byBike.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                routeManager?.type = Router.Type.BIKING
                 route()
             }
         }
 
-        (findViewById(R.id.by_bike) as RadioButton)
-                .setOnCheckedChangeListener { compoundButton, b ->
-            if (b) {
-                type = Router.Type.BIKING
+        byFoot.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                routeManager?.type = Router.Type.WALKING
                 route()
             }
         }
     }
 
     private fun reverse() {
-        reverse = !reverse
-        routePreviewView.reverse = this.reverse
+        routeManager?.toggleReverse()
+        routePreviewView.reverse = routeManager?.reverse ?: false
         route()
     }
 
@@ -602,7 +568,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val instructionStrings = ArrayList<String>()
         val instructionType = ArrayList<Int>()
         val instructionDistance = ArrayList<Int>()
-        val instructions = presenter?.route?.getRouteInstructions()
+        val instructions = routeManager?.route?.getRouteInstructions()
         if (instructions != null) {
             for(instruction in instructions) {
                 val humanInstruction = instruction.getHumanTurnInstruction()
@@ -614,31 +580,31 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             }
         }
 
-        val simpleFeature = SimpleFeature.fromFeature(destination)
+        val simpleFeature = SimpleFeature.fromFeature(routeManager?.destination)
         val intent = Intent(this, InstructionListActivity::class.java)
         intent.putExtra("instruction_strings", instructionStrings)
         intent.putExtra("instruction_types", instructionType)
         intent.putExtra("instruction_distances", instructionDistance)
         intent.putExtra("destination", simpleFeature.toString())
-        intent.putExtra("reverse", this.reverse)
+        intent.putExtra("reverse", routeManager?.reverse)
         startActivityForResult(intent, requestCodeSearchResults)
     }
 
     override fun startRoutingMode(feature: Feature) {
         showRoutingMode(feature)
-        routeModeView.startRoute(feature, presenter?.route)
+        routeModeView.startRoute(feature, routeManager?.route)
     }
 
     override fun resumeRoutingMode(feature: Feature) {
         showRoutingMode(feature)
-        routeModeView.resumeRoute(feature, presenter?.route)
+        routeModeView.resumeRoute(feature, routeManager?.route)
     }
 
     private fun showRoutingMode(feature: Feature) {
         hideFindMe()
         supportActionBar?.hide()
-        this.destination = feature
-        reverse = false
+        routeManager?.destination = feature
+        routeManager?.reverse = false
         routePreviewView.visibility = View.GONE
         routeModeView.mainPresenter = presenter
         routeModeView.mapController = mapController
@@ -650,8 +616,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initFindMeButton()
         presenter?.routingEnabled = false
         routeModeView.visibility = View.GONE
-        if (origin is Location && destination is Feature) {
-            showRoutePreview(origin as Location, destination as Feature)
+        val location = routeManager?.origin
+        val feature = routeManager?.destination
+        if (location is Location && feature is Feature) {
+            showRoutePreview(location, feature)
         }
         supportActionBar?.hide()
         routeModeView.route = null

@@ -35,7 +35,7 @@ public class InstructionListActivityTest {
 
     @Before
     public void setUp() throws Exception {
-        startActivity.setReverse(true);
+        startActivity.getRouteManager().setReverse(true);
         startActivity.showRoutePreview(getTestLocation(), getTestFeature());
         startActivity.success(new Route(getFixture("valhalla_route")));
         startActivity.findViewById(R.id.view_list).performClick();
@@ -58,7 +58,8 @@ public class InstructionListActivityTest {
     @Test
     public void onDirectionListOpenReversed_shouldHaveOriginSet() throws Exception {
         assertThat(((TextView) activity.findViewById(R.id.starting_point)).getText())
-                .isEqualTo(SimpleFeature.fromFeature(startActivity.getDestination()).toString());
+                .isEqualTo(SimpleFeature.fromFeature(startActivity.getRouteManager()
+                        .getDestination()).toString());
         assertThat(((TextView) activity.findViewById(R.id.destination)).getText())
                 .isEqualTo(activity.getString(R.string.current_location));
     }
