@@ -25,6 +25,7 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapData
+import com.mapzen.tangram.Tangram
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
@@ -287,6 +288,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     override fun showRouteIcon(location: Location) {
         if (routeIcon == null) {
             routeIcon = MapData("route_icon")
+            Tangram.addDataSource(routeIcon);
         }
 
         val properties = com.mapzen.tangram.Properties()
@@ -294,6 +296,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
         routeIcon?.clear()
         routeIcon?.addPoint(properties, LngLat(location.longitude, location.latitude))
+        routeIcon?.update();
     }
 
     override fun centerMapOnCurrentLocation() {
