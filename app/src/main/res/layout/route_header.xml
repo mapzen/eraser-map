@@ -11,26 +11,10 @@
     android:paddingLeft="8dp"
     android:background="@drawable/bg_route_header">
 
-    <LinearLayout
+    <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_start_1" />
-
-        <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_end" />
-    </LinearLayout>
+        android:layout_height="64dp"
+        android:src="@drawable/ic_to_from" />
 
     <LinearLayout
         android:id="@+id/places"
