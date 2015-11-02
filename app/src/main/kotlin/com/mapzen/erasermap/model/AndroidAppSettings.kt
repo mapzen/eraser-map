@@ -15,6 +15,7 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
         public val KEY_MOCK_LOCATION_VALUE: String = "edittext_mock_location"
         public val KEY_MOCK_ROUTE_ENABLED: String = "checkbox_mock_route"
         public val KEY_MOCK_ROUTE_VALUE: String = "edittext_mock_route"
+        public val KEY_BUILD_NUMBER: String = "edittext_build_number"
     }
 
     private val prefs = PreferenceManager.getDefaultSharedPreferences(application)
