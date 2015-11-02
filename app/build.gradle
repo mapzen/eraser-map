@@ -17,6 +17,7 @@ def VECTOR_TILE_API_KEY_DEBUG = hasProperty('vectorTileApiKeyDebugProp') ? '"' +
 def VECTOR_TILE_API_KEY_RELEASE = hasProperty('vectorTileApiKeyReleaseProp') ? '"' + vectorTileApiKeyReleaseProp + '"' : "null";
 def VALHALLA_API_KEY = hasProperty('valhallaApiKey') ? '"' + valhallaApiKey + '"' : "null";
 def MINT_API_KEY = hasProperty('mintApiKey') ? '"' + mintApiKey + '"' : "null";
+def BUILD_NUMBER = hasProperty('buildNumber') ? '"' + buildNumber + '"' : '"DEV"';
 
 android {
   compileSdkVersion 22
@@ -35,6 +36,7 @@ android {
       buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY_DEBUG
       buildConfigField "String", "VALHALLA_API_KEY", VALHALLA_API_KEY
       buildConfigField "String", "MINT_API_KEY", MINT_API_KEY
+      buildConfigField "String", "BUILD_NUMBER", BUILD_NUMBER
     }
     release {
       buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY_RELEASE

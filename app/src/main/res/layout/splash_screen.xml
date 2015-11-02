@@ -163,4 +163,14 @@
         android:scaleType="fitCenter"
         android:src="@drawable/map" />
 
+    <TextView
+        android:id="@+id/build_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:paddingRight="8dp"
+        android:paddingBottom="8dp"
+        android:textSize="18sp" />
+
 </RelativeLayout>
