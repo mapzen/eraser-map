@@ -4,7 +4,6 @@ import android.preference.Preference
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.PrivateMapsTestRunner
 import com.mapzen.erasermap.model.AndroidAppSettings
-import com.mapzen.erasermap.view.SettingsActivity.SettingsFragment
 import com.mapzen.valhalla.Router
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -17,7 +16,7 @@ import org.robolectric.annotation.Config
 @Config(constants = BuildConfig::class, sdk=intArrayOf(21))
 public class SettingsActivityTest {
     val settingsActivity = setupActivity(javaClass<SettingsActivity>())
-    val settingsFragment = settingsActivity.getFragmentManager()
+    val settingsFragment = settingsActivity.fragmentManager
             .findFragmentById(android.R.id.content) as SettingsFragment
 
     fun findPreference(key: String): Preference = settingsFragment.findPreference(key)
@@ -30,15 +29,13 @@ public class SettingsActivityTest {
 
     @Test fun onCreate_shouldSetDistanceUnitsSummaryDefaultValue() {
         settingsFragment.onCreate(null)
-        assertThat(findPreference(AndroidAppSettings.KEY_DISTANCE_UNITS).getSummary())
-                .isEqualTo("Miles")
+        assertThat(findPreference(AndroidAppSettings.KEY_DISTANCE_UNITS).summary).isEqualTo("Miles")
     }
 
     @Test fun onCreate_shouldSetDistanceUnitsSummaryStoredValue() {
         settingsActivity.settings?.distanceUnits = Router.DistanceUnits.KILOMETERS
         settingsFragment.onCreate(null)
-        assertThat(findPreference(AndroidAppSettings.KEY_DISTANCE_UNITS).getSummary())
-                .isEqualTo("Kilometers")
+        assertThat(findPreference(AndroidAppSettings.KEY_DISTANCE_UNITS).summary).isEqualTo("Kilometers")
     }
 
     @Test fun onPreferenceChange_shouldUpdateDistanceUnitsSummary() {
@@ -46,10 +43,10 @@ public class SettingsActivityTest {
 
         settingsFragment.onPreferenceChange(distanceUnitsPref,
                 Router.DistanceUnits.MILES.toString())
-        assertThat(distanceUnitsPref.getSummary()).isEqualTo("Miles")
+        assertThat(distanceUnitsPref.summary).isEqualTo("Miles")
 
         settingsFragment.onPreferenceChange(distanceUnitsPref,
                 Router.DistanceUnits.KILOMETERS.toString())
-        assertThat(distanceUnitsPref.getSummary()).isEqualTo("Kilometers")
+        assertThat(distanceUnitsPref.summary).isEqualTo("Kilometers")
     }
 }

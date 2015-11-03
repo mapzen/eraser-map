@@ -38,6 +38,10 @@
             android:summary="@string/edittext_mock_route_summary"
             android:title="@string/edittext_mock_route_title" />
 
+        <EditTextPreference
+            android:key="edittext_build_number"
+            android:title="@string/edittext_build_number_title" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

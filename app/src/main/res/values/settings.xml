@@ -29,4 +29,8 @@
     <string name="edittext_mock_route_dialog_title">Set mock route</string>
     <string name="edittext_mock_route_summary">Path to GPX trace file (SD card)</string>
     <string name="edittext_mock_route_title">Set mock route</string>
+
+    <!-- Build number -->
+    <string name="edittext_build_number_title">Build number</string>
+
 </resources>
