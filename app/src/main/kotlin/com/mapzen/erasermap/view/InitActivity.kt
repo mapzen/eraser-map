@@ -8,7 +8,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.widget.TextView
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
@@ -40,12 +39,13 @@ public class InitActivity : AppCompatActivity() {
         app = application as EraserMapApplication
         app?.component()?.inject(this)
         initCrashReportService()
-        setContentView(R.layout.splash_screen)
-        getSupportActionBar().hide()
-        tempKeys = ManifestModel()
-        getApiKeys()
-        animate(0)
-        (findViewById(R.id.build_number) as TextView).text = BuildConfig.BUILD_NUMBER
+        throw NullPointerException("Crash me!")
+//        setContentView(R.layout.splash_screen)
+//        getSupportActionBar().hide()
+//        tempKeys = ManifestModel()
+//        getApiKeys()
+//        animate(0)
+//        (findViewById(R.id.build_number) as TextView).text = BuildConfig.BUILD_NUMBER
     }
 
     private fun getApiKeys() {
