@@ -52,9 +52,9 @@ public class TestAndroidModule {
         return new TestAppSettings();
     }
 
-    @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation,
+    @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation, Bus bus,
             RouteManager routeManager, AppSettings settings, ViewStateManager vsm) {
-        return new MainPresenterImpl(mapzenLocation, routeManager, settings, vsm);
+        return new MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm);
     }
 
     @Provides @Singleton RouteManager provideRouteManager() {

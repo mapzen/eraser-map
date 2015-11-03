@@ -6,14 +6,11 @@ import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
-import com.squareup.otto.Bus
 
 public interface MainPresenter {
     companion object {
         val DEFAULT_ZOOM: Float = 14f
         val ROUTING_ZOOM: Float = 17f
-
-        val DEFAULT_TILT: Float = 0f
         val ROUTING_TILT: Float = 0.785398163f // 45°
     }
 
@@ -21,7 +18,6 @@ public interface MainPresenter {
     public var routeViewController: RouteViewController?
     public var currentSearchTerm: String?
     public var currentFeature: Feature?
-    public var bus: Bus?
     public var routingEnabled: Boolean
 
     public fun onSearchResultsAvailable(result: Result?)
