@@ -33,4 +33,10 @@
     <!-- Build number -->
     <string name="edittext_build_number_title">Build number</string>
 
+    <!-- Debug category -->
+    <string name="category_support_title">Support</string>
+
+    <!-- Send feedback -->
+    <string name="edittext_send_feedback_title">Send feedback</string>
+
 </resources>

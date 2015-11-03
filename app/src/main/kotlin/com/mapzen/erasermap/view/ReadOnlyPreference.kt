@@ -4,7 +4,7 @@ import android.content.Context
 import android.preference.EditTextPreference
 import android.util.AttributeSet
 
-public class ReadOnlyEditTextPreference(context: Context?, attrs: AttributeSet?) :
+open class ReadOnlyPreference(context: Context?, attrs: AttributeSet?) :
         EditTextPreference(context, attrs) {
 
     override fun onClick() {
