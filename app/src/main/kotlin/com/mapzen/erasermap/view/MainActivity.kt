@@ -49,7 +49,6 @@ import com.mapzen.tangram.Tangram
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
-import com.squareup.otto.Bus
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
@@ -64,8 +63,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var savedSearch: SavedSearch? = null
         @Inject set
     var presenter: MainPresenter? = null
-        @Inject set
-    var bus: Bus? = null
         @Inject set
     var crashReportService: CrashReportService? = null
         @Inject set
@@ -103,7 +100,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initCrashReportService()
         setContentView(R.layout.activity_main)
         presenter?.mainViewController = this
-        presenter?.bus = bus
         initMapController()
         initAutoCompleteAdapter()
         initFindMeButton()
@@ -140,7 +136,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override public fun onDestroy() {
         super.onDestroy()
         saveCurrentSearchTerm()
-        bus?.unregister(presenter)
         clearRouteLine()
     }
 

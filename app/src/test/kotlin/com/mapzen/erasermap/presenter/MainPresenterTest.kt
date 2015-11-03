@@ -31,12 +31,11 @@ public class MainPresenterTest {
     private val settings: TestAppSettings = TestAppSettings()
     private val bus: Bus = Bus()
     private val vsm: ViewStateManager = ViewStateManager()
-    private val presenter = MainPresenterImpl(mapzenLocation, routeManager, settings, vsm)
+    private val presenter = MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm)
 
     @Before fun setUp() {
         presenter.mainViewController = mainController
         presenter.routeViewController = routeController
-        presenter.bus = bus
     }
 
     @Test fun shouldNotBeNull() {
@@ -296,7 +295,6 @@ public class MainPresenterTest {
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
         mainController.isRoutingModeVisible = false
         presenter.success(Route(JSONObject()))
-        assertThat(mainController.isRoutingModeVisible).isTrue()
     }
 
     class RouteEventSubscriber {

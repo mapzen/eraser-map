@@ -19,7 +19,7 @@ import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 import java.util.ArrayList
 
-public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
+public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         val routeManager: RouteManager, val settings: AppSettings, val vsm: ViewStateManager)
         : MainPresenter, RouteCallback {
 
@@ -28,15 +28,14 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     override var mainViewController: MainViewController? = null
     override var routeViewController: RouteViewController? = null
     override var currentSearchTerm: String? = null
-    override var bus: Bus? = null
-        set(value) {
-            field = value
-            bus?.register(this)
-        }
 
     private var searchResults: Result? = null
     private var destination: Feature? = null
     private var initialized = false
+
+    init {
+        bus.register(this)
+    }
 
     override fun onSearchResultsAvailable(searchResults: Result?) {
         vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
@@ -173,7 +172,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation,
     }
 
     override fun onClickStartNavigation() {
-        bus?.post(RouteEvent())
+        bus.post(RouteEvent())
         generateRoutingMode()
         vsm.viewState = ViewStateManager.ViewState.ROUTING
     }
