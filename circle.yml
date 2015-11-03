@@ -21,7 +21,7 @@ dependencies:
 
 test:
   override:
-    - ./gradlew -PvalhallaApiKey=$VALHALLA_API_KEY -PbuildNumber=$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM --refresh-dependencies
+    - ./gradlew -PmintApiKey=$MINT_API_KEY -PvalhallaApiKey=$VALHALLA_API_KEY -PbuildNumber=$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM --refresh-dependencies
     - ./gradlew checkstyle
 
 deployment:
