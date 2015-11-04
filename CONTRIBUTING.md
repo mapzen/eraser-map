@@ -67,13 +67,42 @@ Coming soon to Eraser Map `settings` menu!
 
 The screen will flash. Go to your photo `Gallery.app` and email the screenshot to yourself. Then attach it to the issue.
 
-
-### Device logs
-
-This requires installing **ADB** or a **logcat** viewer app. If you don’t know what these things are don’t worry about it. If you do please attach logs!
-
 ### Why we ask for your location for routing and search
 
 You don't have to provide it, but we try to prioritize search results nearer your `current location` and it's hard to replicate the bug unless we have this information. 
 
 If you don't feel comfortable sharing your location in the issue, please email it to: [android-support@mapzen.com](mailto:android-support@mapzen.com).
+
+### Device logs
+
+This requires installing **ADB** or a **logcat** viewer app. If you don’t know what these things are don’t worry about it. If you do please attach logs!
+
+For the adventurous: 
+
+#### Install Android Studio or the SDK tools
+
+You'll need Android Studio with the Android SDK Tools package, or possibly just the SDK. 
+
+1. http://developer.android.com/sdk/index.html#Other
+2. For the Android Studio route, install it from http://developer.android.com/sdk/installing/index.html?pkg=studio
+3. In the Android Studio SDK Manager, install Tools > Android SDK Tools. http://developer.android.com/sdk/installing/adding-packages.html (or possibly only the SDK).
+
+#### Enable debugging
+
+1. Connect your phone to your machine with a USB cable.
+2. Enable USB debugging on your phone in Settings > About phone and tap Build number seven times. Return to the previous screen to find Developer options at the bottom. 
+3. Go to Settings > Developer Options (which should now be visible) and make sure the developer options are on and USB debugging is enabled.
+4. At some point, you may see a confirmation to Allow USB debugging with a key of the computer. Tap OK.
+
+#### Enable logging
+
+Follow these steps to enable command-line debugging. You can also use Android Studio for your debugging, if you have installed it.
+
+Here is the usage for the Android Debug Bridge: http://developer.android.com/tools/help/adb.html
+
+1. Start a terminal and navigate to the directory with the Android SDK platform-tools. For the default Android Studio installation, type cd /Users/[name]/Library/Android/sdk/platform-tools.
+2. Type adb devices. If correctly configured, you should see a list of the devices attached.
+3. If you are having trouble, try one of the solutions in this StackExchange thread. http://stackoverflow.com/questions/7609270/not-able-to-access-adb-in-os-x-through-terminal-command-not-found I had this same scenario (note that I had already had Android Studio, and was able to solve it with the last answer on the page, with reinstalling with brew). 
+4. Get ready to start Eraser Map and in the terminal, type adb logcat. This will dump all the logs to your terminal. (Note that there are probably ways to filter this. You might also want to type a word, like your name, that you can search for to be able to identify when the relevant logging starts.)
+5. Start Eraser Map on your phone.
+6. Copy the logs on your terminal to an email or bug report, as appropriate.
