@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.widget.TextView
 import com.mapzen.erasermap.BuildConfig
@@ -75,11 +76,36 @@ public class InitActivity : AppCompatActivity() {
     }
 
     public fun startMainActivity() {
-        startActivity(Intent(applicationContext, MainActivity::class.java))
-        finish()
+        if (BuildConfig.VECTOR_TILE_API_KEY == null ||
+                BuildConfig.PELIAS_API_KEY == null ||
+                BuildConfig.VALHALLA_API_KEY == null) {
+            showApiKeyDialog()
+        } else {
+            startActivity(Intent(applicationContext, MainActivity::class.java))
+            finish()
+        }
     }
 
     private fun initCrashReportService() {
         crashReportService?.initAndStartSession(this)
+    }
+
+    private fun showApiKeyDialog() {
+        var message = "The following API keys are not set: "
+        if (BuildConfig.VECTOR_TILE_API_KEY == null) {
+            message += "\n* VECTOR TILE"
+        }
+        if (BuildConfig.PELIAS_API_KEY == null) {
+            message += "\n* PELIAS"
+        }
+        if (BuildConfig.VALHALLA_API_KEY == null) {
+            message += "\n* VALHALLA"
+        }
+
+        AlertDialog.Builder(this)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("Exit Application", { dialogInterface, i -> finish() })
+                .show()
     }
 }

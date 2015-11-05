@@ -56,13 +56,17 @@ public class AndroidModule {
 
     @Provides @Singleton RouteManager provideRouteManager(AppSettings settings) {
         ValhallaRouteManager manager = new ValhallaRouteManager(settings);
-        manager.setApiKey(BuildConfig.VALHALLA_API_KEY);
+        if (BuildConfig.VALHALLA_API_KEY != null) {
+            manager.setApiKey(BuildConfig.VALHALLA_API_KEY);
+        }
         return manager;
     }
 
     @Provides @Singleton TileHttpHandler provideTileHttpHandler() {
         TileHttpHandler handler = new TileHttpHandler(application);
-        handler.setApiKey(BuildConfig.VECTOR_TILE_API_KEY);
+        if (BuildConfig.VECTOR_TILE_API_KEY != null) {
+            handler.setApiKey(BuildConfig.VECTOR_TILE_API_KEY);
+        }
         return handler;
     }
 
