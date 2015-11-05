@@ -15,6 +15,7 @@ apply plugin: 'checkstyle'
 
 def VECTOR_TILE_API_KEY_DEBUG = hasProperty('vectorTileApiKeyDebugProp') ? '"' + vectorTileApiKeyDebugProp + '"' : "null";
 def VECTOR_TILE_API_KEY_RELEASE = hasProperty('vectorTileApiKeyReleaseProp') ? '"' + vectorTileApiKeyReleaseProp + '"' : "null";
+def PELIAS_API_KEY = hasProperty('peliasApiKey') ? '"' + peliasApiKey + '"' : "null";
 def VALHALLA_API_KEY = hasProperty('valhallaApiKey') ? '"' + valhallaApiKey + '"' : "null";
 def MINT_API_KEY = hasProperty('mintApiKey') ? '"' + mintApiKey + '"' : "null";
 def BUILD_NUMBER = hasProperty('buildNumber') ? '"' + buildNumber + '"' : '"DEV"';
@@ -34,16 +35,17 @@ android {
   buildTypes {
     debug {
       buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY_DEBUG
+      buildConfigField "String", "PELIAS_API_KEY", PELIAS_API_KEY
       buildConfigField "String", "VALHALLA_API_KEY", VALHALLA_API_KEY
       buildConfigField "String", "MINT_API_KEY", MINT_API_KEY
       buildConfigField "String", "BUILD_NUMBER", BUILD_NUMBER
     }
     release {
       buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY_RELEASE
+      buildConfigField "String", "PELIAS_API_KEY", PELIAS_API_KEY
       buildConfigField "String", "VALHALLA_API_KEY", VALHALLA_API_KEY
       buildConfigField "String", "MINT_API_KEY", MINT_API_KEY
       minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
   }
   sourceSets {
@@ -91,13 +93,11 @@ repositories {
 dependencies {
   compile 'com.android.support:appcompat-v7:22.2.0'
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
   compile 'com.mapzen.tangram:tangram:0.1-SNAPSHOT'
   compile 'com.mapzen.android:lost:1.0.1'
   compile('com.mapzen.android:pelias-android-sdk:0.6-SNAPSHOT') {
     exclude group: 'javax.annotation:javax', module: 'javax.annotation-api'
   }
-  compile 'com.mapzen:leyndo-android-library:0.1-SNAPSHOT'
   compile 'com.google.dagger:dagger:2.0'
   compile 'com.google.dagger:dagger-compiler:2.0'
   compile 'javax.annotation:javax.annotation-api:1.2'
@@ -110,7 +110,6 @@ dependencies {
   compile 'com.splunk.mint:mint:4.2.1'
   compile 'com.squareup.okhttp:okhttp:2.4.0'
   compile 'com.mapzen.android:speakerbox:1.1.0'
-  compile 'com.android.support:multidex:1.0.1'
   compile 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
 
   testCompile 'junit:junit:4.12'
@@ -120,4 +119,5 @@ dependencies {
     exclude group: 'commons-logging', module: 'commons-logging'
     exclude group: 'org.apache.httpcomponents', module: 'httpclient'
   }
+  testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 }

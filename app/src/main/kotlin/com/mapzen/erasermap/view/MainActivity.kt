@@ -1,10 +1,7 @@
 package com.mapzen.erasermap.view
 
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.location.Location
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
@@ -29,7 +26,6 @@ import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
-import com.mapzen.leyndo.ManifestModel
 import com.mapzen.pelias.BoundingBox
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
@@ -72,8 +68,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         @Inject set
     var tileHttpHandler: TileHttpHandler? = null
         @Inject set
-    var apiKeys: ManifestModel? = null
-        @Inject set
 
     var app: EraserMapApplication? = null
     var mapController : MapController? = null
@@ -104,7 +98,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initAutoCompleteAdapter()
         initFindMeButton()
         initReverseButton()
-        checkIfUpdateNeeded()
         presenter?.onCreate()
         presenter?.onRestoreViewState()
     }
@@ -164,23 +157,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         crashReportService?.initAndStartSession(this)
     }
 
-    public fun checkIfUpdateNeeded() {
-        if(apiKeys?.minVersion as Int > BuildConfig.VERSION_CODE ) {
-            var builder: AlertDialog.Builder  = AlertDialog.Builder(this)
-            builder.setMessage(getString(R.string.update_message))
-                    .setPositiveButton(getString(R.string.accept_update),
-                            DialogInterface.OnClickListener { dialogInterface, i ->
-                            startActivity(Intent(Intent.ACTION_VIEW,
-                                    Uri.parse("market://details?id=" + packageName)))
-                            finish()
-                         })
-                    .setNegativeButton(getString(R.string.decline_update),
-                            DialogInterface.OnClickListener { dialogInterface, i -> finish() })
-                    .setCancelable(false)
-            builder.create().show()
-       }
-    }
-
     override fun centerMapOnLocation(location: Location, zoom: Float) {
         mapController?.setMapPosition(location.longitude, location.latitude)
         mapController?.mapZoom = zoom
@@ -220,7 +196,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             listView.adapter = autoCompleteAdapter
             val pelias = Pelias.getPelias()
             pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
-            pelias.setApiKey(apiKeys?.peliasApiKey)
+            pelias.setApiKey(BuildConfig.PELIAS_API_KEY)
             searchView.setAutoCompleteListView(listView)
             searchView.setSavedSearch(savedSearch)
             searchView.setPelias(Pelias.getPelias())

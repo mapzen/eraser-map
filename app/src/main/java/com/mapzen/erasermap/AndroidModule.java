@@ -13,7 +13,6 @@ import com.mapzen.erasermap.model.ValhallaRouteManager;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.erasermap.presenter.ViewStateManager;
-import com.mapzen.leyndo.ManifestModel;
 import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;
@@ -31,10 +30,6 @@ public class AndroidModule {
 
     @Provides @Singleton @ForApplication Context provideApplicationContext() {
         return application;
-    }
-
-    @Provides @Singleton ManifestModel provideManifestModel() {
-        return new ManifestModel();
     }
 
     @Provides @Singleton LostApiClient provideLocationClient() {
@@ -60,11 +55,15 @@ public class AndroidModule {
     }
 
     @Provides @Singleton RouteManager provideRouteManager(AppSettings settings) {
-        return new ValhallaRouteManager(settings);
+        ValhallaRouteManager manager = new ValhallaRouteManager(settings);
+        manager.setApiKey(BuildConfig.VALHALLA_API_KEY);
+        return manager;
     }
 
     @Provides @Singleton TileHttpHandler provideTileHttpHandler() {
-        return new TileHttpHandler(application);
+        TileHttpHandler handler = new TileHttpHandler(application);
+        handler.setApiKey(BuildConfig.VECTOR_TILE_API_KEY);
+        return handler;
     }
 
     @Provides @Singleton Bus provideBus() {

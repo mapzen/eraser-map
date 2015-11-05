@@ -13,7 +13,6 @@ import com.mapzen.erasermap.model.TileHttpHandler;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.erasermap.presenter.ViewStateManager;
-import com.mapzen.leyndo.ManifestModel;
 import com.squareup.otto.Bus;
 
 import org.mockito.Mockito;
@@ -62,11 +61,9 @@ public class TestAndroidModule {
     }
 
     @Provides @Singleton TileHttpHandler provideTileHttpHandler() {
-        return new TileHttpHandler(application);
-    }
-
-    @Provides @Singleton ManifestModel provideManifestModel() {
-        return new ManifestModel();
+        TileHttpHandler handler = new TileHttpHandler(application);
+        handler.setApiKey(BuildConfig.VECTOR_TILE_API_KEY);
+        return handler;
     }
 
     @Provides @Singleton Bus provideBus() {

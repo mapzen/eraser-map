@@ -8,7 +8,7 @@ import com.mapzen.helpers.RouteListener
 
 class RouteEngineListener : RouteListener {
     companion object {
-        val TAG = RouteEngineListener::class.simpleName
+        val TAG = "RouteEngineListener"
     }
 
     public var controller: RouteViewController? = null
