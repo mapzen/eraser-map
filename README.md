@@ -9,9 +9,22 @@ Privacy-focused mapping application for Android
 5. Modify unit test run configuration working directory to `/path/to/project/eraser-map/app`
 6. Rebuild and run tests
 
-## Setting vector tile API key
-To set API key(s) to be appended to vector tile requests add the following lines to your `$HOME/.gradle/gradle.properties` file.
+## API Keys
+
+API keys for tiles, search, and routing services must be set in a local `gradle.properties` file or via Gradle command line arguments.
+
+**gradle.properties**
+
 ```bash
-vectorTileApiKeyDebugProp=[your-debug-key]
-vectorTileApiKeyReleaseProp=[your-release-key]
+vectorTileApiKey=vector-tiles-???
+peliasApiKey=search-???
+valhallaApiKey=valhalla-???
+```
+
+**Command-line arguments**
+
+```bash
+./gradlew clean installDebug -PvectorTileApiKey=$VECTOR_TILE_API_KEY \
+    -PpeliasApiKey=$PELIAS_API_KEY \
+    -PvalhallaApiKey=$VALHALLA_API_KEY
 ```
