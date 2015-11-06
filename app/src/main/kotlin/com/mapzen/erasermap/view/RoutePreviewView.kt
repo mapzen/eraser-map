@@ -8,30 +8,29 @@ import android.widget.RelativeLayout
 import android.widget.RelativeLayout.GONE
 import android.widget.RelativeLayout.VISIBLE
 import android.widget.TextView
-import butterknife.bindView
 import com.mapzen.erasermap.R
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.valhalla.Route
 
 public class RoutePreviewView : RelativeLayout {
-    val startView: TextView by bindView(R.id.starting_point)
-    val destinationView: TextView by bindView(R.id.destination)
-    val distancePreview: DistanceView by bindView(R.id.distance_preview)
-    val timePreview: TimeView by bindView(R.id.time_preview)
-    val viewListButton: Button by bindView(R.id.view_list)
-    val startNavigationButton: Button by bindView(R.id.start_navigation)
+    var startView: TextView? = null
+    var destinationView: TextView? = null
+    var distancePreview: DistanceView? = null
+    var timePreview: TimeView? = null
+    var viewListButton: Button? = null
+    var startNavigationButton: Button? = null
 
     public var reverse : Boolean = false
         set (value) {
             field = value
             if (value) {
-                startView.text = destination?.title
-                destinationView.setText(R.string.current_location)
-                startNavigationButton.visibility = GONE
+                startView?.text = destination?.title
+                destinationView?.setText(R.string.current_location)
+                startNavigationButton?.visibility = GONE
             } else {
-                startView.setText(R.string.current_location)
-                destinationView.text = destination?.title
-                startNavigationButton.visibility = VISIBLE
+                startView?.setText(R.string.current_location)
+                destinationView?.text = destination?.title
+                startNavigationButton?.visibility = VISIBLE
 
             }
         }
@@ -39,18 +38,18 @@ public class RoutePreviewView : RelativeLayout {
     public var destination: SimpleFeature? = null
         set (value) {
             field = value
-            startView.setText(R.string.current_location)
-            destinationView.text = value?.title
+            startView?.setText(R.string.current_location)
+            destinationView?.text = value?.title
         }
 
     public var route: Route? = null
         set (value) {
             field = value
             val distance = value?.getTotalDistance() ?: 0
-            distancePreview.distanceInMeters =  distance
+            distancePreview?.distanceInMeters =  distance
 
             val time = value?.getTotalTime() ?: 0
-            timePreview.timeInMinutes = time / 60
+            timePreview?.timeInMinutes = time / 60
         }
 
     public constructor(context: Context) : super(context) {
@@ -69,5 +68,12 @@ public class RoutePreviewView : RelativeLayout {
     private fun init() {
         (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_preview, this, true)
+
+        startView = findViewById(R.id.starting_point) as TextView?
+        destinationView = findViewById(R.id.destination) as TextView?
+        distancePreview = findViewById(R.id.distance_preview) as DistanceView?
+        timePreview = findViewById(R.id.time_preview) as TimeView?
+        viewListButton = findViewById(R.id.view_list) as Button?
+        startNavigationButton = findViewById(R.id.start_navigation) as Button?
     }
 }
