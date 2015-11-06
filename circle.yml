@@ -1,22 +1,15 @@
 machine:
   ruby:
     version: jruby-1.7.12
-  pre:
-    - curl -O http://apache.osuosl.org/maven/maven-3/3.1.1/binaries/apache-maven-3.1.1-bin.tar.gz && tar xvf apache-maven-3.1.1-bin.tar.gz -C ~/.m2
   environment:
-    PATH: $HOME/.m2/apache-maven-3.1.1/bin:$PATH
-    M2_HOME: $HOME/.m2/apache-maven-3.1.1/
-    M2: $HOME/.m2/apache-maven-3.1.1/bin/
     ANDROID_HOME: /usr/local/android-sdk-linux
     JAVA_OPTS: "-Xmx512m -XX:MaxPermSize=512m"
 
-
 dependencies:
   pre:
-    - echo y | android update sdk --all --no-ui --force --filter "extra-android-m2repository"
+    - echo y | android update sdk --all --no-ui --force --filter "tool,platform-tool,extra-android-m2repository"
     - sudo apt-get update; sudo apt-get install s3cmd
     - printf "[default]\naccess_key = $S3_ACCESS_KEY\n secret_key = $S3_SECRET_KEY" > ~/.s3cfg
-    - git clone git@github.com:mapzen/leyndo-android-library.git; cd leyndo-android-library; ./gradlew clean install
     - git submodule init; git submodule update
 
 test:
