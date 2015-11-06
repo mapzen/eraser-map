@@ -21,7 +21,7 @@ def BUILD_NUMBER = hasProperty('buildNumber') ? '"' + buildNumber + '"' : '"DEV"
 
 android {
   compileSdkVersion 22
-  buildToolsVersion "23.0.2"
+  buildToolsVersion "23.0.1"
 
   defaultConfig {
     applicationId "com.mapzen.erasermap"
