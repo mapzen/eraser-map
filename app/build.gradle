@@ -1,5 +1,5 @@
 buildscript {
-  ext.kotlin_version = '1.0.0-beta-1038'
+  ext.kotlin_version = '1.0.0-beta-1103'
   repositories {
     mavenCentral()
   }
@@ -13,15 +13,15 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'checkstyle'
 
-def VECTOR_TILE_API_KEY_DEBUG = hasProperty('vectorTileApiKeyDebugProp') ? '"' + vectorTileApiKeyDebugProp + '"' : "null";
-def VECTOR_TILE_API_KEY_RELEASE = hasProperty('vectorTileApiKeyReleaseProp') ? '"' + vectorTileApiKeyReleaseProp + '"' : "null";
+def VECTOR_TILE_API_KEY = hasProperty('vectorTileApiKey') ? '"' + vectorTileApiKey + '"' : "null";
+def PELIAS_API_KEY = hasProperty('peliasApiKey') ? '"' + peliasApiKey + '"' : "null";
 def VALHALLA_API_KEY = hasProperty('valhallaApiKey') ? '"' + valhallaApiKey + '"' : "null";
 def MINT_API_KEY = hasProperty('mintApiKey') ? '"' + mintApiKey + '"' : "null";
 def BUILD_NUMBER = hasProperty('buildNumber') ? '"' + buildNumber + '"' : '"DEV"';
 
 android {
   compileSdkVersion 22
-  buildToolsVersion "21.1.2"
+  buildToolsVersion "23.0.1"
 
   defaultConfig {
     applicationId "com.mapzen.erasermap"
@@ -29,21 +29,21 @@ android {
     targetSdkVersion 22
     versionCode 2
     versionName "0.3-SNAPSHOT"
-    multiDexEnabled true
   }
   buildTypes {
     debug {
-      buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY_DEBUG
+      buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY
+      buildConfigField "String", "PELIAS_API_KEY", PELIAS_API_KEY
       buildConfigField "String", "VALHALLA_API_KEY", VALHALLA_API_KEY
       buildConfigField "String", "MINT_API_KEY", MINT_API_KEY
       buildConfigField "String", "BUILD_NUMBER", BUILD_NUMBER
     }
     release {
-      buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY_RELEASE
+      buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY
+      buildConfigField "String", "PELIAS_API_KEY", PELIAS_API_KEY
       buildConfigField "String", "VALHALLA_API_KEY", VALHALLA_API_KEY
       buildConfigField "String", "MINT_API_KEY", MINT_API_KEY
       minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
   }
   sourceSets {
@@ -91,13 +91,11 @@ repositories {
 dependencies {
   compile 'com.android.support:appcompat-v7:22.2.0'
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
   compile 'com.mapzen.tangram:tangram:0.1-SNAPSHOT'
   compile 'com.mapzen.android:lost:1.0.1'
   compile('com.mapzen.android:pelias-android-sdk:0.6-SNAPSHOT') {
     exclude group: 'javax.annotation:javax', module: 'javax.annotation-api'
   }
-  compile 'com.mapzen:leyndo-android-library:0.1-SNAPSHOT'
   compile 'com.google.dagger:dagger:2.0'
   compile 'com.google.dagger:dagger-compiler:2.0'
   compile 'javax.annotation:javax.annotation-api:1.2'
@@ -110,8 +108,6 @@ dependencies {
   compile 'com.splunk.mint:mint:4.2.1'
   compile 'com.squareup.okhttp:okhttp:2.4.0'
   compile 'com.mapzen.android:speakerbox:1.1.0'
-  compile 'com.android.support:multidex:1.0.1'
-  compile 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
 
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.9.5'
@@ -120,4 +116,5 @@ dependencies {
     exclude group: 'commons-logging', module: 'commons-logging'
     exclude group: 'org.apache.httpcomponents', module: 'httpclient'
   }
+  testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 }

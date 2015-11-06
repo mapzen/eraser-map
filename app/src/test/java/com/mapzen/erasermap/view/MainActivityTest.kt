@@ -1,10 +1,7 @@
 package com.mapzen.erasermap.view
 
-import android.app.AlertDialog
 import android.content.ComponentName
 import android.content.Context.LOCATION_SERVICE
-import android.content.DialogInterface
-import android.content.Intent
 import android.location.LocationManager
 import android.os.SystemClock
 import android.preference.PreferenceManager
@@ -39,7 +36,6 @@ import org.robolectric.annotation.Config
 import org.robolectric.fakes.RoboMenu
 import org.robolectric.fakes.RoboMenuItem
 import org.robolectric.internal.ShadowExtractor
-import org.robolectric.shadows.ShadowAlertDialog
 import org.robolectric.shadows.ShadowApplication
 import java.util.ArrayList
 
@@ -418,38 +414,6 @@ public class MainActivityTest {
         assertThat(activity.presenter!!.currentFeature).isNull()
         activity.reverseGeolocate(getLongPressMotionEvent())
         assertThat(activity.presenter!!.currentFeature).isNotNull()
-    }
-
-    @Test
-    public fun onMinVersionGreaterThanCurrent_shouldLaunchUpdateDialog() {
-        activity.apiKeys?.setMinVersion(101)
-        activity.checkIfUpdateNeeded()
-        var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
-        assertThat(dialog.isShowing()).isTrue()
-        assertThat(shadowOf(dialog).getMessage())
-                .isEqualTo(activity.getString(R.string.update_message))
-    }
-
-    @Test
-    public fun onMinVersionGreaterThanCurrent_clickUpdateNowShouldOpenPlayStore() {
-        activity.apiKeys?.setMinVersion(101)
-        activity.checkIfUpdateNeeded()
-        var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
-        assertThat(dialog.isShowing()).isTrue()
-        dialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick()
-        var startedIntent: Intent = shadowOf(activity).nextStartedActivity;
-        assertThat(startedIntent.data.toString())
-                .isEqualTo("market://details?id=com.mapzen.erasermap");
-    }
-
-    @Test
-    public fun onMinVersionGreaterThanCurrent_clickExitShouldExitApp() {
-        activity.apiKeys?.minVersion = 101
-        activity.checkIfUpdateNeeded()
-        var dialog: AlertDialog = ShadowAlertDialog.getLatestAlertDialog()
-        assertThat(dialog.isShowing).isTrue()
-        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).performClick()
-        assertThat(shadowOf(activity).isFinishing).isTrue()
     }
 
     @Test
