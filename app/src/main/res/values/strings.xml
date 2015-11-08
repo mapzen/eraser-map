@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">Eraser Map</string>
     <string name="action_search">Search</string>
-    <string name="action_clear">Erase History</string>
     <string name="action_settings">Settings</string>
-    <string name="action_view_all">View All</string>
     <string name="no_recent_searches">No recent searches</string>
     <string name="search_results_indicator">%1$d of %2$d results</string>
     <string name="search_results">Search Results</string>

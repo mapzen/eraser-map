@@ -216,6 +216,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             searchView.setOnSubmitListener({ presenter?.onQuerySubmit() })
             listView.emptyView = emptyView
             restoreCurrentSearchTerm()
+            searchView.setIconifiedByDefault(false);
         }
 
         return true
@@ -226,8 +227,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         when (id) {
             R.id.action_settings -> { onActionSettings(); return true }
             R.id.action_search -> { onActionSearch(); return true }
-            R.id.action_clear -> { onActionClear(); return true }
-            R.id.action_view_all -> { onActionViewAll(); return true }
         }
 
         return super.onOptionsItemSelected(item)
@@ -417,11 +416,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showOverflowMenu() {
-        optionsMenu?.setGroupVisible(R.id.menu_overflow, true)
     }
 
     override fun hideOverflowMenu() {
-        optionsMenu?.setGroupVisible(R.id.menu_overflow, false)
     }
 
     override fun onSearchResultSelected(position: Int) {
@@ -429,11 +426,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showActionViewAll() {
-        optionsMenu?.findItem(R.id.action_view_all)?.setVisible(true)
     }
 
     override fun hideActionViewAll() {
-        optionsMenu?.findItem(R.id.action_view_all)?.setVisible(false)
     }
 
     override fun collapseSearchView() {

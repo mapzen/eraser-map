@@ -5,24 +5,13 @@
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search"
         android:title="@string/action_search"
-        app:showAsAction="collapseActionView|ifRoom"
+        app:showAsAction="always"
         app:actionViewClass="com.mapzen.pelias.widget.PeliasSearchView" />
 
     <item
-        android:id="@+id/action_view_all"
-        android:title="@string/action_view_all"
-        android:icon="@drawable/ic_action_view_all_normal"
-        android:visible="false"
+        android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:icon="@drawable/ic_settings"
+        android:visible="true"
         app:showAsAction="always" />
-
-    <group android:id="@+id/menu_overflow">
-        <item
-            android:id="@+id/action_clear"
-            android:title="@string/action_clear"
-            app:showAsAction="never" />
-        <item
-            android:id="@+id/action_settings"
-            android:title="@string/action_settings"
-            app:showAsAction="never" />
-    </group>
 </menu>
