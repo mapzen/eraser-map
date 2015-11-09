@@ -1,5 +1,6 @@
 package com.mapzen.erasermap.presenter
 
+import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
 import com.mapzen.erasermap.model.LocationChangeEvent
@@ -277,6 +278,22 @@ public class MainPresenterTest {
         assertThat(routeManager.origin).isNotNull()
         assertThat(routeManager.destination).isNotNull()
         assertThat(routeManager.route).isNotNull()
+    }
+
+    @Test fun onReroute_shouldSetHeadingIfHasBearingIsTrue() {
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        routeManager.reset()
+        val location = TestHelper.getMockLocation(0.0, 0.0, 180f, true)
+        presenter.onReroute(location)
+        assertThat(routeManager.bearing).isEqualTo(180f)
+    }
+
+    @Test fun onReroute_shouldNotSetHeadingIfHasBearingIsFalse() {
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        routeManager.reset()
+        val location = TestHelper.getMockLocation(0.0, 0.0, 180f, false)
+        presenter.onReroute(location)
+        assertThat(routeManager.bearing).isEqualTo(null)
     }
 
     @Test fun onRouteFailure_shouldHideProgress() {

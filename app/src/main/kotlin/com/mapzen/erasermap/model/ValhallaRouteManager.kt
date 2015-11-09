@@ -15,6 +15,7 @@ public class ValhallaRouteManager(val settings: AppSettings) : RouteManager {
     override var type: Router.Type = Router.Type.DRIVING
     override var reverse: Boolean = false
     override var route: Route? = null
+    override var bearing: Float? = null
 
     override fun fetchRoute(callback: RouteCallback) {
         if (reverse) {
@@ -39,9 +40,15 @@ public class ValhallaRouteManager(val settings: AppSettings) : RouteManager {
             val street = simpleFeature.title
             val city = simpleFeature.city
             val state = simpleFeature.admin
-            getInitializedRouter(type)
-                    .setLocation(start)
-                    .setLocation(dest, name, street, city, state)
+            val router = getInitializedRouter(type)
+
+            if (location.hasBearing()) {
+                router.setLocation(start, location.bearing)
+            } else {
+                router.setLocation(start)
+            }
+
+            router.setLocation(dest, name, street, city, state)
                     .setDistanceUnits(units)
                     .setCallback(callback)
                     .fetch()
