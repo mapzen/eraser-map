@@ -1,18 +1,17 @@
 package com.mapzen.erasermap.dummy;
 
+import android.location.Location;
+
+import com.google.common.io.Files;
 import com.mapzen.pelias.SimpleFeature;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.gson.Geometry;
 import com.mapzen.pelias.gson.Properties;
 import com.mapzen.valhalla.Instruction;
 
-import com.google.common.io.Files;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mockito.Mockito;
-
-import android.location.Location;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,5 +81,15 @@ public class TestHelper {
         Mockito.when(jsonObject.length()).thenReturn(6);
         Mockito.when(jsonObject.getString("type")).thenReturn("0");
         return new Instruction(jsonObject);
+    }
+
+    public static Location getMockLocation(double lon, double lat, float bearing,
+            boolean hasBearing) {
+        Location location = Mockito.mock(Location.class);
+        Mockito.when(location.getLongitude()).thenReturn(lon);
+        Mockito.when(location.getLatitude()).thenReturn(lat);
+        Mockito.when(location.getBearing()).thenReturn(bearing);
+        Mockito.when(location.hasBearing()).thenReturn(hasBearing);
+        return location;
     }
 }

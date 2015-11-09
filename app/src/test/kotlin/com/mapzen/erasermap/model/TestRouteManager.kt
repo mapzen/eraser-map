@@ -16,6 +16,7 @@ public class TestRouteManager : RouteManager {
     override var type: Router.Type = Router.Type.DRIVING
     override var reverse: Boolean = false
     override var route: Route? = null
+    override var bearing: Float? = null
 
     override fun fetchRoute(callback: RouteCallback) {
         route = TestRoute()
@@ -40,6 +41,7 @@ public class TestRouteManager : RouteManager {
         origin = null
         destination = null
         route = null
+        bearing = null
     }
 
     public inner class TestRouter : Router {
@@ -82,6 +84,12 @@ public class TestRouteManager : RouteManager {
 
         override fun setLocation(point: DoubleArray): Router {
             locations.add(point)
+            return this
+        }
+
+        override fun setLocation(point: DoubleArray, heading: Float): Router {
+            locations.add(point)
+            bearing = heading
             return this
         }
 

@@ -13,6 +13,7 @@ public interface RouteManager {
     public var type: Router.Type
     public var reverse: Boolean
     public var route: Route?
+    public var bearing: Float?
     public fun fetchRoute(callback: RouteCallback)
     public fun toggleReverse()
 }

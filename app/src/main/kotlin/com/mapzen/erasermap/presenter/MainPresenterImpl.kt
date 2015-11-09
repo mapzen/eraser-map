@@ -245,6 +245,11 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         routeManager.origin = location
         routeManager.destination = destination
         routeManager.reverse = false
+        if (location.hasBearing()) {
+            routeManager.bearing = location.bearing
+        } else {
+            routeManager.bearing = null
+        }
         routeManager.fetchRoute(this)
     }
 
@@ -252,7 +257,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         mainViewController?.hideProgress()
         Log.e("MainPresenterImpl", "Error fetching new route: " + statusCode)
     }
-
 
     override fun success(route: Route) {
         mainViewController?.hideProgress()

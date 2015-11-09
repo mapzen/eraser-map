@@ -443,6 +443,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun showRoutePreview(location: Location, feature: Feature) {
         routeManager?.origin = location
         routeManager?.destination = feature
+
+        if (location.hasBearing()) {
+            routeManager?.bearing = location.bearing
+        } else {
+            routeManager?.bearing = null
+        }
+
         routePreviewView?.destination = SimpleFeature.fromFeature(feature)
         route()
     }
