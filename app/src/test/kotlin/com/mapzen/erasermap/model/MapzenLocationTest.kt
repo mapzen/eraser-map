@@ -3,6 +3,7 @@ package com.mapzen.erasermap.model
 import com.mapzen.android.lost.api.LocationServices.FusedLocationApi
 import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.erasermap.BuildConfig
+import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.PrivateMapsTestRunner
 import com.mapzen.erasermap.dummy.TestHelper
 import com.squareup.otto.Bus
@@ -19,7 +20,8 @@ public class MapzenLocationTest {
     val locationClient = LostApiClient.Builder(application).build()
     val settings = TestAppSettings()
     val bus = Bus()
-    val mapzenLocation = MapzenLocationImpl(locationClient, settings, bus)
+    val mapzenLocation = MapzenLocationImpl(locationClient, settings, bus,
+            application as EraserMapApplication)
 
     @Test fun shouldNotBeNull() {
         assertThat(mapzenLocation).isNotNull()

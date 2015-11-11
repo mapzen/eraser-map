@@ -14,7 +14,7 @@ import org.robolectric.annotation.Config
 @RunWith(PrivateMapsTestRunner::class)
 @Config(constants = BuildConfig::class, sdk=intArrayOf(21))
 public class InitActivityTest {
-    val activity = Robolectric.setupActivity<InitActivity>(javaClass<InitActivity>())
+    val activity = Robolectric.setupActivity<InitActivity>(InitActivity::class.java)
 
     @Test
     public fun shouldNotBeNull() {
@@ -30,9 +30,8 @@ public class InitActivityTest {
     public fun onApiKeyFetchComplete_shouldLaunchMainActivity() {
         activity.apiKeyFetchComplete = true
         activity.startMainActivity()
-        var startedIntent: Intent = shadowOf(activity).getNextStartedActivity();
+        var startedIntent: Intent = shadowOf(activity).nextStartedActivity;
             assertThat(startedIntent.getComponent().toString())
                     .isEqualTo("ComponentInfo{com.mapzen.erasermap/com.mapzen.erasermap.view.MainActivity}");
       }
     }
-

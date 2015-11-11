@@ -42,7 +42,7 @@ public class AndroidModule {
 
     @Provides @Singleton MapzenLocation provideMapzenLocation(LostApiClient locationClient,
             AppSettings settings, Bus bus) {
-        return new MapzenLocationImpl(locationClient, settings, bus);
+        return new MapzenLocationImpl(locationClient, settings, bus, application);
     }
 
     @Provides @Singleton AppSettings provideAppSettings() {

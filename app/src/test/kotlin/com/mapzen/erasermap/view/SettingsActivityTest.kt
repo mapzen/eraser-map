@@ -15,7 +15,7 @@ import org.robolectric.annotation.Config
 @RunWith(PrivateMapsTestRunner::class)
 @Config(constants = BuildConfig::class, sdk=intArrayOf(21))
 public class SettingsActivityTest {
-    val settingsActivity = setupActivity(javaClass<SettingsActivity>())
+    val settingsActivity = setupActivity(SettingsActivity::class.java)
     val settingsFragment = settingsActivity.fragmentManager
             .findFragmentById(android.R.id.content) as SettingsFragment
 
