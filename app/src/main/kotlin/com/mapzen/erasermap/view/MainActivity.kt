@@ -8,7 +8,6 @@ import android.preference.PreferenceManager
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.Display
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
@@ -22,10 +21,10 @@ import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AppSettings
+import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
-import com.mapzen.pelias.BoundingBox
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.SimpleFeature
@@ -66,6 +65,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var settings: AppSettings? = null
         @Inject set
     var tileHttpHandler: TileHttpHandler? = null
+        @Inject set
+    var mapzenLocation: MapzenLocation? = null
         @Inject set
 
     var app: EraserMapApplication? = null
@@ -150,6 +151,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         mapController?.setLongPressListener(View.OnGenericMotionListener {
             view, motionEvent -> reverseGeolocate(motionEvent) })
         mapController?.setHttpHandler(tileHttpHandler)
+        mapzenLocation?.mapController = mapController
     }
 
     private fun initAutoCompleteAdapter() {
@@ -304,7 +306,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         override fun failure(error: RetrofitError?) {
             hideProgress()
-            Log.e(TAG, "Error fetching search results: " + error?.getMessage())
+            Log.e(TAG, "Error fetching search results: " + error?.message)
             Toast.makeText(this@MainActivity, "Error fetching search results",
                     Toast.LENGTH_LONG).show()
         }
@@ -319,7 +321,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         override fun failure(error: RetrofitError?) {
             hideProgress()
-            Log.e(TAG, "Error Reverse Geolocating: " + error?.getMessage())
+            Log.e(TAG, "Error Reverse Geolocating: " + error?.message)
         }
     }
 
@@ -377,10 +379,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun centerOnCurrentFeature(features: List<Feature>) {
         Handler().postDelayed({
-            if(features.size() > 0) {
+            if(features.size > 0) {
                 val pager = findViewById(R.id.search_results) as SearchResultsView
                 val position = pager.getCurrentItem()
-                val feature = SimpleFeature.fromFeature(features.get(position))
+                val feature = SimpleFeature.fromFeature(features[position])
                 mapController?.setMapPosition(feature.lon, feature.lat)
                 mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
             }
@@ -394,7 +396,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 event.rawX.toDouble(), event.rawY.toDouble())
         presenter?.currentFeature = getGenericLocationFeature(coords?.latitude as Double,
                 coords?.longitude as Double)
-        pelias.reverse(coords?.latitude.toString(), coords?.longitude.toString(),
+        pelias.reverse(coords?.latitude as Double, coords?.longitude as Double,
                 ReversePeliasCallback())
         return true
     }
@@ -617,22 +619,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun setBoundingBox() {
-        val menuItem = optionsMenu?.findItem(R.id.action_search)
-        var mdisp : Display = getWindowManager().getDefaultDisplay()
-        var minLatLon = mapController?.coordinatesAtScreenPosition(0.0, mdisp.height.toDouble())
-        var maxLatLon = mapController?.coordinatesAtScreenPosition(mdisp.width.toDouble(), 0.0)
-        var bbox: BoundingBox = BoundingBox(minLatLon?.latitude as Double,
-                minLatLon?.longitude as Double,
-                maxLatLon?.latitude as Double,
-                maxLatLon?.longitude as Double)
-        (menuItem?.actionView  as PeliasSearchView).setBoundingBox(bbox)
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {
         var nameLength: Int = 6
         val feature = Feature()
         val properties = Properties()
-        if(lat.toString().length() > nameLength && lon.toString().length() > nameLength + 1) {
+        if (lat.toString().length > nameLength && lon.toString().length > nameLength + 1) {
             properties.label = lat.toString().substring(0, nameLength) + "," + lon.toString()
                     .substring(0, nameLength + 1)
         }

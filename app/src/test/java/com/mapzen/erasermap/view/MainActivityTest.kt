@@ -42,7 +42,7 @@ import java.util.ArrayList
 @RunWith(PrivateMapsTestRunner::class)
 @Config(constants = BuildConfig::class, sdk=intArrayOf(21))
 public class MainActivityTest {
-    val activity = Robolectric.setupActivity<MainActivity>(javaClass<MainActivity>())
+    val activity = Robolectric.setupActivity<MainActivity>(MainActivity::class.java)
     val locationManager = activity.getSystemService(LOCATION_SERVICE) as LocationManager
     val shadowLocationManager = shadowOf(locationManager)
 
@@ -58,14 +58,14 @@ public class MainActivityTest {
 
     @Test
     public fun shouldHaveMapView() {
-        assertThat(activity.findViewById(R.id.map)).isInstanceOf(javaClass<MapView>())
+        assertThat(activity.findViewById(R.id.map)).isInstanceOf(MapView::class.java)
     }
 
     @Test
     public fun onPause_shouldDisconnectLocationServices() {
         activity.onPause()
         assertThat(LocationServices.FusedLocationApi).isNull()
-        assertThat(shadowLocationManager!!.getRequestLocationUpdateListeners()).isEmpty()
+        assertThat(shadowLocationManager.requestLocationUpdateListeners).isEmpty()
     }
 
     @Test
@@ -73,7 +73,7 @@ public class MainActivityTest {
         activity.onPause()
         activity.onResume()
         assertThat(LocationServices.FusedLocationApi).isNotNull()
-        assertThat(shadowLocationManager!!.getRequestLocationUpdateListeners()).isNotEmpty()
+        assertThat(shadowLocationManager.requestLocationUpdateListeners).isNotEmpty()
     }
 
     @Test

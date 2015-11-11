@@ -1,16 +1,22 @@
 package com.mapzen.erasermap.model
 
+import android.content.Context
 import android.location.Location
 import android.util.Log
+import android.view.WindowManager
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
+import com.mapzen.erasermap.EraserMapApplication
+import com.mapzen.pelias.BoundingBox
+import com.mapzen.tangram.MapController
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 
 public class MapzenLocationImpl(val locationClient: LostApiClient,
         val settings: AppSettings,
-        val bus: Bus) : MapzenLocation {
+        val bus: Bus,
+        val application: EraserMapApplication) : MapzenLocation {
 
     companion object {
         private val LOCATION_UPDATE_INTERVAL_IN_MS: Long = 1000L
@@ -20,6 +26,8 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
     init {
         bus.register(this)
     }
+
+    override var mapController: MapController? = null
 
     private fun connect() {
         if (!locationClient.isConnected) {
@@ -67,13 +75,26 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
         }
     }
 
-    override fun getLon(): String {
+    override fun getLat(): Double {
         connect()
-        return LocationServices.FusedLocationApi?.lastLocation?.longitude.toString()
+        return LocationServices.FusedLocationApi?.lastLocation?.latitude ?: 0.0
     }
 
-    override fun getLat(): String {
+    override fun getLon(): Double {
         connect()
-        return LocationServices.FusedLocationApi?.lastLocation?.latitude.toString()
+        return LocationServices.FusedLocationApi?.lastLocation?.longitude ?: 0.0
+    }
+
+    override fun getBoundingBox(): BoundingBox? {
+        val windowManager = application.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display = windowManager.defaultDisplay
+        val minLatLon = mapController?.coordinatesAtScreenPosition(0.0, display.height.toDouble())
+        val maxLatLon = mapController?.coordinatesAtScreenPosition(display.width.toDouble(), 0.0)
+        val boundingBox: BoundingBox = BoundingBox(
+                minLatLon?.latitude as Double,
+                minLatLon?.longitude as Double,
+                maxLatLon?.latitude as Double,
+                maxLatLon?.longitude as Double)
+        return boundingBox
     }
 }
