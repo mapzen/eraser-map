@@ -216,8 +216,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             searchView.setPelias(Pelias.getPelias())
             searchView.setCallback(PeliasCallback())
             searchView.setOnSubmitListener({ presenter?.onQuerySubmit() })
+            searchView.setIconifiedByDefault(false)
             listView.emptyView = emptyView
-            restoreCurrentSearchTerm()
+            restoreCurrentSearchTerm(searchView)
         }
 
         return true
@@ -276,21 +277,17 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun saveCurrentSearchTerm() {
         val menuItem = optionsMenu?.findItem(R.id.action_search)
         val actionView = menuItem?.actionView
-        val isExpanded = menuItem?.isActionViewExpanded ?: false
-        if (actionView is PeliasSearchView && isExpanded) {
+        if (actionView is PeliasSearchView) {
             presenter?.currentSearchTerm = actionView.query.toString()
         }
     }
 
-    private fun restoreCurrentSearchTerm() {
-        val menuItem = optionsMenu?.findItem(R.id.action_search)
-        val actionView = menuItem?.actionView as PeliasSearchView
+    private fun restoreCurrentSearchTerm(searchView: PeliasSearchView) {
         val term = presenter?.currentSearchTerm
         if (term != null) {
-            menuItem?.expandActionView()
-            actionView.setQuery(term, false)
+            searchView.setQuery(term, false)
             if (findViewById(R.id.search_results).visibility == View.VISIBLE) {
-                actionView.clearFocus()
+                searchView.clearFocus()
                 showActionViewAll()
             }
             presenter?.currentSearchTerm = null
