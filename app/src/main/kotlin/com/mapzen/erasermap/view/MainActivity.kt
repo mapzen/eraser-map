@@ -1,5 +1,6 @@
 package com.mapzen.erasermap.view
 
+import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.os.Bundle
@@ -7,11 +8,14 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.RadioButton
@@ -101,6 +105,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initReverseButton()
         presenter?.onCreate()
         presenter?.onRestoreViewState()
+        supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
     private fun initViews() {
@@ -217,6 +222,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             searchView.setCallback(PeliasCallback())
             searchView.setOnSubmitListener({ presenter?.onQuerySubmit() })
             searchView.setIconifiedByDefault(false)
+
+            val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            val display = windowManager.defaultDisplay
+            val metrics = DisplayMetrics()
+            display.getMetrics(metrics)
+            searchView.maxWidth = display.width - (32 * metrics.density.toInt())
+            searchView.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
             listView.emptyView = emptyView
             restoreCurrentSearchTerm(searchView)
         }
