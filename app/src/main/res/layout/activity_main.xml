@@ -18,7 +18,9 @@
             android:layout_alignParentRight="true"
             android:layout_marginBottom="16dp"
             android:layout_marginRight="16dp"
-            android:src="@android:drawable/ic_menu_compass" />
+            android:background="@drawable/bg_route_header"
+            android:padding="8dp"
+            android:src="@drawable/ic_find_me" />
 
     <RelativeLayout
         android:id="@+id/progress"
