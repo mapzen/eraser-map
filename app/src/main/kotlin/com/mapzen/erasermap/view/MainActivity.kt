@@ -229,6 +229,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             display.getMetrics(metrics)
             searchView.maxWidth = display.width - (32 * metrics.density.toInt())
             searchView.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
+            searchView.queryHint = "Search for place or address"
             listView.emptyView = emptyView
             restoreCurrentSearchTerm(searchView)
         }
