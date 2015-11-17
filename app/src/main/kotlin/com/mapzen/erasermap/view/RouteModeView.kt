@@ -294,9 +294,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         val properties = com.mapzen.tangram.Properties()
         properties.add("type", "point");
 
-        routeIcon?.clear()
+        routeIcon?.update()
         routeIcon?.addPoint(properties, LngLat(location.longitude, location.latitude))
-        routeIcon?.update();
+        mapController?.requestRender();
     }
 
     override fun centerMapOnCurrentLocation() {
