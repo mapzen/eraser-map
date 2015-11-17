@@ -189,7 +189,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         findMe?.clear()
         findMe?.addPoint(properties, currentLocation)
-        mapController?.requestRender();
+        findMe?.update();
     }
 
     override fun setMapTilt(radians: Float) {
@@ -383,7 +383,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             properties.add("type", "point");
 
             searchResults?.addPoint(properties, lngLat)
-            mapController?.requestRender();
+            searchResults?.update();
         }
     }
 
@@ -502,7 +502,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         routeLine?.clear()
         routeLine?.addLine(properties, mapGeometry)
-        mapController?.requestRender();
+        routeLine?.update();
     }
 
     override fun failure(statusCode: Int) {
