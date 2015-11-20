@@ -274,7 +274,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         val menuItem = optionsMenu?.findItem(R.id.action_search)
         val actionView = menuItem?.actionView as PeliasSearchView
-        setBoundingBox()
         val intent = Intent(this, SearchResultsListActivity::class.java)
         intent.putParcelableArrayListExtra("features", simpleFeatures)
         intent.putExtra("query", actionView.query.toString())
@@ -337,7 +336,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     inner class SearchOnActionExpandListener : MenuItemCompat.OnActionExpandListener {
         override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-            setBoundingBox()
             presenter?.onExpandSearchView()
             return true
         }
@@ -599,6 +597,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun resumeRoutingMode(feature: Feature) {
         showRoutingMode(feature)
+        val route = routeManager?.route
+        if (route is Route) {
+            drawRouteLine(route)
+        }
         routeModeView?.resumeRoute(feature, routeManager?.route)
     }
 
@@ -626,9 +628,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         supportActionBar?.hide()
         routeModeView?.route = null
         routeModeView?.hideRouteIcon()
-    }
-
-    private fun setBoundingBox() {
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {
