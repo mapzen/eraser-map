@@ -433,6 +433,14 @@ public class MainActivityTest {
         assertThat(shadowMapData.points).isNullOrEmpty()
     }
 
+    @Test
+    public fun resumeRoutingMode_shouldDrawRouteLine() {
+        activity.routeManager?.route = TestRoute()
+        activity.resumeRoutingMode(getTestFeature())
+        val shadowMapData = ShadowExtractor.extract(activity.routeLine) as ShadowMapData
+        assertThat(shadowMapData.line).isNotNull()
+    }
+
     protected inner class RoboMenuWithGroup public constructor(public var group: Int,
             public var visible: Boolean) : RoboMenu() {
 
