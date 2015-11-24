@@ -9,7 +9,11 @@ import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.model.TestAppSettings
 import com.mapzen.erasermap.model.TestMapzenLocation
 import com.mapzen.erasermap.model.TestRouteManager
-import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.*
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.DEFAULT
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_PREVIEW
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTING
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
 import com.mapzen.erasermap.view.TestMainController
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.pelias.gson.Feature
@@ -142,6 +146,12 @@ public class MainPresenterTest {
         mainController.isSearchVisible = true
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
         assertThat(mainController.isSearchVisible).isFalse()
+    }
+
+    @Test fun onRoutePreviewEvent_shouldHideSearchResults() {
+        mainController.searchResults = ArrayList<Feature>()
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        assertThat(mainController.searchResults).isNull()
     }
 
     @Test fun onRoutePreviewEvent_shouldShowRoutePreview() {
