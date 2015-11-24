@@ -33,5 +33,5 @@ public class InitActivityTest {
         var startedIntent: Intent = shadowOf(activity).nextStartedActivity;
             assertThat(startedIntent.getComponent().toString())
                     .isEqualTo("ComponentInfo{com.mapzen.erasermap/com.mapzen.erasermap.view.MainActivity}");
-      }
     }
+}
