@@ -122,6 +122,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
         destination = event.destination
         mainViewController?.collapseSearchView()
+        mainViewController?.hideSearchResults()
         generateRoutePreview()
     }
 
