@@ -45,7 +45,7 @@ public class SearchResultsAdapterTest {
         ViewGroup container = new FrameLayout(application);
         View view = (View) adapter.instantiateItem(container, 0);
         TextView text = (TextView) view.findViewById(R.id.title);
-        assertThat(text.getText()).isEqualTo(SimpleFeature.fromFeature(feature).getTitle());
+        assertThat(text.getText()).isEqualTo(SimpleFeature.fromFeature(feature).name());
     }
 
     @Test
@@ -53,7 +53,7 @@ public class SearchResultsAdapterTest {
         ViewGroup container = new FrameLayout(application);
         View view = (View) adapter.instantiateItem(container, 0);
         TextView text = (TextView) view.findViewById(R.id.address);
-        assertThat(text.getText()).isEqualTo(SimpleFeature.fromFeature(feature).getAddress());
+        assertThat(text.getText()).isEqualTo(SimpleFeature.fromFeature(feature).address());
     }
 
     @Test
@@ -89,8 +89,8 @@ public class SearchResultsAdapterTest {
         RoutePreviewSubscriber subscriber = new RoutePreviewSubscriber();
         adapter.getBus().register(subscriber);
         start.performClick();
-        assertThat(subscriber.event.getDestination().getProperties().getLabel())
-                .isEqualTo(getTestFeature().getProperties().getLabel());
+        assertThat(subscriber.event.getDestination().properties.label)
+                .isEqualTo(getTestFeature().properties.label);
     }
 
     public static class RoutePreviewSubscriber {

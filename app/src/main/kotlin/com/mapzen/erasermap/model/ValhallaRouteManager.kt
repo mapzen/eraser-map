@@ -34,12 +34,12 @@ public class ValhallaRouteManager(val settings: AppSettings) : RouteManager {
         val simpleFeature = SimpleFeature.fromFeature(destination)
         if (location is Location) {
             val start: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
-            val dest: DoubleArray = doubleArrayOf(simpleFeature.lat, simpleFeature.lon)
+            val dest: DoubleArray = doubleArrayOf(simpleFeature.lat(), simpleFeature.lng())
             val units: Router.DistanceUnits = settings.distanceUnits
             val name = destination?.properties?.name
-            val street = simpleFeature.title
-            val city = simpleFeature.city
-            val state = simpleFeature.admin
+            val street = simpleFeature.name()
+            val city = simpleFeature.localAdmin()
+            val state = simpleFeature.region()
             val router = getInitializedRouter(type)
 
             if (location.hasBearing()) {
@@ -59,7 +59,7 @@ public class ValhallaRouteManager(val settings: AppSettings) : RouteManager {
         val location = origin
         val simpleFeature = SimpleFeature.fromFeature(destination)
         if (location is Location) {
-            val start: DoubleArray = doubleArrayOf(simpleFeature.lat, simpleFeature.lon)
+            val start: DoubleArray = doubleArrayOf(simpleFeature.lat(), simpleFeature.lng())
             val dest: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
             val units: Router.DistanceUnits = settings.distanceUnits
             getInitializedRouter(type)

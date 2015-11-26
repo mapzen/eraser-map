@@ -409,7 +409,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     private fun initDestination(destination: Feature) {
         val simpleFeature = SimpleFeature.fromFeature(destination)
-        (findViewById(R.id.destination_name) as TextView).text = simpleFeature.toString()
+        (findViewById(R.id.destination_name) as TextView).text = simpleFeature.label()
     }
 
     private fun initInstructionAdapter() {

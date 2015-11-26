@@ -21,7 +21,7 @@ public class SearchResultsAdapter(val context: Context, val features: List<Featu
         @Inject set
 
     init {
-        (context.getApplicationContext() as EraserMapApplication).component()
+        (context.applicationContext as EraserMapApplication).component()
                 .inject(this@SearchResultsAdapter)
     }
 
@@ -31,15 +31,15 @@ public class SearchResultsAdapter(val context: Context, val features: List<Featu
         val title = view.findViewById(R.id.title) as TextView
         val address = view.findViewById(R.id.address) as TextView
         val start = view.findViewById(R.id.preview) as ImageButton
-        title.setText(simpleFeature.getTitle())
-        address.setText(simpleFeature.getAddress())
+        title.text = simpleFeature.name()
+        address.text = simpleFeature.address()
         start.setOnClickListener { bus?.post(RoutePreviewEvent(features.get(position))) }
         container?.addView(view)
         return view
     }
 
     override fun getCount(): Int {
-        return features.size()
+        return features.size
     }
 
     override fun isViewFromObject(view: View?, `object`: Any?): Boolean {

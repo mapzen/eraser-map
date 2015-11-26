@@ -376,7 +376,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         searchResults?.clear()
         for (feature in features) {
             val simpleFeature = SimpleFeature.fromFeature(feature)
-            val lngLat = LngLat(simpleFeature.lon, simpleFeature.lat)
+            val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
             val properties = com.mapzen.tangram.Properties()
             properties.add("type", "point");
 
@@ -391,7 +391,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 val pager = findViewById(R.id.search_results) as SearchResultsView
                 val position = pager.getCurrentItem()
                 val feature = SimpleFeature.fromFeature(features[position])
-                mapController?.setMapPosition(feature.lon, feature.lat)
+                mapController?.setMapPosition(feature.lng(), feature.lat())
                 mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
             }
         }, 100)
