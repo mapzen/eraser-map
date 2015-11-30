@@ -15,7 +15,10 @@ import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.PrivateMapsTestRunner
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.dummy.TestHelper.*
+import com.mapzen.erasermap.dummy.TestHelper
+import com.mapzen.erasermap.dummy.TestHelper.getFixture
+import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
+import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.shadows.ShadowMapData
 import com.mapzen.pelias.SavedSearch
@@ -403,10 +406,9 @@ public class MainActivityTest {
         val features = ArrayList<Feature>()
         features.add(getTestFeature(30.0, 30.0))
         activity.showReverseGeocodeFeature(features)
-        assertThat(activity.findViewById(R.id.search_results).getVisibility()).isEqualTo(
-                View.VISIBLE)
+        assertThat(activity.findViewById(R.id.search_results).visibility).isEqualTo(View.VISIBLE)
         assertThat(((activity.findViewById(R.id.search_results).findViewById(R.id.title))
-                as TextView).getText()).isEqualTo("Text")
+                as TextView).text).isEqualTo(TestHelper.TEST_NAME)
     }
 
     @Test

@@ -24,12 +24,12 @@ public class RoutePreviewView : RelativeLayout {
         set (value) {
             field = value
             if (value) {
-                startView?.text = destination?.title
+                startView?.text = destination?.name()
                 destinationView?.setText(R.string.current_location)
                 startNavigationButton?.visibility = GONE
             } else {
                 startView?.setText(R.string.current_location)
-                destinationView?.text = destination?.title
+                destinationView?.text = destination?.name()
                 startNavigationButton?.visibility = VISIBLE
 
             }
@@ -39,7 +39,7 @@ public class RoutePreviewView : RelativeLayout {
         set (value) {
             field = value
             startView?.setText(R.string.current_location)
-            destinationView?.text = value?.title
+            destinationView?.text = value?.name()
         }
 
     public var route: Route? = null

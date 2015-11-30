@@ -1,17 +1,18 @@
 package com.mapzen.erasermap.dummy;
 
-import android.location.Location;
-
-import com.google.common.io.Files;
 import com.mapzen.pelias.SimpleFeature;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.gson.Geometry;
 import com.mapzen.pelias.gson.Properties;
 import com.mapzen.valhalla.Instruction;
 
+import com.google.common.io.Files;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mockito.Mockito;
+
+import android.location.Location;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,10 +23,11 @@ import java.util.List;
 import static java.lang.System.getProperty;
 
 public class TestHelper {
-    public static final String TEST_TEXT = "Text";
+    public static final String TEST_NAME = "Name";
     public static final String TEST_LOCALITY = "Locality";
     public static final String TEST_LOCAL_ADMIN = "Local Admin";
     public static final String TEST_ADMIN1_ABBR = "Admin1 Abbr";
+    public static final String TEST_LABEL = "Name, Local Admin, Admin1 Abbr";
 
     public static Feature getTestFeature() {
         return getTestFeature(0.0, 0.0);
@@ -34,17 +36,18 @@ public class TestHelper {
     public static Feature getTestFeature(double lat, double lon) {
         Feature feature = new Feature();
         Properties properties = new Properties();
-        properties.setLabel(TEST_TEXT);
-        properties.setLocality(TEST_LOCALITY);
-        properties.setLocalAdmin(TEST_LOCAL_ADMIN);
-        properties.setRegion_a(TEST_ADMIN1_ABBR);
-        feature.setProperties(properties);
+        properties.name = TEST_NAME;
+        properties.locality = TEST_LOCALITY;
+        properties.localadmin = TEST_LOCAL_ADMIN;
+        properties.region_a = TEST_ADMIN1_ABBR;
+        properties.label = TEST_LABEL;
+        feature.properties = properties;
         Geometry geometry = new Geometry();
         List<Double> coordinates = new ArrayList<>();
         coordinates.add(lon);
         coordinates.add(lat);
-        geometry.setCoordinates(coordinates);
-        feature.setGeometry(geometry);
+        geometry.coordinates = coordinates;
+        feature.geometry = geometry;
         return feature;
     }
 

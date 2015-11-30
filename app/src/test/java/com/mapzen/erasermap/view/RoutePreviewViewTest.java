@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import static com.mapzen.erasermap.dummy.TestHelper.TEST_TEXT;
+import static com.mapzen.erasermap.dummy.TestHelper.TEST_NAME;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestSimpleFeature;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -38,7 +38,7 @@ public class RoutePreviewViewTest {
     @Test
     public void setDestination_shouldPopulateTextView() throws Exception {
         routePreview.setDestination(getTestSimpleFeature());
-        assertThat(routePreview.getDestinationView().getText()).isEqualTo(TEST_TEXT);
+        assertThat(routePreview.getDestinationView().getText()).isEqualTo(TEST_NAME);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class RoutePreviewViewTest {
         routePreview.setDestination(getTestSimpleFeature());
         routePreview.setRoute(route);
         routePreview.setReverse(true);
-        assertThat(routePreview.getStartView().getText().toString()).isEqualTo(TEST_TEXT);
+        assertThat(routePreview.getStartView().getText().toString()).isEqualTo(TEST_NAME);
         assertThat(routePreview.getDestinationView().getText()).isEqualTo("Current Location");
     }
 }
