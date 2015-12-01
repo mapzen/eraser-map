@@ -86,6 +86,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var byCar: RadioButton? = null
     var byBike: RadioButton? = null
     var byFoot: RadioButton? = null
+    var northButton: Button? = null
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,6 +99,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initMapController()
         initAutoCompleteAdapter()
         initFindMeButton()
+        initNorthButton()
         initReverseButton()
         presenter?.onCreate()
         presenter?.onRestoreViewState()
@@ -114,6 +116,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         byCar = findViewById(R.id.by_car) as RadioButton?
         byBike = findViewById(R.id.by_bike) as RadioButton?
         byFoot = findViewById(R.id.by_foot) as RadioButton?
+        northButton = findViewById(R.id.north) as Button?
     }
 
     override public fun onStart() {
@@ -166,6 +169,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         Tangram.addDataSource(findMe);
         findMeButton?.visibility = View.VISIBLE
         findMeButton?.setOnClickListener({ presenter?.onFindMeButtonClick() })
+    }
+
+    private fun initNorthButton() {
+        northButton?.setOnClickListener({ presenter?.onNorthButtonClick() })
     }
 
     private fun initCrashReportService() {

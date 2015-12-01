@@ -235,6 +235,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         }
     }
 
+    override fun onNorthButtonClick() {
+        mainViewController?.setMapRotation(0f)
+    }
+
     override fun getPeliasLocationProvider(): PeliasLocationProvider {
         return mapzenLocation
     }
