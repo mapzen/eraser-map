@@ -112,12 +112,6 @@ public class MainPresenterTest {
         assertThat(mainController.isProgressVisible).isFalse()
     }
 
-    @Test fun onExpandSearchView_shouldHideOverflowMenu() {
-        mainController.isOverflowVisible = true
-        presenter.onExpandSearchView()
-        assertThat(mainController.isOverflowVisible).isFalse()
-    }
-
     @Test fun onCollapseSearchView_shouldShowOverflowMenu() {
         mainController.isOverflowVisible = false
         presenter.onCollapseSearchView()
@@ -140,6 +134,12 @@ public class MainPresenterTest {
         mainController.isViewAllVisible = true
         presenter.onCollapseSearchView()
         assertThat(mainController.isViewAllVisible).isFalse()
+    }
+
+    @Test fun onCollapseSearchView_shouldClearQueryText() {
+        mainController.queryText = "query"
+        presenter.onCollapseSearchView()
+        assertThat(mainController.queryText).isEmpty()
     }
 
     @Test fun onRoutePreviewEvent_shouldCollapseSearchView() {

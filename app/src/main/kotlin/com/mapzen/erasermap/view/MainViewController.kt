@@ -17,6 +17,7 @@ public interface MainViewController {
     public fun showActionViewAll()
     public fun hideActionViewAll()
     public fun collapseSearchView()
+    public fun clearQuery()
     public fun showRoutePreview(location: Location, feature: Feature)
     public fun hideRoutePreview()
     public fun hideRoutingMode()

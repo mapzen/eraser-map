@@ -1,20 +1,16 @@
 package com.mapzen.erasermap.view
 
-import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
-import android.support.v4.view.MenuItemCompat
 import android.support.v7.app.AppCompatActivity
-import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
-import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.ImageButton
@@ -204,9 +200,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         menuInflater.inflate(R.menu.menu_main, menu)
         optionsMenu = menu
 
-        MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.action_search),
-                SearchOnActionExpandListener())
-
         val searchView = menu.findItem(R.id.action_search).actionView
         val listView = findViewById(R.id.auto_complete) as AutoCompleteListView
         val emptyView = findViewById(android.R.id.empty)
@@ -223,15 +216,16 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             searchView.setOnSubmitListener({ presenter?.onQuerySubmit() })
             searchView.setIconifiedByDefault(false)
 
-            val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            val display = windowManager.defaultDisplay
-            val metrics = DisplayMetrics()
-            display.getMetrics(metrics)
-            searchView.maxWidth = display.width - (32 * metrics.density.toInt())
             searchView.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
             searchView.queryHint = "Search for place or address"
             listView.emptyView = emptyView
             restoreCurrentSearchTerm(searchView)
+
+            searchView.setOnPeliasFocusChangeListener { view, b ->
+                if (b) {
+                    presenter?.onExpandSearchView()
+                }
+            }
         }
 
         return true
@@ -241,7 +235,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val id = item.itemId
         when (id) {
             R.id.action_settings -> { onActionSettings(); return true }
-            R.id.action_search -> { onActionSearch(); return true }
             R.id.action_clear -> { onActionClear(); return true }
             R.id.action_view_all -> { onActionViewAll(); return true }
         }
@@ -251,9 +244,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun onActionSettings() {
         startActivity(Intent(this, SettingsActivity::class.java))
-    }
-
-    private fun onActionSearch() {
     }
 
     private fun onActionClear() {
@@ -331,18 +321,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         override fun failure(error: RetrofitError?) {
             hideProgress()
             Log.e(TAG, "Error Reverse Geolocating: " + error?.message)
-        }
-    }
-
-    inner class SearchOnActionExpandListener : MenuItemCompat.OnActionExpandListener {
-        override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-            presenter?.onExpandSearchView()
-            return true
-        }
-
-        override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-            presenter?.onCollapseSearchView()
-            return true
         }
     }
 
@@ -447,7 +425,14 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun collapseSearchView() {
-        optionsMenu?.findItem(R.id.action_search)?.collapseActionView()
+        presenter?.onCollapseSearchView()
+    }
+
+    override fun clearQuery() {
+        val searchView = optionsMenu?.findItem(R.id.action_search)?.actionView
+        if (searchView is PeliasSearchView) {
+            searchView.setQuery("", false)
+        }
     }
 
     override fun showRoutePreview(location: Location, feature: Feature) {

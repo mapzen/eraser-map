@@ -42,18 +42,20 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         this.searchResults = searchResults
         mainViewController?.showSearchResults(searchResults?.getFeatures())
         mainViewController?.hideProgress()
-        val featureCount = searchResults?.getFeatures()?.size()
+        val featureCount = searchResults?.features?.size
         if (featureCount != null && featureCount > 1) {
             mainViewController?.showActionViewAll()
+            mainViewController?.hideOverflowMenu()
         } else {
             mainViewController?.hideActionViewAll()
+            mainViewController?.showOverflowMenu()
         }
     }
 
     override fun onReverseGeocodeResultsAvailable(searchResults: Result?) {
         var features = ArrayList<Feature>()
         this.searchResults = searchResults
-        if(searchResults?.getFeatures()?.isEmpty() as Boolean) {
+        if(searchResults?.features?.isEmpty() as Boolean) {
             val current = currentFeature
             if (current is Feature) {
                 features.add(current)
@@ -61,11 +63,11 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             mainViewController?.showReverseGeocodeFeature(features)
             searchResults?.setFeatures(features)
         } else {
-            val current = searchResults?.getFeatures()?.get(0)
+            val current = searchResults?.features?.get(0)
             if (current is Feature) {
                 features.add(current)
             }
-            searchResults?.setFeatures(features)
+            searchResults?.features = features
             mainViewController?.showReverseGeocodeFeature(features)
         }
     }
@@ -90,7 +92,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     override fun onExpandSearchView() {
         vsm.viewState = ViewStateManager.ViewState.SEARCH
-        mainViewController?.hideOverflowMenu()
     }
 
     override fun onCollapseSearchView() {
@@ -102,6 +103,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         mainViewController?.hideSearchResults()
         mainViewController?.showOverflowMenu()
         mainViewController?.hideActionViewAll()
+        mainViewController?.clearQuery()
     }
 
     override fun onQuerySubmit() {
@@ -110,12 +112,12 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     override fun onSearchResultSelected(position: Int) {
         if (searchResults != null) {
-            mainViewController?.centerOnCurrentFeature(searchResults?.getFeatures())
+            mainViewController?.centerOnCurrentFeature(searchResults?.features)
         }
     }
 
     override fun onViewAllSearchResults() {
-        mainViewController?.showAllSearchResults(searchResults?.getFeatures())
+        mainViewController?.showAllSearchResults(searchResults?.features)
     }
 
     @Subscribe public fun onRoutePreviewEvent(event: RoutePreviewEvent) {
