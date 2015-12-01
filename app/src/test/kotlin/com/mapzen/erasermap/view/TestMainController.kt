@@ -11,6 +11,7 @@ public class TestMainController : MainViewController {
     public var tilt: Float = 0f
     public var rotation: Float = 0f
     public var routeLine: List<LngLat>? = null
+    public var queryText: String = ""
 
     public var isProgressVisible: Boolean = false
     public var isOverflowVisible: Boolean = false
@@ -63,6 +64,10 @@ public class TestMainController : MainViewController {
 
     override fun collapseSearchView() {
         isSearchVisible = false
+    }
+
+    override fun clearQuery() {
+        queryText = ""
     }
 
     override fun showRoutePreview(location: Location, feature: Feature) {
