@@ -3,7 +3,7 @@
     android:id="@+id/pager_item_instruction"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:background="@color/transparent_light_gray">
+    android:background="@android:color/white">
     <RelativeLayout
         android:id="@+id/turn_container"
         android:layout_width="wrap_content"

@@ -44,7 +44,7 @@
             android:layout_height="60dp"
             android:layout_alignParentTop="true"
             android:layout_gravity="top"
-            android:background="@color/transparent_white"
+            android:background="@android:color/white"
             android:paddingBottom="@dimen/padding_vertical_small"
             android:paddingLeft="@dimen/instruction_padding"
             android:paddingTop="@dimen/footer_padding">

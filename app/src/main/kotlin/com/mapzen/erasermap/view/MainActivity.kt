@@ -86,7 +86,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var byCar: RadioButton? = null
     var byBike: RadioButton? = null
     var byFoot: RadioButton? = null
-    var northButton: Button? = null
+    var northButton: ImageButton? = null
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,7 +116,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         byCar = findViewById(R.id.by_car) as RadioButton?
         byBike = findViewById(R.id.by_bike) as RadioButton?
         byFoot = findViewById(R.id.by_foot) as RadioButton?
-        northButton = findViewById(R.id.north) as Button?
+        northButton = findViewById(R.id.north) as ImageButton?
     }
 
     override public fun onStart() {
@@ -577,7 +577,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         intent.putExtra("instruction_strings", instructionStrings)
         intent.putExtra("instruction_types", instructionType)
         intent.putExtra("instruction_distances", instructionDistance)
-        intent.putExtra("destination", simpleFeature.toString())
+        intent.putExtra("destination", simpleFeature.name())
         intent.putExtra("reverse", routeManager?.reverse)
         startActivityForResult(intent, requestCodeSearchResults)
     }

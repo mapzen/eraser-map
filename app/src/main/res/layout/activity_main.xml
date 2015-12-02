@@ -10,17 +10,29 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-        <ImageButton
-            android:id="@+id/find_me"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginBottom="16dp"
-            android:layout_marginRight="16dp"
-            android:background="@drawable/bg_route_header"
-            android:padding="8dp"
-            android:src="@drawable/ic_find_me" />
+    <ImageButton
+        android:id="@+id/north"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="12dp"
+        android:src="@drawable/ic_north_arrow"
+        tools:ignore="RtlHardcoded" />
+
+    <ImageButton
+        android:id="@+id/find_me"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/bg_route_header"
+        android:padding="8dp"
+        android:src="@drawable/ic_find_me"
+        tools:ignore="RtlHardcoded" />
 
     <RelativeLayout
         android:id="@+id/progress"
@@ -72,15 +84,4 @@
         android:gravity="bottom"
         android:visibility="gone" />
 
-    <Button
-        android:id="@+id/north"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="12dp"
-        android:layout_marginRight="12dp"
-        android:text="N"
-        style="@style/Widget.AppCompat.Button.Small"
-        tools:ignore="RtlHardcoded" />
 </RelativeLayout>

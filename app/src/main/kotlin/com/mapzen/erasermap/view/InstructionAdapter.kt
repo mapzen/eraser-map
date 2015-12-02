@@ -9,7 +9,7 @@ import android.widget.TextView
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.valhalla.Instruction
-import java.util.*
+import java.util.ArrayList
 
 public class InstructionAdapter(val context: Context, val instructions: ArrayList<Instruction>,
         val pager: RouteModeView) : PagerAdapter() {
@@ -23,13 +23,13 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
         var iconId: Int = DisplayHelper.getRouteDrawable(context,
                 instruction.getIntegerInstruction())
         distance.distanceInMeters = instruction.distance
-        title.setText(instruction.getName())
+        title.text = instruction.getName()
         icon.setImageResource(iconId)
         if (position == 0) {
-            view.findViewById(R.id.left_arrow).setVisibility(View.INVISIBLE)
+            view.findViewById(R.id.left_arrow).visibility = View.INVISIBLE
         }
-        if (position == getCount() - 1) {
-            view.findViewById(R.id.right_arrow).setVisibility(View.INVISIBLE)
+        if (position == count - 1) {
+            view.findViewById(R.id.right_arrow).visibility = View.INVISIBLE
         }
         initArrowOnClickListeners(view, position)
         setTagId(view, position)
@@ -37,16 +37,12 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
         return view
     }
 
-    fun getView(): View {
-        return this.getView()
-    }
-
     override fun getCount(): Int {
-        return instructions.size()
+        return instructions.size
     }
 
     private fun setTagId(view: View, position: Int) {
-        view.setTag(RouteModeView.VIEW_TAG + position)
+        view.tag = RouteModeView.VIEW_TAG + position
     }
 
     private fun initArrowOnClickListeners(view: View, position: Int) {
@@ -59,15 +55,15 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
     }
 
     public fun setBackgroundColorActive(view: View?) {
-        view?.setBackgroundColor(context.getResources().getColor(R.color.transparent_white))
+        view?.setBackgroundColor(context.resources.getColor(android.R.color.white))
     }
 
     public fun setBackgroundColorInactive(view: View?) {
-        view?.setBackgroundColor(context.getResources().getColor(R.color.transparent_light_gray))
+        view?.setBackgroundColor(context.resources.getColor(R.color.light_gray))
     }
 
     public fun setBackgroundColorArrived(view: View?) {
-        view?.setBackgroundColor(context.getResources().getColor(R.color.you_have_arrived))
+        view?.setBackgroundColor(context.resources.getColor(R.color.you_have_arrived))
     }
 
     override fun isViewFromObject(view: View?, `object`: Any?): Boolean {
