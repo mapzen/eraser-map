@@ -18,7 +18,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginTop="12dp"
         android:layout_marginRight="12dp"
-        android:src="@drawable/ic_north_arrow"
+        android:src="@drawable/ic_compass"
         tools:ignore="RtlHardcoded" />
 
     <ImageButton
