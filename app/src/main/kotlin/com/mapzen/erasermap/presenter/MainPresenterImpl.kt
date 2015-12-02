@@ -235,7 +235,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         }
     }
 
-    override fun onNorthButtonClick() {
+    override fun onCompassClick() {
         mainViewController?.setMapRotation(0f)
     }
 

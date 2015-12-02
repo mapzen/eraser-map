@@ -14,6 +14,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.Toast
 import com.mapzen.erasermap.BuildConfig
@@ -86,7 +87,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var byCar: RadioButton? = null
     var byBike: RadioButton? = null
     var byFoot: RadioButton? = null
-    var northButton: ImageButton? = null
+    var compass: ImageView? = null
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,7 +100,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initMapController()
         initAutoCompleteAdapter()
         initFindMeButton()
-        initNorthButton()
+        initCompass()
         initReverseButton()
         presenter?.onCreate()
         presenter?.onRestoreViewState()
@@ -116,7 +117,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         byCar = findViewById(R.id.by_car) as RadioButton?
         byBike = findViewById(R.id.by_bike) as RadioButton?
         byFoot = findViewById(R.id.by_foot) as RadioButton?
-        northButton = findViewById(R.id.north) as ImageButton?
+        compass = findViewById(R.id.compass) as ImageView?
     }
 
     override public fun onStart() {
@@ -171,8 +172,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         findMeButton?.setOnClickListener({ presenter?.onFindMeButtonClick() })
     }
 
-    private fun initNorthButton() {
-        northButton?.setOnClickListener({ presenter?.onNorthButtonClick() })
+    private fun initCompass() {
+        compass?.setOnClickListener({ presenter?.onCompassClick() })
     }
 
     private fun initCrashReportService() {

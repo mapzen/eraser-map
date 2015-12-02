@@ -324,9 +324,9 @@ public class MainPresenterTest {
         presenter.success(Route(JSONObject()))
     }
 
-    @Test fun onRouteButtonClick_shouldResetMapRotation() {
+    @Test fun onCompassClick_shouldResetMapRotation() {
         mainController.rotation = 180f
-        presenter.onNorthButtonClick()
+        presenter.onCompassClick()
         assertThat(mainController.rotation).isEqualTo(0f)
     }
 
