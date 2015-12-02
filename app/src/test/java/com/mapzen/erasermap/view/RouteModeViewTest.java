@@ -76,32 +76,32 @@ public class RouteModeViewTest {
     }
 
     @Test
-    public void defaultInstruction_shouldHaveTransparentGrayBackground() throws Exception {
+    public void defaultInstruction_shouldHaveGrayBackground() throws Exception {
         View view = (View) adapter.instantiateItem(viewGroup, 0);
         ColorDrawable background = (ColorDrawable) view.findViewById(R.id.pager_item_instruction)
                 .getBackground();
-        int expectedColor = application.getResources().getColor(R.color.transparent_light_gray);
+        int expectedColor = application.getResources().getColor(R.color.light_gray);
         assertThat(background.getColor()).isEqualTo(expectedColor);
     }
 
     @Test
-    public void activeInstruction_shouldHaveTransparentWhiteBackground() throws Exception {
+    public void activeInstruction_shouldWhiteBackground() throws Exception {
         View view = (View) adapter.instantiateItem(viewGroup, 0);
         adapter.setBackgroundColorActive(view);
         ColorDrawable background = (ColorDrawable) view.findViewById(R.id.pager_item_instruction)
                 .getBackground();
-        int expectedColor = application.getResources().getColor(R.color.transparent_white);
+        int expectedColor = application.getResources().getColor(android.R.color.white);
         assertThat(background.getColor()).isEqualTo(expectedColor);
     }
 
     @Test
-    public void inactiveInstruction_shouldHaveTransparentGrayBackground() throws Exception {
+    public void inactiveInstruction_shouldHaveGrayBackground() throws Exception {
         View view = (View) adapter.instantiateItem(viewGroup, 0);
         adapter.setBackgroundColorActive(view);
         adapter.setBackgroundColorInactive(view);
         ColorDrawable background = (ColorDrawable) view.findViewById(R.id.pager_item_instruction)
                 .getBackground();
-        int expectedColor = application.getResources().getColor(R.color.transparent_light_gray);
+        int expectedColor = application.getResources().getColor(R.color.light_gray);
         assertThat(background.getColor()).isEqualTo(expectedColor);
     }
 

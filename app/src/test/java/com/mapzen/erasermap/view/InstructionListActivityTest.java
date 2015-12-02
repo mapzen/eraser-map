@@ -59,7 +59,7 @@ public class InstructionListActivityTest {
     public void onDirectionListOpenReversed_shouldHaveOriginSet() throws Exception {
         assertThat(((TextView) activity.findViewById(R.id.starting_point)).getText())
                 .isEqualTo(SimpleFeature.fromFeature(startActivity.getRouteManager()
-                        .getDestination()).toString());
+                        .getDestination()).name());
         assertThat(((TextView) activity.findViewById(R.id.destination)).getText())
                 .isEqualTo(activity.getString(R.string.current_location));
     }
