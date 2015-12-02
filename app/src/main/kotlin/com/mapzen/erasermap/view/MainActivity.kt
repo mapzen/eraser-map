@@ -574,11 +574,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         val simpleFeature = SimpleFeature.fromFeature(routeManager?.destination)
         val intent = Intent(this, InstructionListActivity::class.java)
-        intent.putExtra("instruction_strings", instructionStrings)
-        intent.putExtra("instruction_types", instructionType)
-        intent.putExtra("instruction_distances", instructionDistance)
-        intent.putExtra("destination", simpleFeature.name())
-        intent.putExtra("reverse", routeManager?.reverse)
+        intent.putExtra(InstructionListActivity.EXTRA_STRINGS, instructionStrings)
+        intent.putExtra(InstructionListActivity.EXTRA_TYPES, instructionType)
+        intent.putExtra(InstructionListActivity.EXTRA_DISTANCES, instructionDistance)
+        intent.putExtra(InstructionListActivity.EXTRA_DESTINATION, simpleFeature.name())
+        intent.putExtra(InstructionListActivity.EXTRA_REVERSE, routeManager?.reverse)
         startActivityForResult(intent, requestCodeSearchResults)
     }
 
