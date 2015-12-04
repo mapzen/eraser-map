@@ -1,6 +1,5 @@
 package com.mapzen.erasermap.view
 
-import android.animation.ObjectAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -20,13 +19,13 @@ public class CompassView(context: Context, attrs: AttributeSet) : RelativeLayout
 
     override fun setRotation(rotation: Float) {
         compass.rotation = rotation
+        if (alpha == 0f) {
+            alpha = 1f
+        }
     }
 
     public fun reset() {
-        val start = compass.rotation
-        val finish = 0f
-        val animator = ObjectAnimator.ofFloat(compass, "rotation", start, finish);
-        animator.setDuration(1000)
-        animator.start()
+        compass.animate().setDuration(1000).rotation(0f)
+        animate().setDuration(1000).alpha(0f).setStartDelay(1000)
     }
 }
