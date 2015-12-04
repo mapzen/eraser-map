@@ -25,7 +25,8 @@ public class CompassView(context: Context, attrs: AttributeSet) : RelativeLayout
     }
 
     public fun reset() {
-        compass.animate().setDuration(1000).rotation(0f)
+        val newRotation = if (compass.rotation < 180) 0f else 360f
+        compass.animate().setDuration(1000).rotation(newRotation)
         animate().setDuration(1000).alpha(0f).setStartDelay(1000)
     }
 }
