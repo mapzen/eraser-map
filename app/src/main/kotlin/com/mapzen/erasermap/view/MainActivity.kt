@@ -77,16 +77,16 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var findMe: MapData? = null
     var searchResults: MapData? = null
 
-    var findMeButton: ImageButton? = null
-    var routePreviewView: RoutePreviewView? = null
-    var routeModeView: RouteModeView? = null
-    var reverseButton: ImageButton? = null
-    var viewListButton: Button? = null
-    var startNavigationButton: Button? = null
-    var byCar: RadioButton? = null
-    var byBike: RadioButton? = null
-    var byFoot: RadioButton? = null
-    var compass: CompassView? = null
+    val findMeButton: ImageButton by lazy { findViewById(R.id.find_me) as ImageButton }
+    val routePreviewView: RoutePreviewView by lazy { findViewById(R.id.route_preview) as RoutePreviewView }
+    val routeModeView: RouteModeView by lazy { findViewById(R.id.route_mode) as RouteModeView }
+    val reverseButton: ImageButton by lazy { findViewById(R.id.route_reverse) as ImageButton }
+    val viewListButton: Button by lazy { findViewById(R.id.view_list) as Button }
+    val startNavigationButton: Button by lazy { findViewById(R.id.start_navigation) as Button }
+    val byCar: RadioButton by lazy { findViewById(R.id.by_car) as RadioButton }
+    val byBike: RadioButton by lazy { findViewById(R.id.by_bike) as RadioButton }
+    val byFoot: RadioButton by lazy { findViewById(R.id.by_foot) as RadioButton }
+    val compass: CompassView by lazy { findViewById(R.id.compass_view) as CompassView }
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,7 +94,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         app?.component()?.inject(this)
         initCrashReportService()
         setContentView(R.layout.activity_main)
-        initViews()
         presenter?.mainViewController = this
         initMapController()
         initAutoCompleteAdapter()
@@ -107,19 +106,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
-    private fun initViews() {
-        findMeButton = findViewById(R.id.find_me) as ImageButton?
-        routePreviewView = findViewById(R.id.route_preview) as RoutePreviewView?
-        routeModeView = findViewById(R.id.route_mode) as RouteModeView?
-        reverseButton = findViewById(R.id.route_reverse) as ImageButton?
-        viewListButton = findViewById(R.id.view_list) as Button?
-        startNavigationButton = findViewById(R.id.start_navigation) as Button?
-        byCar = findViewById(R.id.by_car) as RadioButton?
-        byBike = findViewById(R.id.by_bike) as RadioButton?
-        byFoot = findViewById(R.id.by_foot) as RadioButton?
-        compass = findViewById(R.id.compass_view) as CompassView?
-    }
-
     private fun initMapGestureListener() {
         mapController?.setGenericMotionEventListener(View.OnGenericMotionListener {
             view, event -> onMapMotionEvent()
@@ -129,7 +115,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun onMapMotionEvent(): Boolean {
         val radians: Float = mapController?.mapRotation ?: 0f
         val degrees = Math.toDegrees(radians.toDouble()).toFloat()
-        compass?.rotation = degrees
+        compass.rotation = degrees
         return true
     }
 
@@ -181,12 +167,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun initFindMeButton() {
         findMe = MapData("find_me")
         Tangram.addDataSource(findMe);
-        findMeButton?.visibility = View.VISIBLE
-        findMeButton?.setOnClickListener({ presenter?.onFindMeButtonClick() })
+        findMeButton.visibility = View.VISIBLE
+        findMeButton.setOnClickListener({ presenter?.onFindMeButtonClick() })
     }
 
     private fun initCompass() {
-        compass?.setOnClickListener({
+        compass.setOnClickListener({
             presenter?.onCompassClick()
         })
     }
@@ -217,7 +203,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun setMapRotation(radians: Float) {
         mapController?.setMapRotation(radians, 1f)
-        compass?.reset()
+        compass.reset()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -469,7 +455,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             routeManager?.bearing = null
         }
 
-        routePreviewView?.destination = SimpleFeature.fromFeature(feature)
+        routePreviewView.destination = SimpleFeature.fromFeature(feature)
         route()
     }
 
@@ -479,11 +465,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun success(route: Route) {
         routeManager?.route = route
-        routePreviewView?.route = route
+        routePreviewView.route = route
         runOnUiThread ({
-            if (routeModeView?.visibility != View.VISIBLE) {
+            if (routeModeView.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
-                routePreviewView?.visibility = View.VISIBLE
+                routePreviewView.visibility = View.VISIBLE
             }
         })
         updateRoutePreview()
@@ -531,21 +517,21 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun updateRoutePreview() {
-        byCar?.setOnCheckedChangeListener { buttonView, isChecked ->
+        byCar.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 routeManager?.type = Router.Type.DRIVING
                 route()
             }
         }
 
-        byBike?.setOnCheckedChangeListener { buttonView, isChecked ->
+        byBike.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 routeManager?.type = Router.Type.BIKING
                 route()
             }
         }
 
-        byFoot?.setOnCheckedChangeListener { buttonView, isChecked ->
+        byFoot.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 routeManager?.type = Router.Type.WALKING
                 route()
@@ -555,14 +541,14 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun reverse() {
         routeManager?.toggleReverse()
-        routePreviewView?.reverse = routeManager?.reverse ?: false
+        routePreviewView.reverse = routeManager?.reverse ?: false
         route()
     }
 
     private fun initReverseButton() {
-        reverseButton?.setOnClickListener({ reverse() })
-        viewListButton?.setOnClickListener({ presenter?.onClickViewList() })
-        startNavigationButton?.setOnClickListener({ presenter?.onClickStartNavigation() })
+        reverseButton.setOnClickListener({ reverse() })
+        viewListButton.setOnClickListener({ presenter?.onClickViewList() })
+        startNavigationButton.setOnClickListener({ presenter?.onClickStartNavigation() })
     }
 
     override fun onBackPressed() {
@@ -601,7 +587,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun startRoutingMode(feature: Feature) {
         showRoutingMode(feature)
-        routeModeView?.startRoute(feature, routeManager?.route)
+        routeModeView.startRoute(feature, routeManager?.route)
     }
 
     override fun resumeRoutingMode(feature: Feature) {
@@ -610,7 +596,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         if (route is Route) {
             drawRouteLine(route)
         }
-        routeModeView?.resumeRoute(feature, routeManager?.route)
+        routeModeView.resumeRoute(feature, routeManager?.route)
     }
 
     private fun showRoutingMode(feature: Feature) {
@@ -618,25 +604,25 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         supportActionBar?.hide()
         routeManager?.destination = feature
         routeManager?.reverse = false
-        routePreviewView?.visibility = View.GONE
-        routeModeView?.mainPresenter = presenter
-        routeModeView?.mapController = mapController
+        routePreviewView.visibility = View.GONE
+        routeModeView.mainPresenter = presenter
+        routeModeView.mapController = mapController
         presenter?.routeViewController = routeModeView
-        routeModeView?.voiceNavigationController = VoiceNavigationController(this)
+        routeModeView.voiceNavigationController = VoiceNavigationController(this)
     }
 
     override fun hideRoutingMode() {
         initFindMeButton()
         presenter?.routingEnabled = false
-        routeModeView?.visibility = View.GONE
+        routeModeView.visibility = View.GONE
         val location = routeManager?.origin
         val feature = routeManager?.destination
         if (location is Location && feature is Feature) {
             showRoutePreview(location, feature)
         }
         supportActionBar?.hide()
-        routeModeView?.route = null
-        routeModeView?.hideRouteIcon()
+        routeModeView.route = null
+        routeModeView.hideRouteIcon()
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {
