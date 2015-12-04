@@ -14,7 +14,6 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.Toast
 import com.mapzen.erasermap.BuildConfig
@@ -87,7 +86,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var byCar: RadioButton? = null
     var byBike: RadioButton? = null
     var byFoot: RadioButton? = null
-    var compass: ImageView? = null
+    var compass: CompassView? = null
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,6 +101,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initFindMeButton()
         initCompass()
         initReverseButton()
+        initMapGestureListener()
         presenter?.onCreate()
         presenter?.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -117,7 +117,20 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         byCar = findViewById(R.id.by_car) as RadioButton?
         byBike = findViewById(R.id.by_bike) as RadioButton?
         byFoot = findViewById(R.id.by_foot) as RadioButton?
-        compass = findViewById(R.id.compass) as ImageView?
+        compass = findViewById(R.id.compass_view) as CompassView?
+    }
+
+    private fun initMapGestureListener() {
+        mapController?.setGenericMotionEventListener(View.OnGenericMotionListener {
+            view, event -> onMapMotionEvent()
+        })
+    }
+
+    private fun onMapMotionEvent(): Boolean {
+        val radians: Float = mapController?.mapRotation ?: 0f
+        val degrees = Math.toDegrees(radians.toDouble()).toFloat()
+        compass?.rotation = degrees
+        return true
     }
 
     override public fun onStart() {
@@ -173,7 +186,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun initCompass() {
-        compass?.setOnClickListener({ presenter?.onCompassClick() })
+        compass?.setOnClickListener({
+            presenter?.onCompassClick()
+        })
     }
 
     private fun initCrashReportService() {
@@ -201,7 +216,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun setMapRotation(radians: Float) {
-        mapController?.mapRotation = radians
+        mapController?.setMapRotation(radians, 1f)
+        compass?.reset()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
