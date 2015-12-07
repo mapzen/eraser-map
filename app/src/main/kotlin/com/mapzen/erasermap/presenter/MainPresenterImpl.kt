@@ -235,6 +235,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         }
     }
 
+    override fun onCompassClick() {
+        mainViewController?.setMapRotation(0f)
+    }
+
     override fun getPeliasLocationProvider(): PeliasLocationProvider {
         return mapzenLocation
     }
@@ -289,5 +293,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         if (feature is Feature) {
             mainViewController?.resumeRoutingMode(feature)
         }
+    }
+
+    override fun onMapMotionEvent(): Boolean {
+        mainViewController?.rotateCompass()
+        return true
     }
 }

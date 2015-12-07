@@ -29,4 +29,5 @@ public interface MainViewController {
     public fun setMapTilt(radians: Float)
     public fun setMapRotation(radians: Float)
     public fun clearRouteLine()
+    public fun rotateCompass()
 }

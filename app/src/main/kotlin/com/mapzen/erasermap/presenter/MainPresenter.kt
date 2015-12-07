@@ -37,6 +37,8 @@ public interface MainPresenter {
     public fun onResume()
     public fun onPause()
     public fun onFindMeButtonClick()
+    public fun onCompassClick()
     public fun getPeliasLocationProvider(): PeliasLocationProvider
     public fun onReroute(location: Location)
+    public fun onMapMotionEvent(): Boolean
 }
