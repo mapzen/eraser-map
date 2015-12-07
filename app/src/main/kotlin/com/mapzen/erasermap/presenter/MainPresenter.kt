@@ -40,4 +40,5 @@ public interface MainPresenter {
     public fun onCompassClick()
     public fun getPeliasLocationProvider(): PeliasLocationProvider
     public fun onReroute(location: Location)
+    public fun onMapMotionEvent(): Boolean
 }

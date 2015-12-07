@@ -274,6 +274,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     private fun onMapMotionEvent(): Boolean {
         routePresenter?.onMapGesture()
+        mainPresenter?.onMapMotionEvent()
         return false
     }
 

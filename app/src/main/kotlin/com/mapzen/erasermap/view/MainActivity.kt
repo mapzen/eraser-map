@@ -87,6 +87,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     val byBike: RadioButton by lazy { findViewById(R.id.by_bike) as RadioButton }
     val byFoot: RadioButton by lazy { findViewById(R.id.by_foot) as RadioButton }
     val compass: CompassView by lazy { findViewById(R.id.compass_view) as CompassView }
+    val routePreviewCompass: CompassView by lazy { findViewById(R.id.route_preview_compass_view) as CompassView }
+    val routeModeCompass: CompassView by lazy { findViewById(R.id.route_mode_compass_view) as CompassView }
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,15 +110,16 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun initMapGestureListener() {
         mapController?.setGenericMotionEventListener(View.OnGenericMotionListener {
-            view, event -> onMapMotionEvent()
+            view, event -> presenter?.onMapMotionEvent() ?: false
         })
     }
 
-    private fun onMapMotionEvent(): Boolean {
+    override fun rotateCompass() {
         val radians: Float = mapController?.mapRotation ?: 0f
         val degrees = Math.toDegrees(radians.toDouble()).toFloat()
         compass.rotation = degrees
-        return true
+        routePreviewCompass.rotation = degrees
+        routeModeCompass.rotation = degrees
     }
 
     override public fun onStart() {
@@ -175,6 +178,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         compass.setOnClickListener({
             presenter?.onCompassClick()
         })
+        routePreviewCompass.setOnClickListener({
+            presenter?.onCompassClick()
+        })
+        routeModeCompass.setOnClickListener({
+            presenter?.onCompassClick()
+        })
     }
 
     private fun initCrashReportService() {
@@ -204,6 +213,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun setMapRotation(radians: Float) {
         mapController?.setMapRotation(radians, 1f)
         compass.reset()
+        routePreviewCompass.reset()
+        routeModeCompass.reset()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -120,4 +120,7 @@ public class TestMainController : MainViewController {
     override fun clearRouteLine() {
         routeLine = null
     }
+
+    override fun rotateCompass() {
+    }
 }

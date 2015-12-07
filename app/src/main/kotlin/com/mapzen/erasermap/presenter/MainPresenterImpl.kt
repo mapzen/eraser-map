@@ -294,4 +294,9 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             mainViewController?.resumeRoutingMode(feature)
         }
     }
+
+    override fun onMapMotionEvent(): Boolean {
+        mainViewController?.rotateCompass()
+        return true
+    }
 }
