@@ -2,6 +2,7 @@ package com.mapzen.erasermap.view
 
 import android.location.Location
 import com.mapzen.pelias.gson.Feature
+import com.mapzen.valhalla.Route
 
 public interface MainViewController {
     public fun showSearchResults(features: List<Feature>)
@@ -28,6 +29,7 @@ public interface MainViewController {
     public fun showCurrentLocation(location: Location)
     public fun setMapTilt(radians: Float)
     public fun setMapRotation(radians: Float)
+    public fun drawRouteLine(route: Route)
     public fun clearRouteLine()
     public fun rotateCompass()
 }

@@ -18,7 +18,6 @@ import com.mapzen.erasermap.view.TestMainController
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
-import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
@@ -168,7 +167,7 @@ public class MainPresenterTest {
 
     @Test fun onBackPressed_shouldClearRouteLine() {
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
-        mainController.routeLine = ArrayList<LngLat>()
+        mainController.routeLine = Route(JSONObject())
         presenter.onBackPressed()
         assertThat(mainController.routeLine).isNull()
     }
@@ -186,7 +185,7 @@ public class MainPresenterTest {
 
     @Test fun onClickStartNavigation_shouldPublishRouteEvent() {
         val subscriber = RouteEventSubscriber()
-        presenter.bus?.register(subscriber)
+        presenter.bus.register(subscriber)
         presenter.onClickStartNavigation()
         assertThat(subscriber.event).isNotNull()
     }
@@ -322,6 +321,14 @@ public class MainPresenterTest {
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
         mainController.isRoutingModeVisible = false
         presenter.success(Route(JSONObject()))
+    }
+
+    @Test fun onRerouteSuccess_shouldDrawRouteLine() {
+        val route = Route(JSONObject())
+        mainController.routeLine = null
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.success(route)
+        assertThat(mainController.routeLine).isEqualTo(route)
     }
 
     @Test fun onCompassClick_shouldResetMapRotation() {

@@ -2,7 +2,7 @@ package com.mapzen.erasermap.view
 
 import android.location.Location
 import com.mapzen.pelias.gson.Feature
-import com.mapzen.tangram.LngLat
+import com.mapzen.valhalla.Route
 
 public class TestMainController : MainViewController {
     public var searchResults: List<Feature>? = null
@@ -10,7 +10,7 @@ public class TestMainController : MainViewController {
     public var zoom: Float = 0f
     public var tilt: Float = 0f
     public var rotation: Float = 0f
-    public var routeLine: List<LngLat>? = null
+    public var routeLine: Route? = null
     public var queryText: String = ""
 
     public var isProgressVisible: Boolean = false
@@ -115,6 +115,10 @@ public class TestMainController : MainViewController {
 
     override fun showReverseGeocodeFeature(features: List<Feature>) {
         isReverseGeocodeVisible = true
+    }
+
+    override fun drawRouteLine(route: Route) {
+        routeLine = route
     }
 
     override fun clearRouteLine() {
