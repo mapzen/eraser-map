@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.view
 
 import android.content.Context
+import android.graphics.Point
 import android.location.Location
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
@@ -8,6 +9,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -335,6 +337,19 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         mapController?.setMapRotation(getBearingInRadians(location), 1f, MapController.EaseType.LINEAR)
         mapController?.mapZoom = MainPresenter.ROUTING_ZOOM
         mapController?.mapTilt = MainPresenter.ROUTING_TILT
+        adjustMapPosition()
+    }
+
+    private fun adjustMapPosition() {
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display = windowManager.defaultDisplay
+        val point = Point()
+        display.getSize(point)
+
+        val screenWidth = point.x.toDouble()
+        val screenHeight = point.y.toDouble()
+        val position = mapController?.coordinatesAtScreenPosition(screenWidth/2, screenHeight/4)
+        mapController?.mapPosition = position
     }
 
     override fun updateSnapLocation(location: Location) {
