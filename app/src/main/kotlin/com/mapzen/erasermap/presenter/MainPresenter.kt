@@ -9,8 +9,8 @@ import com.mapzen.pelias.gson.Result
 
 public interface MainPresenter {
     companion object {
-        val DEFAULT_ZOOM: Float = 14f
-        val ROUTING_ZOOM: Float = 17f
+        val DEFAULT_ZOOM: Float = 16f
+        val ROUTING_ZOOM: Float = 18f
         val ROUTING_TILT: Float = 0.785398163f // 45°
     }
 
