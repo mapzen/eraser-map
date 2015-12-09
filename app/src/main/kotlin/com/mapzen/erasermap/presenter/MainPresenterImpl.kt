@@ -269,6 +269,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         mainViewController?.hideProgress()
         routeManager.route = route
         generateRoutingMode()
+        mainViewController?.drawRouteLine(route)
     }
 
     private fun generateRoutePreview() {

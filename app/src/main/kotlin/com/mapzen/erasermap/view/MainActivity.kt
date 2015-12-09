@@ -488,7 +488,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         hideProgress()
     }
 
-    private fun drawRouteLine(route: Route) {
+    override fun drawRouteLine(route: Route) {
         val properties = com.mapzen.tangram.Properties()
         properties.add("type", "line");
         val geometry: ArrayList<Location>? = route.getGeometry()
