@@ -63,6 +63,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     private var currentSnapLocation: Location? = null
     private var routeIcon: MapData? = null
+    private var routeLine: MapData? = null
+
 
     public constructor(context: Context) : super(context) {
         init(context)
@@ -380,7 +382,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         return Math.toRadians(360 - location.bearing.toDouble()).toFloat()
     }
 
-    fun hideRouteIcon() {
+    override fun hideRouteIcon() {
         routeIcon?.clear()
     }
 
@@ -419,5 +421,34 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             val adapter = InstructionAdapter(context, instructions, this)
             setAdapter(adapter)
         }
+    }
+
+    public fun drawRoute(route: Route) {
+        val properties = com.mapzen.tangram.Properties()
+        properties.add("type", "line");
+        val geometry: ArrayList<Location>? = route.getGeometry()
+        val mapGeometry: ArrayList<LngLat> = ArrayList()
+        if (geometry is ArrayList<Location>) {
+            for (location in geometry) {
+                mapGeometry.add(LngLat(location.longitude, location.latitude))
+            }
+        }
+
+        if (routeLine == null) {
+            routeLine = MapData("route")
+            Tangram.addDataSource(routeLine);
+        }
+
+        routeLine?.clear()
+        routeLine?.addLine(properties, mapGeometry)
+        routeLine?.update();
+    }
+
+    override fun hideRouteLine() {
+        routeLine?.clear()
+    }
+
+    public fun clearRoute() {
+        routePresenter?.onRouteClear()
     }
 }

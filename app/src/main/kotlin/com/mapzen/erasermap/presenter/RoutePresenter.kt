@@ -17,4 +17,5 @@ public interface RoutePresenter {
     public fun onInstructionPagerTouch()
     public fun onInstructionSelected(instruction: Instruction)
     public fun onUpdateSnapLocation(location: Location)
+    public fun onRouteClear()
 }

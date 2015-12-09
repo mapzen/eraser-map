@@ -117,11 +117,11 @@ public class TestMainController : MainViewController {
         isReverseGeocodeVisible = true
     }
 
-    override fun drawRouteLine(route: Route) {
+    override fun drawRoute(route: Route) {
         routeLine = route
     }
 
-    override fun clearRouteLine() {
+    override fun clearRoute() {
         routeLine = null
     }
 

@@ -8,6 +8,8 @@ public class TestRouteController : RouteViewController {
     public var mapLocation: Location? = null
     public var isDirectionListVisible: Boolean = false
     public var isResumeButtonVisible: Boolean = false
+    public var isRouteIconVisible: Boolean = false
+    public var isRouteLineVisible: Boolean = false
 
     override fun onLocationChanged(location: Location) {
         this.location = location
@@ -67,5 +69,13 @@ public class TestRouteController : RouteViewController {
     }
 
     override fun updateSnapLocation(location: Location) {
+    }
+
+    override fun hideRouteIcon() {
+        isRouteIconVisible = false
+    }
+
+    override fun hideRouteLine() {
+        isRouteLineVisible = false
     }
 }

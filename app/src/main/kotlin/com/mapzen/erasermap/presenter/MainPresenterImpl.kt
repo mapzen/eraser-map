@@ -157,7 +157,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     private fun onBackPressedStateRoutePreview() {
         vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
         mainViewController?.hideRoutePreview()
-        mainViewController?.clearRouteLine()
+        mainViewController?.clearRoute()
     }
 
     private fun onBackPressedStateRouting() {
@@ -269,7 +269,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         mainViewController?.hideProgress()
         routeManager.route = route
         generateRoutingMode()
-        mainViewController?.drawRouteLine(route)
+        mainViewController?.drawRoute(route)
     }
 
     private fun generateRoutePreview() {

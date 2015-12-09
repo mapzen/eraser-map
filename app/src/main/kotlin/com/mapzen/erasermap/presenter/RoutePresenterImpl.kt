@@ -64,4 +64,9 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
             routeController?.centerMapOnLocation(location)
         }
     }
+
+    override fun onRouteClear() {
+        routeController?.hideRouteIcon()
+        routeController?.hideRouteLine()
+    }
 }
