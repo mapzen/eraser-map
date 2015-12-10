@@ -155,8 +155,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun initMapController() {
         val mapView = findViewById(R.id.map) as MapView
         mapController = MapController(this, mapView, "style/eraser-map.yaml")
-        mapController?.setLongPressListener(View.OnGenericMotionListener {
-            view, motionEvent -> reverseGeolocate(motionEvent) })
+        mapController?.setLongPressListener({
+            view, motionEvent -> presenter?.onLongPressMap(motionEvent) ?: false
+        })
         mapController?.setHttpHandler(tileHttpHandler)
         mapzenLocation?.mapController = mapController
     }
@@ -396,7 +397,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         }, 100)
     }
 
-    public fun reverseGeolocate(event: MotionEvent) : Boolean {
+    override fun reverseGeolocate(event: MotionEvent) {
         val pelias = Pelias.getPelias()
         pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
         var coords  = mapController?.coordinatesAtScreenPosition(
@@ -405,7 +406,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 coords?.longitude as Double)
         pelias.reverse(coords?.latitude as Double, coords?.longitude as Double,
                 ReversePeliasCallback())
-        return true
     }
 
     override fun hideSearchResults() {

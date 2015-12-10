@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.view
 
 import android.location.Location
+import android.view.MotionEvent
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.valhalla.Route
 
@@ -32,4 +33,5 @@ public interface MainViewController {
     public fun drawRoute(route: Route)
     public fun clearRoute()
     public fun rotateCompass()
+    public fun reverseGeolocate(event: MotionEvent)
 }

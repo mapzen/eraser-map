@@ -344,6 +344,25 @@ public class MainPresenterTest {
         assertThat(mainController.rotation).isEqualTo(0f)
     }
 
+    @Test fun onLongPressMap_shouldReverseGeolocate() {
+        presenter.onLongPressMap(TestHelper.getLongPressMotionEvent())
+        assertThat(mainController.reverseGeolocateEvent).isNotNull()
+    }
+
+    @Test fun onLongPressMap_shouldNotReverseGeolocateWhileRouting() {
+        presenter.vsm.viewState = ROUTE_PREVIEW
+        presenter.onLongPressMap(TestHelper.getLongPressMotionEvent())
+        assertThat(mainController.reverseGeolocateEvent).isNull()
+
+        presenter.vsm.viewState = ROUTING
+        presenter.onLongPressMap(TestHelper.getLongPressMotionEvent())
+        assertThat(mainController.reverseGeolocateEvent).isNull()
+
+        presenter.vsm.viewState = ROUTE_DIRECTION_LIST
+        presenter.onLongPressMap(TestHelper.getLongPressMotionEvent())
+        assertThat(mainController.reverseGeolocateEvent).isNull()
+    }
+
     class RouteEventSubscriber {
         public var event: RouteEvent? = null
 

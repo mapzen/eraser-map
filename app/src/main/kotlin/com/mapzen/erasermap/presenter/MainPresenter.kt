@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.presenter
 
 import android.location.Location
+import android.view.MotionEvent
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
@@ -41,4 +42,5 @@ public interface MainPresenter {
     public fun getPeliasLocationProvider(): PeliasLocationProvider
     public fun onReroute(location: Location)
     public fun onMapMotionEvent(): Boolean
+    public fun onLongPressMap(event: MotionEvent): Boolean
 }

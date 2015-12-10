@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import org.mockito.Mockito;
 
 import android.location.Location;
+import android.view.MotionEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,5 +95,9 @@ public class TestHelper {
         Mockito.when(location.getBearing()).thenReturn(bearing);
         Mockito.when(location.hasBearing()).thenReturn(hasBearing);
         return location;
+    }
+
+    public static MotionEvent getLongPressMotionEvent() {
+        return Mockito.mock(MotionEvent.class);
     }
 }
