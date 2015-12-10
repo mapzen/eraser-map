@@ -2,6 +2,7 @@ package com.mapzen.erasermap.presenter
 
 import android.location.Location
 import android.util.Log
+import android.view.MotionEvent
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.LocationChangeEvent
 import com.mapzen.erasermap.model.MapzenLocation
@@ -302,6 +303,17 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     override fun onMapMotionEvent(): Boolean {
         mainViewController?.rotateCompass()
+        return true
+    }
+
+    override fun onLongPressMap(event: MotionEvent): Boolean {
+        if (vsm.viewState == ViewStateManager.ViewState.ROUTE_PREVIEW
+                || vsm.viewState == ViewStateManager.ViewState.ROUTING
+                || vsm.viewState == ViewStateManager.ViewState.ROUTE_DIRECTION_LIST) {
+            return false
+        }
+
+        mainViewController?.reverseGeolocate(event)
         return true
     }
 }

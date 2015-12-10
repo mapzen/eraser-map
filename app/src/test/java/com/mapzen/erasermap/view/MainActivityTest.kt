@@ -3,10 +3,8 @@ package com.mapzen.erasermap.view
 import android.content.ComponentName
 import android.content.Context.LOCATION_SERVICE
 import android.location.LocationManager
-import android.os.SystemClock
 import android.preference.PreferenceManager
 import android.support.v7.widget.SearchView
-import android.view.MotionEvent
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -414,7 +412,7 @@ public class MainActivityTest {
     @Test
     public fun onLongClick_shouldSetPresenterFeature() {
         assertThat(activity.presenter!!.currentFeature).isNull()
-        activity.reverseGeolocate(getLongPressMotionEvent())
+        activity.reverseGeolocate(TestHelper.getLongPressMotionEvent())
         assertThat(activity.presenter!!.currentFeature).isNotNull()
     }
 
@@ -459,11 +457,6 @@ public class MainActivityTest {
             this.group = group
             this.visible = visible
         }
-    }
-
-    private fun getLongPressMotionEvent(): MotionEvent {
-        return MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis() + 501,
-                MotionEvent.ACTION_DOWN, 30.0f, 30.0f, 1.0f, 1.0f, 1, 1.0f, 1.0f, 0, 0)
     }
 
     private class TestRoute : Route(JSONObject()) {
