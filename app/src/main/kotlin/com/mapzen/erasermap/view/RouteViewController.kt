@@ -22,4 +22,6 @@ public interface RouteViewController {
     public fun updateDistanceToDestination(meters: Int)
     public fun showRouteComplete()
     public fun showReroute(location: Location)
+    public fun hideRouteIcon()
+    public fun hideRouteLine()
 }

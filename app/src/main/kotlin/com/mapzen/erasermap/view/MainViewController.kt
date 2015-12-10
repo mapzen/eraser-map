@@ -29,7 +29,7 @@ public interface MainViewController {
     public fun showCurrentLocation(location: Location)
     public fun setMapTilt(radians: Float)
     public fun setMapRotation(radians: Float)
-    public fun drawRouteLine(route: Route)
-    public fun clearRouteLine()
+    public fun drawRoute(route: Route)
+    public fun clearRoute()
     public fun rotateCompass()
 }

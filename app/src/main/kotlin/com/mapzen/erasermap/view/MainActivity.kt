@@ -73,7 +73,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var mapController : MapController? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
     var optionsMenu: Menu? = null
-    var routeLine: MapData? = null
     var findMe: MapData? = null
     var searchResults: MapData? = null
 
@@ -149,7 +148,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override public fun onDestroy() {
         super.onDestroy()
         saveCurrentSearchTerm()
-        clearRouteLine()
+        routeModeView.clearRoute()
+        findMe?.clear()
     }
 
     private fun initMapController() {
@@ -470,8 +470,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         route()
     }
 
-    override fun clearRouteLine() {
-        routeLine?.clear()
+    override fun drawRoute(route: Route) {
+        routeModeView.drawRoute(route)
+    }
+
+    override fun clearRoute() {
+        routeModeView.clearRoute()
     }
 
     override fun success(route: Route) {
@@ -484,29 +488,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             }
         })
         updateRoutePreview()
-        drawRouteLine(route)
+        routeModeView.drawRoute(route)
         hideProgress()
-    }
-
-    override fun drawRouteLine(route: Route) {
-        val properties = com.mapzen.tangram.Properties()
-        properties.add("type", "line");
-        val geometry: ArrayList<Location>? = route.getGeometry()
-        val mapGeometry: ArrayList<LngLat> = ArrayList()
-        if (geometry is ArrayList<Location>) {
-            for (location in geometry) {
-                mapGeometry.add(LngLat(location.longitude, location.latitude))
-            }
-        }
-
-        if (routeLine == null) {
-            routeLine = MapData("route")
-            Tangram.addDataSource(routeLine);
-        }
-
-        routeLine?.clear()
-        routeLine?.addLine(properties, mapGeometry)
-        routeLine?.update();
     }
 
     override fun failure(statusCode: Int) {
@@ -605,7 +588,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         showRoutingMode(feature)
         val route = routeManager?.route
         if (route is Route) {
-            drawRouteLine(route)
+            drawRoute(route)
         }
         routeModeView.resumeRoute(feature, routeManager?.route)
     }

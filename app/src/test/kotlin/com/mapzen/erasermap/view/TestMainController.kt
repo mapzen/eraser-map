@@ -12,6 +12,7 @@ public class TestMainController : MainViewController {
     public var rotation: Float = 0f
     public var routeLine: Route? = null
     public var queryText: String = ""
+    public var puckPosition: Location? = null
 
     public var isProgressVisible: Boolean = false
     public var isOverflowVisible: Boolean = false
@@ -103,6 +104,7 @@ public class TestMainController : MainViewController {
     }
 
     override fun showCurrentLocation(location: Location) {
+        puckPosition = location
     }
 
     override fun setMapTilt(radians: Float) {
@@ -117,11 +119,11 @@ public class TestMainController : MainViewController {
         isReverseGeocodeVisible = true
     }
 
-    override fun drawRouteLine(route: Route) {
+    override fun drawRoute(route: Route) {
         routeLine = route
     }
 
-    override fun clearRouteLine() {
+    override fun clearRoute() {
         routeLine = null
     }
 

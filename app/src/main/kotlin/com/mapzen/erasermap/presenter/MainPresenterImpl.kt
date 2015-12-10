@@ -157,7 +157,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     private fun onBackPressedStateRoutePreview() {
         vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
         mainViewController?.hideRoutePreview()
-        mainViewController?.clearRouteLine()
+        mainViewController?.clearRoute()
     }
 
     private fun onBackPressedStateRouting() {
@@ -197,12 +197,16 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     }
 
     override fun onCreate() {
-        if (!initialized) {
-            val currentLocation = mapzenLocation.getLastLocation()
-            if (currentLocation is Location) {
+        val currentLocation = mapzenLocation.getLastLocation()
+        if (currentLocation is Location) {
+            if (!initialized) {
+                // Show location puck and center map
                 mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
+                initialized = true
+            } else {
+                // Just show location puck. Do not recenter map.
+                mainViewController?.showCurrentLocation(currentLocation)
             }
-            initialized = true
         }
     }
 
@@ -269,7 +273,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         mainViewController?.hideProgress()
         routeManager.route = route
         generateRoutingMode()
-        mainViewController?.drawRouteLine(route)
+        mainViewController?.drawRoute(route)
     }
 
     private fun generateRoutePreview() {

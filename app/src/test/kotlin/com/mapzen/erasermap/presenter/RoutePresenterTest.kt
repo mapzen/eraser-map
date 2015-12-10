@@ -87,4 +87,16 @@ public class RoutePresenterTest {
         routePresenter.onInstructionSelected(instruction)
         assertThat(routeController.mapLocation).isEqualTo(location)
     }
+
+    @Test fun onClearRoute_shouldHideRouteIcon() {
+        routeController.isRouteIconVisible = true
+        routePresenter.onRouteClear()
+        assertThat(routeController.isRouteIconVisible).isFalse()
+    }
+
+    @Test fun onClearRoute_shouldHideRouteLine() {
+        routeController.isRouteLineVisible = true
+        routePresenter.onRouteClear()
+        assertThat(routeController.isRouteLineVisible).isFalse()
+    }
 }
