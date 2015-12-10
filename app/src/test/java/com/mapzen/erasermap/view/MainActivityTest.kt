@@ -436,6 +436,14 @@ public class MainActivityTest {
     }
 
     @Test
+    public fun onDestroy_shouldClearFindMeIcon() {
+        activity.showCurrentLocation(getTestLocation())
+        val shadowMapData = ShadowExtractor.extract(activity.findMe) as ShadowMapData
+        activity.onDestroy()
+        assertThat(shadowMapData.points).isNullOrEmpty()
+    }
+
+    @Test
     public fun resumeRoutingMode_shouldDrawRouteLine() {
         activity.routeManager?.route = TestRoute()
         activity.resumeRoutingMode(getTestFeature())

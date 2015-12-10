@@ -149,6 +149,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         super.onDestroy()
         saveCurrentSearchTerm()
         routeModeView.clearRoute()
+        findMe?.clear()
     }
 
     private fun initMapController() {

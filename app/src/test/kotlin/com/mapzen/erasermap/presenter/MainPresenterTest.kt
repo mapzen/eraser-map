@@ -273,6 +273,13 @@ public class MainPresenterTest {
         assertThat(mainController.location).isNull()
     }
 
+    @Test fun onCreate_shouldShowCurrentLocationSecondTimeInvoked() {
+        presenter.onCreate()
+        mainController.puckPosition = null
+        presenter.onCreate()
+        assertThat(mainController.puckPosition).isNotNull()
+    }
+
     @Test fun onReroute_shouldShowProgress() {
         routeManager.reset()
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
