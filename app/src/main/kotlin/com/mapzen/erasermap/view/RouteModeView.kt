@@ -43,7 +43,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     var mapController: MapController? = null
         set(value) {
             value?.setGenericMotionEventListener(View.OnGenericMotionListener {
-                view, event -> onMapMotionEvent()
+                view, event -> onMapMotionEvent(event)
             })
 
             field = value
@@ -274,8 +274,15 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         }
     }
 
-    private fun onMapMotionEvent(): Boolean {
-        routePresenter?.onMapGesture()
+    private fun onMapMotionEvent(motionEvent: MotionEvent): Boolean {
+        val action = motionEvent.action
+        val pointerCount = motionEvent.pointerCount
+        if (motionEvent.historySize > 0) {
+            val deltaX = motionEvent.getHistoricalX(0)
+            val deltaY = motionEvent.getHistoricalY(0)
+            routePresenter?.onMapGesture(action, pointerCount, deltaX, deltaY)
+        }
+
         mainPresenter?.onMapMotionEvent()
         return false
     }

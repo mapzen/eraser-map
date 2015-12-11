@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.presenter
 
 import android.location.Location
+import android.view.MotionEvent
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Instruction
@@ -36,9 +37,16 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
         routeController?.setCurrentInstruction(currentInstructionIndex)
     }
 
-    override fun onMapGesture() {
-        isTrackingCurrentLocation = false
-        routeController?.showResumeButton()
+    override fun onMapGesture(action: Int, pointerCount: Int, deltaX: Float, deltaY: Float) {
+        if (action == MotionEvent.ACTION_MOVE) {
+            if (pointerCount == 1) {
+                if (deltaX >= RoutePresenter.GESTURE_MIN_DELTA ||
+                        deltaY >= RoutePresenter.GESTURE_MIN_DELTA) {
+                    isTrackingCurrentLocation = false
+                    routeController?.showResumeButton()
+                }
+            }
+        }
     }
 
     override fun onResumeButtonClick() {

@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.presenter
 
 import android.location.Location
+import android.view.MotionEvent
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getFixture
 import com.mapzen.erasermap.view.TestRouteController
@@ -42,15 +43,40 @@ public class RoutePresenterTest {
 
     @Test fun onMapGesture_shouldShowResumeButton() {
         routeController.isResumeButtonVisible = false
-        routePresenter.onMapGesture()
+        routePresenter.onMapGesture(MotionEvent.ACTION_MOVE, 1, RoutePresenter.GESTURE_MIN_DELTA,
+                RoutePresenter.GESTURE_MIN_DELTA)
         assertThat(routeController.isResumeButtonVisible).isTrue()
     }
 
     @Test fun onMapGesture_shouldDisableLocationTracking() {
         routePresenter.onResumeButtonClick()
-        routePresenter.onMapGesture()
+        routePresenter.onMapGesture(MotionEvent.ACTION_MOVE, 1, RoutePresenter.GESTURE_MIN_DELTA,
+                RoutePresenter.GESTURE_MIN_DELTA)
         routePresenter.onUpdateSnapLocation(Location("test"))
         assertThat(routeController.mapLocation).isNull()
+    }
+
+    @Test fun onMapGesture_shouldNotDisableLocationTrackingOnActionDown() {
+        routePresenter.onResumeButtonClick()
+        routePresenter.onMapGesture(MotionEvent.ACTION_DOWN, 1, RoutePresenter.GESTURE_MIN_DELTA,
+                RoutePresenter.GESTURE_MIN_DELTA)
+        routePresenter.onUpdateSnapLocation(Location("test"))
+        assertThat(routeController.mapLocation).isNotNull()
+    }
+
+    @Test fun onMapGesture_shouldNotDisableLocationTrackingIfMoreThanOnePointer() {
+        routePresenter.onResumeButtonClick()
+        routePresenter.onMapGesture(MotionEvent.ACTION_MOVE, 2, RoutePresenter.GESTURE_MIN_DELTA,
+                RoutePresenter.GESTURE_MIN_DELTA)
+        routePresenter.onUpdateSnapLocation(Location("test"))
+        assertThat(routeController.mapLocation).isNotNull()
+    }
+
+    @Test fun onMapGesture_shouldNotDisableLocationTrackingIfDeltaIsLessThanMinDistance() {
+        routePresenter.onResumeButtonClick()
+        routePresenter.onMapGesture(MotionEvent.ACTION_MOVE, 1, 0f, 0f)
+        routePresenter.onUpdateSnapLocation(Location("test"))
+        assertThat(routeController.mapLocation).isNotNull()
     }
 
     @Test fun onResumeButtonClick_shouldHideResumeButton() {
@@ -60,7 +86,8 @@ public class RoutePresenterTest {
     }
 
     @Test fun onResumeButtonClick_shouldEnableLocationTracking() {
-        routePresenter.onMapGesture()
+        routePresenter.onMapGesture(MotionEvent.ACTION_MOVE, 1, RoutePresenter.GESTURE_MIN_DELTA,
+                RoutePresenter.GESTURE_MIN_DELTA)
         routePresenter.onResumeButtonClick()
         routePresenter.onUpdateSnapLocation(Location("test"))
         assertThat(routeController.mapLocation).isNotNull()
