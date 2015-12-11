@@ -312,8 +312,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun centerMapOnLocation(location: Location) {
         currentSnapLocation = location
-        mapController?.mapPosition = LngLat(location.longitude, location.latitude)
-        mapController?.mapRotation = getBearingInRadians(location)
+        mapController?.setMapPosition(location.longitude, location.latitude, 1f, MapController.EaseType.LINEAR)
+        mapController?.setMapRotation(getBearingInRadians(location), 1f, MapController.EaseType.LINEAR)
         mapController?.mapZoom = MainPresenter.ROUTING_ZOOM
         mapController?.mapTilt = MainPresenter.ROUTING_TILT
     }
