@@ -43,7 +43,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     var mapController: MapController? = null
         set(value) {
             value?.setGenericMotionEventListener(View.OnGenericMotionListener {
-                view, event -> onMapMotionEvent()
+                view, event -> onMapMotionEvent(event)
             })
 
             field = value
@@ -64,7 +64,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     private var currentSnapLocation: Location? = null
     private var routeIcon: MapData? = null
     private var routeLine: MapData? = null
-
+    private var previousScrollState: Int = ViewPager.SCROLL_STATE_IDLE
+    private var userScrollChange: Boolean = false
 
     public constructor(context: Context) : super(context) {
         init(context)
@@ -107,11 +108,22 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         setCurrentPagerItemStyling(routePresenter?.currentInstructionIndex ?: 0);
         val instruction = route?.getRouteInstructions()?.get(position)
         if (instruction is Instruction) {
-            routePresenter?.onInstructionSelected(instruction)
+            if (userScrollChange) {
+                routePresenter?.onInstructionSelected(instruction)
+            }
         }
     }
 
     override fun onPageScrollStateChanged(state: Int) {
+        if (previousScrollState == ViewPager.SCROLL_STATE_DRAGGING
+                && state == ViewPager.SCROLL_STATE_SETTLING) {
+            userScrollChange = true
+        } else if (previousScrollState == ViewPager.SCROLL_STATE_SETTLING
+                && state == ViewPager.SCROLL_STATE_IDLE) {
+            userScrollChange = false
+        }
+
+        previousScrollState = state
     }
 
     public fun setAdapter(adapter: PagerAdapter) {
@@ -274,8 +286,15 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         }
     }
 
-    private fun onMapMotionEvent(): Boolean {
-        routePresenter?.onMapGesture()
+    private fun onMapMotionEvent(motionEvent: MotionEvent): Boolean {
+        val action = motionEvent.action
+        val pointerCount = motionEvent.pointerCount
+        if (motionEvent.historySize > 0) {
+            val deltaX = motionEvent.getHistoricalX(0)
+            val deltaY = motionEvent.getHistoricalY(0)
+            routePresenter?.onMapGesture(action, pointerCount, deltaX, deltaY)
+        }
+
         mainPresenter?.onMapMotionEvent()
         return false
     }
@@ -349,7 +368,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         val instruction = route?.getRouteInstructions()?.get(index)
         if (instruction is Instruction) {
             voiceNavigationController?.playPost(instruction)
-            routePresenter?.onInstructionSelected(instruction)
         }
     }
 
