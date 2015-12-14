@@ -1,7 +1,5 @@
 package com.mapzen.erasermap;
 
-import android.content.Context;
-
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.AndroidAppSettings;
 import com.mapzen.erasermap.model.AppSettings;
@@ -10,10 +8,14 @@ import com.mapzen.erasermap.model.MapzenLocationImpl;
 import com.mapzen.erasermap.model.RouteManager;
 import com.mapzen.erasermap.model.TileHttpHandler;
 import com.mapzen.erasermap.model.ValhallaRouteManager;
+import com.mapzen.erasermap.model.ValhallaRouterFactory;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.erasermap.presenter.ViewStateManager;
+
 import com.squareup.otto.Bus;
+
+import android.content.Context;
 
 import javax.inject.Singleton;
 
@@ -55,7 +57,8 @@ public class AndroidModule {
     }
 
     @Provides @Singleton RouteManager provideRouteManager(AppSettings settings) {
-        ValhallaRouteManager manager = new ValhallaRouteManager(settings);
+        ValhallaRouteManager manager = new ValhallaRouteManager(settings,
+                new ValhallaRouterFactory());
         if (BuildConfig.VALHALLA_API_KEY != null) {
             manager.setApiKey(BuildConfig.VALHALLA_API_KEY);
         }

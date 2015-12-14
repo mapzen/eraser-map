@@ -6,9 +6,8 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
-import com.mapzen.valhalla.ValhallaRouter
 
-public class ValhallaRouteManager(val settings: AppSettings) : RouteManager {
+public class ValhallaRouteManager(val settings: AppSettings, val routerFactory: RouterFactory) : RouteManager {
     override var apiKey: String = ""
     override var origin: Location? = null
     override var destination: Feature? = null
@@ -36,7 +35,12 @@ public class ValhallaRouteManager(val settings: AppSettings) : RouteManager {
             val start: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
             val dest: DoubleArray = doubleArrayOf(simpleFeature.lat(), simpleFeature.lng())
             val units: Router.DistanceUnits = settings.distanceUnits
-            val name = destination?.properties?.name
+            var name: String? = null
+
+            if (!simpleFeature.isAddress) {
+                name = simpleFeature.name()
+            }
+
             val street = simpleFeature.name()
             val city = simpleFeature.localAdmin()
             val state = simpleFeature.region()
@@ -72,7 +76,7 @@ public class ValhallaRouteManager(val settings: AppSettings) : RouteManager {
     }
 
     private fun getInitializedRouter(type: Router.Type): Router {
-        val router = ValhallaRouter().setApiKey(apiKey)
+        val router = routerFactory.getRouter().setApiKey(apiKey)
         when(type) {
             Router.Type.DRIVING -> return router.setDriving()
             Router.Type.WALKING -> return router.setWalking()
