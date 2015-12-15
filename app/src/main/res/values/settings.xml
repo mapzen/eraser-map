@@ -30,6 +30,14 @@
     <string name="edittext_mock_route_summary">Path to GPX trace file (SD card)</string>
     <string name="edittext_mock_route_title">Set mock route</string>
 
+    <!-- Enable tile debug rendering -->
+    <string name="checkbox_tile_debug_summary">Draw map tile debugging information</string>
+    <string name="checkbox_tile_debug_title">Tile debug info</string>
+
+    <!-- Enable label debug rendering -->
+    <string name="checkbox_label_debug_summary">Draw label debugging information</string>
+    <string name="checkbox_label_debug_title">Label debug info</string>
+
     <!-- Build number -->
     <string name="edittext_build_number_title">Build number</string>
 

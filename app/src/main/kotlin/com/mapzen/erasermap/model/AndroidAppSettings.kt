@@ -4,6 +4,8 @@ import android.location.Location
 import android.preference.PreferenceManager
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
+import com.mapzen.tangram.DebugFlags
+import com.mapzen.tangram.Tangram
 import com.mapzen.valhalla.Router
 import java.io.File
 import java.util.Locale
@@ -15,6 +17,8 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
         public val KEY_MOCK_LOCATION_VALUE: String = "edittext_mock_location"
         public val KEY_MOCK_ROUTE_ENABLED: String = "checkbox_mock_route"
         public val KEY_MOCK_ROUTE_VALUE: String = "edittext_mock_route"
+        public val KEY_TILE_DEBUG_ENABLED: String = "checkbox_tile_debug"
+        public val KEY_LABEL_DEBUG_ENABLED: String = "checkbox_label_debug"
         public val KEY_BUILD_NUMBER: String = "edittext_build_number"
     }
 
@@ -90,6 +94,28 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
             prefs.edit().putString(KEY_MOCK_ROUTE_VALUE, value.getName()).commit()
         }
 
+    /**
+     * Tile debug drawing checkbox setting
+     */
+    override var isTileDebugEnabled: Boolean
+        get() {
+            return prefs.getBoolean(KEY_TILE_DEBUG_ENABLED, false)
+        }
+        set(value) {
+            prefs.edit().putBoolean(KEY_TILE_DEBUG_ENABLED, value).commit()
+        }
+
+    /**
+     * Label debug drawing checkbox setting
+     */
+    override var isLabelDebugEnabled: Boolean
+        get() {
+            return prefs.getBoolean(KEY_LABEL_DEBUG_ENABLED, false)
+        }
+        set(value) {
+            prefs.edit().putBoolean(KEY_LABEL_DEBUG_ENABLED, value).commit()
+        }
+
     init {
         val distanceUnitsPref = prefs.getString(KEY_DISTANCE_UNITS, null)
         if (distanceUnitsPref == null) {
@@ -100,5 +126,11 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
                 this.distanceUnits = Router.DistanceUnits.KILOMETERS
             }
         }
+    }
+
+    override fun initTangramDebugFlags() {
+        Tangram.setDebugFlag(DebugFlags.TILE_BOUNDS, isTileDebugEnabled)
+        Tangram.setDebugFlag(DebugFlags.TILE_INFOS, isTileDebugEnabled)
+        Tangram.setDebugFlag(DebugFlags.LABELS, isLabelDebugEnabled)
     }
 }

@@ -38,6 +38,16 @@
             android:summary="@string/edittext_mock_route_summary"
             android:title="@string/edittext_mock_route_title" />
 
+        <CheckBoxPreference
+            android:key="checkbox_tile_debug"
+            android:summary="@string/checkbox_tile_debug_summary"
+            android:title="@string/checkbox_tile_debug_title" />
+
+        <CheckBoxPreference
+            android:key="checkbox_label_debug"
+            android:summary="@string/checkbox_label_debug_summary"
+            android:title="@string/checkbox_label_debug_title" />
+
         <com.mapzen.erasermap.view.ReadOnlyPreference
             android:key="edittext_build_number"
             android:title="@string/edittext_build_number_title" />

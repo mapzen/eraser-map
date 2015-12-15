@@ -9,4 +9,5 @@
     <suppress checks="MagicNumberCheck" files=".*src/test/java/*" />
     <suppress checks="[a-zA-Z0-9]*" files="MapzenAndroidManifest\.java" />
     <suppress checks="VisibilityModifier" files="ShadowTangram\.java" />
+    <suppress checks="ParameterName" files="ShadowTangram\.java" />
 </suppressions>

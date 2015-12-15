@@ -7,6 +7,8 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.AppSettings
+import com.mapzen.tangram.DebugFlags
+import com.mapzen.tangram.Tangram
 
 public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceChangeListener {
 
@@ -26,12 +28,24 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
         addPreferencesFromResource(R.xml.preferences)
         initDistanceUnitsPref()
         initBuildNumberPref()
+        initTileDebugPref()
+        initLabelDebugPref()
     }
 
     override fun onPreferenceChange(preference: Preference?, value: Any?): Boolean {
         if (preference is Preference && value is String) {
             if (AndroidAppSettings.KEY_DISTANCE_UNITS.equals(preference.key)) {
                 updateDistanceUnitsPref(preference, value)
+                return true
+            }
+        }
+        if (preference is Preference && value is Boolean) {
+            if (AndroidAppSettings.KEY_TILE_DEBUG_ENABLED.equals(preference.key)) {
+                updateTileDebugPref(value)
+                return true
+            }
+            if (AndroidAppSettings.KEY_LABEL_DEBUG_ENABLED.equals(preference.key)) {
+                updateLabelDebugPref(value)
                 return true
             }
         }
@@ -52,7 +66,27 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
         preference.summary = text
     }
 
+    private fun initTileDebugPref() {
+        findPreference(AndroidAppSettings.KEY_TILE_DEBUG_ENABLED).onPreferenceChangeListener = this
+        updateTileDebugPref(settings?.isTileDebugEnabled ?: false)
+    }
+
+    private fun updateTileDebugPref(value: Boolean) {
+        Tangram.setDebugFlag(DebugFlags.TILE_BOUNDS, value)
+        Tangram.setDebugFlag(DebugFlags.TILE_INFOS, value)
+    }
+
+    private fun initLabelDebugPref() {
+        findPreference(AndroidAppSettings.KEY_LABEL_DEBUG_ENABLED).onPreferenceChangeListener = this
+        updateLabelDebugPref(settings?.isLabelDebugEnabled ?: false)
+    }
+
+    private fun updateLabelDebugPref(value: Boolean) {
+        Tangram.setDebugFlag(DebugFlags.LABELS, value)
+    }
+
     private fun initBuildNumberPref() {
         findPreference(AndroidAppSettings.KEY_BUILD_NUMBER).summary = BuildConfig.BUILD_NUMBER
     }
+
 }
