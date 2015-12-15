@@ -105,6 +105,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         presenter?.onCreate()
         presenter?.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
+        settings?.initTangramDebugFlags()
     }
 
     private fun initMapGestureListener() {

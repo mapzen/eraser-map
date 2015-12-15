@@ -5,6 +5,8 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.PrivateMapsTestRunner
 import com.mapzen.erasermap.dummy.TestHelper
+import com.mapzen.erasermap.shadows.ShadowTangram
+import com.mapzen.tangram.DebugFlags
 import com.mapzen.valhalla.Router
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -158,5 +160,14 @@ public class AndroidAppSettingsTest {
         val key = AndroidAppSettings.KEY_MOCK_ROUTE_VALUE
         settings.mockRoute = File("ymca.gpx")
         assertThat(prefs.getString(key, null)).isEqualTo("ymca.gpx")
+    }
+
+    @Test fun initTangramDebugFlags_shouldSetTangramDebugFlags() {
+        prefs.edit().putBoolean(AndroidAppSettings.KEY_TILE_DEBUG_ENABLED, true).commit()
+        prefs.edit().putBoolean(AndroidAppSettings.KEY_LABEL_DEBUG_ENABLED, true).commit()
+        settings.initTangramDebugFlags()
+        assertThat(ShadowTangram.debugFlags).contains(DebugFlags.TILE_BOUNDS)
+        assertThat(ShadowTangram.debugFlags).contains(DebugFlags.TILE_INFOS)
+        assertThat(ShadowTangram.debugFlags).contains(DebugFlags.LABELS)
     }
 }

@@ -12,4 +12,6 @@ public interface AppSettings {
     public var mockRoute: File
     public var isTileDebugEnabled: Boolean
     public var isLabelDebugEnabled: Boolean
+
+    public fun initTangramDebugFlags()
 }

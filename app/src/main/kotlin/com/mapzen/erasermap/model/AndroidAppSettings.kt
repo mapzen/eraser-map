@@ -4,6 +4,8 @@ import android.location.Location
 import android.preference.PreferenceManager
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
+import com.mapzen.tangram.DebugFlags
+import com.mapzen.tangram.Tangram
 import com.mapzen.valhalla.Router
 import java.io.File
 import java.util.Locale
@@ -124,5 +126,11 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
                 this.distanceUnits = Router.DistanceUnits.KILOMETERS
             }
         }
+    }
+
+    override fun initTangramDebugFlags() {
+        Tangram.setDebugFlag(DebugFlags.TILE_BOUNDS, isTileDebugEnabled)
+        Tangram.setDebugFlag(DebugFlags.TILE_INFOS, isTileDebugEnabled)
+        Tangram.setDebugFlag(DebugFlags.LABELS, isLabelDebugEnabled)
     }
 }

@@ -7,8 +7,8 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.AppSettings
-import com.mapzen.tangram.Tangram
 import com.mapzen.tangram.DebugFlags
+import com.mapzen.tangram.Tangram
 
 public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceChangeListener {
 
