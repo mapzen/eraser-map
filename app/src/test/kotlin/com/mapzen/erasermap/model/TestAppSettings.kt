@@ -11,4 +11,6 @@ public class TestAppSettings : AppSettings {
     override var mockLocation: Location = TestHelper.getTestLocation()
     override var isMockRouteEnabled: Boolean = false
     override var mockRoute: File = File("lost.gpx")
+    override var isTileDebugEnabled: Boolean = false
+    override var isLabelDebugEnabled: Boolean = false
 }

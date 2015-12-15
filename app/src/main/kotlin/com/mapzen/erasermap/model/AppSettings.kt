@@ -10,4 +10,6 @@ public interface AppSettings {
     public var mockLocation: Location
     public var isMockRouteEnabled: Boolean
     public var mockRoute: File
+    public var isTileDebugEnabled: Boolean
+    public var isLabelDebugEnabled: Boolean
 }
