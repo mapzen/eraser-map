@@ -333,23 +333,38 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun centerMapOnLocation(location: Location) {
         currentSnapLocation = location
-        mapController?.setMapPosition(location.longitude, location.latitude, 1f, MapController.EaseType.LINEAR)
-        mapController?.setMapRotation(getBearingInRadians(location), 1f, MapController.EaseType.LINEAR)
-        mapController?.mapZoom = MainPresenter.ROUTING_ZOOM
-        mapController?.mapTilt = MainPresenter.ROUTING_TILT
-        adjustMapPosition()
-    }
+        mapController?.queueEvent {
 
-    private fun adjustMapPosition() {
-        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val display = windowManager.defaultDisplay
-        val point = Point()
-        display.getSize(point)
+            // Record the initial view configuration
+            val lastPosition = mapController?.mapPosition
+            val lastRotation = mapController?.mapRotation
 
-        val screenWidth = point.x.toDouble()
-        val screenHeight = point.y.toDouble()
-        val position = mapController?.coordinatesAtScreenPosition(screenWidth/2, screenHeight/4)
-        mapController?.mapPosition = position
+            // Update position, rotation, tilt, and zoom for new location
+            mapController?.mapPosition = LngLat(location.longitude, location.latitude)
+            mapController?.mapRotation = getBearingInRadians(location)
+            mapController?.mapZoom = MainPresenter.ROUTING_ZOOM
+            mapController?.mapTilt = MainPresenter.ROUTING_TILT
+
+            // Get the width and height of the window
+            val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            val display = windowManager.defaultDisplay
+            val point = Point()
+            display.getSize(point)
+            val screenWidth = point.x.toDouble()
+            val screenHeight = point.y.toDouble()
+
+            // Find the view that will place the current location marker in the lower quarter of the window
+            val nextPosition = mapController?.coordinatesAtScreenPosition(screenWidth/2, screenHeight/4) ?: LngLat()
+            val nextRotation = getBearingInRadians(location)
+
+            // Return to our initial view to prepare for easing to the next view
+            mapController?.mapPosition = lastPosition
+            mapController?.mapRotation = lastRotation
+
+            // Begin easing to the next view
+            mapController?.setMapPosition(nextPosition.longitude, nextPosition.latitude, 1f, MapController.EaseType.LINEAR)
+            mapController?.setMapRotation(nextRotation, 1f, MapController.EaseType.LINEAR)
+        }
     }
 
     override fun updateSnapLocation(location: Location) {
