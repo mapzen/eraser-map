@@ -27,8 +27,8 @@ android {
     applicationId "com.mapzen.erasermap"
     minSdkVersion 15
     targetSdkVersion 22
-    versionCode 4
-    versionName "0.3.2-SNAPSHOT"
+    versionCode 5
+    versionName "0.3.2"
   }
   buildTypes {
     debug {
