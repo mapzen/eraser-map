@@ -1,13 +1,20 @@
 # Eraser Map
 Privacy-focused mapping application for Android
 
+## Clone and build project
+```bash
+$ git clone https://github.com/mapzen/eraser-map.git
+$ cd eraser-map
+$ git submodule init && git submodule update
+$ ./gradlew
+```
+
 ## Importing project into Android Studio
-1. Clone https://github.com/mapzen/eraser-map.git
-2. Open Android Studio and choose _File > Import project..._ and select project root folder
-3. Install [Kotlin Plugin for Android Studio](https://plugins.jetbrains.com/plugin/6954?pr=androidstudio)
-4. Follow instructions to enable [unit testing support](http://tools.android.com/tech-docs/unit-testing-support) in Android Studio
-5. Modify unit test run configuration working directory to `/path/to/project/eraser-map/app`
-6. Rebuild and run tests
+1. Open Android Studio and choose _File > Import project..._ and select project root folder
+2. Install [Kotlin Plugin for Android Studio](https://plugins.jetbrains.com/plugin/6954?pr=androidstudio)
+3. Follow instructions to enable [unit testing support](http://tools.android.com/tech-docs/unit-testing-support) in Android Studio
+4. Modify unit test run configuration working directory to `/path/to/project/eraser-map/app`
+5. Rebuild and run tests
 
 ## API Keys
 
