@@ -63,6 +63,23 @@ public class MapzenLocationTest {
         assertThat(mapzenLocation.getLastLocation()).isNull()
     }
 
+    @Test fun onLocationUpdate_shouldPostOneEvent() {
+        val subscriber = LocationChangeSubscriber()
+        bus.register(subscriber)
+        mapzenLocation.onLocationUpdate(TestHelper.getTestLocation())
+        assertThat(subscriber.event?.location).isNotNull()
+    }
+
+    @Test fun onLocationUpdate_shouldNotPostEventIfDistanceIsLessThanMinimumDisplacement() {
+        val location1 = TestHelper.getTestLocation(0.0, 0.0)
+        val location2 = TestHelper.getTestLocation(0.0, 0.0)
+        val subscriber = LocationChangeSubscriber()
+        bus.register(subscriber)
+        mapzenLocation.onLocationUpdate(location1)
+        mapzenLocation.onLocationUpdate(location2)
+        assertThat(subscriber.event?.location).isSameAs(location1)
+    }
+
     class LocationChangeSubscriber {
         public var event: LocationChangeEvent? = null
 
