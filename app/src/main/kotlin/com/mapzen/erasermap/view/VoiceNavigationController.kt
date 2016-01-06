@@ -15,6 +15,14 @@ public class VoiceNavigationController(val activity: Activity) {
         speakerbox.setQueueMode(TextToSpeech.QUEUE_ADD)
     }
 
+    public fun playStart(instruction: Instruction): Unit =
+        play(instruction.getVerbalPreTransitionInstruction())
+
+    public fun playRecalculating() {
+        speakerbox.textToSpeech.stop()
+        play(activity.getString(R.string.recalculating))
+    }
+
     public fun playMilestone(instruction: Instruction,
             milestone: RouteEngine.Milestone,
             units: Router.DistanceUnits) {

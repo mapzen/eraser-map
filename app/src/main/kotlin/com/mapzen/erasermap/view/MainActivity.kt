@@ -106,6 +106,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         presenter?.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
         settings?.initTangramDebugFlags()
+        routeModeView.voiceNavigationController = VoiceNavigationController(this)
     }
 
     private fun initMapGestureListener() {
@@ -603,7 +604,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         routeModeView.mainPresenter = presenter
         routeModeView.mapController = mapController
         presenter?.routeViewController = routeModeView
-        routeModeView.voiceNavigationController = VoiceNavigationController(this)
     }
 
     override fun hideRoutingMode() {
