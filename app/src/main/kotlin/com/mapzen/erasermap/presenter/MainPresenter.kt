@@ -43,4 +43,5 @@ public interface MainPresenter {
     public fun onReroute(location: Location)
     public fun onMapMotionEvent(): Boolean
     public fun onLongPressMap(event: MotionEvent): Boolean
+    open fun onExitNavigation()
 }
