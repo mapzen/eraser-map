@@ -37,15 +37,11 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
         routeController?.setCurrentInstruction(currentInstructionIndex)
     }
 
-    override fun onMapGesture(action: Int, pointerCount: Int, deltaX: Float, deltaY: Float) {
-        if (action == MotionEvent.ACTION_MOVE) {
-            if (pointerCount == 1) {
-                if (deltaX >= RoutePresenter.GESTURE_MIN_DELTA ||
-                        deltaY >= RoutePresenter.GESTURE_MIN_DELTA) {
-                    isTrackingCurrentLocation = false
-                    routeController?.showResumeButton()
-                }
-            }
+    override fun onMapPan(deltaX: Float, deltaY: Float) {
+        if (Math.abs(deltaX) >= RoutePresenter.GESTURE_MIN_DELTA ||
+            Math.abs(deltaY) >= RoutePresenter.GESTURE_MIN_DELTA) {
+            isTrackingCurrentLocation = false
+            routeController?.showResumeButton()
         }
     }
 
