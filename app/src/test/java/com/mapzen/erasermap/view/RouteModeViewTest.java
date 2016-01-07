@@ -6,6 +6,8 @@ import com.mapzen.erasermap.R;
 import com.mapzen.erasermap.dummy.TestHelper;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
+import com.mapzen.erasermap.util.NotificationCreator;
+import com.mapzen.valhalla.Instruction;
 import com.mapzen.valhalla.Route;
 
 import org.junit.Before;
@@ -15,9 +17,15 @@ import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowApplication;
+import org.robolectric.shadows.ShadowNotification;
+import org.robolectric.shadows.ShadowNotificationManager;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Build;
@@ -246,6 +254,45 @@ public class RouteModeViewTest {
                 .getOnTouchListener()).isNotNull();
     }
 
+
+    @Test @SuppressLint("NewApi")
+    public void shouldGenerateNotificationOnFirstInstruction() throws Exception {
+        ShadowNotification sNotification = getRoutingNotification();
+        assertThat(sNotification.getContentTitle()).isEqualTo("Test SimpleFeature");
+        assertThat(sNotification.getContentText()).isEqualTo("Head on 19th Street for 520 ft");
+        assertThat(sNotification.getActions().get(0).title).isEqualTo("Exit Navigation");
+    }
+
+    @Test @SuppressLint("NewApi")
+    public void shouldGenerateNotificationOnPageSelected() throws Exception {
+        View view = (View) adapter.instantiateItem(viewGroup, 1);
+        ShadowNotification sNotification = getRoutingNotification();
+        assertThat(sNotification.getContentTitle()).isEqualTo("Test SimpleFeature");
+        assertThat(sNotification.getContentText()).isEqualTo("Head on 19th Street for 520 ft");
+        assertThat(sNotification.getActions().get(0).title).isEqualTo("Exit Navigation");
+    }
+
+    @Test @SuppressLint("NewApi")
+    public void shouldKillNotificationOnExitNavigation() throws Exception {
+        ShadowNotification sNotification = getRoutingNotification();
+        sNotification.getActions().get(0).actionIntent.send();
+        ShadowApplication application = Shadows.shadowOf(startActivity.getApplication());
+        Intent broadcastIntent = application.getBroadcastIntents().get(0);
+        String broadcastClassName = broadcastIntent.getComponent().getClassName();
+        boolean shouldExit = broadcastIntent.getExtras()
+                .getBoolean(NotificationCreator.EXIT_NAVIGATION);
+        assertThat(shouldExit).isTrue();
+        assertThat(broadcastClassName)
+                .isEqualTo("com.mapzen.open.util.NotificationBroadcastReceiver");
+    }
+
+    private ShadowNotification getRoutingNotification() {
+        NotificationManager manager = (NotificationManager) startActivity.getSystemService(
+                Context.NOTIFICATION_SERVICE);
+        ShadowNotificationManager sManager = Shadows.shadowOf(manager);
+        return Shadows.shadowOf(sManager.getAllNotifications().get(0));
+    }
+
     class TestViewGroup extends ViewGroup {
         public TestViewGroup(Context context) {
             super(context);
@@ -255,4 +302,6 @@ public class RouteModeViewTest {
         protected void onLayout(boolean changed, int l, int t, int r, int b) {
         }
     }
+
+
 }

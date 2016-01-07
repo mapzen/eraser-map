@@ -21,6 +21,7 @@ import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.presenter.RoutePresenter
 import com.mapzen.erasermap.util.DisplayHelper
+import com.mapzen.erasermap.util.NotificationCreator
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
@@ -64,6 +65,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     var panelListener: SlidingUpPanelLayout.PanelSlideListener? = null
     var mainPresenter: MainPresenter? = null
     var voiceNavigationController: VoiceNavigationController? = null
+    var notificationCreator: NotificationCreator? = null
     var routePresenter: RoutePresenter? = null
         @Inject set
     var settings: AppSettings? = null
@@ -120,6 +122,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
                 routePresenter?.onInstructionSelected(instruction)
             }
         }
+        notificationCreator?.createNewNotification((findViewById(R.id.destination_name) as TextView).text.toString(),
+                route?.getCurrentInstruction()?.getHumanTurnInstruction().toString())
     }
 
     override fun onPageScrollStateChanged(state: Int) {
@@ -141,6 +145,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         (findViewById(R.id.destination_distance) as DistanceView).distanceInMeters =
                 (route?.getRemainingDistanceToDestination() as Int)
         pager?.setOnTouchListener({ view, motionEvent -> onPagerTouch() })
+        notificationCreator?.createNewNotification((findViewById(R.id.destination_name) as TextView).text.toString(),
+                route?.getCurrentInstruction()?.getHumanTurnInstruction().toString())
     }
 
     private fun onPagerTouch(): Boolean {
