@@ -345,22 +345,22 @@ public class MainPresenterTest {
     }
 
     @Test fun onLongPressMap_shouldReverseGeolocate() {
-        presenter.onLongPressMap(TestHelper.getLongPressMotionEvent())
-        assertThat(mainController.reverseGeolocateEvent).isNotNull()
+        presenter.onLongPressMap(0f, 0f)
+        assertThat(mainController.reverseGeolocatePoint).isNotNull()
     }
 
     @Test fun onLongPressMap_shouldNotReverseGeolocateWhileRouting() {
         presenter.vsm.viewState = ROUTE_PREVIEW
-        presenter.onLongPressMap(TestHelper.getLongPressMotionEvent())
-        assertThat(mainController.reverseGeolocateEvent).isNull()
+        presenter.onLongPressMap(0f, 0f)
+        assertThat(mainController.reverseGeolocatePoint).isNull()
 
         presenter.vsm.viewState = ROUTING
-        presenter.onLongPressMap(TestHelper.getLongPressMotionEvent())
-        assertThat(mainController.reverseGeolocateEvent).isNull()
+        presenter.onLongPressMap(0f, 0f)
+        assertThat(mainController.reverseGeolocatePoint).isNull()
 
         presenter.vsm.viewState = ROUTE_DIRECTION_LIST
-        presenter.onLongPressMap(TestHelper.getLongPressMotionEvent())
-        assertThat(mainController.reverseGeolocateEvent).isNull()
+        presenter.onLongPressMap(0f, 0f)
+        assertThat(mainController.reverseGeolocatePoint).isNull()
     }
 
     class RouteEventSubscriber {

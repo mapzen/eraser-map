@@ -1,7 +1,7 @@
 package com.mapzen.erasermap.view
 
 import android.location.Location
-import android.view.MotionEvent
+import android.graphics.PointF
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.valhalla.Route
 
@@ -14,7 +14,7 @@ public class TestMainController : MainViewController {
     public var routeLine: Route? = null
     public var queryText: String = ""
     public var puckPosition: Location? = null
-    public var reverseGeolocateEvent: MotionEvent? = null
+    public var reverseGeolocatePoint: PointF? = null
 
     public var isProgressVisible: Boolean = false
     public var isOverflowVisible: Boolean = false
@@ -132,7 +132,7 @@ public class TestMainController : MainViewController {
     override fun rotateCompass() {
     }
 
-    override fun reverseGeolocate(event: MotionEvent) {
-        reverseGeolocateEvent = event
+    override fun reverseGeolocate(screenX: Float, screenY: Float) {
+        reverseGeolocatePoint = PointF(screenX, screenY)
     }
 }
