@@ -34,7 +34,6 @@
             android:name=".view.InitActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
-
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
 
@@ -42,7 +41,6 @@
         </intent-filter>
     </activity>
         <receiver android:name=".util.NotificationBroadcastReceiver"/>
-
     </application>
 
 </manifest>
