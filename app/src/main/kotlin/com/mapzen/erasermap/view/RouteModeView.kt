@@ -384,6 +384,11 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         }
     }
 
+    override fun playStartInstructionAlert() {
+        val instruction = route?.getRouteInstructions()?.get(0)
+        if (instruction is Instruction) voiceNavigationController?.playStart(instruction)
+    }
+
     override fun playPreInstructionAlert(index: Int) {
         val instruction = route?.getRouteInstructions()?.get(index)
         if (instruction is Instruction) voiceNavigationController?.playPre(instruction)
@@ -424,6 +429,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun showReroute(location: Location) {
+        voiceNavigationController?.playRecalculating()
         mainPresenter?.onReroute(location)
     }
 

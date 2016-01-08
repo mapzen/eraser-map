@@ -14,6 +14,12 @@ class RouteEngineListener : RouteListener {
     public var controller: RouteViewController? = null
     public var debug: Boolean = true
 
+    override fun onRouteStart() {
+        log("[onRouteStart]")
+        controller?.setCurrentInstruction(0)
+        controller?.playPreInstructionAlert(0)
+    }
+
     override fun onSnapLocation(originalLocation: Location, snapLocation: Location) {
         log("[onSnapLocation]", "original = $originalLocation | snap = $snapLocation")
         controller?.updateSnapLocation(snapLocation);
@@ -33,7 +39,9 @@ class RouteEngineListener : RouteListener {
 
     override fun onInstructionComplete(index: Int) {
         log("[onInstructionComplete]", index)
-        controller?.playPostInstructionAlert(index)
+        if (index != 0) {
+            controller?.playPostInstructionAlert(index)
+        }
     }
 
     override fun onUpdateDistance(next: Int, destination: Int) {

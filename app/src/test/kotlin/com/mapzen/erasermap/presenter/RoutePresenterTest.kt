@@ -28,6 +28,7 @@ public class RoutePresenterTest {
     @Test fun onRouteStart_shouldResetRouteEngine() {
         val route1 = Route(getFixture("valhalla_route"))
         val route2 = Route(getFixture("valhalla_route"))
+        routeEngine.setListener(routeListener)
         routeEngine.route = route1
         routePresenter.onRouteStart(route2)
         assertThat(routeEngine.route).isEqualTo(route2)
@@ -36,6 +37,7 @@ public class RoutePresenterTest {
     @Test fun onRouteResume_shouldNotResetRouteEngine() {
         val route1 = Route(getFixture("valhalla_route"))
         val route2 = Route(getFixture("valhalla_route"))
+        routeEngine.setListener(routeListener)
         routeEngine.route = route1
         routePresenter.onRouteResume(route2)
         assertThat(routeEngine.route).isEqualTo(route1)

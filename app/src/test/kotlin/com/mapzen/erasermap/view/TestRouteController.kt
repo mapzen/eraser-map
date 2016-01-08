@@ -10,6 +10,9 @@ public class TestRouteController : RouteViewController {
     public var isResumeButtonVisible: Boolean = false
     public var isRouteIconVisible: Boolean = false
     public var isRouteLineVisible: Boolean = false
+    public var alert: Int = -1
+    public var pre: Int = -1
+    public var post: Int = -1
 
     override fun onLocationChanged(location: Location) {
         this.location = location
@@ -48,12 +51,15 @@ public class TestRouteController : RouteViewController {
     }
 
     override fun setMilestone(index: Int, milestone: RouteEngine.Milestone) {
+        alert = index
     }
 
     override fun playPreInstructionAlert(index: Int) {
+        pre = index
     }
 
     override fun playPostInstructionAlert(index: Int) {
+        post = index
     }
 
     override fun updateDistanceToNextInstruction(meters: Int) {
@@ -77,5 +83,8 @@ public class TestRouteController : RouteViewController {
 
     override fun hideRouteLine() {
         isRouteLineVisible = false
+    }
+
+    override fun playStartInstructionAlert() {
     }
 }

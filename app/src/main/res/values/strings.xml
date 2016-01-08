@@ -27,4 +27,5 @@
     <string name="milestone_half_km">In a half kilometer</string>
 
     <string name="less_than_one_minute">&lt;1 min</string>
+    <string name="recalculating">Recalculating</string>
 </resources>

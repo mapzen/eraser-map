@@ -16,4 +16,14 @@ class RouteEngineListenerTest {
     @Test fun shouldNotBeNull() {
         assertThat(routeListener).isNotNull()
     }
+
+    @Test fun onInstructionComplete_shouldPlayPostInstruction() {
+        routeListener.onInstructionComplete(1)
+        assertThat(routeController.post).isEqualTo(1)
+    }
+
+    @Test fun onInstructionComplete_shouldNotPlayPostInstructionWhenIndexIsZero() {
+        routeListener.onInstructionComplete(0)
+        assertThat(routeController.post).isEqualTo(-1)
+    }
 }

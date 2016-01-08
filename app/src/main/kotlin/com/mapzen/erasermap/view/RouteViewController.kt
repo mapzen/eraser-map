@@ -16,6 +16,7 @@ public interface RouteViewController {
     public fun updateSnapLocation(location: Location)
     public fun setCurrentInstruction(index: Int)
     public fun setMilestone(index: Int, milestone: RouteEngine.Milestone)
+    public fun playStartInstructionAlert()
     public fun playPreInstructionAlert(index: Int)
     public fun playPostInstructionAlert(index: Int)
     public fun updateDistanceToNextInstruction(meters: Int)

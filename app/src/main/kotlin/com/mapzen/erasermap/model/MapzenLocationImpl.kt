@@ -20,7 +20,7 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
 
     companion object {
         private val LOCATION_UPDATE_INTERVAL_IN_MS: Long = 1000L
-        private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT: Float = 0f
+        private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT: Float = 3f
     }
 
     init {
@@ -28,6 +28,8 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
     }
 
     override var mapController: MapController? = null
+
+    private var previousLocation: Location? = null
 
     private fun connect() {
         if (!locationClient.isConnected) {
@@ -58,9 +60,22 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
                 .setSmallestDisplacement(LOCATION_UPDATE_SMALLEST_DISPLACEMENT)
 
         LocationServices.FusedLocationApi?.requestLocationUpdates(locationRequest) {
-            location: Location -> bus.post(LocationChangeEvent(location))
-            Log.d("MapzenLocation", "onLocationChanged: " + location)
+            location -> onLocationUpdate(location)
         }
+    }
+
+    fun onLocationUpdate(location: Location) {
+        val previous = previousLocation
+        val displacement = if (previous != null) previous.distanceTo(location) else Float.MAX_VALUE
+
+        if (displacement > LOCATION_UPDATE_SMALLEST_DISPLACEMENT) {
+            Log.d("MapzenLocation", "onLocationChanged: " + location)
+            bus.post(LocationChangeEvent(location))
+        } else {
+            Log.d("MapzenLocation", "no significant change")
+        }
+
+        previousLocation = location
     }
 
     override fun stopLocationUpdates() {
