@@ -20,7 +20,10 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.model.*
+import com.mapzen.erasermap.model.AppSettings
+import com.mapzen.erasermap.model.MapzenLocation
+import com.mapzen.erasermap.model.RouteManager
+import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.util.NotificationCreator
 import com.mapzen.pelias.Pelias
@@ -41,8 +44,6 @@ import com.mapzen.tangram.Tangram
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
-import com.squareup.otto.Bus
-import com.squareup.otto.Subscribe
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
@@ -68,8 +69,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         @Inject set
     var mapzenLocation: MapzenLocation? = null
         @Inject set
-    var bus: Bus? = null
-        @Inject set
 
     var app: EraserMapApplication? = null
     var mapController : MapController? = null
@@ -77,8 +76,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var optionsMenu: Menu? = null
     var findMe: MapData? = null
     var searchResults: MapData? = null
-
-    var exitNavigationIntentReceived: Boolean = false;
 
     val findMeButton: ImageButton by lazy { findViewById(R.id.find_me) as ImageButton }
     val routePreviewView: RoutePreviewView by lazy { findViewById(R.id.route_preview) as RoutePreviewView }
@@ -114,7 +111,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override protected fun onNewIntent(intent: Intent?) {
-        if (intent?.getBooleanExtra(NotificationCreator.EXIT_NAVIGATION, false) == true) {
+        if (intent?.getBooleanExtra(NotificationCreator.EXIT_NAVIGATION, false) as Boolean) {
             exitNavigation()
         }
     }
@@ -142,8 +139,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override public fun onResume() {
         super.onResume()
         presenter?.onResume()
-        if( exitNavigationIntentReceived) {
-        }
     }
 
     override public fun onPause() {

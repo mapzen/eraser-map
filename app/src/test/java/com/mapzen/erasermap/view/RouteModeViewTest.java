@@ -7,7 +7,6 @@ import com.mapzen.erasermap.dummy.TestHelper;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.erasermap.util.NotificationCreator;
-import com.mapzen.valhalla.Instruction;
 import com.mapzen.valhalla.Route;
 
 import org.junit.Before;
@@ -257,25 +256,32 @@ public class RouteModeViewTest {
 
     @Test @SuppressLint("NewApi")
     public void shouldGenerateNotificationOnFirstInstruction() throws Exception {
-        ShadowNotification sNotification = getRoutingNotification();
-        assertThat(sNotification.getContentTitle()).isEqualTo("Test SimpleFeature");
-        assertThat(sNotification.getContentText()).isEqualTo("Head on 19th Street for 520 ft");
-        assertThat(sNotification.getActions().get(0).title).isEqualTo("Exit Navigation");
+        ShadowNotificationManager sManager = getRoutingNotificationManager();
+        ShadowNotification sNotification = Shadows.shadowOf(sManager.getAllNotifications().get(0));
+        assertThat(sNotification.getContentTitle()).isEqualTo("Name, Local Admin, Admin1 Abbr");
+        assertThat(sNotification.getContentText()).isEqualTo("Go north on Adalbertstraße.");
+        assertThat(sManager.getAllNotifications().get(0).actions[0].title)
+                .isEqualTo("Exit Navigation");
     }
 
     @Test @SuppressLint("NewApi")
     public void shouldGenerateNotificationOnPageSelected() throws Exception {
         View view = (View) adapter.instantiateItem(viewGroup, 1);
-        ShadowNotification sNotification = getRoutingNotification();
-        assertThat(sNotification.getContentTitle()).isEqualTo("Test SimpleFeature");
-        assertThat(sNotification.getContentText()).isEqualTo("Head on 19th Street for 520 ft");
-        assertThat(sNotification.getActions().get(0).title).isEqualTo("Exit Navigation");
+        ShadowNotificationManager sManager = getRoutingNotificationManager();
+        ShadowNotification sNotification = Shadows.shadowOf(sManager.getAllNotifications().get(0));
+        assertThat(sNotification.getContentTitle()).isEqualTo("Name, Local Admin, Admin1 Abbr");
+        assertThat(sNotification.getContentText()).isEqualTo("Go north on Adalbertstraße.");
+        NotificationManager manager = (NotificationManager) startActivity.getSystemService(
+                Context.NOTIFICATION_SERVICE);
+        assertThat(sManager.getAllNotifications().get(0).actions[0].title)
+                .isEqualTo("Exit Navigation");
     }
 
     @Test @SuppressLint("NewApi")
     public void shouldKillNotificationOnExitNavigation() throws Exception {
-        ShadowNotification sNotification = getRoutingNotification();
-        sNotification.getActions().get(0).actionIntent.send();
+        ShadowNotificationManager sManager = getRoutingNotificationManager();
+        sManager.getAllNotifications().get(0).actions[0].actionIntent.send();
+
         ShadowApplication application = Shadows.shadowOf(startActivity.getApplication());
         Intent broadcastIntent = application.getBroadcastIntents().get(0);
         String broadcastClassName = broadcastIntent.getComponent().getClassName();
@@ -283,14 +289,14 @@ public class RouteModeViewTest {
                 .getBoolean(NotificationCreator.EXIT_NAVIGATION);
         assertThat(shouldExit).isTrue();
         assertThat(broadcastClassName)
-                .isEqualTo("com.mapzen.open.util.NotificationBroadcastReceiver");
+                .isEqualTo("com.mapzen.erasermap.util.NotificationBroadcastReceiver");
     }
 
-    private ShadowNotification getRoutingNotification() {
+    private ShadowNotificationManager getRoutingNotificationManager() {
         NotificationManager manager = (NotificationManager) startActivity.getSystemService(
                 Context.NOTIFICATION_SERVICE);
         ShadowNotificationManager sManager = Shadows.shadowOf(manager);
-        return Shadows.shadowOf(sManager.getAllNotifications().get(0));
+        return sManager;
     }
 
     class TestViewGroup extends ViewGroup {
@@ -302,6 +308,4 @@ public class RouteModeViewTest {
         protected void onLayout(boolean changed, int l, int t, int r, int b) {
         }
     }
-
-
 }

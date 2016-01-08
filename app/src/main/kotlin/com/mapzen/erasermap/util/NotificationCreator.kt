@@ -20,6 +20,7 @@ public class NotificationCreator(private val mainActivity: Activity) {
     private var pendingNotificationIntent: PendingIntent? = null
     private var pendingExitNavigationIntent: PendingIntent? = null
     private val mNotificationManager: NotificationManager
+
     init {
         mNotificationManager = mainActivity.getSystemService(
                 Context.NOTIFICATION_SERVICE) as NotificationManager

@@ -116,7 +116,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
                 routePresenter?.onInstructionSelected(instruction)
             }
         }
-        notificationCreator?.createNewNotification((findViewById(R.id.destination_name) as TextView).text.toString(),
+        notificationCreator?.createNewNotification(
+                (findViewById(R.id.destination_name) as TextView).text.toString(),
                 route?.getCurrentInstruction()?.getHumanTurnInstruction().toString())
     }
 
@@ -139,7 +140,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         (findViewById(R.id.destination_distance) as DistanceView).distanceInMeters =
                 (route?.getRemainingDistanceToDestination() as Int)
         pager?.setOnTouchListener({ view, motionEvent -> onPagerTouch() })
-        notificationCreator?.createNewNotification((findViewById(R.id.destination_name) as TextView).text.toString(),
+        notificationCreator?.createNewNotification(
+                (findViewById(R.id.destination_name) as TextView).text.toString(),
                 route?.getCurrentInstruction()?.getHumanTurnInstruction().toString())
     }
 
@@ -168,7 +170,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
                 return true
             }
         })
-        findViewById(R.id.instruction_route_header).setOnTouchListener(object: View.OnTouchListener {
+        findViewById(R.id.instruction_route_header)
+                .setOnTouchListener(object: View.OnTouchListener {
             override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
                 slideLayout?.isTouchEnabled = true
                 return true

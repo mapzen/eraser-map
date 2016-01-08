@@ -5,13 +5,9 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import com.mapzen.erasermap.model.RouteExitEvent
 import com.mapzen.erasermap.view.MainActivity
-import com.squareup.otto.Bus
 
 public class NotificationBroadcastReceiver : BroadcastReceiver() {
-    public var bus: Bus? = null
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.getBooleanExtra(NotificationCreator.EXIT_NAVIGATION, false)) {

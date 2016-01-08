@@ -3,7 +3,12 @@ package com.mapzen.erasermap.presenter
 import android.location.Location
 import android.util.Log
 import android.view.MotionEvent
-import com.mapzen.erasermap.model.*
+import com.mapzen.erasermap.model.AppSettings
+import com.mapzen.erasermap.model.LocationChangeEvent
+import com.mapzen.erasermap.model.MapzenLocation
+import com.mapzen.erasermap.model.RouteEvent
+import com.mapzen.erasermap.model.RouteManager
+import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
@@ -305,7 +310,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     override fun onMapMotionEvent(): Boolean {
         mainViewController?.rotateCompass()
-        onFindMeButtonClick()
         return true
     }
 
