@@ -84,4 +84,7 @@ public class TestRouteController : RouteViewController {
     override fun hideRouteLine() {
         isRouteLineVisible = false
     }
+
+    override fun playStartInstructionAlert() {
+    }
 }
