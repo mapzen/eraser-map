@@ -22,10 +22,10 @@ public class NotificationBroadcastReceiver : BroadcastReceiver() {
     }
 
     private fun startBaseActivityWithExitExtra(context: Context) {
-        var exitRoutingIntent: Intent? = Intent(context, MainActivity::class.java)
-        exitRoutingIntent?.putExtra(NotificationCreator.EXIT_NAVIGATION, true);
-        exitRoutingIntent?.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK );
-        context.getApplicationContext().startActivity(exitRoutingIntent);
+        val exitRoutingIntent: Intent = Intent(context, MainActivity::class.java)
+        exitRoutingIntent.putExtra(NotificationCreator.EXIT_NAVIGATION, true)
+        exitRoutingIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK )
+        context.getApplicationContext().startActivity(exitRoutingIntent)
     }
 
 

@@ -76,6 +76,11 @@ public class NotificationCreator(private val mainActivity: Activity) {
         builder?.setOngoing(true)
     }
 
+    public fun killNotification() {
+        val notificationManager = mainActivity.getSystemService(Activity.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancelAll()
+    }
+
     companion object {
         val EXIT_NAVIGATION = "exit_navigation"
     }

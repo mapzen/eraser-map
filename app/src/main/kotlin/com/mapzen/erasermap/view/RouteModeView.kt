@@ -122,9 +122,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
                 routePresenter?.onInstructionSelected(instruction)
             }
         }
-        notificationCreator?.createNewNotification(
-                (findViewById(R.id.destination_name) as TextView).text.toString(),
-                route?.getCurrentInstruction()?.getHumanTurnInstruction().toString())
     }
 
     override fun onPageScrollStateChanged(state: Int) {
@@ -146,9 +143,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         (findViewById(R.id.destination_distance) as DistanceView).distanceInMeters =
                 (route?.getRemainingDistanceToDestination() as Int)
         pager?.setOnTouchListener({ view, motionEvent -> onPagerTouch() })
-        notificationCreator?.createNewNotification(
-                (findViewById(R.id.destination_name) as TextView).text.toString(),
-                route?.getCurrentInstruction()?.getHumanTurnInstruction().toString())
     }
 
     private fun onPagerTouch(): Boolean {
@@ -382,6 +376,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     override fun setCurrentInstruction(index: Int) {
         routePresenter?.currentInstructionIndex = index
         pager?.currentItem = index
+        notificationCreator?.createNewNotification(
+                (findViewById(R.id.destination_name) as TextView).text.toString(),
+                route?.getRouteInstructions()?.get(index)?.getHumanTurnInstruction().toString())
     }
 
     override fun setMilestone(index: Int, milestone: RouteEngine.Milestone) {
@@ -434,6 +431,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         findViewById(R.id.resume)?.visibility = View.GONE
         findViewById(R.id.instruction_list)?.visibility = View.GONE
         (findViewById(R.id.sliding_layout) as SlidingUpPanelLayout).shadowHeight = 0
+        notificationCreator?.killNotification()
+
     }
 
     override fun showReroute(location: Location) {
