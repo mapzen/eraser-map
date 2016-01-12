@@ -7,6 +7,7 @@ import com.mapzen.valhalla.Route
 
 public interface MainViewController {
     public fun showSearchResults(features: List<Feature>)
+    public fun addSearchResultsToMap(features: List<Feature>, activeIndex: Int)
     public fun showDirectionList()
     public fun centerOnCurrentFeature(features: List<Feature>)
     public fun showAllSearchResults(features: List<Feature>)

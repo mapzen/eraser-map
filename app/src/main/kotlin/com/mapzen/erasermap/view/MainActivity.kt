@@ -351,7 +351,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun showSearchResults(features: List<Feature>) {
         showSearchResultsPager(features)
-        addSearchResultsToMap(features)
+        addSearchResultsToMap(features, 0)
     }
 
     private fun showSearchResultsPager(features: List<Feature>) {
@@ -368,7 +368,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         pager.onSearchResultsSelectedListener = this
     }
 
-    private fun addSearchResultsToMap(features: List<Feature>) {
+    override fun addSearchResultsToMap(features: List<Feature>, activeIndex: Int) {
         centerOnCurrentFeature(features)
 
         if (searchResults == null) {
@@ -376,14 +376,21 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             Tangram.addDataSource(searchResults);
         }
 
+        var activeFeature: Int = 0
         searchResults?.clear()
         for (feature in features) {
             val simpleFeature = SimpleFeature.fromFeature(feature)
             val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
             val properties = com.mapzen.tangram.Properties()
             properties.add("type", "point");
+            if (activeFeature == activeIndex) {
+                properties.add("state", "active");
+            } else {
+                properties.add("state", "inactive");
+            }
 
             searchResults?.addPoint(properties, lngLat)
+            activeFeature++;
         }
         mapController?.requestRender()
     }

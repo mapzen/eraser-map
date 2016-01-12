@@ -30,6 +30,10 @@ public class TestMainController : MainViewController {
         searchResults = features
     }
 
+    override fun addSearchResultsToMap(features: List<Feature>, activeIndex: Int) {
+        searchResults = features;
+    }
+
     override fun centerOnCurrentFeature(features: List<Feature>) {
         isCenteredOnCurrentFeature = true
     }
