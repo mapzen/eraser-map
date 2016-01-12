@@ -412,7 +412,7 @@ public class MainActivityTest {
     @Test
     public fun onLongClick_shouldSetPresenterFeature() {
         assertThat(activity.presenter!!.currentFeature).isNull()
-        activity.reverseGeolocate(TestHelper.getLongPressMotionEvent())
+        activity.reverseGeolocate(0f, 0f)
         assertThat(activity.presenter!!.currentFeature).isNotNull()
     }
 

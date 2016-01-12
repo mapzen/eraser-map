@@ -33,5 +33,5 @@ public interface MainViewController {
     public fun drawRoute(route: Route)
     public fun clearRoute()
     public fun rotateCompass()
-    public fun reverseGeolocate(event: MotionEvent)
+    public fun reverseGeolocate(screenX: Float, screenY: Float)
 }

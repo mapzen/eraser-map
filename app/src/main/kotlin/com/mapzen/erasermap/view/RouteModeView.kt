@@ -28,6 +28,7 @@ import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapData
 import com.mapzen.tangram.Tangram
+import com.mapzen.tangram.TouchInput
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
@@ -44,8 +45,13 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     var mapController: MapController? = null
         set(value) {
-            value?.setGenericMotionEventListener(View.OnGenericMotionListener {
-                view, event -> onMapMotionEvent(event)
+            value?.setPanResponder(object: TouchInput.PanResponder {
+                override fun onPan(startX: Float, startY: Float, endX: Float, endY: Float): Boolean {
+                    return onMapPan(endX - startX, endY - startY)
+                }
+                override fun onFling(posX: Float, posY: Float, velocityX: Float, velocityY: Float): Boolean {
+                    return false
+                }
             })
 
             field = value
@@ -288,15 +294,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         }
     }
 
-    private fun onMapMotionEvent(motionEvent: MotionEvent): Boolean {
-        val action = motionEvent.action
-        val pointerCount = motionEvent.pointerCount
-        if (motionEvent.historySize > 0) {
-            val deltaX = motionEvent.getHistoricalX(0)
-            val deltaY = motionEvent.getHistoricalY(0)
-            routePresenter?.onMapGesture(action, pointerCount, deltaX, deltaY)
-        }
-
+    private fun onMapPan(deltaX: Float, deltaY: Float): Boolean {
+        routePresenter?.onMapPan(deltaX, deltaY)
         mainPresenter?.onMapMotionEvent()
         return false
     }
