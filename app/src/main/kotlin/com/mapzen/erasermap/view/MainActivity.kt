@@ -41,6 +41,7 @@ import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapData
 import com.mapzen.tangram.MapView
 import com.mapzen.tangram.Tangram
+import com.mapzen.tangram.TouchInput
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
@@ -102,7 +103,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initFindMeButton()
         initCompass()
         initReverseButton()
-        initMapGestureListener()
+        initMapRotateListener()
         presenter?.onCreate()
         presenter?.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -116,9 +117,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         }
     }
 
-    private fun initMapGestureListener() {
-        mapController?.setGenericMotionEventListener(View.OnGenericMotionListener {
-            view, event -> presenter?.onMapMotionEvent() ?: false
+    private fun initMapRotateListener() {
+        mapController?.setRotateResponder(TouchInput.RotateResponder {
+            x, y, rotation -> presenter?.onMapMotionEvent() ?: false
         })
     }
 
@@ -164,8 +165,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun initMapController() {
         val mapView = findViewById(R.id.map) as MapView
         mapController = MapController(this, mapView, "style/eraser-map.yaml")
-        mapController?.setLongPressListener({
-            view, motionEvent -> presenter?.onLongPressMap(motionEvent) ?: false
+        mapController?.setLongPressResponder({
+            x, y -> presenter?.onLongPressMap(x, y)
         })
         mapController?.setHttpHandler(tileHttpHandler)
         mapzenLocation?.mapController = mapController
@@ -406,11 +407,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         }, 100)
     }
 
-    override fun reverseGeolocate(event: MotionEvent) {
+    override fun reverseGeolocate(screenX: Float, screenY: Float) {
         val pelias = Pelias.getPelias()
         pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
-        var coords  = mapController?.coordinatesAtScreenPosition(
-                event.rawX.toDouble(), event.rawY.toDouble())
+        var coords = mapController?.coordinatesAtScreenPosition(screenX.toDouble(), screenY.toDouble())
         presenter?.currentFeature = getGenericLocationFeature(coords?.latitude as Double,
                 coords?.longitude as Double)
         pelias.reverse(coords?.latitude as Double, coords?.longitude as Double,

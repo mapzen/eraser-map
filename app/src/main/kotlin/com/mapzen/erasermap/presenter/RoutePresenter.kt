@@ -16,7 +16,7 @@ public interface RoutePresenter {
     public fun onLocationChanged(location: Location)
     public fun onRouteStart(route: Route?)
     public fun onRouteResume(route: Route?)
-    public fun onMapGesture(action: Int, pointerCount: Int, deltaX: Float, deltaY: Float)
+    public fun onMapPan(deltaX: Float, deltaY: Float)
     public fun onResumeButtonClick()
     public fun onInstructionPagerTouch()
     public fun onInstructionSelected(instruction: Instruction)
