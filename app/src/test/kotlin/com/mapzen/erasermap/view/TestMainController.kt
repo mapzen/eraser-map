@@ -25,6 +25,7 @@ public class TestMainController : MainViewController {
     public var isDirectionListVisible: Boolean = false
     public var isRoutingModeVisible: Boolean = false
     public var isCenteredOnCurrentFeature: Boolean = false
+    public var isCenteredOnTappedFeature: Boolean = false
     public var isReverseGeocodeVisible: Boolean = false
 
     override fun showSearchResults(features: List<Feature>) {
@@ -37,6 +38,10 @@ public class TestMainController : MainViewController {
 
     override fun centerOnCurrentFeature(features: List<Feature>) {
         isCenteredOnCurrentFeature = true
+    }
+
+    override fun centerOnTappedFeature(features: List<Feature>, position: Int) {
+        isCenteredOnTappedFeature = true
     }
 
     override fun hideSearchResults() {
