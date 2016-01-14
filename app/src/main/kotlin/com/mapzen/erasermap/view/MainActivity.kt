@@ -90,6 +90,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     val routePreviewCompass: CompassView by lazy { findViewById(R.id.route_preview_compass_view) as CompassView }
     val routeModeCompass: CompassView by lazy { findViewById(R.id.route_mode_compass_view) as CompassView }
 
+    val mapStyleList: Array<String> = arrayOf(
+        "style/eraser-map.yaml",
+        "refill-style/refill-style.yaml",
+        "skin-and-bones/scene.yaml"
+    )
+    var currentMapStyle : Int = 0
+
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         app = application as EraserMapApplication
@@ -262,6 +269,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             R.id.action_settings -> { onActionSettings(); return true }
             R.id.action_clear -> { onActionClear(); return true }
             R.id.action_view_all -> { onActionViewAll(); return true }
+            R.id.action_restyle -> { onRestyleMap(); return true }
         }
 
         return super.onOptionsItemSelected(item)
@@ -279,6 +287,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun onActionViewAll() {
         presenter?.onViewAllSearchResults()
+    }
+
+    private fun onRestyleMap() {
+        currentMapStyle = (currentMapStyle + 1) % mapStyleList.size
+        val style = mapStyleList[currentMapStyle]
+        mapController?.loadSceneFile(style)
     }
 
     override fun showAllSearchResults(features: List<Feature>) {
