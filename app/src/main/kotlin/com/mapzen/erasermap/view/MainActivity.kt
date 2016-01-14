@@ -76,6 +76,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var optionsMenu: Menu? = null
     var findMe: MapData? = null
     var searchResults: MapData? = null
+    var reverseGeocodeData: MapData? = null
 
     val findMeButton: ImageButton by lazy { findViewById(R.id.find_me) as ImageButton }
     val routePreviewView: RoutePreviewView by lazy { findViewById(R.id.route_preview) as RoutePreviewView }
@@ -415,6 +416,21 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 coords?.longitude as Double)
         pelias.reverse(coords?.latitude as Double, coords?.longitude as Double,
                 ReversePeliasCallback())
+
+        if (reverseGeocodeData == null) {
+            reverseGeocodeData = MapData("search")
+            Tangram.addDataSource(reverseGeocodeData);
+        }
+
+        reverseGeocodeData?.clear()
+
+        val lngLat = LngLat(coords?.longitude as Double, coords?.latitude as Double);
+        val properties = com.mapzen.tangram.Properties()
+        properties.add("type", "point")
+        properties.add("state", "active")
+        reverseGeocodeData?.addPoint(properties, lngLat)
+
+        mapController?.requestRender()
     }
 
     override fun hideSearchResults() {
