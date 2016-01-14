@@ -47,7 +47,7 @@ public class NotificationCreator(private val mainActivity: Activity) {
     }
 
     private fun initNotificationIntent() {
-        notificationIntent = Intent(mainActivity, MainActivity  ::class.java)
+        notificationIntent = Intent(mainActivity, MainActivity::class.java)
         notificationIntent?.setAction(Intent.ACTION_MAIN)
         notificationIntent?.addCategory(Intent.CATEGORY_LAUNCHER)
         notificationIntent?.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)

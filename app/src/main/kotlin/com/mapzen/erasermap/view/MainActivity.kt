@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
@@ -114,6 +113,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override protected fun onNewIntent(intent: Intent?) {
         if (intent?.getBooleanExtra(NotificationCreator.EXIT_NAVIGATION, false) as Boolean) {
             exitNavigation()
+            moveTaskToBack(true);
         }
     }
 
@@ -555,6 +555,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun onBackPressed() {
+        if(findViewById(R.id.route_mode).visibility == View.VISIBLE) {
+            routeModeView.notificationCreator?.killNotification()
+        }
         presenter?.onBackPressed()
     }
 
@@ -632,14 +635,15 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun exitNavigation() {
         initFindMeButton()
         routeModeView.voiceNavigationController?.stop()
-        routeModeView.visibility = View.GONE
+        presenter?.routingEnabled = false
         routeModeView.clearRoute()
         routeModeView.route = null
         routeModeView.hideRouteIcon()
+        routeModeView.visibility = View.GONE
         supportActionBar?.show()
         findViewById(R.id.route_preview).visibility = View.GONE
         presenter?.onExitNavigation()
-
+        mapController?.setPanResponder(null)
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {

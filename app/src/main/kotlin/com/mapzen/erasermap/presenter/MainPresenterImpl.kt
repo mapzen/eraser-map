@@ -301,15 +301,14 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     }
 
     override fun onExitNavigation() {
+        vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
         routingEnabled = false;
         routeManager?.reverse = false
-        vsm.viewState == ViewStateManager.ViewState.DEFAULT
         onFindMeButtonClick()
     }
 
     override fun onMapMotionEvent(): Boolean {
         mainViewController?.rotateCompass()
-        onFindMeButtonClick()
         return false
     }
 
