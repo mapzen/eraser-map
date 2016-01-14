@@ -112,7 +112,15 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     override fun onSearchResultSelected(position: Int) {
         if (searchResults != null) {
+            mainViewController?.addSearchResultsToMap(searchResults?.getFeatures(), position)
             mainViewController?.centerOnCurrentFeature(searchResults?.features)
+        }
+    }
+
+    override fun onSearchResultTapped(position: Int) {
+        if (searchResults != null) {
+            mainViewController?.addSearchResultsToMap(searchResults?.getFeatures(), position)
+            mainViewController?.centerOnTappedFeature(searchResults?.features, position)
         }
     }
 

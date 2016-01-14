@@ -37,6 +37,7 @@ import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
+import com.mapzen.tangram.MapController.FeatureTouchListener
 import com.mapzen.tangram.MapData
 import com.mapzen.tangram.MapView
 import com.mapzen.tangram.Tangram
@@ -160,6 +161,21 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         mapController = MapController(this, mapView, "style/eraser-map.yaml")
         mapController?.setLongPressResponder({
             x, y -> presenter?.onLongPressMap(x, y)
+        })
+        mapController?.setTapResponder(object: TouchInput.TapResponder {
+            override fun onSingleTapUp(x: Float, y: Float): Boolean = false
+            override fun onSingleTapConfirmed(x: Float, y: Float): Boolean {
+                mapController?.pickFeature(x, y)
+                return true
+            }
+        })
+        mapController?.setFeatureTouchListener({
+            properties ->
+                val tapProp = properties.getString("tap")
+                val searchIndexProp = properties.getNumber("searchIndex").toInt()
+                if (tapProp == "search") {
+                    presenter?.onSearchResultTapped(searchIndexProp)
+                }
         })
         mapController?.setHttpHandler(tileHttpHandler)
         mapzenLocation?.mapController = mapController
@@ -351,7 +367,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun showSearchResults(features: List<Feature>) {
         showSearchResultsPager(features)
-        addSearchResultsToMap(features)
+        addSearchResultsToMap(features, 0)
     }
 
     private fun showSearchResultsPager(features: List<Feature>) {
@@ -368,7 +384,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         pager.onSearchResultsSelectedListener = this
     }
 
-    private fun addSearchResultsToMap(features: List<Feature>) {
+    override fun addSearchResultsToMap(features: List<Feature>, activeIndex: Int) {
         centerOnCurrentFeature(features)
 
         if (searchResults == null) {
@@ -376,14 +392,23 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             Tangram.addDataSource(searchResults);
         }
 
+        var featureCount: Int = 0
         searchResults?.clear()
         for (feature in features) {
             val simpleFeature = SimpleFeature.fromFeature(feature)
             val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
             val properties = com.mapzen.tangram.Properties()
+            properties.add("tap", "search")
             properties.add("type", "point");
+            properties.add("searchIndex", featureCount.toDouble());
+            if (featureCount == activeIndex) {
+                properties.add("state", "active");
+            } else {
+                properties.add("state", "inactive");
+            }
 
             searchResults?.addPoint(properties, lngLat)
+            featureCount++;
         }
         mapController?.requestRender()
     }
@@ -393,6 +418,18 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             if(features.size > 0) {
                 val pager = findViewById(R.id.search_results) as SearchResultsView
                 val position = pager.getCurrentItem()
+                val feature = SimpleFeature.fromFeature(features[position])
+                mapController?.setMapPosition(feature.lng(), feature.lat())
+                mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
+            }
+        }, 100)
+    }
+
+    override fun centerOnTappedFeature(features: List<Feature>, position: Int) {
+        Handler().postDelayed({
+            if(features.size > 0) {
+                val pager = findViewById(R.id.search_results) as SearchResultsView
+                pager.setCurrentItem(position)
                 val feature = SimpleFeature.fromFeature(features[position])
                 mapController?.setMapPosition(feature.lng(), feature.lat())
                 mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM

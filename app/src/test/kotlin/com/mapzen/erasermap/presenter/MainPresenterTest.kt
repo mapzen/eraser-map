@@ -209,6 +209,15 @@ public class MainPresenterTest {
         assertThat(mainController.isCenteredOnCurrentFeature).isTrue()
     }
 
+    @Test fun onSearchResultTapped_shouldCenterOnCurrentFeature() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.setFeatures(features)
+        presenter.onSearchResultsAvailable(result)
+        presenter.onSearchResultTapped(0)
+        assertThat(mainController.isCenteredOnTappedFeature).isTrue()
+    }
+
     @Test fun onSlidingPanelOpen_shouldShowRouteDirectionList() {
         presenter.onSlidingPanelOpen()
         assertThat(routeController.isDirectionListVisible).isTrue()
