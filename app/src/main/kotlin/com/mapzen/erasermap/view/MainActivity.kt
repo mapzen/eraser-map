@@ -174,7 +174,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 val tapProp = properties.getString("tap")
                 val searchIndexProp = properties.getNumber("searchIndex").toInt()
                 if (tapProp == "search") {
-                    presenter?.onSearchResultSelected(searchIndexProp)
+                    presenter?.onSearchResultTapped(searchIndexProp)
                 }
         })
         mapController?.setHttpHandler(tileHttpHandler)
@@ -418,6 +418,18 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             if(features.size > 0) {
                 val pager = findViewById(R.id.search_results) as SearchResultsView
                 val position = pager.getCurrentItem()
+                val feature = SimpleFeature.fromFeature(features[position])
+                mapController?.setMapPosition(feature.lng(), feature.lat())
+                mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
+            }
+        }, 100)
+    }
+
+    override fun centerOnTappedFeature(features: List<Feature>, position: Int) {
+        Handler().postDelayed({
+            if(features.size > 0) {
+                val pager = findViewById(R.id.search_results) as SearchResultsView
+                pager.setCurrentItem(position)
                 val feature = SimpleFeature.fromFeature(features[position])
                 mapController?.setMapPosition(feature.lng(), feature.lat())
                 mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
