@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
@@ -25,6 +24,8 @@ import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
+import com.mapzen.erasermap.util.NotificationBroadcastReceiver
+import com.mapzen.erasermap.util.NotificationCreator
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.SimpleFeature
@@ -111,6 +112,16 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         routeModeView.voiceNavigationController = VoiceNavigationController(this)
     }
 
+    override protected fun onNewIntent(intent: Intent?) {
+        if (intent?.getBooleanExtra(NotificationCreator.EXIT_NAVIGATION, false) as Boolean) {
+            exitNavigation()
+            if((intent?.getBooleanExtra(NotificationBroadcastReceiver.VISIBILITY, false)
+                    as Boolean).not()) {
+                moveTaskToBack(true);
+            }
+        }
+    }
+
     private fun initMapRotateListener() {
         mapController?.setRotateResponder(TouchInput.RotateResponder {
             x, y, rotation -> presenter?.onMapMotionEvent() ?: false
@@ -134,11 +145,14 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override public fun onResume() {
         super.onResume()
         presenter?.onResume()
+        app?.onActivityResume()
+
     }
 
     override public fun onPause() {
         super.onPause()
         presenter?.onPause()
+        app?.onActivityPause()
     }
 
     override public fun onStop() {
@@ -571,6 +585,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun onBackPressed() {
+        if(findViewById(R.id.route_mode).visibility == View.VISIBLE) {
+            routeModeView.notificationCreator?.killNotification()
+        }
         presenter?.onBackPressed()
     }
 
@@ -627,6 +644,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         routeModeView.mainPresenter = presenter
         routeModeView.mapController = mapController
         presenter?.routeViewController = routeModeView
+        routeModeView.voiceNavigationController = VoiceNavigationController(this)
+        routeModeView.notificationCreator = NotificationCreator(this)
     }
 
     override fun hideRoutingMode() {
@@ -641,6 +660,20 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         supportActionBar?.hide()
         routeModeView.route = null
         routeModeView.hideRouteIcon()
+    }
+
+    private fun exitNavigation() {
+        initFindMeButton()
+        routeModeView.voiceNavigationController?.stop()
+        presenter?.routingEnabled = false
+        routeModeView.clearRoute()
+        routeModeView.route = null
+        routeModeView.hideRouteIcon()
+        routeModeView.visibility = View.GONE
+        supportActionBar?.show()
+        findViewById(R.id.route_preview).visibility = View.GONE
+        presenter?.onExitNavigation()
+        mapController?.setPanResponder(null)
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {

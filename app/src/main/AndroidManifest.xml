@@ -12,12 +12,14 @@
 
     <application
         android:name=".EraserMapApplication"
+        android:launchMode="singleInstance"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
             android:name=".view.MainActivity"
+            android:launchMode="singleInstance"
             android:label="@string/app_name" />
         <activity
             android:name=".view.SearchResultsListActivity"
@@ -32,13 +34,13 @@
             android:name=".view.InitActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
-
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
 
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
     </activity>
-</application>
+        <receiver android:name=".util.NotificationBroadcastReceiver"/>
+    </application>
 
 </manifest>

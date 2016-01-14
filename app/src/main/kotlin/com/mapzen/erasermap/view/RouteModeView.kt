@@ -21,6 +21,7 @@ import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.presenter.RoutePresenter
 import com.mapzen.erasermap.util.DisplayHelper
+import com.mapzen.erasermap.util.NotificationCreator
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
@@ -64,6 +65,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     var panelListener: SlidingUpPanelLayout.PanelSlideListener? = null
     var mainPresenter: MainPresenter? = null
     var voiceNavigationController: VoiceNavigationController? = null
+    var notificationCreator: NotificationCreator? = null
     var routePresenter: RoutePresenter? = null
         @Inject set
     var settings: AppSettings? = null
@@ -168,7 +170,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
                 return true
             }
         })
-        findViewById(R.id.instruction_route_header).setOnTouchListener(object: View.OnTouchListener {
+        findViewById(R.id.instruction_route_header)
+                .setOnTouchListener(object: View.OnTouchListener {
             override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
                 slideLayout?.isTouchEnabled = true
                 return true
@@ -373,6 +376,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     override fun setCurrentInstruction(index: Int) {
         routePresenter?.currentInstructionIndex = index
         pager?.currentItem = index
+        notificationCreator?.createNewNotification(
+                (findViewById(R.id.destination_name) as TextView).text.toString(),
+                route?.getRouteInstructions()?.get(index)?.getHumanTurnInstruction().toString())
     }
 
     override fun setMilestone(index: Int, milestone: RouteEngine.Milestone) {
@@ -425,6 +431,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         findViewById(R.id.resume)?.visibility = View.GONE
         findViewById(R.id.instruction_list)?.visibility = View.GONE
         (findViewById(R.id.sliding_layout) as SlidingUpPanelLayout).shadowHeight = 0
+        notificationCreator?.killNotification()
+
     }
 
     override fun showReroute(location: Location) {
