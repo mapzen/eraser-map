@@ -53,6 +53,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     }
 
     override fun onReverseGeocodeResultsAvailable(searchResults: Result?) {
+        vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
         var features = ArrayList<Feature>()
         this.searchResults = searchResults
         if(searchResults?.features?.isEmpty() as Boolean) {
@@ -152,6 +153,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     private fun onBackPressedStateSearchResults() {
         vsm.viewState = ViewStateManager.ViewState.DEFAULT
         mainViewController?.collapseSearchView()
+        mainViewController?.hideReverseGeolocateResult()
         mainViewController?.hideSearchResults()
     }
 
