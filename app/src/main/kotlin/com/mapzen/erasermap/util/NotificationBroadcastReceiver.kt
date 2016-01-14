@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.view.MainActivity
 
 public class NotificationBroadcastReceiver : BroadcastReceiver() {
@@ -24,9 +25,14 @@ public class NotificationBroadcastReceiver : BroadcastReceiver() {
     private fun startBaseActivityWithExitExtra(context: Context) {
         val exitRoutingIntent: Intent = Intent(context, MainActivity::class.java)
         exitRoutingIntent.putExtra(NotificationCreator.EXIT_NAVIGATION, true)
+        exitRoutingIntent.putExtra(VISIBILITY, (context.applicationContext as EraserMapApplication)
+                .getApplicationVisibility())
         exitRoutingIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK )
         context.getApplicationContext().startActivity(exitRoutingIntent)
     }
 
+    companion object {
+        val VISIBILITY = "visibility"
+    }
 
 }

@@ -24,6 +24,7 @@ import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
+import com.mapzen.erasermap.util.NotificationBroadcastReceiver
 import com.mapzen.erasermap.util.NotificationCreator
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
@@ -113,7 +114,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override protected fun onNewIntent(intent: Intent?) {
         if (intent?.getBooleanExtra(NotificationCreator.EXIT_NAVIGATION, false) as Boolean) {
             exitNavigation()
-            moveTaskToBack(true);
+            if((intent?.getBooleanExtra(NotificationBroadcastReceiver.VISIBILITY, false)
+                    as Boolean).not()) {
+                moveTaskToBack(true);
+            }
         }
     }
 
@@ -140,11 +144,14 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override public fun onResume() {
         super.onResume()
         presenter?.onResume()
+        app?.onActivityResume()
+
     }
 
     override public fun onPause() {
         super.onPause()
         presenter?.onPause()
+        app?.onActivityPause()
     }
 
     override public fun onStop() {
