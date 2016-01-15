@@ -384,7 +384,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         pager.onSearchResultsSelectedListener = this
 
         if (reverseGeocodeData == null) {
-            reverseGeocodeData = MapData("search")
+            reverseGeocodeData = MapData("reverse_geocode")
             Tangram.addDataSource(reverseGeocodeData);
         }
 
