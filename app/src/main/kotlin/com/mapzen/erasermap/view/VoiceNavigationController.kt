@@ -56,6 +56,10 @@ public class VoiceNavigationController(val activity: Activity) {
         play(instruction.getVerbalTransitionAlertInstruction())
     }
 
+    public fun stop() {
+        speakerbox.stop()
+    }
+
     public fun playPre(instruction: Instruction): Unit =
             play(instruction.getVerbalPreTransitionInstruction())
 

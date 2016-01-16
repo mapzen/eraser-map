@@ -7,6 +7,7 @@ import com.mapzen.valhalla.Route
 
 public class TestMainController : MainViewController {
     public var searchResults: List<Feature>? = null
+    public var reverseGeoCodeResults: List<Feature>? = null
     public var location: Location? = null
     public var zoom: Float = 0f
     public var tilt: Float = 0f
@@ -24,6 +25,7 @@ public class TestMainController : MainViewController {
     public var isDirectionListVisible: Boolean = false
     public var isRoutingModeVisible: Boolean = false
     public var isCenteredOnCurrentFeature: Boolean = false
+    public var isCenteredOnTappedFeature: Boolean = false
     public var isReverseGeocodeVisible: Boolean = false
 
     override fun showSearchResults(features: List<Feature>) {
@@ -38,8 +40,16 @@ public class TestMainController : MainViewController {
         isCenteredOnCurrentFeature = true
     }
 
+    override fun centerOnTappedFeature(features: List<Feature>, position: Int) {
+        isCenteredOnTappedFeature = true
+    }
+
     override fun hideSearchResults() {
         searchResults = null
+    }
+
+    override fun hideReverseGeolocateResult() {
+        reverseGeoCodeResults = null
     }
 
     override fun showProgress() {
@@ -123,6 +133,7 @@ public class TestMainController : MainViewController {
 
     override fun showReverseGeocodeFeature(features: List<Feature>) {
         isReverseGeocodeVisible = true
+        reverseGeoCodeResults = features;
     }
 
     override fun drawRoute(route: Route) {

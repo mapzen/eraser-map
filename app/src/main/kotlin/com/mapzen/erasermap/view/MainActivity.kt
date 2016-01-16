@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
@@ -25,6 +24,8 @@ import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
+import com.mapzen.erasermap.util.NotificationBroadcastReceiver
+import com.mapzen.erasermap.util.NotificationCreator
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.SimpleFeature
@@ -37,6 +38,7 @@ import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
+import com.mapzen.tangram.MapController.FeatureTouchListener
 import com.mapzen.tangram.MapData
 import com.mapzen.tangram.MapView
 import com.mapzen.tangram.Tangram
@@ -76,6 +78,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var optionsMenu: Menu? = null
     var findMe: MapData? = null
     var searchResults: MapData? = null
+    var reverseGeocodeData: MapData? = null
 
     val findMeButton: ImageButton by lazy { findViewById(R.id.find_me) as ImageButton }
     val routePreviewView: RoutePreviewView by lazy { findViewById(R.id.route_preview) as RoutePreviewView }
@@ -110,6 +113,16 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         routeModeView.voiceNavigationController = VoiceNavigationController(this)
     }
 
+    override protected fun onNewIntent(intent: Intent?) {
+        if (intent?.getBooleanExtra(NotificationCreator.EXIT_NAVIGATION, false) as Boolean) {
+            exitNavigation()
+            if((intent?.getBooleanExtra(NotificationBroadcastReceiver.VISIBILITY, false)
+                    as Boolean).not()) {
+                moveTaskToBack(true);
+            }
+        }
+    }
+
     private fun initMapRotateListener() {
         mapController?.setRotateResponder(TouchInput.RotateResponder {
             x, y, rotation -> presenter?.onMapMotionEvent() ?: false
@@ -133,11 +146,14 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override public fun onResume() {
         super.onResume()
         presenter?.onResume()
+        app?.onActivityResume()
+
     }
 
     override public fun onPause() {
         super.onPause()
         presenter?.onPause()
+        app?.onActivityPause()
     }
 
     override public fun onStop() {
@@ -160,6 +176,21 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         mapController = MapController(this, mapView, "style/eraser-map.yaml")
         mapController?.setLongPressResponder({
             x, y -> presenter?.onLongPressMap(x, y)
+        })
+        mapController?.setTapResponder(object: TouchInput.TapResponder {
+            override fun onSingleTapUp(x: Float, y: Float): Boolean = false
+            override fun onSingleTapConfirmed(x: Float, y: Float): Boolean {
+                mapController?.pickFeature(x, y)
+                return true
+            }
+        })
+        mapController?.setFeatureTouchListener({
+            properties ->
+                val tapProp = properties.getString("tap")
+                val searchIndexProp = properties.getNumber("searchIndex").toInt()
+                if (tapProp == "search") {
+                    presenter?.onSearchResultTapped(searchIndexProp)
+                }
         })
         mapController?.setHttpHandler(tileHttpHandler)
         mapzenLocation?.mapController = mapController
@@ -352,6 +383,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun showSearchResults(features: List<Feature>) {
         showSearchResultsPager(features)
         addSearchResultsToMap(features, 0)
+        hideReverseGeolocateResult()
     }
 
     private fun showSearchResultsPager(features: List<Feature>) {
@@ -366,6 +398,22 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         pager.setAdapter(SearchResultsAdapter(this, features.subList(0, 1)))
         pager.visibility = View.VISIBLE
         pager.onSearchResultsSelectedListener = this
+
+        if (reverseGeocodeData == null) {
+            reverseGeocodeData = MapData("reverse_geocode")
+            Tangram.addDataSource(reverseGeocodeData);
+        }
+
+        reverseGeocodeData?.clear()
+
+        val simpleFeature = SimpleFeature.fromFeature(features.get(0))
+        val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
+        val properties = com.mapzen.tangram.Properties()
+        properties.add("type", "point")
+        properties.add("state", "active")
+        reverseGeocodeData?.addPoint(properties, lngLat)
+
+        mapController?.requestRender()
     }
 
     override fun addSearchResultsToMap(features: List<Feature>, activeIndex: Int) {
@@ -376,21 +424,23 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             Tangram.addDataSource(searchResults);
         }
 
-        var activeFeature: Int = 0
+        var featureCount: Int = 0
         searchResults?.clear()
         for (feature in features) {
             val simpleFeature = SimpleFeature.fromFeature(feature)
             val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
             val properties = com.mapzen.tangram.Properties()
+            properties.add("tap", "search")
             properties.add("type", "point");
-            if (activeFeature == activeIndex) {
+            properties.add("searchIndex", featureCount.toDouble());
+            if (featureCount == activeIndex) {
                 properties.add("state", "active");
             } else {
                 properties.add("state", "inactive");
             }
 
             searchResults?.addPoint(properties, lngLat)
-            activeFeature++;
+            featureCount++;
         }
         mapController?.requestRender()
     }
@@ -407,6 +457,18 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         }, 100)
     }
 
+    override fun centerOnTappedFeature(features: List<Feature>, position: Int) {
+        Handler().postDelayed({
+            if(features.size > 0) {
+                val pager = findViewById(R.id.search_results) as SearchResultsView
+                pager.setCurrentItem(position)
+                val feature = SimpleFeature.fromFeature(features[position])
+                mapController?.setMapPosition(feature.lng(), feature.lat())
+                mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
+            }
+        }, 100)
+    }
+
     override fun reverseGeolocate(screenX: Float, screenY: Float) {
         val pelias = Pelias.getPelias()
         pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
@@ -415,6 +477,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 coords?.longitude as Double)
         pelias.reverse(coords?.latitude as Double, coords?.longitude as Double,
                 ReversePeliasCallback())
+    }
+
+    override fun hideReverseGeolocateResult() {
+        reverseGeocodeData?.clear()
     }
 
     override fun hideSearchResults() {
@@ -555,6 +621,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun onBackPressed() {
+        if(findViewById(R.id.route_mode).visibility == View.VISIBLE) {
+            routeModeView.notificationCreator?.killNotification()
+        }
         presenter?.onBackPressed()
     }
 
@@ -611,6 +680,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         routeModeView.mainPresenter = presenter
         routeModeView.mapController = mapController
         presenter?.routeViewController = routeModeView
+        routeModeView.voiceNavigationController = VoiceNavigationController(this)
+        routeModeView.notificationCreator = NotificationCreator(this)
     }
 
     override fun hideRoutingMode() {
@@ -625,6 +696,21 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         supportActionBar?.hide()
         routeModeView.route = null
         routeModeView.hideRouteIcon()
+        hideReverseGeolocateResult()
+    }
+
+    private fun exitNavigation() {
+        initFindMeButton()
+        routeModeView.voiceNavigationController?.stop()
+        presenter?.routingEnabled = false
+        routeModeView.clearRoute()
+        routeModeView.route = null
+        routeModeView.hideRouteIcon()
+        routeModeView.visibility = View.GONE
+        supportActionBar?.show()
+        findViewById(R.id.route_preview).visibility = View.GONE
+        presenter?.onExitNavigation()
+        mapController?.setPanResponder(null)
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {

@@ -26,6 +26,7 @@ public class EraserMapApplication extends Application {
     }
 
     private ApplicationComponent component;
+    private boolean isVisible = true;
 
     @Override
     public void onCreate() {
@@ -33,6 +34,18 @@ public class EraserMapApplication extends Application {
         component = DaggerEraserMapApplication_ApplicationComponent.builder()
                 .androidModule(new AndroidModule(this))
                 .build();
+    }
+
+    public void onActivityResume() {
+        isVisible = true;
+    }
+
+    public void onActivityPause() {
+        isVisible = false;
+    }
+
+    public boolean getApplicationVisibility() {
+        return isVisible;
     }
 
     public ApplicationComponent component() {

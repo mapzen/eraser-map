@@ -53,6 +53,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     }
 
     override fun onReverseGeocodeResultsAvailable(searchResults: Result?) {
+        vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
         var features = ArrayList<Feature>()
         this.searchResults = searchResults
         if(searchResults?.features?.isEmpty() as Boolean) {
@@ -117,6 +118,13 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         }
     }
 
+    override fun onSearchResultTapped(position: Int) {
+        if (searchResults != null) {
+            mainViewController?.addSearchResultsToMap(searchResults?.getFeatures(), position)
+            mainViewController?.centerOnTappedFeature(searchResults?.features, position)
+        }
+    }
+
     override fun onViewAllSearchResults() {
         mainViewController?.showAllSearchResults(searchResults?.features)
     }
@@ -152,6 +160,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     private fun onBackPressedStateSearchResults() {
         vsm.viewState = ViewStateManager.ViewState.DEFAULT
         mainViewController?.collapseSearchView()
+        mainViewController?.hideReverseGeolocateResult()
         mainViewController?.hideSearchResults()
     }
 
@@ -299,6 +308,13 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         if (feature is Feature) {
             mainViewController?.resumeRoutingMode(feature)
         }
+    }
+
+    override fun onExitNavigation() {
+        vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
+        routingEnabled = false;
+        routeManager?.reverse = false
+        onFindMeButtonClick()
     }
 
     override fun onMapMotionEvent(): Boolean {
