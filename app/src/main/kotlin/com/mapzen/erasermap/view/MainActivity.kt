@@ -367,6 +367,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun showSearchResults(features: List<Feature>) {
         showSearchResultsPager(features)
         addSearchResultsToMap(features, 0)
+        hideReverseGeolocateResult()
     }
 
     private fun showSearchResultsPager(features: List<Feature>) {
@@ -381,6 +382,22 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         pager.setAdapter(SearchResultsAdapter(this, features.subList(0, 1)))
         pager.visibility = View.VISIBLE
         pager.onSearchResultsSelectedListener = this
+
+        if (reverseGeocodeData == null) {
+            reverseGeocodeData = MapData("reverse_geocode")
+            Tangram.addDataSource(reverseGeocodeData);
+        }
+
+        reverseGeocodeData?.clear()
+
+        val simpleFeature = SimpleFeature.fromFeature(features.get(0))
+        val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
+        val properties = com.mapzen.tangram.Properties()
+        properties.add("type", "point")
+        properties.add("state", "active")
+        reverseGeocodeData?.addPoint(properties, lngLat)
+
+        mapController?.requestRender()
     }
 
     override fun addSearchResultsToMap(features: List<Feature>, activeIndex: Int) {
@@ -430,21 +447,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 coords?.longitude as Double)
         pelias.reverse(coords?.latitude as Double, coords?.longitude as Double,
                 ReversePeliasCallback())
+    }
 
-        if (reverseGeocodeData == null) {
-            reverseGeocodeData = MapData("search")
-            Tangram.addDataSource(reverseGeocodeData);
-        }
-
+    override fun hideReverseGeolocateResult() {
         reverseGeocodeData?.clear()
-
-        val lngLat = LngLat(coords?.longitude as Double, coords?.latitude as Double);
-        val properties = com.mapzen.tangram.Properties()
-        properties.add("type", "point")
-        properties.add("state", "active")
-        reverseGeocodeData?.addPoint(properties, lngLat)
-
-        mapController?.requestRender()
     }
 
     override fun hideSearchResults() {
@@ -660,6 +666,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         supportActionBar?.hide()
         routeModeView.route = null
         routeModeView.hideRouteIcon()
+        hideReverseGeolocateResult()
     }
 
     private fun exitNavigation() {
