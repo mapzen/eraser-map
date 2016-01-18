@@ -40,7 +40,7 @@ public class TestMainController : MainViewController {
         isCenteredOnCurrentFeature = true
     }
 
-    override fun centerOnTappedFeature(features: List<Feature>, position: Int) {
+    override fun centerOnFeature(features: List<Feature>, position: Int) {
         isCenteredOnTappedFeature = true
     }
 

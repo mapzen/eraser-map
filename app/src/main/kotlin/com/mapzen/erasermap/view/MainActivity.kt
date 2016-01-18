@@ -451,18 +451,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun centerOnCurrentFeature(features: List<Feature>) {
-        Handler().postDelayed({
-            if(features.size > 0) {
-                val pager = findViewById(R.id.search_results) as SearchResultsView
-                val position = pager.getCurrentItem()
-                val feature = SimpleFeature.fromFeature(features[position])
-                mapController?.setMapPosition(feature.lng(), feature.lat())
-                mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
-            }
-        }, 100)
+        val pager = findViewById(R.id.search_results) as SearchResultsView
+        centerOnFeature(features, pager.getCurrentItem())
     }
 
-    override fun centerOnTappedFeature(features: List<Feature>, position: Int) {
+    override fun centerOnFeature(features: List<Feature>, position: Int) {
         Handler().postDelayed({
             if(features.size > 0) {
                 val pager = findViewById(R.id.search_results) as SearchResultsView
