@@ -322,7 +322,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         return false
     }
 
-    override fun onLongPressMap(screenX: Float, screenY: Float): Boolean {
+    override fun onReverseGeoRequested(screenX: Float, screenY: Float): Boolean {
         if (vsm.viewState == ViewStateManager.ViewState.ROUTE_PREVIEW
                 || vsm.viewState == ViewStateManager.ViewState.ROUTING
                 || vsm.viewState == ViewStateManager.ViewState.ROUTE_DIRECTION_LIST) {

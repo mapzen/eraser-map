@@ -78,7 +78,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var findMe: MapData? = null
     var searchResults: MapData? = null
     var reverseGeocodeData: MapData? = null
-    var poiTapLngLat: LngLat? = null
+    var poiTapPoint: FloatArray? = null
 
     val findMeButton: ImageButton by lazy { findViewById(R.id.find_me) as ImageButton }
     val routePreviewView: RoutePreviewView by lazy { findViewById(R.id.route_preview) as RoutePreviewView }
@@ -175,12 +175,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val mapView = findViewById(R.id.map) as MapView
         mapController = MapController(this, mapView, "style/eraser-map.yaml")
         mapController?.setLongPressResponder({
-            x, y -> presenter?.onLongPressMap(x, y)
+            x, y -> presenter?.onReverseGeoRequested(x, y)
         })
         mapController?.setTapResponder(object: TouchInput.TapResponder {
             override fun onSingleTapUp(x: Float, y: Float): Boolean = false
             override fun onSingleTapConfirmed(x: Float, y: Float): Boolean {
-                poiTapLngLat = mapController?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
+                poiTapPoint = floatArrayOf(x, y)
                 mapController?.pickFeature(x, y)
                 return true
             }
@@ -192,12 +192,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 if (tapProp == "search") {
                     presenter?.onSearchResultTapped(searchIndexProp)
                 } else {
-                    val pelias = Pelias.getPelias()
-                    pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
-                    presenter?.currentFeature = getGenericLocationFeature(poiTapLngLat?.latitude as Double,
-                            poiTapLngLat?.longitude as Double)
-                    pelias.reverse(poiTapLngLat?.latitude as Double, poiTapLngLat?.longitude as Double,
-                            ReversePeliasCallback())
+                    if (poiTapPoint != null) {
+                        presenter?.onReverseGeoRequested(poiTapPoint?.get(0) as Float, poiTapPoint?.get(1) as Float)
+                    }
                 }
         })
         mapController?.setHttpHandler(tileHttpHandler)
