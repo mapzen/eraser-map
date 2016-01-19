@@ -209,6 +209,15 @@ public class MainPresenterTest {
         assertThat(mainController.isCenteredOnCurrentFeature).isTrue()
     }
 
+    @Test fun onSearchResultTapped_shouldCenterOnCurrentFeature() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.setFeatures(features)
+        presenter.onSearchResultsAvailable(result)
+        presenter.onSearchResultTapped(0)
+        assertThat(mainController.isCenteredOnTappedFeature).isTrue()
+    }
+
     @Test fun onSlidingPanelOpen_shouldShowRouteDirectionList() {
         presenter.onSlidingPanelOpen()
         assertThat(routeController.isDirectionListVisible).isTrue()
@@ -344,22 +353,22 @@ public class MainPresenterTest {
         assertThat(mainController.rotation).isEqualTo(0f)
     }
 
-    @Test fun onLongPressMap_shouldReverseGeolocate() {
-        presenter.onLongPressMap(0f, 0f)
+    @Test fun onReverseGeoRequested_shouldReverseGeolocate() {
+        presenter.onReverseGeoRequested(0f, 0f)
         assertThat(mainController.reverseGeolocatePoint).isNotNull()
     }
 
-    @Test fun onLongPressMap_shouldNotReverseGeolocateWhileRouting() {
+    @Test fun onReverseGeoRequested_shouldNotReverseGeolocateWhileRouting() {
         presenter.vsm.viewState = ROUTE_PREVIEW
-        presenter.onLongPressMap(0f, 0f)
+        presenter.onReverseGeoRequested(0f, 0f)
         assertThat(mainController.reverseGeolocatePoint).isNull()
 
         presenter.vsm.viewState = ROUTING
-        presenter.onLongPressMap(0f, 0f)
+        presenter.onReverseGeoRequested(0f, 0f)
         assertThat(mainController.reverseGeolocatePoint).isNull()
 
         presenter.vsm.viewState = ROUTE_DIRECTION_LIST
-        presenter.onLongPressMap(0f, 0f)
+        presenter.onReverseGeoRequested(0f, 0f)
         assertThat(mainController.reverseGeolocatePoint).isNull()
     }
 

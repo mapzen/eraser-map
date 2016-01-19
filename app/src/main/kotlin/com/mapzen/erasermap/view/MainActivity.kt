@@ -54,6 +54,15 @@ import javax.inject.Inject
 public class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         SearchResultsView.OnSearchResultSelectedListener {
 
+    companion object {
+        @JvmStatic val MAP_DATA_PROP_TAP = "tap";
+        @JvmStatic val MAP_DATA_PROP_TAP_SEARCH = "search"
+        @JvmStatic val MAP_DATA_PROP_SEARCHINDEX = "searchIndex"
+        @JvmStatic val MAP_DATA_PROP_STATE = "state"
+        @JvmStatic val MAP_DATA_PROP_STATE_ACTIVE = "active"
+        @JvmStatic val MAP_DATA_PROP_STATE_INACTIVE = "inactive"
+    }
+
     public val requestCodeSearchResults: Int = 0x01
 
     var savedSearch: SavedSearch? = null
@@ -78,6 +87,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var findMe: MapData? = null
     var searchResults: MapData? = null
     var reverseGeocodeData: MapData? = null
+    var poiTapPoint: FloatArray? = null
 
     val findMeButton: ImageButton by lazy { findViewById(R.id.find_me) as ImageButton }
     val routePreviewView: RoutePreviewView by lazy { findViewById(R.id.route_preview) as RoutePreviewView }
@@ -174,7 +184,27 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val mapView = findViewById(R.id.map) as MapView
         mapController = MapController(this, mapView, "style/eraser-map.yaml")
         mapController?.setLongPressResponder({
-            x, y -> presenter?.onLongPressMap(x, y)
+            x, y -> presenter?.onReverseGeoRequested(x, y)
+        })
+        mapController?.setTapResponder(object: TouchInput.TapResponder {
+            override fun onSingleTapUp(x: Float, y: Float): Boolean = false
+            override fun onSingleTapConfirmed(x: Float, y: Float): Boolean {
+                poiTapPoint = floatArrayOf(x, y)
+                mapController?.pickFeature(x, y)
+                return true
+            }
+        })
+        mapController?.setFeatureTouchListener({
+            properties ->
+                val tapProp = properties.getString(MAP_DATA_PROP_TAP)
+                val searchIndexProp = properties.getNumber(MAP_DATA_PROP_SEARCHINDEX).toInt()
+                if (tapProp == MAP_DATA_PROP_TAP_SEARCH) {
+                    presenter?.onSearchResultTapped(searchIndexProp)
+                } else {
+                    if (poiTapPoint != null) {
+                        presenter?.onReverseGeoRequested(poiTapPoint?.get(0) as Float, poiTapPoint?.get(1) as Float)
+                    }
+                }
         })
         mapController?.setHttpHandler(tileHttpHandler)
         mapzenLocation?.mapController = mapController
@@ -218,7 +248,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun showCurrentLocation(location: Location) {
         val currentLocation = LngLat(location.longitude, location.latitude)
         val properties = com.mapzen.tangram.Properties()
-        properties.add("type", "point");
 
         findMe?.clear()
         findMe?.addPoint(properties, currentLocation)
@@ -393,8 +422,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val simpleFeature = SimpleFeature.fromFeature(features.get(0))
         val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
         val properties = com.mapzen.tangram.Properties()
-        properties.add("type", "point")
-        properties.add("state", "active")
+        properties.add(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
         reverseGeocodeData?.addPoint(properties, lngLat)
 
         mapController?.requestRender()
@@ -408,30 +436,36 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             Tangram.addDataSource(searchResults);
         }
 
-        var activeFeature: Int = 0
+        var featureCount: Int = 0
         searchResults?.clear()
         for (feature in features) {
             val simpleFeature = SimpleFeature.fromFeature(feature)
             val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
             val properties = com.mapzen.tangram.Properties()
-            properties.add("type", "point");
-            if (activeFeature == activeIndex) {
-                properties.add("state", "active");
+            properties.add(MAP_DATA_PROP_TAP, MAP_DATA_PROP_TAP_SEARCH)
+            properties.add(MAP_DATA_PROP_SEARCHINDEX, featureCount.toDouble());
+            if (featureCount == activeIndex) {
+                properties.add(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
             } else {
-                properties.add("state", "inactive");
+                properties.add(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_INACTIVE);
             }
 
             searchResults?.addPoint(properties, lngLat)
-            activeFeature++;
+            featureCount++;
         }
         mapController?.requestRender()
     }
 
     override fun centerOnCurrentFeature(features: List<Feature>) {
+        val pager = findViewById(R.id.search_results) as SearchResultsView
+        centerOnFeature(features, pager.getCurrentItem())
+    }
+
+    override fun centerOnFeature(features: List<Feature>, position: Int) {
         Handler().postDelayed({
             if(features.size > 0) {
                 val pager = findViewById(R.id.search_results) as SearchResultsView
-                val position = pager.getCurrentItem()
+                pager.setCurrentItem(position)
                 val feature = SimpleFeature.fromFeature(features[position])
                 mapController?.setMapPosition(feature.lng(), feature.lat())
                 mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
