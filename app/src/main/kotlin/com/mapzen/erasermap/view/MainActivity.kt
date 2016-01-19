@@ -394,9 +394,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showSearchResults(features: List<Feature>) {
+        hideReverseGeolocateResult()
         showSearchResultsPager(features)
         addSearchResultsToMap(features, 0)
-        hideReverseGeolocateResult()
     }
 
     private fun showSearchResultsPager(features: List<Feature>) {
