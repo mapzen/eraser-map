@@ -30,6 +30,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     override var currentSearchTerm: String? = null
 
     private var searchResults: Result? = null
+    private var reverseGeocodeResults: Result? = null
     private var destination: Feature? = null
     private var initialized = false
 
@@ -52,23 +53,23 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         }
     }
 
-    override fun onReverseGeocodeResultsAvailable(searchResults: Result?) {
+    override fun onReverseGeocodeResultsAvailable(reverseGeocodeResults: Result?) {
         vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
         var features = ArrayList<Feature>()
-        this.searchResults = searchResults
-        if(searchResults?.features?.isEmpty() as Boolean) {
+        this.reverseGeocodeResults = reverseGeocodeResults
+        if(reverseGeocodeResults?.features?.isEmpty() as Boolean) {
             val current = currentFeature
             if (current is Feature) {
                 features.add(current)
             }
             mainViewController?.showReverseGeocodeFeature(features)
-            searchResults?.setFeatures(features)
+            reverseGeocodeResults?.setFeatures(features)
         } else {
-            val current = searchResults?.features?.get(0)
+            val current = reverseGeocodeResults?.features?.get(0)
             if (current is Feature) {
                 features.add(current)
             }
-            searchResults?.features = features
+            reverseGeocodeResults?.features = features
             mainViewController?.showReverseGeocodeFeature(features)
         }
     }
