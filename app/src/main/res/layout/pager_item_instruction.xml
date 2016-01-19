@@ -11,15 +11,6 @@
         android:gravity="center_vertical"
         android:paddingRight="@dimen/instruction_padding">
 
-        <ImageButton
-            android:id="@+id/left_arrow"
-            android:src="@drawable/ic_left_arrow"
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingLeft="@dimen/instruction_padding"
-            android:background="@android:color/transparent" />
-
         <ImageView
             android:id="@+id/icon"
             android:layout_width="24dp"
@@ -27,7 +18,7 @@
             android:layout_above="@+id/distance"
             android:gravity="center_vertical"
             android:paddingLeft="@dimen/instruction_padding"
-            android:layout_toRightOf="@id/left_arrow"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"/>
 
         <com.mapzen.erasermap.view.DistanceView
@@ -39,7 +30,7 @@
             android:textStyle="bold"
             android:textColor="@color/brown"
             android:paddingLeft="@dimen/instruction_padding"
-            android:layout_toRightOf="@id/left_arrow"
+            android:layout_alignParentLeft="true"
             android:layout_marginBottom="@dimen/instruction_padding"
             android:layout_alignParentBottom="true" />
     </RelativeLayout>
@@ -51,24 +42,13 @@
         android:layout_weight="1"
         android:layout_toRightOf="@id/turn_container">
 
-        <ImageButton
-            android:id="@+id/right_arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:src="@drawable/ic_right_arrow"
-            android:paddingLeft="@dimen/instruction_padding"
-            android:paddingRight="@dimen/instruction_padding"
-            android:background="@android:color/transparent" />
-
         <TextView
             android:id="@+id/instruction_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            android:layout_toLeftOf="@id/right_arrow"
+            android:layout_alignParentRight="true"
             android:gravity="center"
             android:maxLines="2"
             android:fontFamily="sans-serif-condensed"

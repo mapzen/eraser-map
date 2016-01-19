@@ -31,7 +31,6 @@ import android.os.Build;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -120,15 +119,6 @@ public class RouteModeViewTest {
                 .getBackground();
         int expectedColor = application.getResources().getColor(R.color.you_have_arrived);
         assertThat(background.getColor()).isEqualTo(expectedColor);
-    }
-
-    @Test
-    public void firstPagerView_shouldNotHaveLeftArrow() throws Exception {
-        View view = (View) adapter.instantiateItem(viewGroup, 0);
-        ImageButton leftArrow = (ImageButton) view.findViewById(R.id.left_arrow);
-        ImageButton rightArrow = (ImageButton) view.findViewById(R.id.right_arrow);
-        assertThat(leftArrow.getVisibility()).isNotEqualTo(View.VISIBLE);
-        assertThat(rightArrow.getVisibility()).isEqualTo(View.VISIBLE);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP) @Test

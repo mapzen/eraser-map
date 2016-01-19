@@ -25,13 +25,6 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
         distance.distanceInMeters = instruction.distance
         title.text = instruction.getName()
         icon.setImageResource(iconId)
-        if (position == 0) {
-            view.findViewById(R.id.left_arrow).visibility = View.INVISIBLE
-        }
-        if (position == count - 1) {
-            view.findViewById(R.id.right_arrow).visibility = View.INVISIBLE
-        }
-        initArrowOnClickListeners(view, position)
         setTagId(view, position)
         container?.addView(view)
         return view
@@ -43,15 +36,6 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
 
     private fun setTagId(view: View, position: Int) {
         view.tag = RouteModeView.VIEW_TAG + position
-    }
-
-    private fun initArrowOnClickListeners(view: View, position: Int) {
-        view.findViewById(R.id.right_arrow).setOnClickListener({
-            pager.pageForward(position)
-        })
-        view.findViewById(R.id.left_arrow).setOnClickListener({
-            pager.pageBackwards(position)
-        })
     }
 
     public fun setBackgroundColorActive(view: View?) {
