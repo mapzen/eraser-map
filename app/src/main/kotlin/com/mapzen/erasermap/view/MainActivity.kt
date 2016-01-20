@@ -194,6 +194,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 return true
             }
         })
+        mapController?.setDoubleTapResponder({
+            x, y -> mapController?.setMapZoom( (mapController?.mapZoom as Float) + 1.0f, 1.0f)
+            true;
+        })
         mapController?.setFeatureTouchListener({
             properties ->
                 val tapProp = properties.getString(MAP_DATA_PROP_TAP)
