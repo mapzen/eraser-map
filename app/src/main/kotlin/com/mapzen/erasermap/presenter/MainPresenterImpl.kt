@@ -32,6 +32,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     private var searchResults: Result? = null
     private var destination: Feature? = null
     private var initialized = false
+    private var reverseGeo = false
 
     init {
         bus.register(this)
@@ -39,6 +40,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     override fun onSearchResultsAvailable(searchResults: Result?) {
         vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
+        reverseGeo = false
         this.searchResults = searchResults
         mainViewController?.showSearchResults(searchResults?.getFeatures())
         mainViewController?.hideProgress()
@@ -100,7 +102,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             vsm.viewState = ViewStateManager.ViewState.DEFAULT
         }
 
-        searchResults = null
         mainViewController?.hideSearchResults()
         mainViewController?.showOverflowMenu()
         mainViewController?.hideActionViewAll()
@@ -134,6 +135,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         destination = event.destination
         mainViewController?.collapseSearchView()
         mainViewController?.hideSearchResults()
+        mainViewController?.hideReverseGeolocateResult()
         generateRoutePreview()
     }
 
@@ -154,6 +156,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     private fun onBackPressedStateSearch() {
         vsm.viewState = ViewStateManager.ViewState.DEFAULT
+        searchResults = null
         mainViewController?.collapseSearchView()
     }
 
@@ -168,6 +171,13 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
         mainViewController?.hideRoutePreview()
         mainViewController?.clearRoute()
+        if (searchResults != null) {
+            if (reverseGeo) {
+                mainViewController?.showReverseGeocodeFeature(searchResults?.getFeatures())
+            } else {
+                mainViewController?.showSearchResults(searchResults?.getFeatures())
+            }
+        }
     }
 
     private fun onBackPressedStateRouting() {
@@ -323,13 +333,11 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     }
 
     override fun onReverseGeoRequested(screenX: Float, screenY: Float): Boolean {
-        if (vsm.viewState == ViewStateManager.ViewState.ROUTE_PREVIEW
-                || vsm.viewState == ViewStateManager.ViewState.ROUTING
-                || vsm.viewState == ViewStateManager.ViewState.ROUTE_DIRECTION_LIST) {
-            return false
+        if (reverseGeo || vsm.viewState == ViewStateManager.ViewState.DEFAULT) {
+            mainViewController?.reverseGeolocate(screenX, screenY)
+            reverseGeo = true
+            return true
         }
-
-        mainViewController?.reverseGeolocate(screenX, screenY)
-        return true
+        return false
     }
 }
