@@ -117,7 +117,7 @@ public class RouteModeViewTest {
         adapter.setBackgroundColorArrived(view);
         ColorDrawable background = (ColorDrawable) view.findViewById(R.id.pager_item_instruction)
                 .getBackground();
-        int expectedColor = application.getResources().getColor(R.color.you_have_arrived);
+        int expectedColor = application.getResources().getColor(R.color.light_gray);
         assertThat(background.getColor()).isEqualTo(expectedColor);
     }
 

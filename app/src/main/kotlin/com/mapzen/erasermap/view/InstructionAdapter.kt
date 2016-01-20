@@ -47,7 +47,7 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
     }
 
     public fun setBackgroundColorArrived(view: View?) {
-        view?.setBackgroundColor(context.resources.getColor(R.color.you_have_arrived))
+        view?.setBackgroundColor(context.resources.getColor(R.color.light_gray))
     }
 
     override fun isViewFromObject(view: View?, `object`: Any?): Boolean {
