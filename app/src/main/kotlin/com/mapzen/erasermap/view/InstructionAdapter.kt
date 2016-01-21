@@ -20,8 +20,8 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
         val title = view.findViewById(R.id.instruction_text) as TextView
         val distance = view.findViewById(R.id.distance) as DistanceView
         val icon = view.findViewById(R.id.icon) as ImageView
-        var iconId: Int = DisplayHelper.getRouteDrawableLarge(context,
-                instruction.getIntegerInstruction())
+        val turn = instruction.getIntegerInstruction()
+        val iconId: Int = DisplayHelper.getRouteDrawable(context, turn, true)
         distance.distanceInMeters = instruction.distance
         title.text = instruction.getName()
         icon.setImageResource(iconId)
