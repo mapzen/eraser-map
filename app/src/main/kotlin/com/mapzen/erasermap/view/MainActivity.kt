@@ -664,6 +664,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun startRoutingMode(feature: Feature) {
         showRoutingMode(feature)
         routeModeView.startRoute(feature, routeManager?.route)
+        setRoutingCamera()
     }
 
     override fun resumeRoutingMode(feature: Feature) {
@@ -673,6 +674,14 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             drawRoute(route)
         }
         routeModeView.resumeRoute(feature, routeManager?.route)
+    }
+
+    private fun setRoutingCamera() {
+        mapController?.setMapCameraType(MapController.CameraType.PERSPECTIVE)
+    }
+
+    private fun setDefaultCamera() {
+        mapController?.setMapCameraType(MapController.CameraType.ISOMETRIC)
     }
 
     private fun showRoutingMode(feature: Feature) {
@@ -689,6 +698,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun hideRoutingMode() {
+        setDefaultCamera()
         initFindMeButton()
         presenter?.routingEnabled = false
         routeModeView.visibility = View.GONE
