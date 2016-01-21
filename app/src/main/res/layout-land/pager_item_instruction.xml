@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pager_item_instruction"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:background="@color/light_gray"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="8dp"
+        android:layout_weight="0.3">
+
+        <com.mapzen.erasermap.view.DistanceView
+            android:id="@+id/distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:textSize="@dimen/font_big_2"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_toLeftOf="@id/distance"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:layout_gravity="center_vertical"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/instruction_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="16dp"
+        android:layout_weight="0.7"
+        android:gravity="center_horizontal"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textSize="@dimen/font_big_2" />
+
+</LinearLayout>
