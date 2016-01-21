@@ -20,18 +20,11 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
         val title = view.findViewById(R.id.instruction_text) as TextView
         val distance = view.findViewById(R.id.distance) as DistanceView
         val icon = view.findViewById(R.id.icon) as ImageView
-        var iconId: Int = DisplayHelper.getRouteDrawable(context,
-                instruction.getIntegerInstruction())
+        val turn = instruction.getIntegerInstruction()
+        val iconId: Int = DisplayHelper.getRouteDrawable(context, turn, true)
         distance.distanceInMeters = instruction.distance
         title.text = instruction.getName()
         icon.setImageResource(iconId)
-        if (position == 0) {
-            view.findViewById(R.id.left_arrow).visibility = View.INVISIBLE
-        }
-        if (position == count - 1) {
-            view.findViewById(R.id.right_arrow).visibility = View.INVISIBLE
-        }
-        initArrowOnClickListeners(view, position)
         setTagId(view, position)
         container?.addView(view)
         return view
@@ -45,15 +38,6 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
         view.tag = RouteModeView.VIEW_TAG + position
     }
 
-    private fun initArrowOnClickListeners(view: View, position: Int) {
-        view.findViewById(R.id.right_arrow).setOnClickListener({
-            pager.pageForward(position)
-        })
-        view.findViewById(R.id.left_arrow).setOnClickListener({
-            pager.pageBackwards(position)
-        })
-    }
-
     public fun setBackgroundColorActive(view: View?) {
         view?.setBackgroundColor(context.resources.getColor(android.R.color.white))
     }
@@ -63,7 +47,7 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
     }
 
     public fun setBackgroundColorArrived(view: View?) {
-        view?.setBackgroundColor(context.resources.getColor(R.color.you_have_arrived))
+        view?.setBackgroundColor(context.resources.getColor(R.color.light_gray))
     }
 
     override fun isViewFromObject(view: View?, `object`: Any?): Boolean {
