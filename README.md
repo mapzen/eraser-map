@@ -9,6 +9,10 @@ $ git submodule init && git submodule update
 $ ./gradlew
 ```
 
+## Beta Builds
+
+Beta builds (which have Splunk MINT Crash Reporting enabled) are available from here: http://android.mapzen.com/erasermap/
+
 ## Importing project into Android Studio
 1. Open Android Studio and choose _File > Import project..._ and select project root folder
 2. Install [Kotlin Plugin for Android Studio](https://plugins.jetbrains.com/plugin/6954?pr=androidstudio)
