@@ -15,6 +15,7 @@ public interface MainViewController {
     public fun hideSearchResults()
     public fun hideReverseGeolocateResult()
     public fun showReverseGeocodeFeature(features: List<Feature>)
+    public fun showPlaceSearchFeature(features: List<Feature>)
     public fun showProgress()
     public fun hideProgress()
     public fun showOverflowMenu()
@@ -37,4 +38,6 @@ public interface MainViewController {
     public fun clearRoute()
     public fun rotateCompass()
     public fun reverseGeolocate(screenX: Float, screenY: Float)
+    public fun placeSearch(gid: String)
+    public fun emptyPlaceSearch()
 }

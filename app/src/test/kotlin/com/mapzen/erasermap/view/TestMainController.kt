@@ -16,6 +16,7 @@ public class TestMainController : MainViewController {
     public var queryText: String = ""
     public var puckPosition: Location? = null
     public var reverseGeolocatePoint: PointF? = null
+    public var placeSearchPoint: PointF? = null
 
     public var isProgressVisible: Boolean = false
     public var isOverflowVisible: Boolean = false
@@ -149,5 +150,9 @@ public class TestMainController : MainViewController {
 
     override fun reverseGeolocate(screenX: Float, screenY: Float) {
         reverseGeolocatePoint = PointF(screenX, screenY)
+    }
+
+    override fun placeSearch(gid: String) {
+        placeSearchPoint = PointF(0.0f, 0.0f)
     }
 }

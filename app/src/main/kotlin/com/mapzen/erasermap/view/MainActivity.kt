@@ -56,12 +56,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         SearchResultsView.OnSearchResultSelectedListener {
 
     companion object {
-        @JvmStatic val MAP_DATA_PROP_TAP = "tap";
-        @JvmStatic val MAP_DATA_PROP_TAP_SEARCH = "search"
         @JvmStatic val MAP_DATA_PROP_SEARCHINDEX = "searchIndex"
         @JvmStatic val MAP_DATA_PROP_STATE = "state"
         @JvmStatic val MAP_DATA_PROP_STATE_ACTIVE = "active"
         @JvmStatic val MAP_DATA_PROP_STATE_INACTIVE = "inactive"
+        @JvmStatic val MAP_DATA_PROP_ID = "id"
     }
 
     public val requestCodeSearchResults: Int = 0x01
@@ -210,14 +209,21 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             true;
         })
         mapController?.setFeatureTouchListener({
-            properties ->
-                val tapProp = properties.getString(MAP_DATA_PROP_TAP)
-                val searchIndexProp = properties.getNumber(MAP_DATA_PROP_SEARCHINDEX).toInt()
-                if (tapProp == MAP_DATA_PROP_TAP_SEARCH) {
-                    presenter?.onSearchResultTapped(searchIndexProp)
+            properties, position ->
+                // Reassign tapPoint to center of the feature tapped
+                // Also used in placing the pin
+                poiTapPoint = floatArrayOf(position[0].toFloat(), position[1].toFloat())
+                if (properties.contains(MAP_DATA_PROP_SEARCHINDEX)) {
+                    val searchIndex = properties.getNumber(MAP_DATA_PROP_SEARCHINDEX).toInt()
+                    presenter?.onSearchResultTapped(searchIndex)
                 } else {
-                    if (poiTapPoint != null) {
-                        presenter?.onReverseGeoRequested(poiTapPoint?.get(0) as Float, poiTapPoint?.get(1) as Float)
+                    if (properties.contains(MAP_DATA_PROP_ID)) {
+                        val featureID = properties.getNumber(MAP_DATA_PROP_ID).toLong()
+                        presenter?.onPlaceSearchRequested("osm:venue:$featureID")
+                    } else {
+                        if (poiTapPoint != null) {
+                            presenter?.onReverseGeoRequested(poiTapPoint?.get(0) as Float, poiTapPoint?.get(1) as Float)
+                        }
                     }
                 }
         })
@@ -408,6 +414,19 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         }
     }
 
+    inner class PlaceCallback : Callback<Result> {
+        private val TAG: String = "PlaceCallback"
+
+        override fun success(result: Result?, response: Response?) {
+            presenter?.onPlaceSearchResultsAvailable(result)
+        }
+
+        override fun failure(error: RetrofitError?) {
+            hideProgress()
+            Log.e(TAG, "Error fetching place search results: " + error?.message)
+        }
+    }
+
     override fun showSearchResults(features: List<Feature>) {
         hideReverseGeolocateResult()
         showSearchResultsPager(features)
@@ -434,13 +453,25 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         reverseGeocodeData?.clear()
 
-        val simpleFeature = SimpleFeature.fromFeature(features.get(0))
-        val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
+        var lngLat: LngLat?
+
+        if (poiTapPoint == null) {
+            val simpleFeature = SimpleFeature.fromFeature(features.get(0))
+            lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
+        } else {
+            val point = poiTapPoint
+            lngLat = mapController?.coordinatesAtScreenPosition(point!![0].toDouble(), point!![1].toDouble())
+        }
         val properties = com.mapzen.tangram.Properties()
         properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
         reverseGeocodeData?.addPoint(properties, lngLat)
 
         mapController?.requestRender()
+        poiTapPoint = null
+    }
+
+    override fun showPlaceSearchFeature(features: List<Feature>) {
+        showReverseGeocodeFeature(features)
     }
 
     override fun addSearchResultsToMap(features: List<Feature>, activeIndex: Int) {
@@ -457,7 +488,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             val simpleFeature = SimpleFeature.fromFeature(feature)
             val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
             val properties = com.mapzen.tangram.Properties()
-            properties.set(MAP_DATA_PROP_TAP, MAP_DATA_PROP_TAP_SEARCH)
             properties.set(MAP_DATA_PROP_SEARCHINDEX, featureCount.toDouble());
             if (featureCount == activeIndex) {
                 properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
@@ -485,6 +515,18 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
             }
         }, 100)
+    }
+
+    override fun placeSearch(gid: String) {
+        val pelias = Pelias.getPelias()
+        pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
+        pelias?.place(gid, (PlaceCallback()))
+    }
+
+    override fun emptyPlaceSearch() {
+        if (poiTapPoint != null) {
+            presenter?.onReverseGeoRequested(poiTapPoint?.get(0) as Float, poiTapPoint?.get(1) as Float)
+        }
     }
 
     override fun reverseGeolocate(screenX: Float, screenY: Float) {

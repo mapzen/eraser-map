@@ -75,6 +75,22 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         }
     }
 
+    override fun onPlaceSearchResultsAvailable(searchResults: Result?) {
+        vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
+        var features = ArrayList<Feature>()
+        this.searchResults = searchResults
+        if(searchResults?.features?.isEmpty() as Boolean) {
+            mainViewController?.emptyPlaceSearch()
+        } else {
+            val current = searchResults?.features?.get(0)
+            if (current is Feature) {
+                features.add(current)
+            }
+            searchResults?.features = features
+            mainViewController?.showPlaceSearchFeature(features)
+        }
+    }
+
     override fun onRestoreViewState() {
         if (destination != null) {
             if(routingEnabled) {
@@ -335,6 +351,15 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     override fun onReverseGeoRequested(screenX: Float, screenY: Float): Boolean {
         if (reverseGeo || vsm.viewState == ViewStateManager.ViewState.DEFAULT) {
             mainViewController?.reverseGeolocate(screenX, screenY)
+            reverseGeo = true
+            return true
+        }
+        return false
+    }
+
+    override fun onPlaceSearchRequested(gid: String): Boolean {
+        if (reverseGeo || vsm.viewState == ViewStateManager.ViewState.DEFAULT) {
+            mainViewController?.placeSearch(gid)
             reverseGeo = true
             return true
         }

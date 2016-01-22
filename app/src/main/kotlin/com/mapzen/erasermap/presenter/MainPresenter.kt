@@ -23,6 +23,7 @@ public interface MainPresenter {
 
     public fun onSearchResultsAvailable(result: Result?)
     public fun onReverseGeocodeResultsAvailable(searchResults: Result?)
+    public fun onPlaceSearchResultsAvailable(searchResults: Result?)
     public fun onSearchResultSelected(position: Int)
     public fun onSearchResultTapped(position: Int)
     public fun onExpandSearchView()
@@ -44,5 +45,6 @@ public interface MainPresenter {
     public fun onReroute(location: Location)
     public fun onMapMotionEvent(): Boolean
     public fun onReverseGeoRequested(screenX: Float, screenY: Float): Boolean
+    public fun onPlaceSearchRequested(gid: String): Boolean
     public fun onExitNavigation()
 }
