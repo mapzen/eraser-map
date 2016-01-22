@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.view
 
 import android.content.Intent
+import android.graphics.Point
 import android.location.Location
 import android.os.Bundle
 import android.os.Handler
@@ -87,6 +88,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var findMe: MapData? = null
     var searchResults: MapData? = null
     var reverseGeocodeData: MapData? = null
+    var startPin: MapData? = null
+    var endPin: MapData? = null
     var poiTapPoint: FloatArray? = null
 
     val findMeButton: ImageButton by lazy { findViewById(R.id.find_me) as ImageButton }
@@ -127,7 +130,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             exitNavigation()
             if((intent?.getBooleanExtra(NotificationBroadcastReceiver.VISIBILITY, false)
                     as Boolean).not()) {
-                moveTaskToBack(true);
+                moveTaskToBack(true)
             }
         }
     }
@@ -230,7 +233,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun initFindMeButton() {
         findMe = MapData("find_me")
-        Tangram.addDataSource(findMe);
+        Tangram.addDataSource(findMe)
         findMeButton.visibility = View.VISIBLE
         findMeButton.setOnClickListener({ presenter?.onFindMeButtonClick() })
     }
@@ -426,7 +429,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         if (reverseGeocodeData == null) {
             reverseGeocodeData = MapData("reverse_geocode")
-            Tangram.addDataSource(reverseGeocodeData);
+            Tangram.addDataSource(reverseGeocodeData)
         }
 
         reverseGeocodeData?.clear()
@@ -445,7 +448,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         if (searchResults == null) {
             searchResults = MapData("search")
-            Tangram.addDataSource(searchResults);
+            Tangram.addDataSource(searchResults)
         }
 
         var featureCount: Int = 0
@@ -461,9 +464,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             } else {
                 properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_INACTIVE);
             }
-
             searchResults?.addPoint(properties, lngLat)
-            featureCount++;
+            featureCount++
         }
         mapController?.requestRender()
     }
@@ -576,11 +578,54 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             if (routeModeView.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
                 routePreviewView.visibility = View.VISIBLE
+                zoomToShowRoute(route)
             }
         })
         updateRoutePreview()
         routeModeView.drawRoute(route)
         hideProgress()
+    }
+
+    private fun zoomToShowRoute(route: Route) {
+        //Get size of display For calculations
+        var mdisp = getWindowManager().getDefaultDisplay()
+        var mdispSize = Point()
+        mdisp.getSize(mdispSize)
+        var width = mdispSize.y
+
+        var geometry = route?.getGeometry()
+        var start = geometry?.get(0)
+        var finish = geometry?.get(geometry.size - 1)
+        var distance = finish?.distanceTo(start)
+
+        var equatorCircumfrence: Double = 40075.16
+
+        var lat: Double = (finish?.latitude  + start?.latitude) / 2.0
+        var lon: Double = (finish?.longitude + start?.longitude) / 2.0
+        mapController?.setMapPosition(lon, lat)
+
+        var numPixelsRequired = distance?.toFloat() / width.toFloat()
+        var zoomLevel = Math.log(((equatorCircumfrence * Math.abs(Math.cos(lat)))
+                / (numPixelsRequired?.toDouble()))) / Math.log(2.0)
+
+        setMapRotation(0f)
+        setMapTilt(0.0f)
+        mapController?.setMapZoom(zoomLevel.toFloat() * .8f)
+
+        if (startPin == null) {
+            startPin = MapData("route_start")
+            Tangram.addDataSource(startPin)
+        }
+
+        if (endPin == null) {
+            endPin = MapData("route_stop")
+            Tangram.addDataSource(endPin)
+        }
+
+        val properties = com.mapzen.tangram.Properties()
+        startPin?.addPoint(properties, LngLat(start.longitude, start.latitude))
+        endPin?.addPoint(properties, LngLat(finish.longitude, finish.latitude))
+        mapController?.requestRender()
     }
 
     override fun failure(statusCode: Int) {
@@ -593,6 +638,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             supportActionBar?.show()
             routeManager?.reverse = false
             findViewById(R.id.route_preview).visibility = View.GONE
+            hideStartPins()
         }
     }
 
@@ -677,6 +723,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         showRoutingMode(feature)
         routeModeView.startRoute(feature, routeManager?.route)
         setRoutingCamera()
+        hideStartPins()
     }
 
     override fun resumeRoutingMode(feature: Feature) {
@@ -761,5 +808,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         findMe?.clear()
         findMe = null
         findViewById(R.id.find_me).visibility = View.GONE
+    }
+
+    private fun hideStartPins() {
+        startPin?.clear()
+        endPin?.clear()
+        startPin = null
+        endPin = null
     }
 }
