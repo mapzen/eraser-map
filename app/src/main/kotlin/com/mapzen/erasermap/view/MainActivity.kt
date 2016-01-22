@@ -194,6 +194,18 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 return true
             }
         })
+        mapController?.setDoubleTapResponder({ x, y ->
+            val tappedPos = mapController?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
+            val currentPos = mapController?.mapPosition
+            if (tappedPos != null && currentPos != null) {
+                mapController?.setMapZoom((mapController?.mapZoom as Float) + 1.0f, 0.5f)
+                mapController?.setMapPosition(
+                        0.5f * (tappedPos.longitude + currentPos.longitude),
+                        0.5f * (tappedPos.latitude + currentPos.latitude),
+                        0.5f);
+            }
+            true;
+        })
         mapController?.setFeatureTouchListener({
             properties ->
                 val tapProp = properties.getString(MAP_DATA_PROP_TAP)
