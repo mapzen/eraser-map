@@ -239,7 +239,7 @@ public class MainActivityTest {
         activity.showRoutePreview(getTestLocation(), getTestFeature())
         activity.success(TestRoute())
         Robolectric.flushForegroundThreadScheduler()
-        assertThat(activity.mapController!!.getMapZoom()).isEqualTo(0.5499235)
+        assertThat(activity.mapController!!.getMapZoom()).isEqualTo(0.5499235f)
     }
 
     @Test
