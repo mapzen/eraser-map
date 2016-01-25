@@ -811,6 +811,19 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         hideReverseGeolocateResult()
     }
 
+    override fun overridePlaceFeaturePosition(feature: Feature) {
+        if (poiTapPoint != null) {
+            val geometry = Geometry()
+            val coordinates = ArrayList<Double>()
+            var coords = mapController?.coordinatesAtScreenPosition(
+                    poiTapPoint?.get(0)!!.toDouble(), poiTapPoint?.get(1)!!.toDouble())
+            coordinates.add(coords!!.longitude)
+            coordinates.add(coords!!.latitude)
+            geometry.coordinates = coordinates
+            feature.geometry = geometry
+        }
+    }
+
     private fun exitNavigation() {
         initFindMeButton()
         routeModeView.voiceNavigationController?.stop()

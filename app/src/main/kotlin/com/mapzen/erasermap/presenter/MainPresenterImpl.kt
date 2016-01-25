@@ -85,6 +85,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             val current = searchResults?.features?.get(0)
             if (current is Feature) {
                 features.add(current)
+                mainViewController?.overridePlaceFeaturePosition(features?.get(0))
             }
             searchResults?.features = features
             mainViewController?.showPlaceSearchFeature(features)

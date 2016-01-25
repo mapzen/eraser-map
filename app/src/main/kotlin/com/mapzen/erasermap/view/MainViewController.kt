@@ -40,4 +40,5 @@ public interface MainViewController {
     public fun reverseGeolocate(screenX: Float, screenY: Float)
     public fun placeSearch(gid: String)
     public fun emptyPlaceSearch()
+    public fun overridePlaceFeaturePosition(feature: Feature)
 }
