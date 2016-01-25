@@ -209,10 +209,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             true;
         })
         mapController?.setFeatureTouchListener({
-            properties, position ->
+            properties, positionX, positionY ->
                 // Reassign tapPoint to center of the feature tapped
                 // Also used in placing the pin
-                poiTapPoint = floatArrayOf(position[0].toFloat(), position[1].toFloat())
+                poiTapPoint = floatArrayOf(positionX, positionY)
                 if (properties.contains(MAP_DATA_PROP_SEARCHINDEX)) {
                     val searchIndex = properties.getNumber(MAP_DATA_PROP_SEARCHINDEX).toInt()
                     presenter?.onSearchResultTapped(searchIndex)
