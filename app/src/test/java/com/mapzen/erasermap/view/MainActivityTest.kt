@@ -236,7 +236,7 @@ public class MainActivityTest {
     @Test
     public fun showRoutePreview_shouldClearPreviousRouteLine() {
         val properties = com.mapzen.tangram.Properties()
-        properties.add("type", "line");
+        properties.set("type", "line");
         val old = ArrayList<LngLat>()
         old.add(LngLat())
         activity.routeModeView.drawRoute(TestRoute())

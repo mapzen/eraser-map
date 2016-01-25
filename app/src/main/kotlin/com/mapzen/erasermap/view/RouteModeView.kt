@@ -318,7 +318,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         }
 
         val properties = com.mapzen.tangram.Properties()
-        properties.add("type", "point");
+        properties.set("type", "point");
 
         routeIcon?.clearData()
         routeIcon?.addPoint(properties, LngLat(location.longitude, location.latitude))
@@ -487,7 +487,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     public fun drawRoute(route: Route) {
         val properties = com.mapzen.tangram.Properties()
-        properties.add("type", "line");
+        properties.set("type", "line");
         val geometry: ArrayList<Location>? = route.getGeometry()
         val mapGeometry: ArrayList<LngLat> = ArrayList()
         if (geometry is ArrayList<Location>) {

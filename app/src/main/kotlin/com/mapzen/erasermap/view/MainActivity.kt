@@ -434,7 +434,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val simpleFeature = SimpleFeature.fromFeature(features.get(0))
         val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
         val properties = com.mapzen.tangram.Properties()
-        properties.add(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
+        properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
         reverseGeocodeData?.addPoint(properties, lngLat)
 
         mapController?.requestRender()
@@ -454,12 +454,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             val simpleFeature = SimpleFeature.fromFeature(feature)
             val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
             val properties = com.mapzen.tangram.Properties()
-            properties.add(MAP_DATA_PROP_TAP, MAP_DATA_PROP_TAP_SEARCH)
-            properties.add(MAP_DATA_PROP_SEARCHINDEX, featureCount.toDouble());
+            properties.set(MAP_DATA_PROP_TAP, MAP_DATA_PROP_TAP_SEARCH)
+            properties.set(MAP_DATA_PROP_SEARCHINDEX, featureCount.toDouble());
             if (featureCount == activeIndex) {
-                properties.add(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
+                properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
             } else {
-                properties.add(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_INACTIVE);
+                properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_INACTIVE);
             }
 
             searchResults?.addPoint(properties, lngLat)
