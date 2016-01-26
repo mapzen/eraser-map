@@ -245,7 +245,7 @@ public class MainActivityTest {
     @Test
     public fun showRoutePreview_shouldClearPreviousRouteLine() {
         val properties = com.mapzen.tangram.Properties()
-        properties.add("type", "line")
+        properties.set("type", "line")
         val old = ArrayList<LngLat>()
         old.add(LngLat())
         activity.routeModeView.drawRoute(TestRoute())
@@ -341,13 +341,13 @@ public class MainActivityTest {
         activity.success(TestRoute())
         Robolectric.flushForegroundThreadScheduler()
         val shadowStartPin = ShadowExtractor.extract(activity.startPin) as ShadowMapData
-        val shadowEndPin = ShadowExtractor.extract(activity.startPin) as ShadowMapData
+        val shadowEndPin = ShadowExtractor.extract(activity.endPin) as ShadowMapData
         assertThat(ShadowTangram.dataSources).contains(activity.startPin)
         assertThat(ShadowTangram.dataSources).contains(activity.endPin)
-        assertThat(shadowEndPin.points.get(0).latitude).isEqualTo(32.774799)
-        assertThat(shadowEndPin.points.get(0).longitude).isEqualTo(117.071869)
         assertThat(shadowStartPin.points.get(0).latitude).isEqualTo(40.748817)
         assertThat(shadowStartPin.points.get(0).longitude).isEqualTo(-73.985428)
+        assertThat(shadowEndPin.points.get(0).latitude).isEqualTo(32.774799)
+        assertThat(shadowEndPin.points.get(0).longitude).isEqualTo(117.071869)
         activity.hideRoutePreview()
         assertThat(shadowEndPin.points).isEmpty()
         assertThat(shadowStartPin.points).isEmpty()
