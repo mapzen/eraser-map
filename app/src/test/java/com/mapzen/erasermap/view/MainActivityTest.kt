@@ -2,6 +2,7 @@ package com.mapzen.erasermap.view
 
 import android.content.ComponentName
 import android.content.Context.LOCATION_SERVICE
+import android.location.Location
 import android.location.LocationManager
 import android.preference.PreferenceManager
 import android.support.v7.widget.SearchView
@@ -234,9 +235,17 @@ public class MainActivityTest {
     }
 
     @Test
+    public fun showRoutePreview_shouldSetProperMapZoom() {
+        activity.showRoutePreview(getTestLocation(), getTestFeature())
+        activity.success(TestRoute())
+        Robolectric.flushForegroundThreadScheduler()
+        assertThat(activity.mapController!!.getMapZoom()).isEqualTo(0.5499235f)
+    }
+
+    @Test
     public fun showRoutePreview_shouldClearPreviousRouteLine() {
         val properties = com.mapzen.tangram.Properties()
-        properties.set("type", "line");
+        properties.set("type", "line")
         val old = ArrayList<LngLat>()
         old.add(LngLat())
         activity.routeModeView.drawRoute(TestRoute())
@@ -245,6 +254,23 @@ public class MainActivityTest {
         Robolectric.flushForegroundThreadScheduler()
         val new = ShadowTangram.dataSources[0]
         assertThat(old).isNotSameAs(new)
+    }
+
+    @Test
+    public fun showRoutePreview_shouldAddStartandEndPins() {
+        activity.showRoutePreview(getTestLocation(), getTestFeature())
+        activity.success(TestRoute())
+        Robolectric.flushForegroundThreadScheduler()
+        val shadowStartPin = ShadowExtractor.extract(activity.startPin) as ShadowMapData
+        val shadowEndPin = ShadowExtractor.extract(activity.endPin) as ShadowMapData
+        assertThat(shadowEndPin.points).isNotNull()
+        assertThat(shadowStartPin.points).isNotNull()
+        assertThat(ShadowTangram.dataSources).contains(activity.startPin)
+        assertThat(ShadowTangram.dataSources).contains(activity.endPin)
+        assertThat(shadowEndPin.points.get(0).latitude).isEqualTo(32.774799)
+        assertThat(shadowEndPin.points.get(0).longitude).isEqualTo(117.071869)
+        assertThat(shadowStartPin.points.get(0).latitude).isEqualTo(40.748817)
+        assertThat(shadowStartPin.points.get(0).longitude).isEqualTo(-73.985428)
     }
 
     @Test
@@ -307,6 +333,24 @@ public class MainActivityTest {
         activity.findViewById(R.id.route_preview).setVisibility(VISIBLE)
         activity.hideRoutePreview()
         assertThat(activity.findViewById(R.id.route_preview).getVisibility()).isEqualTo(GONE)
+    }
+
+    @Test
+    public fun hideRoutePreview_shouldClearStartandEndPins() {
+        activity.showRoutePreview(getTestLocation(), getTestFeature())
+        activity.success(TestRoute())
+        Robolectric.flushForegroundThreadScheduler()
+        val shadowStartPin = ShadowExtractor.extract(activity.startPin) as ShadowMapData
+        val shadowEndPin = ShadowExtractor.extract(activity.endPin) as ShadowMapData
+        assertThat(ShadowTangram.dataSources).contains(activity.startPin)
+        assertThat(ShadowTangram.dataSources).contains(activity.endPin)
+        assertThat(shadowStartPin.points.get(0).latitude).isEqualTo(40.748817)
+        assertThat(shadowStartPin.points.get(0).longitude).isEqualTo(-73.985428)
+        assertThat(shadowEndPin.points.get(0).latitude).isEqualTo(32.774799)
+        assertThat(shadowEndPin.points.get(0).longitude).isEqualTo(117.071869)
+        activity.hideRoutePreview()
+        assertThat(shadowEndPin.points).isEmpty()
+        assertThat(shadowStartPin.points).isEmpty()
     }
 
     @Test
@@ -461,11 +505,20 @@ public class MainActivityTest {
 
     private class TestRoute : Route(JSONObject()) {
         override fun getTotalDistance(): Int {
-            return 0;
+            return 0
         }
 
         override fun getTotalTime(): Int {
-            return 0;
+            return 0
+        }
+
+        override fun getGeometry(): ArrayList<Location> {
+            var geometry = ArrayList<Location>()
+            var loc1 = getTestLocation(-73.985428,40.748817)
+            var loc2 = getTestLocation(117.071869,32.774799)
+            geometry.add(loc1)
+            geometry.add(loc2)
+            return geometry
         }
     }
 }
