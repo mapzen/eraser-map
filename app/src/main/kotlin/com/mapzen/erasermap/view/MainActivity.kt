@@ -587,40 +587,37 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun zoomToShowRoute(route: Route) {
-        //Get size of display For calculations
-        var mdisp = getWindowManager().getDefaultDisplay()
-        var mdispSize = Point()
+        val mdisp = getWindowManager().getDefaultDisplay()
+        val mdispSize = Point()
         mdisp.getSize(mdispSize)
-        var width = mdispSize.y
+        val width = mdispSize.y
 
-        var geometry = route?.getGeometry()
-        var start = geometry?.get(0)
-        var finish = geometry?.get(geometry.size - 1)
-        var distance = finish?.distanceTo(start)
+        val geometry = route.getGeometry()
+        val start = geometry.get(0)
+        val finish = geometry.get(geometry.size - 1)
+        val distance = finish.distanceTo(start)
 
-        var equatorCircumfrence: Double = 40075.16
+        val equatorCircumfrence: Double = 40075.16
 
-        var lat: Double = (finish?.latitude  + start?.latitude) / 2.0
-        var lon: Double = (finish?.longitude + start?.longitude) / 2.0
+        val lat: Double = (finish.latitude  + start.latitude) / 2.0
+        val lon: Double = (finish.longitude + start.longitude) / 2.0
         mapController?.setMapPosition(lon, lat)
 
-        var numPixelsRequired = distance?.toFloat() / width.toFloat()
-        var zoomLevel = Math.log(((equatorCircumfrence * Math.abs(Math.cos(lat)))
-                / (numPixelsRequired?.toDouble()))) / Math.log(2.0)
+        val numPixelsRequired = distance.toFloat() / width.toFloat()
+        val zoomLevel = Math.log(((equatorCircumfrence * Math.abs(Math.cos(lat)))
+                / (numPixelsRequired.toDouble()))) / Math.log(2.0)
 
         setMapRotation(0f)
         setMapTilt(0.0f)
-        mapController?.setMapZoom(zoomLevel.toFloat() * .8f)
+        val zoomRatio = if (distance > 1560000.0f ) 0.8f else 0.9f
+        mapController?.setMapZoom(zoomLevel.toFloat() * zoomRatio)
+        mapController?.setMapZoom(zoomLevel.toFloat() * zoomRatio)
 
-        if (startPin == null) {
-            startPin = MapData("route_start")
-            Tangram.addDataSource(startPin)
-        }
-
-        if (endPin == null) {
-            endPin = MapData("route_stop")
-            Tangram.addDataSource(endPin)
-        }
+        hideStartPins()
+        startPin = MapData("route_start")
+        endPin = MapData("route_stop")
+        Tangram.addDataSource(startPin)
+        Tangram.addDataSource(endPin)
 
         val properties = com.mapzen.tangram.Properties()
         startPin?.addPoint(properties, LngLat(start.longitude, start.latitude))

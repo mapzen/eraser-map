@@ -262,9 +262,15 @@ public class MainActivityTest {
         activity.success(TestRoute())
         Robolectric.flushForegroundThreadScheduler()
         val shadowStartPin = ShadowExtractor.extract(activity.startPin) as ShadowMapData
-        val shadowEndPin = ShadowExtractor.extract(activity.startPin) as ShadowMapData
+        val shadowEndPin = ShadowExtractor.extract(activity.endPin) as ShadowMapData
         assertThat(shadowEndPin.points).isNotNull()
         assertThat(shadowStartPin.points).isNotNull()
+        assertThat(ShadowTangram.dataSources).contains(activity.startPin)
+        assertThat(ShadowTangram.dataSources).contains(activity.endPin)
+        assertThat(shadowEndPin.points.get(0).latitude).isEqualTo(32.774799)
+        assertThat(shadowEndPin.points.get(0).longitude).isEqualTo(117.071869)
+        assertThat(shadowStartPin.points.get(0).latitude).isEqualTo(40.748817)
+        assertThat(shadowStartPin.points.get(0).longitude).isEqualTo(-73.985428)
     }
 
     @Test
@@ -336,8 +342,12 @@ public class MainActivityTest {
         Robolectric.flushForegroundThreadScheduler()
         val shadowStartPin = ShadowExtractor.extract(activity.startPin) as ShadowMapData
         val shadowEndPin = ShadowExtractor.extract(activity.startPin) as ShadowMapData
-        assertThat(shadowEndPin.points).isNotNull()
-        assertThat(shadowStartPin.points).isNotNull()
+        assertThat(ShadowTangram.dataSources).contains(activity.startPin)
+        assertThat(ShadowTangram.dataSources).contains(activity.endPin)
+        assertThat(shadowEndPin.points.get(0).latitude).isEqualTo(32.774799)
+        assertThat(shadowEndPin.points.get(0).longitude).isEqualTo(117.071869)
+        assertThat(shadowStartPin.points.get(0).latitude).isEqualTo(40.748817)
+        assertThat(shadowStartPin.points.get(0).longitude).isEqualTo(-73.985428)
         activity.hideRoutePreview()
         assertThat(shadowEndPin.points).isEmpty()
         assertThat(shadowStartPin.points).isEmpty()
