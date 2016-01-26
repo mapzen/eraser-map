@@ -4,8 +4,7 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:background="@color/light_gray"
-    android:orientation="horizontal"
-    android:paddingTop="16dp">
+    android:orientation="horizontal">
 
     <RelativeLayout
         android:id="@+id/turn_container"
@@ -20,13 +19,13 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true" />
+            android:layout_centerVertical="true" />
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/instruction_container"
         android:layout_width="0dp"
-        android:layout_height="84dp"
+        android:layout_height="72dp"
         android:layout_gravity="center_vertical"
         android:layout_weight="0.7"
         android:paddingRight="16dp">

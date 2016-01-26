@@ -45,11 +45,12 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <include layout="@layout/list_header_divider"
+    <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/footer" />
+        android:layout_height="1px"
+        android:layout_below="@id/footer"
+        android:background="@drawable/thin_gray_divider" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/instruction_pager"
@@ -57,6 +58,12 @@
         android:layout_height="@dimen/pager_height"
         android:layout_below="@id/divider"
         android:keepScreenOn="true" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@id/instruction_pager"
+        android:background="@drawable/thin_gray_divider" />
 
     <com.mapzen.erasermap.view.CompassView
         android:id="@+id/route_mode_compass_view"
