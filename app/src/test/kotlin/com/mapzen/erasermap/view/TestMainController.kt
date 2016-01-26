@@ -137,6 +137,10 @@ public class TestMainController : MainViewController {
         reverseGeoCodeResults = features;
     }
 
+    override fun showPlaceSearchFeature(features: List<Feature>) {
+        showReverseGeocodeFeature(features)
+    }
+
     override fun drawRoute(route: Route) {
         routeLine = route
     }
@@ -154,5 +158,13 @@ public class TestMainController : MainViewController {
 
     override fun placeSearch(gid: String) {
         placeSearchPoint = PointF(0.0f, 0.0f)
+    }
+ 
+    override fun emptyPlaceSearch() {
+        isReverseGeocodeVisible = true
+    }
+
+    override fun overridePlaceFeaturePosition(feature: Feature) {
+        //EMPTY
     }
 }
