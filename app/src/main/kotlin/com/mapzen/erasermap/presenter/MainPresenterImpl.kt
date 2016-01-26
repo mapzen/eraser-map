@@ -204,7 +204,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     private fun onBackPressedStateRouteDirectionList() {
         vsm.viewState = ViewStateManager.ViewState.ROUTING
-        routeViewController?.collapseSlideLayout()
     }
 
     override fun onClickViewList() {

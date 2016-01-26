@@ -18,9 +18,6 @@ public class TestRouteController : RouteViewController {
         this.location = location
     }
 
-    override fun collapseSlideLayout() {
-    }
-
     override fun showDirectionList() {
         isDirectionListVisible = true
     }
