@@ -10,7 +10,6 @@ import com.mapzen.erasermap.model.TestAppSettings
 import com.mapzen.erasermap.model.TestMapzenLocation
 import com.mapzen.erasermap.model.TestRouteManager
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.DEFAULT
-import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_PREVIEW
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTING
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
@@ -246,17 +245,6 @@ public class MainPresenterTest {
         assertThat(mainController.isCenteredOnTappedFeature).isTrue()
     }
 
-    @Test fun onSlidingPanelOpen_shouldShowRouteDirectionList() {
-        presenter.onSlidingPanelOpen()
-        assertThat(routeController.isDirectionListVisible).isTrue()
-    }
-
-    @Test fun onSlidingPanelCollapse_shouldHideRouteDirectionList() {
-        routeController.isDirectionListVisible = true
-        presenter.onSlidingPanelCollapse()
-        assertThat(routeController.isDirectionListVisible).isFalse()
-    }
-
     @Test fun onPause_shouldDisconnectLocationUpdates() {
         presenter.onPause()
         assertThat(mapzenLocation.connected).isFalse()
@@ -265,7 +253,6 @@ public class MainPresenterTest {
     @Test fun onPause_shouldNotDisconnectLocationUpdatesWhileRouting() {
         mapzenLocation.connected = true
         presenter.onClickStartNavigation()
-        presenter.onSlidingPanelOpen()
         presenter.onPause()
         assertThat(mapzenLocation.connected).isTrue()
     }
@@ -285,9 +272,7 @@ public class MainPresenterTest {
     }
 
     @Test fun onBackPressed_shouldUpdateViewState() {
-        vsm.viewState = ROUTE_DIRECTION_LIST
-        presenter.onBackPressed()
-        assertThat(vsm.viewState).isEqualTo(ROUTING)
+        vsm.viewState = ROUTING
         presenter.onBackPressed()
         assertThat(vsm.viewState).isEqualTo(ROUTE_PREVIEW)
         presenter.onBackPressed()
@@ -399,10 +384,6 @@ public class MainPresenterTest {
         presenter.vsm.viewState = ROUTING
         presenter.onReverseGeoRequested(0f, 0f)
         assertThat(mainController.reverseGeolocatePoint).isNull()
-
-        presenter.vsm.viewState = ROUTE_DIRECTION_LIST
-        presenter.onReverseGeoRequested(0f, 0f)
-        assertThat(mainController.reverseGeolocatePoint).isNull()
     }
 
     @Test fun onPlaceSearchRequested_shouldNotPlaceSearchWhileRouting() {
@@ -411,10 +392,6 @@ public class MainPresenterTest {
         assertThat(mainController.placeSearchPoint).isNull()
 
         presenter.vsm.viewState = ROUTING
-        presenter.onPlaceSearchRequested("");
-        assertThat(mainController.placeSearchPoint).isNull()
-
-        presenter.vsm.viewState = ROUTE_DIRECTION_LIST
         presenter.onPlaceSearchRequested("");
         assertThat(mainController.placeSearchPoint).isNull()
     }

@@ -18,14 +18,6 @@ public class TestRouteController : RouteViewController {
         this.location = location
     }
 
-    override fun showDirectionList() {
-        isDirectionListVisible = true
-    }
-
-    override fun hideDirectionList() {
-        isDirectionListVisible = false
-    }
-
     override fun showResumeButton() {
         isResumeButtonVisible = true
     }
