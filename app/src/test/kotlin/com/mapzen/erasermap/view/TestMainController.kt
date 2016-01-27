@@ -28,6 +28,7 @@ public class TestMainController : MainViewController {
     public var isCenteredOnCurrentFeature: Boolean = false
     public var isCenteredOnTappedFeature: Boolean = false
     public var isReverseGeocodeVisible: Boolean = false
+    public var isPlaceResultOverridden: Boolean = false
 
     override fun showSearchResults(features: List<Feature>) {
         searchResults = features
@@ -165,6 +166,6 @@ public class TestMainController : MainViewController {
     }
 
     override fun overridePlaceFeaturePosition(feature: Feature) {
-        //EMPTY
+        isPlaceResultOverridden = true
     }
 }

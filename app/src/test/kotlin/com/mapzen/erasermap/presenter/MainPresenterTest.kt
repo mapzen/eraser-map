@@ -70,6 +70,26 @@ public class MainPresenterTest {
         assertThat(mainController.isReverseGeocodeVisible).isTrue()
     }
 
+    @Test fun onPlaceSearchRequested_shouldShowNonEmptyResults() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        val feature = Feature()
+        features.add(feature)
+        result.setFeatures(features)
+        presenter.onPlaceSearchResultsAvailable(result)
+        assertThat(mainController.isReverseGeocodeVisible).isTrue()
+    }
+
+    @Test fun onPlaceSearchRequested_shouldOverridePlaceResult() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        val feature = Feature()
+        features.add(feature)
+        result.setFeatures(features)
+        presenter.onPlaceSearchResultsAvailable(result)
+        assertThat(mainController.isPlaceResultOverridden).isTrue()
+    }
+
     @Test fun onRestoreViewState_shouldRestorePreviousSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
