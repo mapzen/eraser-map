@@ -13,6 +13,7 @@ public class TestAppSettings : AppSettings {
     override var mockRoute: File = File("lost.gpx")
     override var isTileDebugEnabled: Boolean = false
     override var isLabelDebugEnabled: Boolean = false
+    override var isTangramInfosDebugEnabled: Boolean = false
 
     override fun initTangramDebugFlags() {
     }

@@ -38,6 +38,10 @@
     <string name="checkbox_label_debug_summary">Draw label debugging information</string>
     <string name="checkbox_label_debug_title">Label debug info</string>
 
+    <!-- Enable tangram infos debug rendering -->
+    <string name="checkbox_tangram_infos_summary">Draw misc tangram debugging information</string>
+    <string name="checkbox_tangram_infos_debug">Tangram debug info</string>
+
     <!-- Build number -->
     <string name="edittext_build_number_title">Build number</string>
 
