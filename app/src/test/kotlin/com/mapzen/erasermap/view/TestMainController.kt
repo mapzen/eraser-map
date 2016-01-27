@@ -16,6 +16,7 @@ public class TestMainController : MainViewController {
     public var queryText: String = ""
     public var puckPosition: Location? = null
     public var reverseGeolocatePoint: PointF? = null
+    public var placeSearchPoint: PointF? = null
 
     public var isProgressVisible: Boolean = false
     public var isOverflowVisible: Boolean = false
@@ -27,6 +28,7 @@ public class TestMainController : MainViewController {
     public var isCenteredOnCurrentFeature: Boolean = false
     public var isCenteredOnTappedFeature: Boolean = false
     public var isReverseGeocodeVisible: Boolean = false
+    public var isPlaceResultOverridden: Boolean = false
 
     override fun showSearchResults(features: List<Feature>) {
         searchResults = features
@@ -136,6 +138,10 @@ public class TestMainController : MainViewController {
         reverseGeoCodeResults = features;
     }
 
+    override fun showPlaceSearchFeature(features: List<Feature>) {
+        showReverseGeocodeFeature(features)
+    }
+
     override fun drawRoute(route: Route) {
         routeLine = route
     }
@@ -149,5 +155,17 @@ public class TestMainController : MainViewController {
 
     override fun reverseGeolocate(screenX: Float, screenY: Float) {
         reverseGeolocatePoint = PointF(screenX, screenY)
+    }
+
+    override fun placeSearch(gid: String) {
+        placeSearchPoint = PointF(0.0f, 0.0f)
+    }
+ 
+    override fun emptyPlaceSearch() {
+        isReverseGeocodeVisible = true
+    }
+
+    override fun overridePlaceFeaturePosition(feature: Feature) {
+        isPlaceResultOverridden = true
     }
 }
