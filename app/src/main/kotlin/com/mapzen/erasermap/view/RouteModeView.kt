@@ -142,47 +142,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         return false
     }
 
-    public fun pageForward(position: Int) {
-        pager?.currentItem = position + 1
-    }
-
-    public fun pageBackwards(position: Int) {
-        pager?.currentItem = position - 1
-    }
-
-    override fun showDirectionList()  {
-        findViewById(R.id.footer).visibility = View.GONE
-        val instructionStrings = ArrayList<String>()
-        val instructionType= ArrayList<Int>()
-        val instructionDistance= ArrayList<Int>()
-
-        val instructions = route?.getRouteInstructions()
-        if (route is Route && instructions is ArrayList<Instruction>) {
-            for (instruction in  instructions) {
-                val humanInstruction = instruction.getHumanTurnInstruction()
-                if (humanInstruction is String) {
-                    instructionStrings.add(humanInstruction)
-                }
-                instructionType.add(instruction.turnInstruction)
-                instructionDistance.add(instruction.distance)
-            }
-
-        }
-
-        findViewById(R.id.route_reverse).visibility = View.GONE
-        setHeaderOrigins()
-    }
-
-    override fun hideDirectionList() {
-        findViewById(R.id.footer).visibility = View.VISIBLE
-    }
-
-    private fun setHeaderOrigins() {
-        (findViewById(R.id.starting_point) as TextView).setText(R.string.current_location)
-        (findViewById(R.id.destination) as TextView).text =
-                (findViewById(R.id.destination_name) as TextView).text
-    }
-
     private fun resumeAutoPaging() {
         pager?.currentItem = routePresenter?.currentInstructionIndex
         setCurrentPagerItemStyling(routePresenter?.currentInstructionIndex ?:0)

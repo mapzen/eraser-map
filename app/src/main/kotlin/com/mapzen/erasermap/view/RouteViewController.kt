@@ -5,8 +5,6 @@ import com.mapzen.helpers.RouteEngine
 
 public interface RouteViewController {
     public fun onLocationChanged(location: Location)
-    public fun showDirectionList()
-    public fun hideDirectionList()
     public fun showResumeButton()
     public fun hideResumeButton()
     public fun showRouteIcon(location: Location)

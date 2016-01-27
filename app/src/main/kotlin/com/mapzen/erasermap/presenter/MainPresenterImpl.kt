@@ -38,13 +38,13 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         bus.register(this)
     }
 
-    override fun onSearchResultsAvailable(searchResults: Result?) {
+    override fun onSearchResultsAvailable(result: Result?) {
         vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
         reverseGeo = false
-        this.searchResults = searchResults
-        mainViewController?.showSearchResults(searchResults?.getFeatures())
+        this.searchResults = result
+        mainViewController?.showSearchResults(result?.features)
         mainViewController?.hideProgress()
-        val featureCount = searchResults?.features?.size
+        val featureCount = result?.features?.size
         if (featureCount != null && featureCount > 1) {
             mainViewController?.showActionViewAll()
             mainViewController?.hideOverflowMenu()
@@ -101,12 +101,8 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             }
         } else {
             if (searchResults != null) {
-                mainViewController?.showSearchResults(searchResults?.getFeatures())
+                mainViewController?.showSearchResults(searchResults?.features)
             }
-        }
-
-        if (vsm.viewState == ViewStateManager.ViewState.ROUTE_DIRECTION_LIST) {
-            routeViewController?.showDirectionList()
         }
     }
 
@@ -131,14 +127,14 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     override fun onSearchResultSelected(position: Int) {
         if (searchResults != null) {
-            mainViewController?.addSearchResultsToMap(searchResults?.getFeatures(), position)
+            mainViewController?.addSearchResultsToMap(searchResults?.features, position)
             mainViewController?.centerOnCurrentFeature(searchResults?.features)
         }
     }
 
     override fun onSearchResultTapped(position: Int) {
         if (searchResults != null) {
-            mainViewController?.addSearchResultsToMap(searchResults?.getFeatures(), position)
+            mainViewController?.addSearchResultsToMap(searchResults?.features, position)
             mainViewController?.centerOnFeature(searchResults?.features, position)
         }
     }
@@ -163,7 +159,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             ViewStateManager.ViewState.SEARCH_RESULTS -> onBackPressedStateSearchResults()
             ViewStateManager.ViewState.ROUTE_PREVIEW -> onBackPressedStateRoutePreview()
             ViewStateManager.ViewState.ROUTING -> onBackPressedStateRouting()
-            ViewStateManager.ViewState.ROUTE_DIRECTION_LIST -> onBackPressedStateRouteDirectionList()
         }
     }
 
@@ -190,9 +185,9 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         mainViewController?.clearRoute()
         if (searchResults != null) {
             if (reverseGeo) {
-                mainViewController?.showReverseGeocodeFeature(searchResults?.getFeatures())
+                mainViewController?.showReverseGeocodeFeature(searchResults?.features)
             } else {
-                mainViewController?.showSearchResults(searchResults?.getFeatures())
+                mainViewController?.showSearchResults(searchResults?.features)
             }
         }
     }
@@ -200,10 +195,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     private fun onBackPressedStateRouting() {
         vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
         mainViewController?.hideRoutingMode()
-    }
-
-    private fun onBackPressedStateRouteDirectionList() {
-        vsm.viewState = ViewStateManager.ViewState.ROUTING
     }
 
     override fun onClickViewList() {
@@ -222,16 +213,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         }
     }
 
-    override fun onSlidingPanelOpen() {
-        vsm.viewState = ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
-        routeViewController?.showDirectionList()
-    }
-
-    override fun onSlidingPanelCollapse() {
-        vsm.viewState = ViewStateManager.ViewState.ROUTING
-        routeViewController?.hideDirectionList()
-    }
-
     override fun onCreate() {
         val currentLocation = mapzenLocation.getLastLocation()
         if (currentLocation is Location) {
@@ -247,23 +228,19 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     }
 
     override fun onResume() {
-        if (!isRouting() && !isRoutingDirectionList()) {
+        if (!isRouting()) {
             mapzenLocation.startLocationUpdates()
         }
     }
 
     override fun onPause() {
-        if (!isRouting() && !isRoutingDirectionList()) {
+        if (!isRouting()) {
             mapzenLocation.stopLocationUpdates()
         }
     }
 
     private fun isRouting(): Boolean {
         return vsm.viewState == ViewStateManager.ViewState.ROUTING
-    }
-
-    private fun isRoutingDirectionList(): Boolean {
-        return vsm.viewState == ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
     }
 
     override fun onFindMeButtonClick() {
@@ -339,7 +316,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     override fun onExitNavigation() {
         vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
         routingEnabled = false;
-        routeManager?.reverse = false
+        routeManager.reverse = false
         onFindMeButtonClick()
     }
 
