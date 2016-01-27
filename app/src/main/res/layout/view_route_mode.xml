@@ -5,51 +5,78 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/footer"
+    <RelativeLayout
+        android:id="@+id/footer_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:gravity="center_horizontal"
-        android:background="@android:color/white"
-        android:orientation="horizontal"
-        android:padding="@dimen/footer_padding">
+        android:background="@android:color/white">
 
-        <com.mapzen.erasermap.view.DistanceView
-            android:id="@+id/destination_distance"
+        <ImageView
+            android:id="@+id/route_view_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-condensed"
-            android:textColor="@color/dark_gray"
-            android:textSize="@dimen/font_medium_2"
-            android:textStyle="bold" />
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:paddingLeft="16dp"
+            android:src="@drawable/ic_list" />
 
-        <TextView
+        <ImageView
+            android:id="@+id/route_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/dark_gray"
-            android:textSize="@dimen/font_medium_2"
-            android:textStyle="bold"
-            android:text="@string/diamond_separator" />
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingRight="16dp"
+            android:src="@drawable/ic_cancel" />
 
-        <TextView
-            android:id="@+id/destination_name"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/footer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:fontFamily="sans-serif-condensed"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:textColor="@color/dark_gray"
-            android:textSize="@dimen/font_medium_2"
-            android:textStyle="bold" />
-    </LinearLayout>
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@id/route_view_list"
+            android:layout_toLeftOf="@id/route_cancel"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:padding="@dimen/footer_padding">
+
+            <com.mapzen.erasermap.view.DistanceView
+                android:id="@+id/destination_distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@color/dark_gray"
+                android:textSize="@dimen/font_medium_2"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/dark_gray"
+                android:textSize="@dimen/font_medium_2"
+                android:textStyle="bold"
+                android:text="@string/diamond_separator" />
+
+            <TextView
+                android:id="@+id/destination_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-condensed"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/dark_gray"
+                android:textSize="@dimen/font_medium_2"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </RelativeLayout>
 
     <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:layout_below="@id/footer"
+        android:layout_below="@id/footer_wrapper"
         android:background="@drawable/thin_gray_divider" />
 
     <android.support.v4.view.ViewPager
