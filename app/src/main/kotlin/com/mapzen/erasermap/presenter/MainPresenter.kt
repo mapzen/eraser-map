@@ -44,7 +44,7 @@ public interface MainPresenter {
     public fun getPeliasLocationProvider(): PeliasLocationProvider
     public fun onReroute(location: Location)
     public fun onMapMotionEvent(): Boolean
-    public fun onReverseGeoRequested(screenX: Float, screenY: Float): Boolean
+    public fun onReverseGeoRequested(screenX: Float?, screenY: Float?): Boolean
     public fun onPlaceSearchRequested(gid: String): Boolean
     public fun onExitNavigation()
 }

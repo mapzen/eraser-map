@@ -349,11 +349,13 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         return false
     }
 
-    override fun onReverseGeoRequested(screenX: Float, screenY: Float): Boolean {
-        if (reverseGeo || vsm.viewState == ViewStateManager.ViewState.DEFAULT) {
-            mainViewController?.reverseGeolocate(screenX, screenY)
-            reverseGeo = true
-            return true
+    override fun onReverseGeoRequested(screenX: Float?, screenY: Float?): Boolean {
+        if (screenX != null && screenY != null) {
+            if (reverseGeo || vsm.viewState == ViewStateManager.ViewState.DEFAULT) {
+                mainViewController?.reverseGeolocate(screenX, screenY)
+                reverseGeo = true
+                return true
+            }
         }
         return false
     }

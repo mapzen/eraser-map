@@ -222,7 +222,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                         presenter?.onPlaceSearchRequested("osm:venue:$featureID")
                     } else {
                         if (poiTapPoint != null) {
-                            presenter?.onReverseGeoRequested(poiTapPoint?.get(0) as Float, poiTapPoint?.get(1) as Float)
+                            presenter?.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(),
+                                    poiTapPoint?.get(0)?.toFloat())
                         }
                     }
                 }
@@ -453,18 +454,24 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         reverseGeocodeData?.clear()
 
-        var lngLat: LngLat?
+        var lngLat: LngLat? = null
 
         if (poiTapPoint == null) {
             val simpleFeature = SimpleFeature.fromFeature(features.get(0))
             lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
         } else {
-            val point = poiTapPoint
-            lngLat = mapController?.coordinatesAtScreenPosition(point!![0].toDouble(), point!![1].toDouble())
+            val pointX = poiTapPoint?.get(0)?.toDouble()
+            val pointY = poiTapPoint?.get(1)?.toDouble()
+            if (pointX != null && pointY != null) {
+                lngLat = mapController?.coordinatesAtScreenPosition(pointX, pointY)
+            }
         }
         val properties = com.mapzen.tangram.Properties()
         properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
-        reverseGeocodeData?.addPoint(properties, lngLat)
+
+        if (lngLat != null) {
+            reverseGeocodeData?.addPoint(properties, lngLat)
+        }
 
         mapController?.requestRender()
         poiTapPoint = null
@@ -525,7 +532,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun emptyPlaceSearch() {
         if (poiTapPoint != null) {
-            presenter?.onReverseGeoRequested(poiTapPoint?.get(0) as Float, poiTapPoint?.get(1) as Float)
+            presenter?.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(), poiTapPoint?.get(1)?.toFloat())
         }
     }
 
@@ -815,12 +822,19 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         if (poiTapPoint != null) {
             val geometry = Geometry()
             val coordinates = ArrayList<Double>()
-            var coords = mapController?.coordinatesAtScreenPosition(
-                    poiTapPoint?.get(0)!!.toDouble(), poiTapPoint?.get(1)!!.toDouble())
-            coordinates.add(coords!!.longitude)
-            coordinates.add(coords!!.latitude)
-            geometry.coordinates = coordinates
-            feature.geometry = geometry
+            val pointX = poiTapPoint?.get(0)?.toDouble()
+            val pointY = poiTapPoint?.get(1)?.toDouble()
+            if (pointX != null && pointY != null) {
+                var coords = mapController?.coordinatesAtScreenPosition(pointX, pointY)
+                var lng = coords?.longitude
+                var lat = coords?.latitude
+                if (lng != null && lat!= null) {
+                    coordinates.add(lng)
+                    coordinates.add(lat)
+                    geometry.coordinates = coordinates
+                    feature.geometry = geometry
+                }
+            }
         }
     }
 
