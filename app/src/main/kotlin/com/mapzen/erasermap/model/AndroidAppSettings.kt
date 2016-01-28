@@ -19,6 +19,7 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
         public val KEY_MOCK_ROUTE_VALUE: String = "edittext_mock_route"
         public val KEY_TILE_DEBUG_ENABLED: String = "checkbox_tile_debug"
         public val KEY_LABEL_DEBUG_ENABLED: String = "checkbox_label_debug"
+        public val KEY_TANGRAM_INFOS_DEBUG_ENABLED: String = "checkbox_tangram_infos_debug"
         public val KEY_BUILD_NUMBER: String = "edittext_build_number"
     }
 
@@ -106,6 +107,17 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
         }
 
     /**
+     * Tangram infos debug drawing checkbox setting
+     */
+    override var isTangramInfosDebugEnabled: Boolean
+        get() {
+            return prefs.getBoolean(KEY_TANGRAM_INFOS_DEBUG_ENABLED, false)
+        }
+        set(value) {
+            prefs.edit().putBoolean(KEY_TANGRAM_INFOS_DEBUG_ENABLED, value).commit()
+        }
+
+    /**
      * Label debug drawing checkbox setting
      */
     override var isLabelDebugEnabled: Boolean
@@ -132,5 +144,6 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
         Tangram.setDebugFlag(DebugFlags.TILE_BOUNDS, isTileDebugEnabled)
         Tangram.setDebugFlag(DebugFlags.TILE_INFOS, isTileDebugEnabled)
         Tangram.setDebugFlag(DebugFlags.LABELS, isLabelDebugEnabled)
+        Tangram.setDebugFlag(DebugFlags.TANGRAM_INFOS, isTangramInfosDebugEnabled)
     }
 }

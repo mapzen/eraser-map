@@ -165,9 +165,11 @@ public class AndroidAppSettingsTest {
     @Test fun initTangramDebugFlags_shouldSetTangramDebugFlags() {
         prefs.edit().putBoolean(AndroidAppSettings.KEY_TILE_DEBUG_ENABLED, true).commit()
         prefs.edit().putBoolean(AndroidAppSettings.KEY_LABEL_DEBUG_ENABLED, true).commit()
+        prefs.edit().putBoolean(AndroidAppSettings.KEY_TANGRAM_INFOS_DEBUG_ENABLED, true).commit()
         settings.initTangramDebugFlags()
         assertThat(ShadowTangram.debugFlags).contains(DebugFlags.TILE_BOUNDS)
         assertThat(ShadowTangram.debugFlags).contains(DebugFlags.TILE_INFOS)
         assertThat(ShadowTangram.debugFlags).contains(DebugFlags.LABELS)
+        assertThat(ShadowTangram.debugFlags).contains(DebugFlags.TANGRAM_INFOS)
     }
 }

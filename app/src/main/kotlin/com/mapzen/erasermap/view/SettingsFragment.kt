@@ -30,6 +30,7 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
         initBuildNumberPref()
         initTileDebugPref()
         initLabelDebugPref()
+        initTangramInfosDebugPref()
     }
 
     override fun onPreferenceChange(preference: Preference?, value: Any?): Boolean {
@@ -46,6 +47,10 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
             }
             if (AndroidAppSettings.KEY_LABEL_DEBUG_ENABLED.equals(preference.key)) {
                 updateLabelDebugPref(value)
+                return true
+            }
+            if (AndroidAppSettings.KEY_TANGRAM_INFOS_DEBUG_ENABLED.equals(preference.key)) {
+                updateTangramInfosDebugPref(value)
                 return true
             }
         }
@@ -74,6 +79,15 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
     private fun updateTileDebugPref(value: Boolean) {
         Tangram.setDebugFlag(DebugFlags.TILE_BOUNDS, value)
         Tangram.setDebugFlag(DebugFlags.TILE_INFOS, value)
+    }
+
+    private fun initTangramInfosDebugPref() {
+        findPreference(AndroidAppSettings.KEY_TANGRAM_INFOS_DEBUG_ENABLED).onPreferenceChangeListener = this
+        updateTangramInfosDebugPref(settings?.isTileDebugEnabled ?: false)
+    }
+
+    private fun updateTangramInfosDebugPref(value: Boolean) {
+        Tangram.setDebugFlag(DebugFlags.TANGRAM_INFOS, value)
     }
 
     private fun initLabelDebugPref() {
