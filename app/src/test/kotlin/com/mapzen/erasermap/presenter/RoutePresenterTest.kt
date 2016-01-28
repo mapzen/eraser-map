@@ -113,6 +113,11 @@ public class RoutePresenterTest {
         assertThat(routeController.isRouteLineVisible).isFalse()
     }
 
+    @Test fun onRouteViewListButtonClick_shouldStartRouteDirectionListActivity() {
+        routePresenter.onRouteViewListButtonClick()
+        assertThat(routeController.startedRouteDirectionListActivity).isTrue()
+    }
+
     @Test fun onRouteCancelButtonClick_shouldPostRouteCancelEvent() {
         val subscriber = RouteCancelSubscriber()
         bus.register(subscriber)

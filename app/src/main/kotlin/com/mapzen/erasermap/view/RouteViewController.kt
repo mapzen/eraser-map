@@ -22,4 +22,5 @@ public interface RouteViewController {
     public fun showReroute(location: Location)
     public fun hideRouteIcon()
     public fun hideRouteLine()
+    public fun startRouteDirectionListActivity()
 }

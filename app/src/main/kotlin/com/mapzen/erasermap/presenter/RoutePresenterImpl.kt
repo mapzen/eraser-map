@@ -76,6 +76,10 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
         routeController?.hideRouteLine()
     }
 
+    override fun onRouteViewListButtonClick() {
+        routeController?.startRouteDirectionListActivity()
+    }
+
     override fun onRouteCancelButtonClick() {
         bus.post(RouteCancelEvent())
     }

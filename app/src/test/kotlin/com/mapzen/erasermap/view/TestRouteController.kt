@@ -10,6 +10,7 @@ public class TestRouteController : RouteViewController {
     public var isResumeButtonVisible: Boolean = false
     public var isRouteIconVisible: Boolean = false
     public var isRouteLineVisible: Boolean = false
+    public var startedRouteDirectionListActivity: Boolean = false
     public var alert: Int = -1
     public var pre: Int = -1
     public var post: Int = -1
@@ -75,5 +76,9 @@ public class TestRouteController : RouteViewController {
     }
 
     override fun playStartInstructionAlert() {
+    }
+
+    override fun startRouteDirectionListActivity() {
+        startedRouteDirectionListActivity = true
     }
 }

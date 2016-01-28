@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.view
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Point
 import android.location.Location
 import android.support.v4.view.PagerAdapter
@@ -39,6 +40,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         val VIEW_TAG: String = "Instruction_"
     }
 
+    val routeViewListButton: ImageView by lazy { findViewById(R.id.route_view_list) as ImageView }
     val routeCancelButton: ImageView by lazy { findViewById(R.id.route_cancel) as ImageView }
 
     var mapController: MapController? = null
@@ -95,6 +97,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             pager?.currentItem = routePresenter?.currentInstructionIndex
         }
 
+        routeViewListButton.setOnClickListener { routePresenter?.onRouteViewListButtonClick() }
         routeCancelButton.setOnClickListener { routePresenter?.onRouteCancelButtonClick() }
     }
 
@@ -396,5 +399,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     public fun clearRoute() {
         routePresenter?.onRouteClear()
+    }
+
+    override fun startRouteDirectionListActivity() {
+        context.startActivity(Intent(context, RouteDirectionListActivity::class.java))
     }
 }
