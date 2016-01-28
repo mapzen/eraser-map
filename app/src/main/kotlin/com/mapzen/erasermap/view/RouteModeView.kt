@@ -39,6 +39,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         val VIEW_TAG: String = "Instruction_"
     }
 
+    val routeCancelButton: ImageView by lazy { findViewById(R.id.route_cancel) as ImageView }
+
     var mapController: MapController? = null
         set(value) {
             value?.setPanResponder(object: TouchInput.PanResponder {
@@ -92,6 +94,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             routePresenter?.onResumeButtonClick()
             pager?.currentItem = routePresenter?.currentInstructionIndex
         }
+
+        routeCancelButton.setOnClickListener { routePresenter?.onRouteCancelButtonClick() }
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {

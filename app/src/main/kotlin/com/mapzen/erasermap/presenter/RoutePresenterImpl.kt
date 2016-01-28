@@ -1,14 +1,16 @@
 package com.mapzen.erasermap.presenter
 
 import android.location.Location
-import android.view.MotionEvent
+import com.mapzen.erasermap.model.event.RouteCancelEvent
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
+import com.squareup.otto.Bus
 
 public class RoutePresenterImpl(private val routeEngine: RouteEngine,
-        private val routeEngineListener: RouteEngineListener) : RoutePresenter {
+        private val routeEngineListener: RouteEngineListener,
+        private val bus: Bus) : RoutePresenter {
 
     override var routeController: RouteViewController? = null
         set(value) {
@@ -72,5 +74,9 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
     override fun onRouteClear() {
         routeController?.hideRouteIcon()
         routeController?.hideRouteLine()
+    }
+
+    override fun onRouteCancelButtonClick() {
+        bus.post(RouteCancelEvent())
     }
 }

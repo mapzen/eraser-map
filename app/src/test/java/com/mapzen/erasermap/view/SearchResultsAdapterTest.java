@@ -3,7 +3,7 @@ package com.mapzen.erasermap.view;
 import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
-import com.mapzen.erasermap.model.RoutePreviewEvent;
+import com.mapzen.erasermap.model.event.RoutePreviewEvent;
 import com.mapzen.pelias.SimpleFeature;
 import com.mapzen.pelias.gson.Feature;
 

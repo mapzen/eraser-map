@@ -3,11 +3,12 @@ package com.mapzen.erasermap.presenter
 import android.location.Location
 import android.util.Log
 import com.mapzen.erasermap.model.AppSettings
-import com.mapzen.erasermap.model.LocationChangeEvent
 import com.mapzen.erasermap.model.MapzenLocation
-import com.mapzen.erasermap.model.RouteEvent
 import com.mapzen.erasermap.model.RouteManager
-import com.mapzen.erasermap.model.RoutePreviewEvent
+import com.mapzen.erasermap.model.event.LocationChangeEvent
+import com.mapzen.erasermap.model.event.RouteCancelEvent
+import com.mapzen.erasermap.model.event.RouteEvent
+import com.mapzen.erasermap.model.event.RoutePreviewEvent
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
@@ -150,6 +151,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         mainViewController?.hideSearchResults()
         mainViewController?.hideReverseGeolocateResult()
         generateRoutePreview()
+    }
+
+    @Subscribe public fun onRouteCancelEvent(event: RouteCancelEvent) {
+        onBackPressed()
     }
 
     override fun onBackPressed() {

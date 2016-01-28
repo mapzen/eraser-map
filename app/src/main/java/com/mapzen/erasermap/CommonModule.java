@@ -7,6 +7,8 @@ import com.mapzen.erasermap.presenter.ViewStateManager;
 import com.mapzen.helpers.RouteEngine;
 import com.mapzen.pelias.SavedSearch;
 
+import com.squareup.otto.Bus;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -27,8 +29,8 @@ public class CommonModule {
     }
 
     @Provides @Singleton RoutePresenter provideRoutePresenter(RouteEngine routeEngine,
-            RouteEngineListener routeEngineListener) {
-        return new RoutePresenterImpl(routeEngine, routeEngineListener);
+            RouteEngineListener routeEngineListener, Bus bus) {
+        return new RoutePresenterImpl(routeEngine, routeEngineListener, bus);
     }
 
     @Provides @Singleton ViewStateManager provideViewStateManager() {

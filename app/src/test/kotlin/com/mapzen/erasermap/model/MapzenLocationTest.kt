@@ -6,6 +6,7 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.PrivateMapsTestRunner
 import com.mapzen.erasermap.dummy.TestHelper
+import com.mapzen.erasermap.model.event.LocationChangeEvent
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 import org.assertj.core.api.Assertions.assertThat

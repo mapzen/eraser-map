@@ -3,12 +3,13 @@ package com.mapzen.erasermap.presenter
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
-import com.mapzen.erasermap.model.LocationChangeEvent
-import com.mapzen.erasermap.model.RouteEvent
-import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.model.TestAppSettings
 import com.mapzen.erasermap.model.TestMapzenLocation
 import com.mapzen.erasermap.model.TestRouteManager
+import com.mapzen.erasermap.model.event.LocationChangeEvent
+import com.mapzen.erasermap.model.event.RouteCancelEvent
+import com.mapzen.erasermap.model.event.RouteEvent
+import com.mapzen.erasermap.model.event.RoutePreviewEvent
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.DEFAULT
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_PREVIEW
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTING
@@ -394,6 +395,12 @@ public class MainPresenterTest {
         presenter.vsm.viewState = ROUTING
         presenter.onPlaceSearchRequested("");
         assertThat(mainController.placeSearchPoint).isNull()
+    }
+
+    @Test fun onRouteCancelEvent_shouldPopBackStack() {
+        vsm.viewState = ROUTING
+        presenter.onRouteCancelEvent(RouteCancelEvent())
+        assertThat(vsm.viewState).isEqualTo(ROUTE_PREVIEW)
     }
 
     class RouteEventSubscriber {

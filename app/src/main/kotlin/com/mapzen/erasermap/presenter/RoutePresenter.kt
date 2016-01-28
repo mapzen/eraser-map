@@ -22,4 +22,5 @@ public interface RoutePresenter {
     public fun onInstructionSelected(instruction: Instruction)
     public fun onUpdateSnapLocation(location: Location)
     public fun onRouteClear()
+    public fun onRouteCancelButtonClick()
 }
