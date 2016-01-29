@@ -165,7 +165,11 @@ public class TestMainController : MainViewController {
         isReverseGeocodeVisible = true
     }
 
-    override fun overridePlaceFeaturePosition(feature: Feature) {
+    override fun overridePlaceFeature(feature: Feature) {
         isPlaceResultOverridden = true
+    }
+
+    override fun drawTappedPoiPin() {
+        //empty
     }
 }

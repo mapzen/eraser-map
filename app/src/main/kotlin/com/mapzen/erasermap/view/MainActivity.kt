@@ -452,44 +452,55 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         pager.visibility = View.VISIBLE
         pager.onSearchResultsSelectedListener = this
 
+        if (poiTapPoint != null) {
+            // Fallback for a failed Pelias Place Callback
+            overridePlaceFeature(features.get(0))
+            return
+        }
+
+        val simpleFeature = SimpleFeature.fromFeature(features.get(0))
+        val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
+
+        val properties = com.mapzen.tangram.Properties()
+        properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
         if (reverseGeocodeData == null) {
             reverseGeocodeData = MapData("reverse_geocode")
             Tangram.addDataSource(reverseGeocodeData)
         }
-
         reverseGeocodeData?.clear()
+        reverseGeocodeData?.addPoint(properties, lngLat)
 
+        mapController?.requestRender()
+    }
+
+    override fun drawTappedPoiPin() {
         var lngLat: LngLat? = null
 
-        if (poiTapPoint == null) {
-            val simpleFeature = SimpleFeature.fromFeature(features.get(0))
-            lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
-        } else {
-            // Fallback for a failed Pelias Place Callback
-            val pointX = poiTapPoint?.get(0)?.toDouble()
-            val pointY = poiTapPoint?.get(1)?.toDouble()
-            if (pointX != null && pointY != null) {
-                lngLat = mapController?.coordinatesAtScreenPosition(pointX, pointY)
-            }
-            // Try to override feature name if its a POI tapped feature
-            if (poiTapName != null) {
-                features.get(0).properties.name = poiTapName
-                poiTapName = null
-            }
+        val pointX = poiTapPoint?.get(0)?.toDouble()
+        val pointY = poiTapPoint?.get(1)?.toDouble()
+        if (pointX != null && pointY != null) {
+            lngLat = mapController?.coordinatesAtScreenPosition(pointX, pointY)
         }
+
         val properties = com.mapzen.tangram.Properties()
         properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
 
-        if (lngLat != null) {
-            reverseGeocodeData?.addPoint(properties, lngLat)
+        // hijack reverseGeocodeData for tappedPoiPin
+        if (reverseGeocodeData == null) {
+            reverseGeocodeData = MapData("reverse_geocode")
+            Tangram.addDataSource(reverseGeocodeData)
         }
+        reverseGeocodeData?.clear()
+        reverseGeocodeData?.addPoint(properties, lngLat)
 
         mapController?.requestRender()
-        poiTapPoint = null
     }
 
     override fun showPlaceSearchFeature(features: List<Feature>) {
-        showReverseGeocodeFeature(features)
+        val pager = findViewById(R.id.search_results) as SearchResultsView
+        pager.setAdapter(SearchResultsAdapter(this, features.subList(0, 1)))
+        pager.visibility = View.VISIBLE
+        pager.onSearchResultsSelectedListener = this
     }
 
     override fun addSearchResultsToMap(features: List<Feature>, activeIndex: Int) {
@@ -829,7 +840,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         hideReverseGeolocateResult()
     }
 
-    override fun overridePlaceFeaturePosition(feature: Feature) {
+    override fun overridePlaceFeature(feature: Feature) {
         if (poiTapPoint != null) {
             val geometry = Geometry()
             val coordinates = ArrayList<Double>()
@@ -847,6 +858,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 }
             }
         }
+        if (poiTapName != null) {
+            feature.properties.name = poiTapName
+        }
+        poiTapName = null
+        poiTapPoint = null
     }
 
     private fun exitNavigation() {

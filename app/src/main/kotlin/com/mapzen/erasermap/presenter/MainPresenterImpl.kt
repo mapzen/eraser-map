@@ -85,7 +85,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             val current = searchResults?.features?.get(0)
             if (current is Feature) {
                 features.add(current)
-                mainViewController?.overridePlaceFeaturePosition(features?.get(0))
+                mainViewController?.overridePlaceFeature(features?.get(0))
             }
             searchResults?.features = features
             mainViewController?.showPlaceSearchFeature(features)
@@ -362,6 +362,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     override fun onPlaceSearchRequested(gid: String): Boolean {
         if (reverseGeo || vsm.viewState == ViewStateManager.ViewState.DEFAULT) {
+            mainViewController?.drawTappedPoiPin()
             mainViewController?.placeSearch(gid)
             reverseGeo = true
             return true
