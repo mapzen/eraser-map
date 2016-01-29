@@ -447,16 +447,19 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showReverseGeocodeFeature(features: List<Feature>) {
+        var poiTapFallback = false
+        if (poiTapPoint != null) {
+            // Fallback for a failed Pelias Place Callback
+            overridePlaceFeature(features.get(0))
+            poiTapFallback = true
+        }
+
         val pager = findViewById(R.id.search_results) as SearchResultsView
         pager.setAdapter(SearchResultsAdapter(this, features.subList(0, 1)))
         pager.visibility = View.VISIBLE
         pager.onSearchResultsSelectedListener = this
 
-        if (poiTapPoint != null) {
-            // Fallback for a failed Pelias Place Callback
-            overridePlaceFeature(features.get(0))
-            return
-        }
+        if (poiTapFallback) return
 
         val simpleFeature = SimpleFeature.fromFeature(features.get(0))
         val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
