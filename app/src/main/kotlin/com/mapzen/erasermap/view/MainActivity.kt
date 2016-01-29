@@ -61,6 +61,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         @JvmStatic val MAP_DATA_PROP_STATE_ACTIVE = "active"
         @JvmStatic val MAP_DATA_PROP_STATE_INACTIVE = "inactive"
         @JvmStatic val MAP_DATA_PROP_ID = "id"
+        @JvmStatic val MAP_DATA_PROP_NAME = "name"
     }
 
     public val requestCodeSearchResults: Int = 0x01
@@ -90,6 +91,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var startPin: MapData? = null
     var endPin: MapData? = null
     var poiTapPoint: FloatArray? = null
+    var poiTapName: String? = null
 
     val findMeButton: ImageButton by lazy { findViewById(R.id.find_me) as ImageButton }
     val routePreviewView: RoutePreviewView by lazy { findViewById(R.id.route_preview) as RoutePreviewView }
@@ -213,6 +215,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 // Reassign tapPoint to center of the feature tapped
                 // Also used in placing the pin
                 poiTapPoint = floatArrayOf(positionX, positionY)
+                if (properties.contains(MAP_DATA_PROP_NAME)) {
+                    poiTapName = properties.getString(MAP_DATA_PROP_NAME).toString()
+                }
                 if (properties.contains(MAP_DATA_PROP_SEARCHINDEX)) {
                     val searchIndex = properties.getNumber(MAP_DATA_PROP_SEARCHINDEX).toInt()
                     presenter?.onSearchResultTapped(searchIndex)
@@ -442,43 +447,63 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showReverseGeocodeFeature(features: List<Feature>) {
+        var poiTapFallback = false
+        if (poiTapPoint != null) {
+            // Fallback for a failed Pelias Place Callback
+            overridePlaceFeature(features.get(0))
+            poiTapFallback = true
+        }
+
         val pager = findViewById(R.id.search_results) as SearchResultsView
         pager.setAdapter(SearchResultsAdapter(this, features.subList(0, 1)))
         pager.visibility = View.VISIBLE
         pager.onSearchResultsSelectedListener = this
 
+        if (poiTapFallback) return
+
+        val simpleFeature = SimpleFeature.fromFeature(features.get(0))
+        val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
+
+        val properties = com.mapzen.tangram.Properties()
+        properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
         if (reverseGeocodeData == null) {
             reverseGeocodeData = MapData("reverse_geocode")
             Tangram.addDataSource(reverseGeocodeData)
         }
-
         reverseGeocodeData?.clear()
+        reverseGeocodeData?.addPoint(properties, lngLat)
 
+        mapController?.requestRender()
+    }
+
+    override fun drawTappedPoiPin() {
         var lngLat: LngLat? = null
 
-        if (poiTapPoint == null) {
-            val simpleFeature = SimpleFeature.fromFeature(features.get(0))
-            lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
-        } else {
-            val pointX = poiTapPoint?.get(0)?.toDouble()
-            val pointY = poiTapPoint?.get(1)?.toDouble()
-            if (pointX != null && pointY != null) {
-                lngLat = mapController?.coordinatesAtScreenPosition(pointX, pointY)
-            }
+        val pointX = poiTapPoint?.get(0)?.toDouble()
+        val pointY = poiTapPoint?.get(1)?.toDouble()
+        if (pointX != null && pointY != null) {
+            lngLat = mapController?.coordinatesAtScreenPosition(pointX, pointY)
         }
+
         val properties = com.mapzen.tangram.Properties()
         properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
 
-        if (lngLat != null) {
-            reverseGeocodeData?.addPoint(properties, lngLat)
+        // hijack reverseGeocodeData for tappedPoiPin
+        if (reverseGeocodeData == null) {
+            reverseGeocodeData = MapData("reverse_geocode")
+            Tangram.addDataSource(reverseGeocodeData)
         }
+        reverseGeocodeData?.clear()
+        reverseGeocodeData?.addPoint(properties, lngLat)
 
         mapController?.requestRender()
-        poiTapPoint = null
     }
 
     override fun showPlaceSearchFeature(features: List<Feature>) {
-        showReverseGeocodeFeature(features)
+        val pager = findViewById(R.id.search_results) as SearchResultsView
+        pager.setAdapter(SearchResultsAdapter(this, features.subList(0, 1)))
+        pager.visibility = View.VISIBLE
+        pager.onSearchResultsSelectedListener = this
     }
 
     override fun addSearchResultsToMap(features: List<Feature>, activeIndex: Int) {
@@ -818,7 +843,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         hideReverseGeolocateResult()
     }
 
-    override fun overridePlaceFeaturePosition(feature: Feature) {
+    override fun overridePlaceFeature(feature: Feature) {
         if (poiTapPoint != null) {
             val geometry = Geometry()
             val coordinates = ArrayList<Double>()
@@ -836,6 +861,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 }
             }
         }
+        if (poiTapName != null) {
+            feature.properties.name = poiTapName
+        }
+        poiTapName = null
+        poiTapPoint = null
     }
 
     private fun exitNavigation() {
