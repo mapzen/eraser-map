@@ -61,6 +61,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         @JvmStatic val MAP_DATA_PROP_STATE_ACTIVE = "active"
         @JvmStatic val MAP_DATA_PROP_STATE_INACTIVE = "inactive"
         @JvmStatic val MAP_DATA_PROP_ID = "id"
+        @JvmStatic val MAP_DATA_PROP_NAME = "name"
     }
 
     public val requestCodeSearchResults: Int = 0x01
@@ -90,6 +91,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var startPin: MapData? = null
     var endPin: MapData? = null
     var poiTapPoint: FloatArray? = null
+    var poiTapName: String? = null
 
     val findMeButton: ImageButton by lazy { findViewById(R.id.find_me) as ImageButton }
     val routePreviewView: RoutePreviewView by lazy { findViewById(R.id.route_preview) as RoutePreviewView }
@@ -213,6 +215,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 // Reassign tapPoint to center of the feature tapped
                 // Also used in placing the pin
                 poiTapPoint = floatArrayOf(positionX, positionY)
+                if (properties.contains(MAP_DATA_PROP_NAME)) {
+                    poiTapName = properties.getString(MAP_DATA_PROP_NAME).toString()
+                }
                 if (properties.contains(MAP_DATA_PROP_SEARCHINDEX)) {
                     val searchIndex = properties.getNumber(MAP_DATA_PROP_SEARCHINDEX).toInt()
                     presenter?.onSearchResultTapped(searchIndex)
@@ -460,10 +465,16 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             val simpleFeature = SimpleFeature.fromFeature(features.get(0))
             lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
         } else {
+            // Fallback for a failed Pelias Place Callback
             val pointX = poiTapPoint?.get(0)?.toDouble()
             val pointY = poiTapPoint?.get(1)?.toDouble()
             if (pointX != null && pointY != null) {
                 lngLat = mapController?.coordinatesAtScreenPosition(pointX, pointY)
+            }
+            // Try to override feature name if its a POI tapped feature
+            if (poiTapName != null) {
+                features.get(0).properties.name = poiTapName
+                poiTapName = null
             }
         }
         val properties = com.mapzen.tangram.Properties()
