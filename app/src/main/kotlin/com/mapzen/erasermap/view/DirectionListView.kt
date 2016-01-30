@@ -21,4 +21,12 @@ public class DirectionListView(context: Context?, attrs: AttributeSet?) : ListVi
 
         adapter = DirectionListAdapter(context, strings, types, distances, false, false)
     }
+
+    public fun setCurrent(index: Int) {
+        if (adapter != null) {
+            val directionListAdapter = adapter as DirectionListAdapter
+            directionListAdapter.currentInstructionIndex = index
+            directionListAdapter.notifyDataSetChanged()
+        }
+    }
 }

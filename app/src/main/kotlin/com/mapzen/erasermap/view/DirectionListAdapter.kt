@@ -16,6 +16,8 @@ public class DirectionListAdapter(val context: Context, val strings: ArrayList<S
 
     private final var CURRENT_LOCATION_OFFSET =  1
 
+    public var currentInstructionIndex: Int = 0
+
     override fun getCount(): Int {
         val size = strings?.size ?: 0
         return if (showCurrentLocation) size + CURRENT_LOCATION_OFFSET else size
@@ -37,6 +39,10 @@ public class DirectionListAdapter(val context: Context, val strings: ArrayList<S
             setReversedDirectionListItem(position, view)
         } else {
             setDirectionListItem(position, view)
+        }
+
+        if (position == currentInstructionIndex) {
+            view.setBackgroundColor(context.resources.getColor(R.color.light_gray))
         }
 
         return view

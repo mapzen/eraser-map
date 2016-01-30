@@ -266,6 +266,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     override fun setCurrentInstruction(index: Int) {
         routePresenter?.currentInstructionIndex = index
         pager?.currentItem = index
+        directionListView.setCurrent(index)
         notificationCreator?.createNewNotification(
                 (findViewById(R.id.destination_name) as TextView).text.toString(),
                 route?.getRouteInstructions()?.get(index)?.getHumanTurnInstruction().toString())
@@ -405,6 +406,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         val instructions = route?.getRouteInstructions()
         if (instructions != null && instructions.size > 0) {
             directionListView.setInstructions(instructions)
+            directionListView.setCurrent(pager?.currentItem ?: 0)
             directionListView.visibility = View.VISIBLE
         }
 
