@@ -3,12 +3,13 @@ package com.mapzen.erasermap.presenter
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
-import com.mapzen.erasermap.model.LocationChangeEvent
-import com.mapzen.erasermap.model.RouteEvent
-import com.mapzen.erasermap.model.RoutePreviewEvent
 import com.mapzen.erasermap.model.TestAppSettings
 import com.mapzen.erasermap.model.TestMapzenLocation
 import com.mapzen.erasermap.model.TestRouteManager
+import com.mapzen.erasermap.model.event.LocationChangeEvent
+import com.mapzen.erasermap.model.event.RouteCancelEvent
+import com.mapzen.erasermap.model.event.RouteEvent
+import com.mapzen.erasermap.model.event.RoutePreviewEvent
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.DEFAULT
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_PREVIEW
@@ -246,17 +247,6 @@ public class MainPresenterTest {
         assertThat(mainController.isCenteredOnTappedFeature).isTrue()
     }
 
-    @Test fun onSlidingPanelOpen_shouldShowRouteDirectionList() {
-        presenter.onSlidingPanelOpen()
-        assertThat(routeController.isDirectionListVisible).isTrue()
-    }
-
-    @Test fun onSlidingPanelCollapse_shouldHideRouteDirectionList() {
-        routeController.isDirectionListVisible = true
-        presenter.onSlidingPanelCollapse()
-        assertThat(routeController.isDirectionListVisible).isFalse()
-    }
-
     @Test fun onPause_shouldDisconnectLocationUpdates() {
         presenter.onPause()
         assertThat(mapzenLocation.connected).isFalse()
@@ -265,7 +255,6 @@ public class MainPresenterTest {
     @Test fun onPause_shouldNotDisconnectLocationUpdatesWhileRouting() {
         mapzenLocation.connected = true
         presenter.onClickStartNavigation()
-        presenter.onSlidingPanelOpen()
         presenter.onPause()
         assertThat(mapzenLocation.connected).isTrue()
     }
@@ -417,6 +406,12 @@ public class MainPresenterTest {
         presenter.vsm.viewState = ROUTE_DIRECTION_LIST
         presenter.onPlaceSearchRequested("");
         assertThat(mainController.placeSearchPoint).isNull()
+    }
+
+    @Test fun onRouteCancelEvent_shouldPopBackStack() {
+        vsm.viewState = ROUTING
+        presenter.onRouteCancelEvent(RouteCancelEvent())
+        assertThat(vsm.viewState).isEqualTo(ROUTE_PREVIEW)
     }
 
     class RouteEventSubscriber {

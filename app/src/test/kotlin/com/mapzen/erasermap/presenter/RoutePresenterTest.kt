@@ -1,12 +1,15 @@
 package com.mapzen.erasermap.presenter
 
 import android.location.Location
-import android.view.MotionEvent
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getFixture
+import com.mapzen.erasermap.model.event.RouteCancelEvent
+import com.mapzen.erasermap.view.MapListToggleButton
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Route
+import com.squareup.otto.Bus
+import com.squareup.otto.Subscribe
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -14,7 +17,9 @@ import org.junit.Test
 public class RoutePresenterTest {
     val routeEngine = RouteEngine()
     val routeListener = RouteEngineListener()
-    val routePresenter = RoutePresenterImpl(routeEngine, routeListener)
+    val bus = Bus()
+    val vsm = ViewStateManager()
+    val routePresenter = RoutePresenterImpl(routeEngine, routeListener, bus, vsm)
     val routeController = TestRouteController()
 
     @Before fun setUp() {
@@ -108,5 +113,27 @@ public class RoutePresenterTest {
         routeController.isRouteLineVisible = true
         routePresenter.onRouteClear()
         assertThat(routeController.isRouteLineVisible).isFalse()
+    }
+
+    @Test fun onMapListToggleClick_shouldToggleViewState() {
+        routePresenter.onMapListToggleClick(MapListToggleButton.MapListState.LIST)
+        assertThat(routeController.isDirectionListVisible).isTrue()
+
+        routePresenter.onMapListToggleClick(MapListToggleButton.MapListState.MAP)
+        assertThat(routeController.isDirectionListVisible).isFalse()
+    }
+
+    @Test fun onRouteCancelButtonClick_shouldPostRouteCancelEvent() {
+        val subscriber = RouteCancelSubscriber()
+        bus.register(subscriber)
+        routePresenter.onRouteCancelButtonClick()
+        assertThat(subscriber.event).isNotNull()
+    }
+
+    class RouteCancelSubscriber {
+        var event: RouteCancelEvent? = null
+        @Subscribe fun onRouteCancelEvent(event: RouteCancelEvent) {
+            this.event = event
+        }
     }
 }

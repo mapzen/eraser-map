@@ -5,6 +5,8 @@
     <color name="color_accent">#88C092</color>
 
     <color name="light_gray">#CECECE</color>
+    <color name="gray">#898989</color>
+    <color name="dark_gray">#454545</color>
     <color name="transparent_light_gray">#99CECECE</color>
     <color name="transparent_white">#E6FFFFFF</color>
     <color name="you_have_arrived">#FF0000</color>

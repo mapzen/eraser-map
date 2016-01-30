@@ -18,17 +18,6 @@ public class TestRouteController : RouteViewController {
         this.location = location
     }
 
-    override fun collapseSlideLayout() {
-    }
-
-    override fun showDirectionList() {
-        isDirectionListVisible = true
-    }
-
-    override fun hideDirectionList() {
-        isDirectionListVisible = false
-    }
-
     override fun showResumeButton() {
         isResumeButtonVisible = true
     }
@@ -86,5 +75,13 @@ public class TestRouteController : RouteViewController {
     }
 
     override fun playStartInstructionAlert() {
+    }
+
+    override fun showRouteDirectionList() {
+        isDirectionListVisible = true
+    }
+
+    override fun hideRouteDirectionList() {
+        isDirectionListVisible = false
     }
 }

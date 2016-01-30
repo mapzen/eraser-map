@@ -3,11 +3,12 @@ package com.mapzen.erasermap.presenter
 import android.location.Location
 import android.util.Log
 import com.mapzen.erasermap.model.AppSettings
-import com.mapzen.erasermap.model.LocationChangeEvent
 import com.mapzen.erasermap.model.MapzenLocation
-import com.mapzen.erasermap.model.RouteEvent
 import com.mapzen.erasermap.model.RouteManager
-import com.mapzen.erasermap.model.RoutePreviewEvent
+import com.mapzen.erasermap.model.event.LocationChangeEvent
+import com.mapzen.erasermap.model.event.RouteCancelEvent
+import com.mapzen.erasermap.model.event.RouteEvent
+import com.mapzen.erasermap.model.event.RoutePreviewEvent
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
@@ -38,13 +39,13 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         bus.register(this)
     }
 
-    override fun onSearchResultsAvailable(searchResults: Result?) {
+    override fun onSearchResultsAvailable(result: Result?) {
         vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
         reverseGeo = false
-        this.searchResults = searchResults
-        mainViewController?.showSearchResults(searchResults?.getFeatures())
+        this.searchResults = result
+        mainViewController?.showSearchResults(result?.features)
         mainViewController?.hideProgress()
-        val featureCount = searchResults?.features?.size
+        val featureCount = result?.features?.size
         if (featureCount != null && featureCount > 1) {
             mainViewController?.showActionViewAll()
             mainViewController?.hideOverflowMenu()
@@ -101,12 +102,12 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             }
         } else {
             if (searchResults != null) {
-                mainViewController?.showSearchResults(searchResults?.getFeatures())
+                mainViewController?.showSearchResults(searchResults?.features)
             }
         }
 
         if (vsm.viewState == ViewStateManager.ViewState.ROUTE_DIRECTION_LIST) {
-            routeViewController?.showDirectionList()
+            routeViewController?.showRouteDirectionList()
         }
     }
 
@@ -131,14 +132,14 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     override fun onSearchResultSelected(position: Int) {
         if (searchResults != null) {
-            mainViewController?.addSearchResultsToMap(searchResults?.getFeatures(), position)
+            mainViewController?.addSearchResultsToMap(searchResults?.features, position)
             mainViewController?.centerOnCurrentFeature(searchResults?.features)
         }
     }
 
     override fun onSearchResultTapped(position: Int) {
         if (searchResults != null) {
-            mainViewController?.addSearchResultsToMap(searchResults?.getFeatures(), position)
+            mainViewController?.addSearchResultsToMap(searchResults?.features, position)
             mainViewController?.centerOnFeature(searchResults?.features, position)
         }
     }
@@ -154,6 +155,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         mainViewController?.hideSearchResults()
         mainViewController?.hideReverseGeolocateResult()
         generateRoutePreview()
+    }
+
+    @Subscribe public fun onRouteCancelEvent(event: RouteCancelEvent) {
+        onBackPressed()
     }
 
     override fun onBackPressed() {
@@ -190,9 +195,9 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         mainViewController?.clearRoute()
         if (searchResults != null) {
             if (reverseGeo) {
-                mainViewController?.showReverseGeocodeFeature(searchResults?.getFeatures())
+                mainViewController?.showReverseGeocodeFeature(searchResults?.features)
             } else {
-                mainViewController?.showSearchResults(searchResults?.getFeatures())
+                mainViewController?.showSearchResults(searchResults?.features)
             }
         }
     }
@@ -204,7 +209,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     private fun onBackPressedStateRouteDirectionList() {
         vsm.viewState = ViewStateManager.ViewState.ROUTING
-        routeViewController?.collapseSlideLayout()
+        routeViewController?.hideRouteDirectionList()
     }
 
     override fun onClickViewList() {
@@ -221,16 +226,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         if (routingEnabled) {
             routeViewController?.onLocationChanged(event.location)
         }
-    }
-
-    override fun onSlidingPanelOpen() {
-        vsm.viewState = ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
-        routeViewController?.showDirectionList()
-    }
-
-    override fun onSlidingPanelCollapse() {
-        vsm.viewState = ViewStateManager.ViewState.ROUTING
-        routeViewController?.hideDirectionList()
     }
 
     override fun onCreate() {
@@ -340,7 +335,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     override fun onExitNavigation() {
         vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
         routingEnabled = false;
-        routeManager?.reverse = false
+        routeManager.reverse = false
         onFindMeButtonClick()
     }
 

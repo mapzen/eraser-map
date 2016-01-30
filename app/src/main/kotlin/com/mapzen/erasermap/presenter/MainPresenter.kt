@@ -1,7 +1,6 @@
 package com.mapzen.erasermap.presenter
 
 import android.location.Location
-import android.view.MotionEvent
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
@@ -34,8 +33,6 @@ public interface MainPresenter {
     public fun onViewAllSearchResults()
     public fun onBackPressed()
     public fun onRestoreViewState()
-    public fun onSlidingPanelOpen()
-    public fun onSlidingPanelCollapse()
     public fun onCreate()
     public fun onResume()
     public fun onPause()

@@ -8,7 +8,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.model.RoutePreviewEvent
+import com.mapzen.erasermap.model.event.RoutePreviewEvent
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.squareup.otto.Bus

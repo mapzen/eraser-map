@@ -5,7 +5,7 @@
     <dimen name="instruction_padding">4dp</dimen>
     <dimen name="footer_padding">8dp</dimen>
 
-    <dimen name="pager_height">96dp</dimen>
+    <dimen name="pager_height">84dp</dimen>
     <dimen name="font_big">28sp</dimen>
     <dimen name="font_big_2">24sp</dimen>
     <dimen name="font_medium">21sp</dimen>

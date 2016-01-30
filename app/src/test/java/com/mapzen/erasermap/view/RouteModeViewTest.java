@@ -211,13 +211,6 @@ public class RouteModeViewTest {
     }
 
     @Test
-    public void showRouteComplete_shouldHideInstructionList() throws Exception {
-        routeModeView.showRouteComplete();
-        assertThat(routeModeView.findViewById(R.id.instruction_list).getVisibility())
-                .isEqualTo(View.GONE);
-    }
-
-    @Test
     public void showReroute_shouldNotifyPresenter() throws Exception {
         MainPresenter presenter = Mockito.mock(MainPresenterImpl.class);
         Location location = getTestLocation();
@@ -230,19 +223,6 @@ public class RouteModeViewTest {
     public void shouldInjectRoutePresenter() throws Exception {
         assertThat(routeModeView.getRoutePresenter()).isNotNull();
     }
-
-    @Test
-    public void shouldSetSlideLayoutTouchListener() throws Exception {
-        assertThat(Shadows.shadowOf(routeModeView.findViewById(R.id.drag_area))
-                .getOnTouchListener()).isNotNull();
-    }
-
-    @Test
-    public void shouldInstructionHeaderTouchListener() throws Exception {
-        assertThat(Shadows.shadowOf(routeModeView.findViewById(R.id.instruction_route_header))
-                .getOnTouchListener()).isNotNull();
-    }
-
 
     @Test @SuppressLint("NewApi")
     public void shouldGenerateNotificationOnFirstInstruction() throws Exception {

@@ -8,6 +8,8 @@ import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.erasermap.EraserMapApplication
+import com.mapzen.erasermap.model.event.LocationChangeEvent
+import com.mapzen.erasermap.model.event.RouteEvent
 import com.mapzen.pelias.BoundingBox
 import com.mapzen.tangram.MapController
 import com.squareup.otto.Bus

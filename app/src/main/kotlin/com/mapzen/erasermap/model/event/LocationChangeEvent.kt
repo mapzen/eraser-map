@@ -1,4 +1,4 @@
-package com.mapzen.erasermap.model
+package com.mapzen.erasermap.model.event
 
 import android.location.Location
 

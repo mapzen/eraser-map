@@ -7,13 +7,11 @@ import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ListView
 import android.widget.TextView
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
@@ -33,7 +31,6 @@ import com.mapzen.tangram.TouchInput
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
-import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -42,7 +39,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         val VIEW_TAG: String = "Instruction_"
     }
 
-    public val SLIDING_PANEL_OFFSET_OPEN: Float = 0.1f
+    val mapListToggle: MapListToggleButton by lazy { findViewById(R.id.map_list_toggle) as MapListToggleButton }
+    val routeCancelButton: ImageView by lazy { findViewById(R.id.route_cancel) as ImageView }
+    val directionListView: DirectionListView by lazy { findViewById(R.id.direction_list_vew) as DirectionListView }
 
     var mapController: MapController? = null
         set(value) {
@@ -61,8 +60,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     var pager: ViewPager? = null
     var autoPage: Boolean = true
     var route: Route? = null
-    var slideLayout: SlidingUpPanelLayout? = null
-    var panelListener: SlidingUpPanelLayout.PanelSlideListener? = null
     var mainPresenter: MainPresenter? = null
     var voiceNavigationController: VoiceNavigationController? = null
     var notificationCreator: NotificationCreator? = null
@@ -99,7 +96,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             routePresenter?.onResumeButtonClick()
             pager?.currentItem = routePresenter?.currentInstructionIndex
         }
-        initSlideLayout(findViewById(R.id.sliding_layout))
+
+        mapListToggle.setOnClickListener { routePresenter?.onMapListToggleClick(mapListToggle.state) }
+        routeCancelButton.setOnClickListener { routePresenter?.onRouteCancelButtonClick() }
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
@@ -148,115 +147,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     private fun onPagerTouch(): Boolean {
         routePresenter?.onInstructionPagerTouch()
         return false
-    }
-
-    public fun pageForward(position: Int) {
-        pager?.currentItem = position + 1
-    }
-
-    public fun pageBackwards(position: Int) {
-        pager?.currentItem = position - 1
-    }
-
-    public fun initSlideLayout(view: View) {
-        slideLayout = view as SlidingUpPanelLayout
-        slideLayout?.setDragView(view.findViewById(R.id.drag_area))
-        panelListener = getPanelSlideListener(view)
-        slideLayout?.setPanelSlideListener(panelListener)
-        slideLayout?.isTouchEnabled = false
-        findViewById(R.id.drag_area).setOnTouchListener(object: View.OnTouchListener {
-            override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
-                slideLayout?.isTouchEnabled = true
-                return true
-            }
-        })
-        findViewById(R.id.instruction_route_header)
-                .setOnTouchListener(object: View.OnTouchListener {
-            override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
-                slideLayout?.isTouchEnabled = true
-                return true
-            }
-        })
-    }
-
-    public fun getPanelSlideListener(view: View): SlidingUpPanelLayout.PanelSlideListener {
-        return (object:SlidingUpPanelLayout.PanelSlideListener {
-
-            public override fun onPanelSlide(panel:View, slideOffset:Float) {
-                if (slideOffset >=  SLIDING_PANEL_OFFSET_OPEN) {
-                    mainPresenter?.onSlidingPanelOpen()
-                }
-
-                if (slideOffset <  SLIDING_PANEL_OFFSET_OPEN) {
-                    mainPresenter?.onSlidingPanelCollapse()
-                }
-
-                if (slideOffset == SLIDING_PANEL_OFFSET_OPEN) {
-                    slideLayout?.isTouchEnabled = false
-                }
-            }
-
-            public override fun onPanelExpanded(panel:View) { }
-
-            public override fun onPanelCollapsed(panel: View) {
-                slideLayout?.isTouchEnabled = false
-            }
-
-            public override fun onPanelAnchored(panel:View) { }
-
-            public override fun onPanelHidden(view:View) { }
-        })
-    }
-
-    override fun showDirectionList()  {
-        findViewById(R.id.footer).visibility = View.GONE
-        val listView = findViewById(R.id.instruction_list_view) as ListView
-        val instructionStrings = ArrayList<String>()
-        val instructionType= ArrayList<Int>()
-        val instructionDistance= ArrayList<Int>()
-
-        val instructions = route?.getRouteInstructions()
-        if (route is Route && instructions is ArrayList<Instruction>) {
-            for (instruction in  instructions) {
-                val humanInstruction = instruction.getHumanTurnInstruction()
-                if (humanInstruction is String) {
-                    instructionStrings.add(humanInstruction)
-                }
-                instructionType.add(instruction.turnInstruction)
-                instructionDistance.add(instruction.distance)
-            }
-
-            listView.adapter = DirectionListAdapter(listView.context, instructionStrings,
-                    instructionType, instructionDistance, false)
-        }
-        listView.setOnItemClickListener { adapterView, view, i, l ->
-            collapseSlideLayout()
-            pager?.currentItem = i - 1
-        }
-        findViewById(R.id.route_reverse).visibility = View.GONE
-        slideLayout?.setDragView(slideLayout?.findViewById(R.id.instruction_route_header))
-        setHeaderOrigins()
-    }
-
-    override fun hideDirectionList() {
-        findViewById(R.id.footer).visibility = View.VISIBLE
-        slideLayout?.setDragView(slideLayout?.findViewById(R.id.drag_area))
-    }
-
-    private fun setHeaderOrigins() {
-        (findViewById(R.id.starting_point) as TextView).setText(R.string.current_location)
-        (findViewById(R.id.destination) as TextView).text =
-                (findViewById(R.id.destination_name) as TextView).text
-    }
-
-    override fun collapseSlideLayout() {
-        if (slideLayoutIsExpanded()) {
-            slideLayout?.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED;
-        }
-    }
-
-    public fun slideLayoutIsExpanded() : Boolean {
-        return slideLayout?.panelState == SlidingUpPanelLayout.PanelState.EXPANDED;
     }
 
     private fun resumeAutoPaging() {
@@ -376,6 +266,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     override fun setCurrentInstruction(index: Int) {
         routePresenter?.currentInstructionIndex = index
         pager?.currentItem = index
+        directionListView.setCurrent(index)
         notificationCreator?.createNewNotification(
                 (findViewById(R.id.destination_name) as TextView).text.toString(),
                 route?.getRouteInstructions()?.get(index)?.getHumanTurnInstruction().toString())
@@ -429,10 +320,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     override fun showRouteComplete() {
         findViewById(R.id.footer_wrapper)?.visibility = View.GONE
         findViewById(R.id.resume)?.visibility = View.GONE
-        findViewById(R.id.instruction_list)?.visibility = View.GONE
-        (findViewById(R.id.sliding_layout) as SlidingUpPanelLayout).shadowHeight = 0
         notificationCreator?.killNotification()
-
     }
 
     override fun showReroute(location: Location) {
@@ -512,5 +400,21 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     public fun clearRoute() {
         routePresenter?.onRouteClear()
+    }
+
+    override fun showRouteDirectionList() {
+        val instructions = route?.getRouteInstructions()
+        if (instructions != null && instructions.size > 0) {
+            directionListView.setInstructions(instructions)
+            directionListView.setCurrent(pager?.currentItem ?: 0)
+            directionListView.visibility = View.VISIBLE
+        }
+
+        mapListToggle.state = MapListToggleButton.MapListState.MAP
+    }
+
+    override fun hideRouteDirectionList() {
+        directionListView.visibility = View.GONE
+        mapListToggle.state = MapListToggleButton.MapListState.LIST
     }
 }

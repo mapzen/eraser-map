@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.presenter
 
 import android.location.Location
+import com.mapzen.erasermap.view.MapListToggleButton
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
@@ -22,4 +23,6 @@ public interface RoutePresenter {
     public fun onInstructionSelected(instruction: Instruction)
     public fun onUpdateSnapLocation(location: Location)
     public fun onRouteClear()
+    public fun onMapListToggleClick(state: MapListToggleButton.MapListState)
+    public fun onRouteCancelButtonClick()
 }
