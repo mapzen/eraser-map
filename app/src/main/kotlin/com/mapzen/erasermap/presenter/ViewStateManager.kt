@@ -6,7 +6,8 @@ public open class ViewStateManager {
         SEARCH,
         SEARCH_RESULTS,
         ROUTE_PREVIEW,
-        ROUTING
+        ROUTING,
+        ROUTE_DIRECTION_LIST
     }
 
     public var viewState: ViewState = ViewState.DEFAULT

@@ -18,7 +18,8 @@ public class RoutePresenterTest {
     val routeEngine = RouteEngine()
     val routeListener = RouteEngineListener()
     val bus = Bus()
-    val routePresenter = RoutePresenterImpl(routeEngine, routeListener, bus)
+    val vsm = ViewStateManager()
+    val routePresenter = RoutePresenterImpl(routeEngine, routeListener, bus, vsm)
     val routeController = TestRouteController()
 
     @Before fun setUp() {

@@ -105,6 +105,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
                 mainViewController?.showSearchResults(searchResults?.features)
             }
         }
+
+        if (vsm.viewState == ViewStateManager.ViewState.ROUTE_DIRECTION_LIST) {
+            routeViewController?.showRouteDirectionList()
+        }
     }
 
     override fun onExpandSearchView() {
@@ -164,6 +168,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             ViewStateManager.ViewState.SEARCH_RESULTS -> onBackPressedStateSearchResults()
             ViewStateManager.ViewState.ROUTE_PREVIEW -> onBackPressedStateRoutePreview()
             ViewStateManager.ViewState.ROUTING -> onBackPressedStateRouting()
+            ViewStateManager.ViewState.ROUTE_DIRECTION_LIST -> onBackPressedStateRouteDirectionList()
         }
     }
 
@@ -202,6 +207,11 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         mainViewController?.hideRoutingMode()
     }
 
+    private fun onBackPressedStateRouteDirectionList() {
+        vsm.viewState = ViewStateManager.ViewState.ROUTING
+        routeViewController?.hideRouteDirectionList()
+    }
+
     override fun onClickViewList() {
         mainViewController?.showDirectionList()
     }
@@ -233,19 +243,23 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     }
 
     override fun onResume() {
-        if (!isRouting()) {
+        if (!isRouting() && !isRoutingDirectionList()) {
             mapzenLocation.startLocationUpdates()
         }
     }
 
     override fun onPause() {
-        if (!isRouting()) {
+        if (!isRouting() && !isRoutingDirectionList()) {
             mapzenLocation.stopLocationUpdates()
         }
     }
 
     private fun isRouting(): Boolean {
         return vsm.viewState == ViewStateManager.ViewState.ROUTING
+    }
+
+    private fun isRoutingDirectionList(): Boolean {
+        return vsm.viewState == ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
     }
 
     override fun onFindMeButtonClick() {

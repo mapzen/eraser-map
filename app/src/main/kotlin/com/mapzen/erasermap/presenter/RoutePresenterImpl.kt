@@ -11,7 +11,8 @@ import com.squareup.otto.Bus
 
 public class RoutePresenterImpl(private val routeEngine: RouteEngine,
         private val routeEngineListener: RouteEngineListener,
-        private val bus: Bus) : RoutePresenter {
+        private val bus: Bus,
+        private val vsm: ViewStateManager) : RoutePresenter {
 
     override var routeController: RouteViewController? = null
         set(value) {
@@ -80,8 +81,10 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
     override fun onMapListToggleClick(state: MapListToggleButton.MapListState) {
         if (state == MapListToggleButton.MapListState.LIST) {
             routeController?.showRouteDirectionList()
+            vsm.viewState = ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
         } else {
             routeController?.hideRouteDirectionList()
+            vsm.viewState = ViewStateManager.ViewState.ROUTING
         }
     }
 
