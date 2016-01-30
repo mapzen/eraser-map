@@ -78,7 +78,7 @@ public class TestRouteController : RouteViewController {
     override fun playStartInstructionAlert() {
     }
 
-    override fun startRouteDirectionListActivity() {
+    override fun showRouteDirectionList() {
         startedRouteDirectionListActivity = true
     }
 }

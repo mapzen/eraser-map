@@ -10,20 +10,15 @@ import com.mapzen.erasermap.R
 import com.mapzen.erasermap.util.DisplayHelper
 import java.util.ArrayList
 
-public class DirectionListAdapter(context: Context, strings: ArrayList<String>?,
-        types: ArrayList<Int>?, distances: ArrayList<Int>?,
-        reverse : Boolean?) : BaseAdapter() {
+public class DirectionListAdapter(val context: Context, val strings: ArrayList<String>?,
+        val types: ArrayList<Int>?, val distances: ArrayList<Int>?,
+        val reverse : Boolean?, val showCurrentLocation : Boolean = true) : BaseAdapter() {
+
     private final var CURRENT_LOCATION_OFFSET =  1
-    private var instruction_strings: ArrayList<String>? = strings
-    private var instruction_types: ArrayList<Int>? = types
-    private var instruction_distances: ArrayList<Int>? = distances
-    private var context: Context = context
-    private var reverse : Boolean? = reverse
 
     override fun getCount(): Int {
-        var size = if (instruction_strings != null) (instruction_strings!!.size()
-                + CURRENT_LOCATION_OFFSET) else 0
-        return size
+        val size = strings?.size ?: 0
+        return if (showCurrentLocation) size + CURRENT_LOCATION_OFFSET else size
     }
 
     override fun getItemId(position: Int): Long {
@@ -35,43 +30,54 @@ public class DirectionListAdapter(context: Context, strings: ArrayList<String>?,
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
-        var view: View = View.inflate(context, R.layout.direction_list_item, null)
-        if(reverse == true) {
+        val view = View.inflate(context, R.layout.direction_list_item, null)
+        if (!showCurrentLocation) {
+            setSimpleDirectionListItem(position, view)
+        } else if(reverse == true) {
             setReversedDirectionListItem(position, view)
         } else {
             setDirectionListItem(position, view)
         }
+
         return view
     }
 
     private fun setReversedDirectionListItem(position : Int, view : View)  {
-        if(position == instruction_strings?.size()) {
+        if(position == strings?.size()) {
             setListItemToCurrentLocation(view)
         } else {
-            val distance = instruction_distances?.get(position) ?: 0
-            val iconId: Int = DisplayHelper.getRouteDrawable(context,
-                    instruction_types?.get(position))
+            val distance = distances?.get(position) ?: 0
+            val iconId: Int = DisplayHelper.getRouteDrawable(context, types?.get(position))
 
-            (view.findViewById(R.id.simple_instruction) as TextView).setText(
-                    instruction_strings?.get(position).toString())
+            (view.findViewById(R.id.simple_instruction) as TextView).text =
+                    strings?.get(position).toString()
             (view.findViewById(R.id.distance) as DistanceView).distanceInMeters = distance
             (view.findViewById(R.id.icon) as ImageView).setImageResource(iconId)
         }
     }
 
     private fun setDirectionListItem(position : Int, view : View) {
-        if (position == 0 ) {
+        if (position == 0) {
             setListItemToCurrentLocation(view)
         } else {
-            var distance = instruction_distances?.get(position - CURRENT_LOCATION_OFFSET) ?: 0
+            var distance = distances?.get(position - CURRENT_LOCATION_OFFSET) ?: 0
             var iconId = DisplayHelper.getRouteDrawable(context,
-                    instruction_types?.get(position - CURRENT_LOCATION_OFFSET))
+                    types?.get(position - CURRENT_LOCATION_OFFSET))
 
-            (view.findViewById(R.id.simple_instruction) as TextView).setText(
-                    instruction_strings?.get(position - CURRENT_LOCATION_OFFSET).toString())
+            (view.findViewById(R.id.simple_instruction) as TextView).text =
+                    strings?.get(position - CURRENT_LOCATION_OFFSET).toString()
             (view.findViewById(R.id.distance) as DistanceView).distanceInMeters = distance
             (view.findViewById(R.id.icon) as ImageView).setImageResource(iconId)
         }
+    }
+
+    private fun setSimpleDirectionListItem(position: Int, view: View) {
+        var distance = distances?.get(position) ?: 0
+        var iconId = DisplayHelper.getRouteDrawable(context, types?.get(position))
+        (view.findViewById(R.id.simple_instruction) as TextView).text =
+                strings?.get(position).toString()
+        (view.findViewById(R.id.distance) as DistanceView).distanceInMeters = distance
+        (view.findViewById(R.id.icon) as ImageView).setImageResource(iconId)
     }
 
     private fun setListItemToCurrentLocation(view : View) {

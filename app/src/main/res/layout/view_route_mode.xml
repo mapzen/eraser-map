@@ -73,7 +73,7 @@
     </RelativeLayout>
 
     <View
-        android:id="@+id/divider"
+        android:id="@+id/divider_1"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_below="@id/footer_wrapper"
@@ -83,10 +83,11 @@
         android:id="@+id/instruction_pager"
         android:layout_width="match_parent"
         android:layout_height="@dimen/pager_height"
-        android:layout_below="@id/divider"
+        android:layout_below="@id/divider_1"
         android:keepScreenOn="true" />
 
     <View
+        android:id="@+id/divider_2"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_below="@id/instruction_pager"
@@ -112,6 +113,14 @@
         android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
         android:text="@string/resume"
+        android:visibility="gone" />
+
+    <com.mapzen.erasermap.view.DirectionListView
+        android:id="@+id/direction_list_vew"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/divider_1"
+        android:background="@android:color/white"
         android:visibility="gone" />
 
 </RelativeLayout>

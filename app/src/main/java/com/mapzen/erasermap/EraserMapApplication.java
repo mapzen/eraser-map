@@ -3,7 +3,6 @@ package com.mapzen.erasermap;
 import com.mapzen.erasermap.view.DistanceView;
 import com.mapzen.erasermap.view.InitActivity;
 import com.mapzen.erasermap.view.MainActivity;
-import com.mapzen.erasermap.view.RouteDirectionListActivity;
 import com.mapzen.erasermap.view.RouteModeView;
 import com.mapzen.erasermap.view.SearchResultsAdapter;
 import com.mapzen.erasermap.view.SettingsActivity;
@@ -24,7 +23,6 @@ public class EraserMapApplication extends Application {
         void inject(RouteModeView routeModeView);
         void inject(SettingsActivity settingsFragment);
         void inject(DistanceView distanceView);
-        void inject(RouteDirectionListActivity routeDirectionListActivity);
     }
 
     private ApplicationComponent component;

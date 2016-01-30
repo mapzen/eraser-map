@@ -199,7 +199,8 @@ public class RouteModeViewTest {
     @Test
     public void showRouteComplete_shouldHideRouteFooter() throws Exception {
         routeModeView.showRouteComplete();
-        assertThat(routeModeView.findViewById(R.id.footer).getVisibility()).isEqualTo(View.GONE);
+        assertThat(routeModeView.findViewById(R.id.footer_wrapper).getVisibility())
+                .isEqualTo(View.GONE);
     }
 
     @Test
