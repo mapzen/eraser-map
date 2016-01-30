@@ -31,6 +31,7 @@ public interface MainPresenter {
     public fun onClickStartNavigation()
     public fun onQuerySubmit()
     public fun onViewAllSearchResults()
+    public fun updateLocation()
     public fun onBackPressed()
     public fun onRestoreViewState()
     public fun onCreate()
