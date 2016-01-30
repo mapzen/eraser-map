@@ -39,7 +39,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         val VIEW_TAG: String = "Instruction_"
     }
 
-    val routeViewListButton: ImageView by lazy { findViewById(R.id.route_view_list) as ImageView }
+    val mapListToggle: MapListToggleButton by lazy { findViewById(R.id.map_list_toggle) as MapListToggleButton }
     val routeCancelButton: ImageView by lazy { findViewById(R.id.route_cancel) as ImageView }
     val directionListView: DirectionListView by lazy { findViewById(R.id.direction_list_vew) as DirectionListView }
 
@@ -97,7 +97,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             pager?.currentItem = routePresenter?.currentInstructionIndex
         }
 
-        routeViewListButton.setOnClickListener { routePresenter?.onRouteViewListButtonClick() }
+        mapListToggle.setOnClickListener { routePresenter?.onMapListToggleClick(mapListToggle.state) }
         routeCancelButton.setOnClickListener { routePresenter?.onRouteCancelButtonClick() }
     }
 
@@ -407,5 +407,12 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             directionListView.setInstructions(instructions)
             directionListView.visibility = View.VISIBLE
         }
+
+        mapListToggle.state = MapListToggleButton.MapListState.MAP
+    }
+
+    override fun hideRouteDirectionList() {
+        directionListView.visibility = View.GONE
+        mapListToggle.state = MapListToggleButton.MapListState.LIST
     }
 }

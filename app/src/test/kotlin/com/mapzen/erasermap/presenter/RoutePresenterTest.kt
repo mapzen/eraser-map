@@ -4,6 +4,7 @@ import android.location.Location
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getFixture
 import com.mapzen.erasermap.model.event.RouteCancelEvent
+import com.mapzen.erasermap.view.MapListToggleButton
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Route
@@ -113,9 +114,12 @@ public class RoutePresenterTest {
         assertThat(routeController.isRouteLineVisible).isFalse()
     }
 
-    @Test fun onRouteViewListButtonClick_shouldStartRouteDirectionListActivity() {
-        routePresenter.onRouteViewListButtonClick()
-        assertThat(routeController.startedRouteDirectionListActivity).isTrue()
+    @Test fun onMapListToggleClick_shouldToggleViewState() {
+        routePresenter.onMapListToggleClick(MapListToggleButton.MapListState.LIST)
+        assertThat(routeController.isDirectionListVisible).isTrue()
+
+        routePresenter.onMapListToggleClick(MapListToggleButton.MapListState.MAP)
+        assertThat(routeController.isDirectionListVisible).isFalse()
     }
 
     @Test fun onRouteCancelButtonClick_shouldPostRouteCancelEvent() {

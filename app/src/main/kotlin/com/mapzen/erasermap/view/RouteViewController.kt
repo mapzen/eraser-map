@@ -23,4 +23,5 @@ public interface RouteViewController {
     public fun hideRouteIcon()
     public fun hideRouteLine()
     public fun showRouteDirectionList()
+    public fun hideRouteDirectionList()
 }

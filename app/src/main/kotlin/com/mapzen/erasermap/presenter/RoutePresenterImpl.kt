@@ -2,6 +2,7 @@ package com.mapzen.erasermap.presenter
 
 import android.location.Location
 import com.mapzen.erasermap.model.event.RouteCancelEvent
+import com.mapzen.erasermap.view.MapListToggleButton
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Instruction
@@ -76,8 +77,12 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
         routeController?.hideRouteLine()
     }
 
-    override fun onRouteViewListButtonClick() {
-        routeController?.showRouteDirectionList()
+    override fun onMapListToggleClick(state: MapListToggleButton.MapListState) {
+        if (state == MapListToggleButton.MapListState.LIST) {
+            routeController?.showRouteDirectionList()
+        } else {
+            routeController?.hideRouteDirectionList()
+        }
     }
 
     override fun onRouteCancelButtonClick() {

@@ -11,8 +11,8 @@
         android:layout_height="wrap_content"
         android:background="@android:color/white">
 
-        <ImageView
-            android:id="@+id/route_view_list"
+        <com.mapzen.erasermap.view.MapListToggleButton
+            android:id="@+id/map_list_toggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@id/route_view_list"
+            android:layout_toRightOf="@id/map_list_toggle"
             android:layout_toLeftOf="@id/route_cancel"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
