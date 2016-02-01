@@ -150,6 +150,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     @Subscribe public fun onRoutePreviewEvent(event: RoutePreviewEvent) {
         vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
+        reverseGeo = false
         destination = event.destination
         mainViewController?.collapseSearchView()
         mainViewController?.hideSearchResults()
