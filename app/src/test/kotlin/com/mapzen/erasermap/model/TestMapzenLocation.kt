@@ -1,9 +1,9 @@
 package com.mapzen.erasermap.model
 
 import android.location.Location
-import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.pelias.BoundingBox
 import com.mapzen.tangram.MapController
+import org.mockito.Mockito
 
 public class TestMapzenLocation : MapzenLocation {
     public var connected = false
@@ -19,7 +19,7 @@ public class TestMapzenLocation : MapzenLocation {
     }
 
     override fun getLastLocation(): Location? {
-        return TestHelper.getTestLocation()
+        return Mockito.mock(Location::class.java)
     }
 
     override fun getLon(): Double {
