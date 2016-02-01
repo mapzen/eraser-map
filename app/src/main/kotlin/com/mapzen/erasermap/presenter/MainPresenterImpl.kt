@@ -9,6 +9,12 @@ import com.mapzen.erasermap.model.event.LocationChangeEvent
 import com.mapzen.erasermap.model.event.RouteCancelEvent
 import com.mapzen.erasermap.model.event.RouteEvent
 import com.mapzen.erasermap.model.event.RoutePreviewEvent
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.DEFAULT
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_PREVIEW
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTING
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
 import com.mapzen.erasermap.view.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
@@ -86,7 +92,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             val current = searchResults?.features?.get(0)
             if (current is Feature) {
                 features.add(current)
-                mainViewController?.overridePlaceFeature(features?.get(0))
+                mainViewController?.overridePlaceFeature(features.get(0))
             }
             searchResults?.features = features
             mainViewController?.showPlaceSearchFeature(features)
@@ -94,21 +100,41 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     }
 
     override fun onRestoreViewState() {
-        if (destination != null) {
-            if(routingEnabled) {
-                resumeRoutingMode()
-            } else {
-                generateRoutePreview()
-            }
-        } else {
-            if (searchResults != null) {
-                mainViewController?.showSearchResults(searchResults?.features)
-            }
+        when (vsm.viewState) {
+            DEFAULT -> onRestoreViewStateDefault()
+            SEARCH -> onRestoreViewStateSearch()
+            SEARCH_RESULTS -> onRestoreViewStateSearchResults()
+            ROUTE_PREVIEW -> onRestoreViewStateRoutePreview()
+            ROUTING -> onRestoreViewStateRouting()
+            ROUTE_DIRECTION_LIST -> onRestoreViewStateRouteDirectionList()
         }
+   }
 
-        if (vsm.viewState == ViewStateManager.ViewState.ROUTE_DIRECTION_LIST) {
-            routeViewController?.showRouteDirectionList()
+    private fun onRestoreViewStateDefault() {
+        // Do nothing.
+    }
+
+    private fun onRestoreViewStateSearch() {
+        // Do nothing.
+    }
+
+    private fun onRestoreViewStateSearchResults() {
+        if (searchResults?.features != null) {
+            mainViewController?.showSearchResults(searchResults?.features)
         }
+    }
+
+    private fun onRestoreViewStateRoutePreview() {
+        generateRoutePreview()
+    }
+
+    private fun onRestoreViewStateRouting() {
+        resumeRoutingMode()
+    }
+
+    private fun onRestoreViewStateRouteDirectionList() {
+        resumeRoutingMode()
+        routeViewController?.showRouteDirectionList()
     }
 
     override fun onExpandSearchView() {
@@ -164,12 +190,12 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     override fun onBackPressed() {
         when (vsm.viewState) {
-            ViewStateManager.ViewState.DEFAULT -> onBackPressedStateDefault()
-            ViewStateManager.ViewState.SEARCH -> onBackPressedStateSearch()
-            ViewStateManager.ViewState.SEARCH_RESULTS -> onBackPressedStateSearchResults()
-            ViewStateManager.ViewState.ROUTE_PREVIEW -> onBackPressedStateRoutePreview()
-            ViewStateManager.ViewState.ROUTING -> onBackPressedStateRouting()
-            ViewStateManager.ViewState.ROUTE_DIRECTION_LIST -> onBackPressedStateRouteDirectionList()
+            DEFAULT -> onBackPressedStateDefault()
+            SEARCH -> onBackPressedStateSearch()
+            SEARCH_RESULTS -> onBackPressedStateSearchResults()
+            ROUTE_PREVIEW -> onBackPressedStateRoutePreview()
+            ROUTING -> onBackPressedStateRouting()
+            ROUTE_DIRECTION_LIST -> onBackPressedStateRouteDirectionList()
         }
     }
 

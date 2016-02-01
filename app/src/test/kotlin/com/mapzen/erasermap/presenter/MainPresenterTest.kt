@@ -50,7 +50,7 @@ public class MainPresenterTest {
     @Test fun onSearchResultsAvailable_shouldShowSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
-        result.setFeatures(features)
+        result.features = features
         presenter.onSearchResultsAvailable(result)
         assertThat(mainController.searchResults).isEqualTo(features)
     }
@@ -58,7 +58,7 @@ public class MainPresenterTest {
     @Test fun onReverseGeocodeResultsAvailable_shouldShowSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
-        result.setFeatures(features)
+        result.features = features
         presenter.onReverseGeocodeResultsAvailable(result)
         assertThat(mainController.isReverseGeocodeVisible).isTrue()
     }
@@ -66,7 +66,7 @@ public class MainPresenterTest {
     @Test fun onPlaceSearchResultsAvailable_shouldShowSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
-        result.setFeatures(features)
+        result.features = features
         presenter.onPlaceSearchResultsAvailable(result)
         assertThat(mainController.isReverseGeocodeVisible).isTrue()
     }
@@ -76,7 +76,7 @@ public class MainPresenterTest {
         val features = ArrayList<Feature>()
         val feature = Feature()
         features.add(feature)
-        result.setFeatures(features)
+        result.features = features
         presenter.onPlaceSearchResultsAvailable(result)
         assertThat(mainController.isReverseGeocodeVisible).isTrue()
     }
@@ -86,7 +86,7 @@ public class MainPresenterTest {
         val features = ArrayList<Feature>()
         val feature = Feature()
         features.add(feature)
-        result.setFeatures(features)
+        result.features = features
         presenter.onPlaceSearchResultsAvailable(result)
         assertThat(mainController.isPlaceResultOverridden).isTrue()
     }
@@ -94,7 +94,7 @@ public class MainPresenterTest {
     @Test fun onRestoreViewState_shouldRestorePreviousSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
-        result.setFeatures(features)
+        result.features = features
         presenter.onSearchResultsAvailable(result)
 
         val newController = TestMainController()
@@ -113,6 +113,7 @@ public class MainPresenterTest {
 
     @Test fun onRestoreViewState_shouldShowRoutingMode() {
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.vsm.viewState = ROUTING
         val newController = TestMainController()
         presenter.mainViewController = newController
         presenter.routingEnabled = true
@@ -120,10 +121,19 @@ public class MainPresenterTest {
         assertThat(newController.isRoutingModeVisible).isTrue()
     }
 
+    @Test fun onRestoreViewState_shouldNotTriggerRoutePreviewIfNotCorrectViewState() {
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.onBackPressed()
+        val newController = TestMainController()
+        presenter.mainViewController = newController
+        presenter.onRestoreViewState()
+        assertThat(newController.isRoutePreviewVisible).isFalse()
+    }
+
     @Test fun onCollapseSearchView_shouldHideSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
-        result.setFeatures(features)
+        result.features = features
         presenter.onSearchResultsAvailable(result)
         presenter.onCollapseSearchView()
         assertThat(mainController.searchResults).isNull()
@@ -238,7 +248,7 @@ public class MainPresenterTest {
     @Test fun onSearchResultSelected_shouldCenterOnCurrentFeature() {
         val result = Result()
         val features = ArrayList<Feature>()
-        result.setFeatures(features)
+        result.features = features
         presenter.onSearchResultsAvailable(result)
         presenter.onSearchResultSelected(0)
         assertThat(mainController.isCenteredOnCurrentFeature).isTrue()
@@ -247,7 +257,7 @@ public class MainPresenterTest {
     @Test fun onSearchResultTapped_shouldCenterOnCurrentFeature() {
         val result = Result()
         val features = ArrayList<Feature>()
-        result.setFeatures(features)
+        result.features = features
         presenter.onSearchResultsAvailable(result)
         presenter.onSearchResultTapped(0)
         assertThat(mainController.isCenteredOnTappedFeature).isTrue()
