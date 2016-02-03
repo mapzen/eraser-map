@@ -11,6 +11,7 @@
 
     <style name="EraserMapActionBarStyle" parent="Widget.AppCompat.Light.ActionBar">
         <item name="contentInsetStart">0dp</item>
+        <item name="background">@android:color/white</item>
     </style>
     
     <style name="EraserMapSearchViewStyle" parent="Widget.AppCompat.SearchView">
