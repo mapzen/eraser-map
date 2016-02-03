@@ -11,18 +11,11 @@ import com.mapzen.erasermap.R
 public class TimeView(context: Context, attrs: AttributeSet) : TextView(context, attrs) {
     public var timeInMinutes: Int = 0
         set (value) {
-            if (noTime) {
-                text = ""
-            } else if (value < 1) {
+            if (value < 1) {
                 text = context.getString(R.string.less_than_one_minute)
             } else {
                 formatTime(value)
             }
-        }
-
-    public var noTime: Boolean = false
-        set (value) {
-            field = value
         }
 
     private fun formatTime(value: Int) {

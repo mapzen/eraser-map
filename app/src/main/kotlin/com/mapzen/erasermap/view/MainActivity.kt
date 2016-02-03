@@ -652,6 +652,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             if (routeModeView.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
                 routePreviewView.visibility = View.VISIBLE
+                findViewById(R.id.route_preview_distance_time_view).visibility = View.VISIBLE
                 zoomToShowRoute(route)
             }
         })
@@ -719,12 +720,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun failure(statusCode: Int) {
-        routeManager?.route = null
-        routePreviewView.route = null
         runOnUiThread ({
             if (routeModeView.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
                 routePreviewView.visibility = View.VISIBLE
+                findViewById(R.id.route_preview_distance_time_view).visibility = View.GONE
                 handleRouteFailure()
             }
         })
