@@ -34,7 +34,6 @@ public class InitActivity : AppCompatActivity() {
         app?.component()?.inject(this)
         initCrashReportService()
         setContentView(R.layout.splash_screen)
-        supportActionBar.hide()
         animate(0)
         (findViewById(R.id.build_number) as TextView).text = BuildConfig.BUILD_NUMBER
     }

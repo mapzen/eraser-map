@@ -119,6 +119,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initCompass()
         initReverseButton()
         initMapRotateListener()
+        initSearchView()
         presenter?.onCreate()
         presenter?.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -295,8 +296,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         optionsMenu = menu
+        return true
+    }
 
-        val searchView = menu.findItem(R.id.action_search).actionView
+    private fun initSearchView() {
+        val searchView = findViewById(R.id.search) as PeliasSearchView
         val listView = findViewById(R.id.auto_complete) as AutoCompleteListView
         val emptyView = findViewById(android.R.id.empty)
 
@@ -313,7 +317,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             searchView.setIconifiedByDefault(false)
 
             searchView.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
-            searchView.queryHint = "Search for place or address"
             listView.emptyView = emptyView
             restoreCurrentSearchTerm(searchView)
 
@@ -323,8 +326,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 }
             }
         }
-
-        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

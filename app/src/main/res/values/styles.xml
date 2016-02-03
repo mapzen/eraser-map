@@ -1,19 +1,21 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="colorAccent">@color/color_accent</item>
-        <item name="searchViewStyle">@style/EraserMapSearchViewStyle</item>
-        <item name="actionBarStyle">@style/EraserMapActionBarStyle</item>
-    </style>
-
-    <style name="EraserMapActionBarStyle" parent="Widget.AppCompat.Light.ActionBar">
-        <item name="contentInsetStart">0dp</item>
     </style>
     
     <style name="EraserMapSearchViewStyle" parent="Widget.AppCompat.SearchView">
-        <item name="searchIcon">@drawable/ic_search</item>
+        <item name="searchIcon">@android:drawable/ic_menu_search</item>
+        <item name="closeIcon">@android:drawable/ic_menu_close_clear_cancel</item>
+        <item name="android:theme">@style/SearchTextStyle</item>
     </style>
+
+    <style name="SearchTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">@color/gray</item>
+        <item name="android:textColorHint">@color/light_gray</item>
+    </style>
+
 </resources>

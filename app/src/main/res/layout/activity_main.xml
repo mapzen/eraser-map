@@ -10,6 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <include layout="@layout/app_bar_main" />
+
     <com.mapzen.erasermap.view.CompassView
         android:id="@+id/compass_view"
         android:layout_width="44dp"
@@ -58,6 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white"
+        android:paddingTop="?attr/actionBarSize"
         android:visibility="gone" />
 
     <TextView

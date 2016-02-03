@@ -29,4 +29,5 @@
     <string name="less_than_one_minute">&lt;1 min</string>
     <string name="recalculating">Recalculating</string>
     <string name="diamond_separator">" ◆ "</string>
+    <string name="search_hint">Search for place or address</string>
 </resources>
