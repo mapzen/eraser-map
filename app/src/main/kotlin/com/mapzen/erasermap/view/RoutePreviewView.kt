@@ -46,7 +46,7 @@ public class RoutePreviewView : RelativeLayout {
         set (value) {
             field = value
             val distance = value?.getTotalDistance() ?: 0
-            distancePreview?.distanceInMeters =  distance
+            distancePreview?.distanceInMeters = distance
 
             val time = value?.getTotalTime() ?: 0
             timePreview?.timeInMinutes = time / 60

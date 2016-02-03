@@ -652,6 +652,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             if (routeModeView.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
                 routePreviewView.visibility = View.VISIBLE
+                findViewById(R.id.route_preview_distance_time_view).visibility = View.VISIBLE
                 zoomToShowRoute(route)
             }
         })
@@ -687,19 +688,48 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         mapController?.setMapZoom(zoomLevel.toFloat() * zoomRatio)
         mapController?.setMapZoom(zoomLevel.toFloat() * zoomRatio)
 
-        hideStartPins()
+        hideRoutePins()
+        showRoutePins(LngLat(start.longitude, start.latitude),
+                LngLat(finish.longitude, finish.latitude))
+    }
+
+    private fun showRoutePins(start: LngLat, end: LngLat) {
         startPin = MapData("route_start")
         endPin = MapData("route_stop")
         Tangram.addDataSource(startPin)
         Tangram.addDataSource(endPin)
 
         val properties = com.mapzen.tangram.Properties()
-        startPin?.addPoint(properties, LngLat(start.longitude, start.latitude))
-        endPin?.addPoint(properties, LngLat(finish.longitude, finish.latitude))
+        startPin?.addPoint(properties, start)
+        endPin?.addPoint(properties, end)
         mapController?.requestRender()
     }
 
+    private fun handleRouteFailure() {
+        hideRoutePins()
+        routeModeView.hideRouteLine()
+
+        val origin = routeManager?.origin
+        val destination = routeManager?.destination
+        if (origin is Location && destination is Feature) {
+            val destinationFeature = SimpleFeature.fromFeature(destination)
+            val start = LngLat(origin.longitude, origin.latitude)
+            val end = LngLat(destinationFeature.lng(), destinationFeature.lat())
+            showRoutePins(start, end)
+        }
+    }
+
     override fun failure(statusCode: Int) {
+        runOnUiThread ({
+            if (routeModeView.visibility != View.VISIBLE) {
+                supportActionBar?.hide()
+                routePreviewView.visibility = View.VISIBLE
+                findViewById(R.id.route_preview_distance_time_view).visibility = View.GONE
+                handleRouteFailure()
+            }
+        })
+
+        updateRoutePreview()
         hideProgress()
         Toast.makeText(this@MainActivity, "No route found", Toast.LENGTH_LONG).show()
     }
@@ -709,7 +739,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             supportActionBar?.show()
             routeManager?.reverse = false
             findViewById(R.id.route_preview).visibility = View.GONE
-            hideStartPins()
+            hideRoutePins()
         }
     }
 
@@ -794,7 +824,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         showRoutingMode(feature)
         routeModeView.startRoute(feature, routeManager?.route)
         setRoutingCamera()
-        hideStartPins()
+        hideRoutePins()
     }
 
     override fun resumeRoutingMode(feature: Feature) {
@@ -906,7 +936,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         findViewById(R.id.find_me).visibility = View.GONE
     }
 
-    private fun hideStartPins() {
+    private fun hideRoutePins() {
         startPin?.clear()
         endPin?.clear()
         startPin = null

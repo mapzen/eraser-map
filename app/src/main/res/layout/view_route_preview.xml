@@ -31,6 +31,7 @@
         android:background="@android:color/white">
 
         <LinearLayout
+            android:id="@+id/route_preview_distance_time_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
