@@ -45,11 +45,18 @@ public class RoutePreviewView : RelativeLayout {
     public var route: Route? = null
         set (value) {
             field = value
-            val distance = value?.getTotalDistance() ?: 0
-            distancePreview?.distanceInMeters =  distance
+            if (value != null) {
+                val distance = value?.getTotalDistance() ?: 0
+                distancePreview?.distanceInMeters = distance
 
-            val time = value?.getTotalTime() ?: 0
-            timePreview?.timeInMinutes = time / 60
+                val time = value?.getTotalTime() ?: 0
+                timePreview?.noTime = false
+                timePreview?.timeInMinutes = time / 60
+            } else {
+                distancePreview?.distanceInMeters = 0
+                timePreview?.noTime = true
+                timePreview?.timeInMinutes = 0
+            }
         }
 
     public constructor(context: Context) : super(context) {
