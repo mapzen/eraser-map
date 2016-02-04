@@ -472,6 +472,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun drawTappedPoiPin() {
+        hideSearchResultsPager()
+
         var lngLat: LngLat? = null
 
         val pointX = poiTapPoint?.get(0)?.toDouble()

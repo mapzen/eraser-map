@@ -94,6 +94,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         routePresenter?.routeController = this
         (findViewById(R.id.resume) as Button).setOnClickListener {
             routePresenter?.onResumeButtonClick()
+            mainPresenter?.updateLocation()
             pager?.currentItem = routePresenter?.currentInstructionIndex
         }
 
@@ -350,6 +351,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         initDestination(destination)
         initInstructionAdapter()
         this.visibility = View.VISIBLE
+
         routePresenter?.onRouteResume(route)
     }
 
@@ -357,6 +359,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         val startingLocation = route?.getRouteInstructions()?.get(0)?.location
         if (startingLocation is Location) {
             centerMapOnLocation(startingLocation)
+            showRouteIcon(startingLocation)
         }
     }
 

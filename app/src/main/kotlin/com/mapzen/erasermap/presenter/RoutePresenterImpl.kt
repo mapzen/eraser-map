@@ -39,6 +39,13 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
 
     override fun onRouteResume(route: Route?) {
         routeController?.setCurrentInstruction(currentInstructionIndex)
+        if (!isTrackingCurrentLocation) {
+            routeController?.showResumeButton()
+        }
+        val location = route?.getRouteInstructions()?.get(currentInstructionIndex)?.location
+        if (location != null) {
+            routeController?.showRouteIcon(location)
+        }
     }
 
     override fun onMapPan(deltaX: Float, deltaY: Float) {
@@ -52,7 +59,6 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
     override fun onResumeButtonClick() {
         isTrackingCurrentLocation = true
         routeController?.hideResumeButton()
-        routeController?.centerMapOnCurrentLocation()
     }
 
     override fun onInstructionPagerTouch() {

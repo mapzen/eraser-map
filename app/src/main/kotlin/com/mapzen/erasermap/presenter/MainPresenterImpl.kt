@@ -185,6 +185,13 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         onBackPressed()
     }
 
+    override fun updateLocation() {
+        val location = mapzenLocation.getLastLocation()
+        if (location != null) {
+            routeViewController?.onLocationChanged(location)
+        }
+    }
+
     override fun onBackPressed() {
         when (vsm.viewState) {
             DEFAULT -> onBackPressedStateDefault()
