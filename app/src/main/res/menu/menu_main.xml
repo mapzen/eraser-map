@@ -11,7 +11,7 @@
     <item
         android:id="@+id/action_view_all"
         android:title="@string/action_view_all"
-        android:icon="@drawable/ic_action_view_all_normal"
+        android:icon="@drawable/ic_list"
         android:visible="false"
         app:showAsAction="always" />
 

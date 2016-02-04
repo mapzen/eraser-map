@@ -16,5 +16,7 @@
     
     <style name="EraserMapSearchViewStyle" parent="Widget.AppCompat.SearchView">
         <item name="searchIcon">@drawable/ic_search</item>
+        <item name="searchHintIcon">@drawable/ic_search</item>
+        <item name="closeIcon">@drawable/ic_cancel</item>
     </style>
 </resources>
