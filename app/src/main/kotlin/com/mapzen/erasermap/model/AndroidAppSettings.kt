@@ -21,6 +21,7 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
         public val KEY_LABEL_DEBUG_ENABLED: String = "checkbox_label_debug"
         public val KEY_TANGRAM_INFOS_DEBUG_ENABLED: String = "checkbox_tangram_infos_debug"
         public val KEY_BUILD_NUMBER: String = "edittext_build_number"
+        public val KEY_ERASE_HISTORY: String = "edittext_erase_history"
     }
 
     private val prefs = PreferenceManager.getDefaultSharedPreferences(application)

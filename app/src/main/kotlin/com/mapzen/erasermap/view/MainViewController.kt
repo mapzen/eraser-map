@@ -18,8 +18,6 @@ public interface MainViewController {
     public fun showPlaceSearchFeature(features: List<Feature>)
     public fun showProgress()
     public fun hideProgress()
-    public fun showOverflowMenu()
-    public fun hideOverflowMenu()
     public fun showActionViewAll()
     public fun hideActionViewAll()
     public fun collapseSearchView()

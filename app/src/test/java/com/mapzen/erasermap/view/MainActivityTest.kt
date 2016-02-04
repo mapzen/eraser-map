@@ -88,17 +88,7 @@ public class MainActivityTest {
         val menu = RoboMenu()
         activity.onCreateOptionsMenu(menu)
         assertThat(menu.findItem(R.id.action_search).getTitle()).isEqualTo("Search")
-        assertThat(menu.findItem(R.id.action_clear).getTitle()).isEqualTo("Erase History")
         assertThat(menu.findItem(R.id.action_settings).getTitle()).isEqualTo("Settings")
-    }
-
-    @Test
-    public fun onOptionsItemSelected_shouldClearSavedSearchesOnActionClear() {
-        activity.savedSearch!!.store("query")
-        val menu = RoboMenu()
-        activity.onCreateOptionsMenu(menu)
-        activity.onOptionsItemSelected(menu.findItem(R.id.action_clear))
-        assertThat(activity.savedSearch!!.size()).isEqualTo(0)
     }
 
     @Test
@@ -160,24 +150,6 @@ public class MainActivityTest {
         activity.showProgress()
         activity.hideProgress()
         assertThat(activity.findViewById(R.id.progress).visibility).isEqualTo(GONE)
-    }
-
-    @Test
-    public fun showOverflowMenu_shouldShowOverflowGroup() {
-        val menu = RoboMenuWithGroup(0, false)
-        activity.onCreateOptionsMenu(menu)
-        activity.showOverflowMenu()
-        assertThat(menu.group).isEqualTo(R.id.menu_overflow)
-        assertThat(menu.visible).isEqualTo(true)
-    }
-
-    @Test
-    public fun hideOverflowMenu_shouldHideOverflowGroup() {
-        val menu = RoboMenuWithGroup(0, true)
-        activity.onCreateOptionsMenu(menu)
-        activity.hideOverflowMenu()
-        assertThat(menu.group).isEqualTo(R.id.menu_overflow)
-        assertThat(menu.visible).isEqualTo(false)
     }
 
     @Test

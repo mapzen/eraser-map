@@ -54,10 +54,8 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         val featureCount = result?.features?.size
         if (featureCount != null && featureCount > 1) {
             mainViewController?.showActionViewAll()
-            mainViewController?.hideOverflowMenu()
         } else {
             mainViewController?.hideActionViewAll()
-            mainViewController?.showOverflowMenu()
         }
     }
 
@@ -147,7 +145,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         }
 
         mainViewController?.hideSearchResults()
-        mainViewController?.showOverflowMenu()
         mainViewController?.hideActionViewAll()
         mainViewController?.clearQuery()
     }

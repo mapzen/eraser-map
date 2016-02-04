@@ -150,12 +150,6 @@ public class MainPresenterTest {
         assertThat(mainController.isProgressVisible).isFalse()
     }
 
-    @Test fun onCollapseSearchView_shouldShowOverflowMenu() {
-        mainController.isOverflowVisible = false
-        presenter.onCollapseSearchView()
-        assertThat(mainController.isOverflowVisible).isTrue()
-    }
-
     @Test fun onSearchResultsAvailable_shouldShowActionViewAll() {
         mainController.isViewAllVisible = false
         val result = Result()
