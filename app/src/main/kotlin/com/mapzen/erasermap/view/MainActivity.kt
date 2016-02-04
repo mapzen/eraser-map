@@ -160,7 +160,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         super.onResume()
         presenter?.onResume()
         app?.onActivityResume()
-
+        autoCompleteAdapter?.clear()
+        autoCompleteAdapter?.notifyDataSetChanged()
     }
 
     override public fun onPause() {
@@ -331,7 +332,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val id = item.itemId
         when (id) {
             R.id.action_settings -> { onActionSettings(); return true }
-            R.id.action_clear -> { onActionClear(); return true }
             R.id.action_view_all -> { onActionViewAll(); return true }
         }
 
@@ -340,12 +340,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun onActionSettings() {
         startActivity(Intent(this, SettingsActivity::class.java))
-    }
-
-    private fun onActionClear() {
-        savedSearch?.clear()
-        autoCompleteAdapter?.clear()
-        autoCompleteAdapter?.notifyDataSetChanged()
     }
 
     private fun onActionViewAll() {
@@ -590,14 +584,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun hideProgress() {
         findViewById(R.id.progress).visibility = View.GONE
-    }
-
-    override fun showOverflowMenu() {
-        optionsMenu?.setGroupVisible(R.id.menu_overflow, true)
-    }
-
-    override fun hideOverflowMenu() {
-        optionsMenu?.setGroupVisible(R.id.menu_overflow, false)
     }
 
     override fun onSearchResultSelected(position: Int) {

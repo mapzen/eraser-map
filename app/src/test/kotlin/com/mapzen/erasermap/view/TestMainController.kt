@@ -19,7 +19,6 @@ public class TestMainController : MainViewController {
     public var placeSearchPoint: PointF? = null
 
     public var isProgressVisible: Boolean = false
-    public var isOverflowVisible: Boolean = false
     public var isViewAllVisible: Boolean = false
     public var isSearchVisible: Boolean = false
     public var isRoutePreviewVisible: Boolean = false
@@ -60,14 +59,6 @@ public class TestMainController : MainViewController {
 
     override fun hideProgress() {
         isProgressVisible = false
-    }
-
-    override fun showOverflowMenu() {
-        isOverflowVisible = true
-    }
-
-    override fun hideOverflowMenu() {
-        isOverflowVisible = false
     }
 
     override fun showActionViewAll() {

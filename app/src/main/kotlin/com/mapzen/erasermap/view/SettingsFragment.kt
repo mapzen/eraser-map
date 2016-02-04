@@ -10,7 +10,8 @@ import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.tangram.DebugFlags
 import com.mapzen.tangram.Tangram
 
-public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceChangeListener {
+public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceChangeListener,
+        Preference.OnPreferenceClickListener {
 
     var settings: AppSettings? = null
 
@@ -31,6 +32,7 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
         initTileDebugPref()
         initLabelDebugPref()
         initTangramInfosDebugPref()
+        initEraseHistoryPref()
     }
 
     override fun onPreferenceChange(preference: Preference?, value: Any?): Boolean {
@@ -58,6 +60,14 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
         return false
     }
 
+    override fun onPreferenceClick(p0: Preference?): Boolean {
+        if(AndroidAppSettings.KEY_ERASE_HISTORY.equals(p0?.key)) {
+            (getActivity() as SettingsActivity).clearHistory()
+            return true
+        }
+        return false
+    }
+
     private fun initDistanceUnitsPref() {
         val key = AndroidAppSettings.KEY_DISTANCE_UNITS
         val value = settings?.distanceUnits
@@ -82,7 +92,8 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
     }
 
     private fun initTangramInfosDebugPref() {
-        findPreference(AndroidAppSettings.KEY_TANGRAM_INFOS_DEBUG_ENABLED).onPreferenceChangeListener = this
+        findPreference(AndroidAppSettings.KEY_TANGRAM_INFOS_DEBUG_ENABLED)
+                .onPreferenceChangeListener = this
         updateTangramInfosDebugPref(settings?.isTileDebugEnabled ?: false)
     }
 
@@ -103,4 +114,7 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
         findPreference(AndroidAppSettings.KEY_BUILD_NUMBER).summary = BuildConfig.BUILD_NUMBER
     }
 
+    private fun initEraseHistoryPref() {
+        findPreference(AndroidAppSettings.KEY_ERASE_HISTORY).onPreferenceClickListener = this
+    }
 }

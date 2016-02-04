@@ -36,7 +36,7 @@ public class HomeAsUpActivityTest {
 
     @Test
     public fun shouldNotFinishIfOtherOptionSelected() {
-        homeAsUpActivity.onOptionsItemSelected(RoboMenuItem(R.id.action_clear))
+        homeAsUpActivity.onOptionsItemSelected(RoboMenuItem(R.id.action_settings))
         assertThat(homeAsUpActivity.isFinishing()).isFalse()
     }
 }

@@ -10,6 +10,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric.setupActivity
 import org.robolectric.RuntimeEnvironment.application
+import org.robolectric.Shadows
 import org.robolectric.annotation.Config
 
 @RunWith(PrivateMapsTestRunner::class)
@@ -36,6 +37,14 @@ public class SettingsActivityTest {
         settingsActivity.settings?.distanceUnits = Router.DistanceUnits.KILOMETERS
         settingsFragment.onCreate(null)
         assertThat(findPreference(AndroidAppSettings.KEY_DISTANCE_UNITS).summary).isEqualTo("Kilometers")
+    }
+
+    @Test fun onEraseHistory_shouldClearSavedSearch() {
+        settingsFragment.onCreate(null)
+        settingsActivity?.savedSearch?.store("query")
+        assertThat(settingsActivity?.savedSearch?.size()).isEqualTo(1)
+        Shadows.shadowOf(findPreference(AndroidAppSettings.KEY_ERASE_HISTORY)).click()
+        assertThat(settingsActivity?.savedSearch?.size()).isEqualTo(0)
     }
 
     @Test fun onPreferenceChange_shouldUpdateDistanceUnitsSummary() {

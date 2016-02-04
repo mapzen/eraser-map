@@ -59,6 +59,14 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/category_privacy_title">
+
+        <com.mapzen.erasermap.view.ReadOnlyPreference
+            android:key = "edittext_erase_history"
+            android:title="@string/edittext_erase_history_title" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/category_support_title">
 
         <com.mapzen.erasermap.view.SendFeedbackPreference

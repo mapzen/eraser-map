@@ -15,14 +15,9 @@
         android:visible="false"
         app:showAsAction="always" />
 
-    <group android:id="@+id/menu_overflow">
-        <item
-            android:id="@+id/action_clear"
-            android:title="@string/action_clear"
-            app:showAsAction="never" />
         <item
             android:id="@+id/action_settings"
             android:title="@string/action_settings"
-            app:showAsAction="never" />
-    </group>
+            android:icon="@drawable/ic_settings"
+            app:showAsAction="always" />
 </menu>

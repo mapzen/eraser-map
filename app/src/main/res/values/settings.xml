@@ -3,6 +3,9 @@
     <!-- Routing category -->
     <string name="category_routing_title">Routing</string>
 
+    <!-- Privacy category -->
+    <string name="category_privacy_title">Privacy</string>
+
     <!-- Distance units -->
     <string name="distance_units_title">Distance units</string>
     <string name="distance_units_default">kilometers</string>
@@ -51,4 +54,6 @@
     <!-- Send feedback -->
     <string name="edittext_send_feedback_title">Send feedback</string>
 
+    <!-- Erase History -->
+    <string name="edittext_erase_history_title">Erase History</string>
 </resources>
