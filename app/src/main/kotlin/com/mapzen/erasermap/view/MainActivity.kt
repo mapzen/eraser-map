@@ -6,6 +6,7 @@ import android.location.Location
 import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
+import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
@@ -92,6 +93,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var endPin: MapData? = null
     var poiTapPoint: FloatArray? = null
     var poiTapName: String? = null
+    var searchView: PeliasSearchView? = null
 
     val findMeButton: ImageButton by lazy { findViewById(R.id.find_me) as ImageButton }
     val routePreviewView: RoutePreviewView by lazy { findViewById(R.id.route_preview) as RoutePreviewView }
@@ -295,12 +297,17 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         menuInflater.inflate(R.menu.menu_main, menu)
         optionsMenu = menu
 
-        val searchView = menu.findItem(R.id.action_search).actionView
+        val searchView = PeliasSearchView(this)
+        supportActionBar.setCustomView(searchView,ActionBar.LayoutParams(
+                ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT))
+        supportActionBar.displayOptions = supportActionBar.displayOptions or
+                ActionBar.DISPLAY_SHOW_CUSTOM
         val listView = findViewById(R.id.auto_complete) as AutoCompleteListView
         val emptyView = findViewById(android.R.id.empty)
         listView.hideHeader()
 
         if (searchView is PeliasSearchView) {
+            this.searchView = searchView
             searchView.setRecentSearchIconResourceId(R.drawable.ic_recent)
             searchView.setAutoCompleteIconResourceId(R.drawable.ic_pin_c)
             listView.adapter = autoCompleteAdapter
@@ -353,11 +360,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             simpleFeatures.add(SimpleFeature.fromFeature(feature))
         }
 
-        val menuItem = optionsMenu?.findItem(R.id.action_search)
-        val actionView = menuItem?.actionView as PeliasSearchView
         val intent = Intent(this, SearchResultsListActivity::class.java)
         intent.putParcelableArrayListExtra("features", simpleFeatures)
-        intent.putExtra("query", actionView.query.toString())
+        intent.putExtra("query", searchView?.query.toString())
         startActivityForResult(intent, requestCodeSearchResults)
     }
 
@@ -368,11 +373,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun saveCurrentSearchTerm() {
-        val menuItem = optionsMenu?.findItem(R.id.action_search)
-        val actionView = menuItem?.actionView
-        if (actionView is PeliasSearchView) {
-            presenter?.currentSearchTerm = actionView.query.toString()
-        }
+        presenter?.currentSearchTerm = searchView?.query.toString()
     }
 
     private fun restoreCurrentSearchTerm(searchView: PeliasSearchView) {
@@ -604,10 +605,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun clearQuery() {
-        val searchView = optionsMenu?.findItem(R.id.action_search)?.actionView
-        if (searchView is PeliasSearchView) {
-            searchView.setQuery("", false)
-        }
+        searchView?.setQuery("", false)
     }
 
     override fun showRoutePreview(location: Location, feature: Feature) {
@@ -649,7 +647,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun zoomToShowRoute(route: Route) {
-        val mdisp = getWindowManager().getDefaultDisplay()
+        val mdisp = windowManager.defaultDisplay
         val mdispSize = Point()
         mdisp.getSize(mdispSize)
         val width = mdispSize.y
@@ -659,21 +657,21 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val finish = geometry.get(geometry.size - 1)
         val distance = finish.distanceTo(start)
 
-        val equatorCircumfrence: Double = 40075.16
+        val equatorCircumference: Double = 40075.16
 
         val lat: Double = (finish.latitude  + start.latitude) / 2.0
         val lon: Double = (finish.longitude + start.longitude) / 2.0
         mapController?.setMapPosition(lon, lat)
 
         val numPixelsRequired = distance.toFloat() / width.toFloat()
-        val zoomLevel = Math.log(((equatorCircumfrence * Math.abs(Math.cos(lat)))
+        val zoomLevel = Math.log(((equatorCircumference * Math.abs(Math.cos(lat)))
                 / (numPixelsRequired.toDouble()))) / Math.log(2.0)
 
         setMapRotation(0f)
         setMapTilt(0.0f)
         val zoomRatio = if (distance > 1560000.0f ) 0.8f else 0.9f
-        mapController?.setMapZoom(zoomLevel.toFloat() * zoomRatio)
-        mapController?.setMapZoom(zoomLevel.toFloat() * zoomRatio)
+        mapController?.mapZoom = zoomLevel.toFloat() * zoomRatio
+        mapController?.mapZoom = zoomLevel.toFloat() * zoomRatio
 
         hideRoutePins()
         showRoutePins(LngLat(start.longitude, start.latitude),
