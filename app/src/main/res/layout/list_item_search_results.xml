@@ -8,5 +8,5 @@
     android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
     android:paddingRight="?android:attr/listPreferredItemPaddingRight"
     android:minHeight="?android:attr/listPreferredItemHeightSmall"
-    android:drawableLeft="@drawable/ic_pin_outline"
+    android:drawableLeft="@drawable/ic_pin_c"
     android:drawablePadding="4dp" />

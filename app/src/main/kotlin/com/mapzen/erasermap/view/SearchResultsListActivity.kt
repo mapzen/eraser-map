@@ -17,17 +17,8 @@ public class SearchResultsListActivity : HomeAsUpActivity() {
         setContentView(R.layout.activity_search_results)
 
         val listView = findViewById(R.id.search_results_list_view) as ListView
-        val headerView = View.inflate(this, R.layout.list_header_search_results, null)
-        val title = headerView.findViewById(R.id.title) as TextView
         val bundle = intent?.extras
-        val query = bundle?.getString("query")
         val simpleFeatures: ArrayList<SimpleFeature>? = bundle?.getParcelableArrayList("features")
-
-        if (query != null) {
-            title.text = "\"" + query + "\""
-            listView.addHeaderView(headerView, null, false)
-            listView.setHeaderDividersEnabled(false)
-        }
 
         if (simpleFeatures != null) {
             listView.adapter = SearchListAdapter(this, R.layout.list_item_search_results, simpleFeatures)
