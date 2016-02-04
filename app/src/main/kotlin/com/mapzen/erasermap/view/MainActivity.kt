@@ -240,8 +240,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun initAutoCompleteAdapter() {
         autoCompleteAdapter = AutoCompleteAdapter(this, R.layout.list_item_auto_complete)
-        autoCompleteAdapter?.setRecentSearchIconResourceId(R.drawable.ic_recent)
-        autoCompleteAdapter?.setAutoCompleteIconResourceId(R.drawable.ic_recent)
     }
 
     private fun initFindMeButton() {
@@ -303,6 +301,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         listView.hideHeader()
 
         if (searchView is PeliasSearchView) {
+            searchView.setRecentSearchIconResourceId(R.drawable.ic_recent)
+            searchView.setAutoCompleteIconResourceId(R.drawable.ic_pin_c)
             listView.adapter = autoCompleteAdapter
             val pelias = Pelias.getPelias()
             pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
