@@ -11,7 +11,7 @@ public interface MainPresenter {
     companion object {
         val DEFAULT_ZOOM: Float = 16f
         val ROUTING_ZOOM: Float = 18f
-        val ROUTING_TILT: Float = 1.0472f // 60°
+        val ROUTING_TILT: Float = 0.83f // 47.5°
     }
 
     public var mainViewController: MainViewController?
