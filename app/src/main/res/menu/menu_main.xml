@@ -2,22 +2,15 @@
     xmlns:app="http://schemas.android.com/apk/res/com.mapzen.erasermap">
 
     <item
-        android:id="@+id/action_search"
-        android:icon="@drawable/ic_search"
-        android:title="@string/action_search"
-        app:showAsAction="always"
-        app:actionViewClass="com.mapzen.pelias.widget.PeliasSearchView" />
-
-    <item
         android:id="@+id/action_view_all"
         android:title="@string/action_view_all"
         android:icon="@drawable/ic_list"
         android:visible="false"
         app:showAsAction="always" />
 
-        <item
-            android:id="@+id/action_settings"
-            android:title="@string/action_settings"
-            android:icon="@drawable/ic_settings"
-            app:showAsAction="always" />
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:icon="@drawable/ic_settings"
+        app:showAsAction="always" />
 </menu>

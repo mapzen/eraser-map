@@ -23,7 +23,6 @@ import com.mapzen.erasermap.shadows.ShadowMapData
 import com.mapzen.erasermap.shadows.ShadowTangram
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.gson.Feature
-import com.mapzen.pelias.widget.PeliasSearchView
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapView
 import com.mapzen.valhalla.Route
@@ -87,8 +86,8 @@ public class MainActivityTest {
     public fun onCreateOptionsMenu_shouldInflateOptionsMenu() {
         val menu = RoboMenu()
         activity.onCreateOptionsMenu(menu)
-        assertThat(menu.findItem(R.id.action_search).getTitle()).isEqualTo("Search")
-        assertThat(menu.findItem(R.id.action_settings).getTitle()).isEqualTo("Settings")
+        assertThat(menu.findItem(R.id.action_view_all).title).isEqualTo("View All")
+        assertThat(menu.findItem(R.id.action_settings).title).isEqualTo("Settings")
     }
 
     @Test
@@ -118,9 +117,7 @@ public class MainActivityTest {
     public fun onDestroy_shouldSetCurrentSearchTerm() {
         val menu = RoboMenu()
         activity.onCreateOptionsMenu(menu)
-        menu.findItem(R.id.action_search).setActionView(PeliasSearchView(activity))
-        menu.findItem(R.id.action_search).expandActionView()
-        val searchView = menu.findItem(R.id.action_search).getActionView() as SearchView
+        val searchView = activity.supportActionBar.customView as SearchView
         searchView.setQuery("query", false)
         searchView.requestFocus()
         activity.onDestroy()
@@ -131,11 +128,9 @@ public class MainActivityTest {
     public fun onCreateOptionsMenu_shouldRestoreCurrentSearchTerm() {
         val menu = RoboMenu()
         activity.onCreateOptionsMenu(menu)
-        menu.findItem(R.id.action_search).setActionView(PeliasSearchView(activity))
-
         activity.presenter!!.currentSearchTerm = "query"
         activity.onCreateOptionsMenu(menu)
-        val searchView = menu.findItem(R.id.action_search).actionView as SearchView
+        val searchView = activity.supportActionBar.customView as SearchView
         assertThat(searchView.query).isEqualTo("query")
     }
 
