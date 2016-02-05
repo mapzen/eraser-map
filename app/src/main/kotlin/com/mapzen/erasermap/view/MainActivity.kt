@@ -642,7 +642,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 supportActionBar?.hide()
                 routePreviewView.visibility = View.VISIBLE
                 findViewById(R.id.route_preview_distance_time_view).visibility = View.VISIBLE
-                zoomToShowRoute(route)
+                zoomToShowRoute(route.getGeometry().toTypedArray())
             }
         })
         updateRoutePreview()
@@ -650,19 +650,23 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         hideProgress()
     }
 
-    private fun zoomToShowRoute(route: Route) {
+    private fun zoomToShowRoute(route: Array<Location>) {
+
+        // Make sure we have some points to work with
+        if (route.isEmpty()) {
+            return
+        }
 
         mapController?.mapRotation = 0f
         mapController?.mapTilt = 0f
 
         // Determine the smallest axis-aligned box that contains the route longitude and latitude
-        val geometry = route.getGeometry()
-        val start = geometry.first()
-        val finish = geometry.last()
+        val start = route.first()
+        val finish = route.last()
         var routeBounds = AxisAlignedBoundingBox()
         routeBounds.center = PointD(start.longitude, start.latitude)
 
-        for (p in geometry) {
+        for (p in route) {
             routeBounds.expandTo(p.longitude, p.latitude)
         }
 
@@ -717,6 +721,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             val start = LngLat(origin.longitude, origin.latitude)
             val end = LngLat(destinationFeature.lng(), destinationFeature.lat())
             showRoutePins(start, end)
+
+            val startLocation = origin
+            val endLocation = Location(origin)
+            endLocation.longitude = end.longitude
+            endLocation.latitude = end.latitude
+            zoomToShowRoute(arrayOf(startLocation, endLocation))
         }
     }
 
