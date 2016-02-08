@@ -1,28 +1,14 @@
 # Eraser Map
 Privacy-focused mapping application for Android
 
-## Clone and build project
-```bash
-$ git clone https://github.com/mapzen/eraser-map.git
-$ cd eraser-map
-$ git submodule init && git submodule update
-$ ./gradlew
-```
-
-## Beta Builds
-
-Beta builds (which have Splunk MINT Crash Reporting enabled) are available from here: http://android.mapzen.com/erasermap/
-
-## Importing project into Android Studio
-1. Open Android Studio and choose _File > Import project..._ and select project root folder
-2. Install [Kotlin Plugin for Android Studio](https://plugins.jetbrains.com/plugin/6954?pr=androidstudio)
-3. Follow instructions to enable [unit testing support](http://tools.android.com/tech-docs/unit-testing-support) in Android Studio
-4. Modify unit test run configuration working directory to `/path/to/project/eraser-map/app`
-5. Rebuild and run tests
+## Install Dependencies
+1. Install [Kotlin Plugin for Android Studio](https://plugins.jetbrains.com/plugin/6954?pr=androidstudio)
 
 ## API Keys
+1. Go to https://mapzen.com/developers/ and auth with Github
+2. Create Mapzen Search, Turn By Turn, and Vector Tiles keys
+3. Add keys to `~/.gradle/gradle.properties` or use as command line arguments
 
-API keys for tiles, search, and routing services must be set in a local `gradle.properties` file or via Gradle command line arguments.
 
 **gradle.properties**
 
@@ -39,3 +25,23 @@ valhallaApiKey=valhalla-???
     -PpeliasApiKey=$PELIAS_API_KEY \
     -PvalhallaApiKey=$VALHALLA_API_KEY
 ```
+
+
+
+## Clone and build project
+```bash
+$ git clone https://github.com/mapzen/eraser-map.git
+$ cd eraser-map
+$ git submodule init && git submodule update
+$ ./gradlew
+```
+
+## Beta Builds
+
+Beta builds (which have Splunk MINT Crash Reporting enabled) are available from here: http://android.mapzen.com/erasermap/
+
+## Running Tests
+2. Follow instructions to enable [unit testing support](http://tools.android.com/tech-docs/unit-testing-support) in Android Studio
+3. Modify unit test run configuration working directory to `/path/to/project/eraser-map/app`
+4. Rebuild and run tests `./gradlew test --continue`
+
