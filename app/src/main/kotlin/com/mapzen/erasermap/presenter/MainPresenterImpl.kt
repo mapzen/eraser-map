@@ -251,6 +251,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         bus.post(RouteEvent())
         generateRoutingMode()
         vsm.viewState = ViewStateManager.ViewState.ROUTING
+        routeViewController?.hideResumeButton()
     }
 
     @Subscribe public fun onLocationChangeEvent(event: LocationChangeEvent) {
