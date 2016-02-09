@@ -541,7 +541,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 val pager = findViewById(R.id.search_results) as SearchResultsView
                 pager.setCurrentItem(position)
                 val feature = SimpleFeature.fromFeature(features[position])
-                mapController?.setMapPosition(feature.lng(), feature.lat())
+                mapController?.setMapPosition(feature.lng(), feature.lat(), 1f)
                 mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
             }
         }, 100)
