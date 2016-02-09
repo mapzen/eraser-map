@@ -21,6 +21,11 @@ public class ShadowMapController {
 
     @Implementation
     public void setMapPosition(double lng, double lat) {
+        setMapPosition(lng, lat, 0);
+    }
+
+    @Implementation
+    public void setMapPosition(double lng, double lat, float duration) {
         this.lng = lng;
         this.lat = lat;
     }
