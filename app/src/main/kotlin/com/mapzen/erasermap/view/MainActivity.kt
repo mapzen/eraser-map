@@ -102,10 +102,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     val byCar: RadioButton by lazy { findViewById(R.id.by_car) as RadioButton }
     val byBike: RadioButton by lazy { findViewById(R.id.by_bike) as RadioButton }
     val byFoot: RadioButton by lazy { findViewById(R.id.by_foot) as RadioButton }
-    val muteView: MuteView by lazy { findViewById(R.id.mute_view) as MuteView }
     val compass: CompassView by lazy { findViewById(R.id.compass_view) as CompassView }
     val routePreviewCompass: CompassView by lazy { findViewById(R.id.route_preview_compass_view) as CompassView }
     val routeModeCompass: CompassView by lazy { findViewById(R.id.route_mode_compass_view) as CompassView }
+    val muteView: MuteView by lazy { findViewById(R.id.route_mode_mute_view) as MuteView }
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -251,10 +251,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         findMeButton.setOnClickListener({ presenter?.onFindMeButtonClick() })
     }
 
-    private fun initMute() {
+    private fun updateMute() {
         val routePresenter = routeModeView.routePresenter
         muteView.setMuted(!(routePresenter?.isMuted() == true))
+    }
 
+    private fun initMute() {
+        updateMute()
         muteView.setOnClickListener({
             presenter?.onMuteClick()
         })
@@ -833,7 +836,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun startRoutingMode(feature: Feature) {
-        resetVars()
+        resetMute()
         showRoutingMode(feature)
         routeModeView.startRoute(feature, routeManager?.route)
         setRoutingCamera()
@@ -857,7 +860,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         mapController?.setMapCameraType(MapController.CameraType.ISOMETRIC)
     }
 
-    private fun resetVars() {
+    private fun resetMute() {
         val routePresenter = routeModeView.routePresenter
         routePresenter?.setMuted(false)
     }
@@ -865,7 +868,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun showRoutingMode(feature: Feature) {
         hideFindMe()
         supportActionBar?.hide()
-        muteView.visibility = View.VISIBLE
+        updateMute()
         routeManager?.destination = feature
         routeManager?.reverse = false
         routePreviewView.visibility = View.GONE
@@ -887,7 +890,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             showRoutePreview(location, feature)
         }
         supportActionBar?.hide()
-        muteView.visibility = View.GONE
         routeModeView.route = null
         routeModeView.hideRouteIcon()
         hideReverseGeolocateResult()

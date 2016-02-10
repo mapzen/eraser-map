@@ -10,21 +10,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.mapzen.erasermap.view.MuteView
-        android:id="@+id/mute_view"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="16dp"
-        android:layout_marginRight="16dp"
-        android:visibility="gone" />
-
     <com.mapzen.erasermap.view.CompassView
         android:id="@+id/compass_view"
         android:layout_width="44dp"
         android:layout_height="44dp"
-        android:layout_below="@+id/mute_view"
+        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_marginTop="16dp"
         android:layout_marginRight="16dp"
