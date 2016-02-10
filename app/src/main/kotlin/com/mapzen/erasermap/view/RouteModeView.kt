@@ -372,7 +372,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     private fun initInstructionAdapter() {
         val instructions = route?.getRouteInstructions()
         if (instructions != null) {
-            val adapter = InstructionAdapter(context, instructions, this)
+            val adapter = InstructionAdapter(context, instructions)
             setAdapter(adapter)
         }
     }

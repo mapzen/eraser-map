@@ -11,8 +11,8 @@ import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.valhalla.Instruction
 import java.util.ArrayList
 
-public class InstructionAdapter(val context: Context, val instructions: ArrayList<Instruction>,
-        val pager: RouteModeView) : PagerAdapter() {
+public class InstructionAdapter(val context: Context,
+        val instructions: ArrayList<Instruction>) : PagerAdapter() {
 
     override fun instantiateItem(container: ViewGroup?, position: Int): Any? {
         val instruction = instructions.get(position)
