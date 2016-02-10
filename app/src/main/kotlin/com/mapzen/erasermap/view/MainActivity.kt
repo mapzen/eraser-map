@@ -255,8 +255,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val routePresenter = routeModeView.routePresenter
         muteView.setMuted(!(routePresenter?.isMuted() == true))
 
-        val str = if(routePresenter?.isMuted() == true) "t" else "f"
-        Log.d("MainActivity", "muted:"+ str)
         muteView.setOnClickListener({
             presenter?.onMuteClick()
         })
@@ -304,7 +302,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         val muted = (routePresenter?.isMuted() == true)
         muteView.setMuted(!muted)
-        
+
         //Actually mute or unmute the speakerbox based on current value
         if (muted) {
             routeModeView.voiceNavigationController!!.mute()
