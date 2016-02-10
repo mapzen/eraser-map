@@ -2,31 +2,28 @@ package com.mapzen.erasermap.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.widget.ImageView
-import android.widget.RelativeLayout
 import com.mapzen.erasermap.R
 
-public class CompassView(context: Context, attrs: AttributeSet) : RelativeLayout(context, attrs) {
+public class CompassView(context: Context, attrs: AttributeSet) : ButtonView(context, attrs) {
 
-    val background: ImageView by lazy { findViewById(R.id.background) as ImageView }
-    val compass: ImageView by lazy { findViewById(R.id.compass) as ImageView }
+    override fun idForLayout():Int {
+        return R.layout.view_compass;
+    }
 
-    init {
-        (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
-                .inflate(R.layout.view_compass, this, true)
+    override fun idForImage():Int {
+        return R.id.compass;
     }
 
     override fun setRotation(rotation: Float) {
-        compass.rotation = rotation
+        image.rotation = rotation
         if (alpha == 0f) {
             alpha = 1f
         }
     }
 
     public fun reset() {
-        val newRotation = if (compass.rotation < 180) 0f else 360f
-        compass.animate().setDuration(1000).rotation(newRotation)
+        val newRotation = if (image.rotation < 180) 0f else 360f
+        image.animate().setDuration(1000).rotation(newRotation)
         animate().setDuration(1000).alpha(0f).setStartDelay(1000)
     }
 }

@@ -13,10 +13,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.RadioButton
-import android.widget.Toast
+import android.widget.*
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
@@ -26,6 +23,7 @@ import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
+import com.mapzen.erasermap.presenter.RoutePresenter
 import com.mapzen.erasermap.util.NotificationBroadcastReceiver
 import com.mapzen.erasermap.util.NotificationCreator
 import com.mapzen.pelias.Pelias
@@ -82,6 +80,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var mapzenLocation: MapzenLocation? = null
         @Inject set
 
+    var routePresenter: RoutePresenter? = null
+
     var app: EraserMapApplication? = null
     var mapController : MapController? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
@@ -104,6 +104,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     val byCar: RadioButton by lazy { findViewById(R.id.by_car) as RadioButton }
     val byBike: RadioButton by lazy { findViewById(R.id.by_bike) as RadioButton }
     val byFoot: RadioButton by lazy { findViewById(R.id.by_foot) as RadioButton }
+    val muteView: MuteView by lazy { findViewById(R.id.mute_view) as MuteView }
     val compass: CompassView by lazy { findViewById(R.id.compass_view) as CompassView }
     val routePreviewCompass: CompassView by lazy { findViewById(R.id.route_preview_compass_view) as CompassView }
     val routeModeCompass: CompassView by lazy { findViewById(R.id.route_mode_compass_view) as CompassView }
@@ -115,9 +116,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initCrashReportService()
         setContentView(R.layout.activity_main)
         presenter?.mainViewController = this
+        routePresenter = routeModeView.routePresenter
         initMapController()
         initAutoCompleteAdapter()
         initFindMeButton()
+        initMute()
         initCompass()
         initReverseButton()
         initMapRotateListener()
@@ -249,6 +252,29 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         Tangram.addDataSource(findMe)
         findMeButton.visibility = View.VISIBLE
         findMeButton.setOnClickListener({ presenter?.onFindMeButtonClick() })
+    }
+
+    private fun initMute() {
+        muteView.setMuted(!(routePresenter?.isMuted() == true))
+
+        val str = if(routePresenter?.isMuted() == true) "t" else "f"
+        Log.d("MainActivity", "muted:"+ str)
+        muteView.setOnClickListener({
+            //Update cached value of routePresenter.isMuted
+            routePresenter?.onMuteClicked()
+
+            val muted = (routePresenter?.isMuted() == true)
+            muteView.setMuted(!muted)
+
+            val strtest = if(muted) "t" else "f"
+            Log.d("MainActivity", "muted:"+ strtest)
+            //Actually mute or unmute the speakerbox based on current value
+            if (muted) {
+                routeModeView.voiceNavigationController!!.mute()
+            } else {
+                routeModeView.voiceNavigationController!!.unmute()
+            }
+        })
     }
 
     private fun initCompass() {
@@ -808,6 +834,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun startRoutingMode(feature: Feature) {
+        resetVars()
         showRoutingMode(feature)
         routeModeView.startRoute(feature, routeManager?.route)
         setRoutingCamera()
@@ -831,9 +858,14 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         mapController?.setMapCameraType(MapController.CameraType.ISOMETRIC)
     }
 
+    private fun resetVars() {
+        routePresenter?.setMuted(false)
+    }
+
     private fun showRoutingMode(feature: Feature) {
         hideFindMe()
         supportActionBar?.hide()
+        muteView.visibility = View.VISIBLE
         routeManager?.destination = feature
         routeManager?.reverse = false
         routePreviewView.visibility = View.GONE
@@ -855,6 +887,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             showRoutePreview(location, feature)
         }
         supportActionBar?.hide()
+        muteView.visibility = View.GONE
         routeModeView.route = null
         routeModeView.hideRouteIcon()
         hideReverseGeolocateResult()
