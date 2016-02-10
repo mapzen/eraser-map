@@ -374,6 +374,13 @@ public class MainPresenterTest {
         assertThat(mainController.routeLine).isEqualTo(route)
     }
 
+    @Test fun onMuteClick_shouldToggleMute() {
+        val muted = mainController.muted
+        presenter.onMuteClick()
+        val mutedAfter = mainController.muted
+        assertThat(muted != mutedAfter)
+    }
+
     @Test fun onCompassClick_shouldResetMapRotation() {
         mainController.rotation = 180f
         presenter.onCompassClick()

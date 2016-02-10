@@ -80,8 +80,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var mapzenLocation: MapzenLocation? = null
         @Inject set
 
-    var routePresenter: RoutePresenter? = null
-
     var app: EraserMapApplication? = null
     var mapController : MapController? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
@@ -116,7 +114,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initCrashReportService()
         setContentView(R.layout.activity_main)
         presenter?.mainViewController = this
-        routePresenter = routeModeView.routePresenter
         initMapController()
         initAutoCompleteAdapter()
         initFindMeButton()
@@ -255,25 +252,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun initMute() {
+        val routePresenter = routeModeView.routePresenter
         muteView.setMuted(!(routePresenter?.isMuted() == true))
 
         val str = if(routePresenter?.isMuted() == true) "t" else "f"
         Log.d("MainActivity", "muted:"+ str)
         muteView.setOnClickListener({
-            //Update cached value of routePresenter.isMuted
-            routePresenter?.onMuteClicked()
-
-            val muted = (routePresenter?.isMuted() == true)
-            muteView.setMuted(!muted)
-
-            val strtest = if(muted) "t" else "f"
-            Log.d("MainActivity", "muted:"+ strtest)
-            //Actually mute or unmute the speakerbox based on current value
-            if (muted) {
-                routeModeView.voiceNavigationController!!.mute()
-            } else {
-                routeModeView.voiceNavigationController!!.unmute()
-            }
+            presenter?.onMuteClick()
         })
     }
 
@@ -310,6 +295,22 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun setMapTilt(radians: Float) {
         mapController?.mapTilt = radians
+    }
+
+    override fun toggleMute() {
+        //Update cached value of routePresenter.isMuted
+        val routePresenter = routeModeView.routePresenter
+        routePresenter?.onMuteClicked()
+
+        val muted = (routePresenter?.isMuted() == true)
+        muteView.setMuted(!muted)
+        
+        //Actually mute or unmute the speakerbox based on current value
+        if (muted) {
+            routeModeView.voiceNavigationController!!.mute()
+        } else {
+            routeModeView.voiceNavigationController!!.unmute()
+        }
     }
 
     override fun setMapRotation(radians: Float) {
@@ -859,6 +860,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun resetVars() {
+        val routePresenter = routeModeView.routePresenter
         routePresenter?.setMuted(false)
     }
 

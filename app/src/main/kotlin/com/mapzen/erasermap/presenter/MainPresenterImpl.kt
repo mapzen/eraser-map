@@ -302,6 +302,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         }
     }
 
+    override fun onMuteClick() {
+        mainViewController?.toggleMute()
+    }
+
     override fun onCompassClick() {
         mainViewController?.setMapRotation(0f)
     }

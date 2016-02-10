@@ -23,6 +23,6 @@ public class CompassViewTest {
     }
 
     @Test fun shouldInflateCompass() {
-        assertThat(compassView.compass).isNotNull()
+        assertThat(compassView.image).isNotNull()
     }
 }
