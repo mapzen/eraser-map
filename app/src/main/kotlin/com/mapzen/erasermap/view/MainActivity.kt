@@ -687,10 +687,16 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val zoomDelta = -Math.log(Math.max(scaleX, scaleY)) / Math.log(2.0)
 
         // Update map position and zoom
-        mapController?.mapPosition = LngLat(routeBounds.center.x, routeBounds.center.y)
-        val zoom = mapController?.mapZoom
-        if (zoom != null) {
-            mapController?.mapZoom = zoom + zoomDelta.toFloat()
+        var map = mapController
+        if (map != null) {
+            val z = map.mapZoom + zoomDelta.toFloat()
+            map.mapZoom = z
+            if (map.mapZoom == z) {
+                // If the new zoom would go beyond the bounds of the earth, the value
+                // won't be set - so we want to make sure that it changed before moving
+                // the position.
+                map.mapPosition = LngLat(routeBounds.center.x, routeBounds.center.y)
+            }
         }
 
         hideRoutePins()
