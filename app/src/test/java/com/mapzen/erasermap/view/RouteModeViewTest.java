@@ -211,6 +211,16 @@ public class RouteModeViewTest {
     }
 
     @Test
+    public void showRouteComplete_shouldSetCurrentInstructionToLast() throws Exception {
+        routeModeView.setCurrentInstruction(0);
+        routeModeView.showRouteComplete();
+
+        final int current = routeModeView.getPager().getCurrentItem();
+        final int size = routeModeView.getPager().getAdapter().getCount();
+        assertThat(current).isEqualTo(size -1);
+    }
+
+    @Test
     public void showReroute_shouldNotifyPresenter() throws Exception {
         MainPresenter presenter = Mockito.mock(MainPresenterImpl.class);
         Location location = getTestLocation();

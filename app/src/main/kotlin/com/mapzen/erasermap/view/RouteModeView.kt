@@ -321,6 +321,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     override fun showRouteComplete() {
         findViewById(R.id.footer_wrapper)?.visibility = View.GONE
         findViewById(R.id.resume)?.visibility = View.GONE
+        setCurrentInstruction(pager?.adapter?.count?.minus(1) ?: 0)
         notificationCreator?.killNotification()
     }
 
