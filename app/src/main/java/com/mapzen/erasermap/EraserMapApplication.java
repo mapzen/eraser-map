@@ -1,6 +1,5 @@
 package com.mapzen.erasermap;
 
-import com.mapzen.erasermap.presenter.RoutePresenter;
 import com.mapzen.erasermap.view.DistanceView;
 import com.mapzen.erasermap.view.InitActivity;
 import com.mapzen.erasermap.view.MainActivity;

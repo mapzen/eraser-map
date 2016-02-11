@@ -23,7 +23,6 @@ import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
-import com.mapzen.erasermap.presenter.RoutePresenter
 import com.mapzen.erasermap.util.AxisAlignedBoundingBox
 import com.mapzen.erasermap.util.AxisAlignedBoundingBox.PointD
 import com.mapzen.erasermap.util.NotificationBroadcastReceiver
