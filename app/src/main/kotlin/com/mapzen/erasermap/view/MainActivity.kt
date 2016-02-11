@@ -24,6 +24,8 @@ import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.presenter.RoutePresenter
+import com.mapzen.erasermap.util.AxisAlignedBoundingBox
+import com.mapzen.erasermap.util.AxisAlignedBoundingBox.PointD
 import com.mapzen.erasermap.util.NotificationBroadcastReceiver
 import com.mapzen.erasermap.util.NotificationCreator
 import com.mapzen.pelias.Pelias
@@ -569,7 +571,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 val pager = findViewById(R.id.search_results) as SearchResultsView
                 pager.setCurrentItem(position)
                 val feature = SimpleFeature.fromFeature(features[position])
-                mapController?.setMapPosition(feature.lng(), feature.lat())
+                mapController?.setMapPosition(feature.lng(), feature.lat(), 1f)
                 mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
             }
         }, 100)
@@ -668,7 +670,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 supportActionBar?.hide()
                 routePreviewView.visibility = View.VISIBLE
                 findViewById(R.id.route_preview_distance_time_view).visibility = View.VISIBLE
-                zoomToShowRoute(route)
+                zoomToShowRoute(route.getGeometry().toTypedArray())
             }
         })
         updateRoutePreview()
@@ -676,32 +678,54 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         hideProgress()
     }
 
-    private fun zoomToShowRoute(route: Route) {
-        val mdisp = windowManager.defaultDisplay
-        val mdispSize = Point()
-        mdisp.getSize(mdispSize)
-        val width = mdispSize.y
+    private fun zoomToShowRoute(route: Array<Location>) {
 
-        val geometry = route.getGeometry()
-        val start = geometry.get(0)
-        val finish = geometry.get(geometry.size - 1)
-        val distance = finish.distanceTo(start)
+        // Make sure we have some points to work with
+        if (route.isEmpty()) {
+            return
+        }
 
-        val equatorCircumference: Double = 40075.16
+        mapController?.mapRotation = 0f
+        mapController?.mapTilt = 0f
 
-        val lat: Double = (finish.latitude  + start.latitude) / 2.0
-        val lon: Double = (finish.longitude + start.longitude) / 2.0
-        mapController?.setMapPosition(lon, lat)
+        // Determine the smallest axis-aligned box that contains the route longitude and latitude
+        val start = route.first()
+        val finish = route.last()
+        var routeBounds = AxisAlignedBoundingBox()
+        routeBounds.center = PointD(start.longitude, start.latitude)
 
-        val numPixelsRequired = distance.toFloat() / width.toFloat()
-        val zoomLevel = Math.log(((equatorCircumference * Math.abs(Math.cos(lat)))
-                / (numPixelsRequired.toDouble()))) / Math.log(2.0)
+        for (p in route) {
+            routeBounds.expandTo(p.longitude, p.latitude)
+        }
 
-        setMapRotation(0f)
-        setMapTilt(0.0f)
-        val zoomRatio = if (distance > 1560000.0f ) 0.8f else 0.9f
-        mapController?.mapZoom = zoomLevel.toFloat() * zoomRatio
-        mapController?.mapZoom = zoomLevel.toFloat() * zoomRatio
+        // Add some padding to the box
+        val padding = 0.35
+        routeBounds.width = (1.0 + padding) * routeBounds.width
+        routeBounds.height = (1.0 + padding) * routeBounds.height
+
+        // Determine the bounds of the current view in longitude and latitude
+        val screen = Point()
+        windowManager.defaultDisplay.getSize(screen)
+        val viewMin = mapController?.coordinatesAtScreenPosition(0.0, 0.0) ?: LngLat()
+        val viewMax = mapController?.coordinatesAtScreenPosition(screen.x.toDouble(), screen.y.toDouble()) ?: LngLat()
+
+        // Determine the amount of re-scaling needed to view the route
+        val scaleX = routeBounds.width / (viewMax.longitude - viewMin.longitude)
+        val scaleY = routeBounds.height / (viewMax.latitude - viewMin.latitude)
+        val zoomDelta = -Math.log(Math.max(scaleX, scaleY)) / Math.log(2.0)
+
+        // Update map position and zoom
+        var map = mapController
+        if (map != null) {
+            val z = map.mapZoom + zoomDelta.toFloat()
+            map.mapZoom = z
+            if (map.mapZoom == z) {
+                // If the new zoom would go beyond the bounds of the earth, the value
+                // won't be set - so we want to make sure that it changed before moving
+                // the position.
+                map.mapPosition = LngLat(routeBounds.center.x, routeBounds.center.y)
+            }
+        }
 
         hideRoutePins()
         showRoutePins(LngLat(start.longitude, start.latitude),
@@ -731,6 +755,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             val start = LngLat(origin.longitude, origin.latitude)
             val end = LngLat(destinationFeature.lng(), destinationFeature.lat())
             showRoutePins(start, end)
+
+            val startLocation = origin
+            val endLocation = Location(origin)
+            endLocation.longitude = end.longitude
+            endLocation.latitude = end.latitude
+            zoomToShowRoute(arrayOf(startLocation, endLocation))
         }
     }
 
