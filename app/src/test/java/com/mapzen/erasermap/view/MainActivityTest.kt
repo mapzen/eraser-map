@@ -28,6 +28,7 @@ import com.mapzen.tangram.MapView
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.data.Offset.offset
 import org.json.JSONObject
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -202,11 +203,13 @@ public class MainActivityTest {
     }
 
     @Test
-    public fun showRoutePreview_shouldSetProperMapZoom() {
+    public fun showRoutePreview_shouldSetProperMapPositionAndZoom() {
         activity.showRoutePreview(getTestLocation(), getTestFeature())
         activity.success(TestRoute())
         Robolectric.flushForegroundThreadScheduler()
-        assertThat(activity.mapController!!.getMapZoom()).isEqualTo(0.5499235f)
+        assertThat(activity.mapController!!.getMapZoom()).isCloseTo(0.5f, offset(0.5f))
+        assertThat(activity.mapController!!.getMapPosition().longitude).isCloseTo(21.5, offset(0.5))
+        assertThat(activity.mapController!!.getMapPosition().latitude).isCloseTo(36.7, offset(0.5))
     }
 
     @Test
