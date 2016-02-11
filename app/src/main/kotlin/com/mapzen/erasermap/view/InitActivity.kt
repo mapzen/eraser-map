@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 public class InitActivity : AppCompatActivity() {
     companion object {
-        @JvmStatic public val START_DELAY_IN_MS: Long = 3000
+        @JvmStatic public val START_DELAY_IN_MS: Long = 1200
     }
 
     var crashReportService: CrashReportService? = null
