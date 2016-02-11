@@ -13,7 +13,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.RadioButton
+import android.widget.Toast
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
@@ -309,9 +312,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         //Actually mute or unmute the speakerbox based on current value
         if (muted) {
-            routeModeView.voiceNavigationController!!.mute()
+            routeModeView.voiceNavigationController?.mute()
         } else {
-            routeModeView.voiceNavigationController!!.unmute()
+            routeModeView.voiceNavigationController?.unmute()
         }
     }
 

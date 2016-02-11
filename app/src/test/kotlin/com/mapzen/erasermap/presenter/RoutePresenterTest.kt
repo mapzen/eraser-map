@@ -43,7 +43,7 @@ public class RoutePresenterTest {
         routePresenter.setMuted(true)
         val route = Route(getFixture("valhalla_route"))
         routePresenter.onRouteStart(route)
-        assertThat(routePresenter.isMuted() == false)
+        assertThat(routePresenter.isMuted()).isFalse()
     }
 
     @Test fun onRouteResume_shouldNotResetRouteEngine() {

@@ -378,7 +378,7 @@ public class MainPresenterTest {
         val muted = mainController.muted
         presenter.onMuteClick()
         val mutedAfter = mainController.muted
-        assertThat(muted != mutedAfter)
+        assertThat(mutedAfter).isNotEqualTo(muted)
     }
 
     @Test fun onCompassClick_shouldResetMapRotation() {
