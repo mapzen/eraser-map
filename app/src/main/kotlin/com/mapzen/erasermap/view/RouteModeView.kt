@@ -38,7 +38,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     companion object {
         const val VIEW_TAG: String = "Instruction_"
         const val MAP_DATA_NAME_ROUTE_ICON = "route_icon"
-        const val MAP_DATA_NAME_ROUTE_LINE = "route_line"
+        const val MAP_DATA_NAME_ROUTE_LINE = "route"
         const val MAP_DATA_PROP_TYPE = "type"
         const val MAP_DATA_PROP_POINT = "point"
         const val MAP_DATA_PROP_LINE = "line"
@@ -323,10 +323,11 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun showRouteComplete() {
-        findViewById(R.id.footer_wrapper)?.visibility = View.GONE
         findViewById(R.id.resume)?.visibility = View.GONE
         setCurrentInstruction(pager?.adapter?.count?.minus(1) ?: 0)
         notificationCreator?.killNotification()
+        (findViewById(R.id.destination_distance) as DistanceView).distanceInMeters = 0
+        findViewById(R.id.footer_separator).visibility = View.GONE
 
         val location = route?.getGeometry()?.get(route?.getGeometry()?.size?.minus(1) ?: 0)
         if (location is Location) {
@@ -355,6 +356,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         initInstructionAdapter()
         this.visibility = View.VISIBLE
         routePresenter?.onRouteStart(route)
+        findViewById(R.id.footer_separator).visibility = View.VISIBLE
     }
 
     public fun resumeRoute(destination: Feature, route: Route?) {
