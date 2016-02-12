@@ -42,6 +42,7 @@ import com.mapzen.pelias.gson.Geometry
 import com.mapzen.pelias.gson.Properties
 import com.mapzen.pelias.gson.Result
 import com.mapzen.pelias.widget.AutoCompleteAdapter
+import com.mapzen.pelias.widget.AutoCompleteItem
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.mapzen.tangram.LngLat
@@ -127,7 +128,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         setContentView(R.layout.activity_main)
         presenter?.mainViewController = this
         initMapController()
-        initAutoCompleteAdapter()
         initFindMeButton()
         initMute()
         initCompass()
@@ -254,7 +254,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun initAutoCompleteAdapter() {
-        autoCompleteAdapter = AutoCompleteAdapter(this, R.layout.list_item_auto_complete)
+        autoCompleteAdapter = SearchListViewAdapter(this, R.layout.list_item_auto_complete,
+                searchView as PeliasSearchView)
     }
 
     private fun initFindMeButton() {
@@ -363,6 +364,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             this.searchView = searchView
             searchView.setRecentSearchIconResourceId(R.drawable.ic_recent)
             searchView.setAutoCompleteIconResourceId(R.drawable.ic_pin_c)
+            initAutoCompleteAdapter()
             listView.adapter = autoCompleteAdapter
             val pelias = Pelias.getPelias()
             pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
@@ -408,15 +410,26 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showAllSearchResults(features: List<Feature>) {
-        val simpleFeatures: ArrayList<SimpleFeature> = ArrayList()
-        for (feature in features) {
-            simpleFeatures.add(SimpleFeature.fromFeature(feature))
-        }
+        if(presenter?.resultListVisible as Boolean) {
+            presenter?.resultListVisible = false
+            optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
+            searchView?.onActionViewCollapsed()
+            searchView?.setIconified(false)
+            searchView?.clearFocus()
+        } else {
+            presenter?.resultListVisible = true
+            optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_map)
 
-        val intent = Intent(this, SearchResultsListActivity::class.java)
-        intent.putParcelableArrayListExtra("features", simpleFeatures)
-        intent.putExtra("query", searchView?.query.toString())
-        startActivityForResult(intent, requestCodeSearchResults)
+            val simpleFeatures: ArrayList<AutoCompleteItem> = ArrayList()
+            for (feature in features) {
+                simpleFeatures.add(AutoCompleteItem(SimpleFeature.fromFeature(feature)))
+            }
+            searchView?.onActionViewCollapsed()
+            searchView?.onActionViewExpanded()
+            autoCompleteAdapter?.clear();
+            autoCompleteAdapter?.addAll(simpleFeatures);
+            autoCompleteAdapter?.notifyDataSetChanged();
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -446,6 +459,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         override fun success(result: Result?, response: Response?) {
             presenter?.onSearchResultsAvailable(result)
+            optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
         }
 
         override fun failure(error: RetrofitError?) {

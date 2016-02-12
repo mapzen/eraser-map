@@ -20,4 +20,18 @@
         <item name="searchHintIcon">@drawable/ic_search</item>
         <item name="closeIcon">@drawable/ic_cancel</item>
     </style>
+
+    <style name="searchName">
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:textSize">@dimen/font_big</item>
+        <item name="android:paddingBottom">8dp</item>
+
+    </style>
+
+    <style name="searchAddr">
+        <item name="android:textSize">@dimen/font_small</item>
+        <item name="android:textColor">@color/dark_gray</item>
+        <item name="android:paddingBottom">12dp</item>
+    </style>
+
 </resources>

@@ -9,6 +9,7 @@ import android.support.v7.widget.SearchView
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.ListView
 import android.widget.TextView
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.erasermap.BuildConfig
@@ -164,15 +165,6 @@ public class MainActivityTest {
         menu.findItem(R.id.action_view_all).setVisible(true)
         activity.hideActionViewAll()
         assertThat(menu.findItem(R.id.action_view_all).isVisible).isFalse()
-    }
-
-    @Test
-    public fun showAllSearchResults_shouldStartSearchResultsActivityForResult() {
-        activity.showAllSearchResults(ArrayList<Feature>())
-        assertThat(shadowOf(activity).peekNextStartedActivityForResult().intent.component
-                .className).isEqualTo(SearchResultsListActivity::class.java.name)
-        assertThat(shadowOf(activity).peekNextStartedActivityForResult().requestCode)
-                .isEqualTo(activity.requestCodeSearchResults)
     }
 
     @Test
@@ -424,18 +416,34 @@ public class MainActivityTest {
     }
 
     @Test
+    public fun showAllSearchResults_ShouldListSearchItems() {
+        val features = ArrayList<Feature>()
+        features.add(getTestFeature())
+        features.add(getTestFeature())
+        activity.showAllSearchResults(features)
+        var listView = activity.findViewById(R.id.auto_complete) as ListView
+        assertThat((listView.getAdapter().getView(0, null, listView) as TextView).getText())
+                .contains("Name")
+    }
+
+    @Test
+    public fun showAllSearchResultsAgain_shouldNotListSearchItems() {
+        val features = ArrayList<Feature>()
+        features.add(getTestFeature())
+        features.add(getTestFeature())
+        activity.showAllSearchResults(features)
+        assertThat(shadowOf(activity).findViewById(R.id.auto_complete).visibility)
+                .isEqualTo(View.VISIBLE)
+        activity.showAllSearchResults(features)
+        assertThat(shadowOf(activity).findViewById(R.id.auto_complete).visibility)
+                .isEqualTo(View.GONE)
+    }
+
+    @Test
     public fun onLongClick_shouldSetPresenterFeature() {
         assertThat(activity.presenter!!.currentFeature).isNull()
         activity.reverseGeolocate(0f, 0f)
         assertThat(activity.presenter!!.currentFeature).isNotNull()
-    }
-
-    @Test
-    public fun onOptionsItemSelected_settingsShouldStartSettingsFragment() {
-        val menuItem = RoboMenuItem(R.id.action_settings)
-        activity.onOptionsItemSelected(menuItem)
-        assertThat(ShadowApplication.getInstance().nextStartedActivity.component)
-                .isEqualTo(ComponentName(activity, SettingsActivity::class.java))
     }
 
     @Test

@@ -35,6 +35,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     override var mainViewController: MainViewController? = null
     override var routeViewController: RouteViewController? = null
     override var currentSearchTerm: String? = null
+    override var resultListVisible = false
 
     private var searchResults: Result? = null
     private var destination: Feature? = null
@@ -201,6 +202,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             ROUTING -> onBackPressedStateRouting()
             ROUTE_DIRECTION_LIST -> onBackPressedStateRouteDirectionList()
         }
+        resultListVisible = false
     }
 
     private fun onBackPressedStateDefault() {
