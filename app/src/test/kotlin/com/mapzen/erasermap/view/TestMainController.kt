@@ -102,6 +102,7 @@ public class TestMainController : MainViewController {
 
     override fun startRoutingMode(feature: Feature) {
         isRoutingModeVisible = true
+        muted = false
     }
 
     override fun resumeRoutingMode(feature: Feature) {
