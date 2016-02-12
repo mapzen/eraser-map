@@ -229,6 +229,12 @@ public class MainPresenterTest {
         assertThat(subscriber.event).isNotNull()
     }
 
+    @Test fun onStartRoutingMode_shouldResetMute() {
+        mainController.muted = true
+        mainController.startRoutingMode(getTestFeature())
+        assertThat(mainController.muted).isFalse()
+    }
+
     @Test fun onLocationChanged_shouldNotifyRouteControllerIfRoutingIsEnabled() {
         presenter.routingEnabled = false
         presenter.onLocationChangeEvent(LocationChangeEvent(getTestLocation()))
@@ -372,6 +378,13 @@ public class MainPresenterTest {
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
         presenter.success(route)
         assertThat(mainController.routeLine).isEqualTo(route)
+    }
+
+    @Test fun onMuteClick_shouldToggleMute() {
+        val muted = mainController.muted
+        presenter.onMuteClick()
+        val mutedAfter = mainController.muted
+        assertThat(mutedAfter).isNotEqualTo(muted)
     }
 
     @Test fun onCompassClick_shouldResetMapRotation() {

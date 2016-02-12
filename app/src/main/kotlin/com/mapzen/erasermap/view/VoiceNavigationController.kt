@@ -67,4 +67,13 @@ public class VoiceNavigationController(val activity: Activity) {
             play(instruction.getVerbalPostTransitionInstruction())
 
     private fun play(text: String): Unit = speakerbox.play(text)
+
+    public fun mute() {
+        speakerbox.mute()
+    }
+
+    public fun unmute() {
+        speakerbox.unmute()
+    }
+
 }

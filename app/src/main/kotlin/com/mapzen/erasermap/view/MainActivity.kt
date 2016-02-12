@@ -109,6 +109,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     val compass: CompassView by lazy { findViewById(R.id.compass_view) as CompassView }
     val routePreviewCompass: CompassView by lazy { findViewById(R.id.route_preview_compass_view) as CompassView }
     val routeModeCompass: CompassView by lazy { findViewById(R.id.route_mode_compass_view) as CompassView }
+    val muteView: MuteView by lazy { findViewById(R.id.route_mode_mute_view) as MuteView }
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,6 +121,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initMapController()
         initAutoCompleteAdapter()
         initFindMeButton()
+        initMute()
         initCompass()
         initReverseButton()
         initMapRotateListener()
@@ -253,6 +255,18 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         findMeButton.setOnClickListener({ presenter?.onFindMeButtonClick() })
     }
 
+    private fun updateMute() {
+        val routePresenter = routeModeView.routePresenter
+        muteView.setMuted(!(routePresenter?.isMuted() == true))
+    }
+
+    private fun initMute() {
+        updateMute()
+        muteView.setOnClickListener({
+            presenter?.onMuteClick()
+        })
+    }
+
     private fun initCompass() {
         compass.setOnClickListener({
             presenter?.onCompassClick()
@@ -286,6 +300,22 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun setMapTilt(radians: Float) {
         mapController?.mapTilt = radians
+    }
+
+    override fun toggleMute() {
+        //Update cached value of routePresenter.isMuted
+        val routePresenter = routeModeView.routePresenter
+        routePresenter?.onMuteClicked()
+
+        val muted = (routePresenter?.isMuted() == true)
+        muteView.setMuted(!muted)
+
+        //Actually mute or unmute the speakerbox based on current value
+        if (muted) {
+            routeModeView.voiceNavigationController?.mute()
+        } else {
+            routeModeView.voiceNavigationController?.unmute()
+        }
     }
 
     override fun setMapRotation(radians: Float) {
@@ -838,6 +868,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun startRoutingMode(feature: Feature) {
+        resetMute()
         showRoutingMode(feature)
         routeModeView.startRoute(feature, routeManager?.route)
         setRoutingCamera()
@@ -861,9 +892,15 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         mapController?.setMapCameraType(MapController.CameraType.ISOMETRIC)
     }
 
+    private fun resetMute() {
+        val routePresenter = routeModeView.routePresenter
+        routePresenter?.setMuted(false)
+    }
+
     private fun showRoutingMode(feature: Feature) {
         hideFindMe()
         supportActionBar?.hide()
+        updateMute()
         routeManager?.destination = feature
         routeManager?.reverse = false
         routePreviewView.visibility = View.GONE

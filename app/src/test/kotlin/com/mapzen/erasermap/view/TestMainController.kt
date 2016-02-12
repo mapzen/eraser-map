@@ -11,6 +11,7 @@ public class TestMainController : MainViewController {
     public var location: Location? = null
     public var zoom: Float = 0f
     public var tilt: Float = 0f
+    public var muted: Boolean = false
     public var rotation: Float = 0f
     public var routeLine: Route? = null
     public var queryText: String = ""
@@ -101,6 +102,7 @@ public class TestMainController : MainViewController {
 
     override fun startRoutingMode(feature: Feature) {
         isRoutingModeVisible = true
+        muted = false
     }
 
     override fun resumeRoutingMode(feature: Feature) {
@@ -118,6 +120,10 @@ public class TestMainController : MainViewController {
 
     override fun setMapTilt(radians: Float) {
         tilt = radians
+    }
+
+    override fun toggleMute() {
+        muted = !muted
     }
 
     override fun setMapRotation(radians: Float) {
