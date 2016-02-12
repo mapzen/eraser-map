@@ -39,13 +39,6 @@ public class RoutePresenterTest {
         assertThat(routeEngine.route).isEqualTo(route2)
     }
 
-    @Test fun onRouteStart_shouldResetMuted() {
-        routePresenter.setMuted(true)
-        val route = Route(getFixture("valhalla_route"))
-        routePresenter.onRouteStart(route)
-        assertThat(routePresenter.isMuted()).isFalse()
-    }
-
     @Test fun onRouteResume_shouldNotResetRouteEngine() {
         val route1 = Route(getFixture("valhalla_route"))
         val route2 = Route(getFixture("valhalla_route"))

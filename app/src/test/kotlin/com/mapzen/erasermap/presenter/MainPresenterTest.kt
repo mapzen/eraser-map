@@ -229,6 +229,12 @@ public class MainPresenterTest {
         assertThat(subscriber.event).isNotNull()
     }
 
+    @Test fun onClickStartNavigation_shouldResetMute() {
+        mainController.muted = false
+        presenter.onClickStartNavigation()
+        assertThat(mainController.muted).isFalse()
+    }
+
     @Test fun onLocationChanged_shouldNotifyRouteControllerIfRoutingIsEnabled() {
         presenter.routingEnabled = false
         presenter.onLocationChangeEvent(LocationChangeEvent(getTestLocation()))

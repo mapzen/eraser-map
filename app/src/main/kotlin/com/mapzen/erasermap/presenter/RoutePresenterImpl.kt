@@ -24,7 +24,7 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
 
     private var route: Route? = null
     private var isTrackingCurrentLocation: Boolean = true
-    private var isMuted: Boolean = false
+    private var muted: Boolean = false
 
     override fun onLocationChanged(location: Location) {
         routeEngine.onLocationChanged(location)
@@ -100,14 +100,14 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
     }
 
     override fun onMuteClicked() {
-        isMuted = !isMuted
+        muted = !muted
     }
 
     override fun isMuted(): Boolean {
-        return isMuted
+        return muted
     }
 
-    override fun setMuted(muted: Boolean) {
-        isMuted = muted
+    override fun setMuted(isMuted: Boolean) {
+        muted = isMuted
     }
 }
