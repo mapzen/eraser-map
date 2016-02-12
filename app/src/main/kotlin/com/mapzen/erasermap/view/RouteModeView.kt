@@ -36,7 +36,12 @@ import javax.inject.Inject
 
 public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener {
     companion object {
-        val VIEW_TAG: String = "Instruction_"
+        const val VIEW_TAG: String = "Instruction_"
+        const val MAP_DATA_NAME_ROUTE_ICON = "route_icon"
+        const val MAP_DATA_NAME_ROUTE_LINE = "route_line"
+        const val MAP_DATA_PROP_TYPE = "type"
+        const val MAP_DATA_PROP_POINT = "point"
+        const val MAP_DATA_PROP_LINE = "line"
     }
 
     val mapListToggle: MapListToggleButton by lazy { findViewById(R.id.map_list_toggle) as MapListToggleButton }
@@ -204,17 +209,16 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun showRouteIcon(location: Location) {
         if (routeIcon == null) {
-            routeIcon = MapData("route_icon")
+            routeIcon = MapData(MAP_DATA_NAME_ROUTE_ICON)
             Tangram.addDataSource(routeIcon);
         }
 
         val properties = com.mapzen.tangram.Properties()
-        properties.set("type", "point");
+        properties.set(MAP_DATA_PROP_TYPE, MAP_DATA_PROP_POINT);
 
         routeIcon?.clearData()
         routeIcon?.addPoint(properties, LngLat(location.longitude, location.latitude))
         mapController?.requestRender()
-
     }
 
     override fun centerMapOnCurrentLocation() {
@@ -323,6 +327,12 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         findViewById(R.id.resume)?.visibility = View.GONE
         setCurrentInstruction(pager?.adapter?.count?.minus(1) ?: 0)
         notificationCreator?.killNotification()
+
+        val location = route?.getGeometry()?.get(route?.getGeometry()?.size?.minus(1) ?: 0)
+        if (location is Location) {
+            centerMapOnLocation(location)
+            showRouteIcon(location)
+        }
     }
 
     override fun showReroute(location: Location) {
@@ -352,7 +362,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         initDestination(destination)
         initInstructionAdapter()
         this.visibility = View.VISIBLE
-
         routePresenter?.onRouteResume(route)
     }
 
@@ -379,7 +388,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     public fun drawRoute(route: Route) {
         val properties = com.mapzen.tangram.Properties()
-        properties.set("type", "line");
+        properties.set(MAP_DATA_PROP_TYPE, MAP_DATA_PROP_LINE);
         val geometry: ArrayList<Location>? = route.getGeometry()
         val mapGeometry: ArrayList<LngLat> = ArrayList()
         if (geometry is ArrayList<Location>) {
@@ -389,7 +398,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         }
 
         if (routeLine == null) {
-            routeLine = MapData("route")
+            routeLine = MapData(MAP_DATA_NAME_ROUTE_LINE)
             Tangram.addDataSource(routeLine);
         }
 

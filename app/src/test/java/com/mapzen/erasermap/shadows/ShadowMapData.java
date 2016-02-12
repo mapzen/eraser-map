@@ -9,6 +9,7 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.RealObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Implements(MapData.class)
@@ -20,8 +21,11 @@ public class ShadowMapData {
     private List<LngLat> points = new ArrayList<>();
     private List<LngLat> line = new ArrayList<>();
 
+    private static final HashMap<String, MapData> mapDataCollection = new HashMap<>();
+
     public void __constructor__(String name) {
         this.name = name;
+        mapDataCollection.put(name, realMapData);
     }
 
     @Implementation
@@ -53,5 +57,9 @@ public class ShadowMapData {
 
     public List<LngLat> getLine() {
         return line;
+    }
+
+    public static final MapData getDataByName(String name) {
+        return mapDataCollection.get(name);
     }
 }

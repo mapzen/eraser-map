@@ -6,6 +6,8 @@ import com.mapzen.erasermap.R;
 import com.mapzen.erasermap.dummy.TestHelper;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
+import com.mapzen.erasermap.shadows.ShadowMapController;
+import com.mapzen.erasermap.shadows.ShadowMapData;
 import com.mapzen.erasermap.util.NotificationCreator;
 import com.mapzen.valhalla.Route;
 
@@ -16,6 +18,7 @@ import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowNotification;
 import org.robolectric.shadows.ShadowNotificationManager;
@@ -34,9 +37,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestLocation;
+import static com.mapzen.erasermap.view.RouteModeView.MAP_DATA_NAME_ROUTE_ICON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
@@ -218,6 +224,30 @@ public class RouteModeViewTest {
         final int current = routeModeView.getPager().getCurrentItem();
         final int size = routeModeView.getPager().getAdapter().getCount();
         assertThat(current).isEqualTo(size -1);
+    }
+
+    @Test
+    public void showRouteComplete_shouldCenterMapOnFinalLocation() throws Exception {
+        final ShadowMapController shadowMapController = (ShadowMapController)
+                ShadowExtractor.extract(routeModeView.getMapController());
+
+        shadowMapController.getEventQueue().clear();
+        routeModeView.showRouteComplete();
+        assertThat(shadowMapController.getEventQueue()).isNotEmpty();
+    }
+
+    @Test
+    public void showRouteComplete_shouldSetRouteIconPosition() throws Exception {
+        final ShadowMapData shadowMapData = (ShadowMapData)
+                ShadowExtractor.extract(ShadowMapData.getDataByName(MAP_DATA_NAME_ROUTE_ICON));
+        final List<Location> geometry = routeModeView.getRoute().getGeometry();
+
+        shadowMapData.getPoints().clear();
+        routeModeView.showRouteComplete();
+        assertThat(shadowMapData.getPoints().get(0).latitude)
+                .isEqualTo(geometry.get(geometry.size() - 1).getLatitude());
+        assertThat(shadowMapData.getPoints().get(0).longitude)
+                .isEqualTo(geometry.get(geometry.size() - 1).getLongitude());
     }
 
     @Test
