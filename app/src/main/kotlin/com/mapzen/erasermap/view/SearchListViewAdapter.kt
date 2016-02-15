@@ -33,11 +33,10 @@ class SearchListViewAdapter(context: Context, resource: Int, private val searchV
         }
         val query = searchView.query.toString()
         val subStringIndex = textView.text.toString().toLowerCase().indexOf(query.toLowerCase())
-        if (subStringIndex >= 0) {
+        if (subStringIndex >= 0 && (query.length > 2)) {
             spannableText.setSpan(StyleSpan(android.graphics.Typeface.BOLD), subStringIndex,
                     subStringIndex + query.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
-
         textView.text = spannableText
         return textView
     }
