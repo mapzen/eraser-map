@@ -468,8 +468,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun showSearchResults(features: List<Feature>) {
         hideReverseGeolocateResult()
         showSearchResultsView(features)
-        layoutAttributionAboveSearchResults()
         addSearchResultsToMap(features, 0)
+        layoutAttributionAboveSearchResults()
     }
 
     private fun showSearchResultsView(features: List<Feature>) {
@@ -480,8 +480,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun layoutAttributionAboveSearchResults() {
         val attributionLayoutParams = osmAttributionText.layoutParams as RelativeLayout.LayoutParams
-        attributionLayoutParams.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-        attributionLayoutParams.addRule(RelativeLayout.ABOVE, searchResultsView.id)
+        val bottomMargin = resources.getDimensionPixelSize(R.dimen.padding_vertical_big)
+        val searchHeight = resources.getDimensionPixelSize(R.dimen.search_results_pager_height)
+        attributionLayoutParams.bottomMargin = searchHeight + bottomMargin
     }
 
     override fun showReverseGeocodeFeature(features: List<Feature>) {
@@ -622,8 +623,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun layoutAttributionAlignBottom() {
         val attributionLayoutParams = osmAttributionText.layoutParams as RelativeLayout.LayoutParams
-        attributionLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-        attributionLayoutParams.removeRule(RelativeLayout.ABOVE)
+
+        val bottomMargin = resources.getDimensionPixelSize(R.dimen.padding_vertical_big)
+        attributionLayoutParams.bottomMargin = bottomMargin
     }
 
     override fun showProgress() {
