@@ -152,7 +152,7 @@ public class RouteModeViewTest {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP) @Test
     public void lastInstruction_shouldHaveFirstInstruction() throws Exception {
         View view = (View) adapter.instantiateItem(viewGroup,
-                routeModeView.getPager().getAdapter().getCount() - 1);
+                routeModeView.getInstructionPager().getAdapter().getCount() - 1);
         TextView instructionText = (TextView) view.findViewById(R.id.instruction_text);
         TextView distance = (TextView) view.findViewById(R.id.distance);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
@@ -181,12 +181,12 @@ public class RouteModeViewTest {
     @Test
     public void setCurrentInstruction_shouldAdvanceViewPager() throws Exception {
         routeModeView.setCurrentInstruction(1);
-        assertThat(routeModeView.getPager().getCurrentItem()).isEqualTo(1);
+        assertThat(routeModeView.getInstructionPager().getCurrentItem()).isEqualTo(1);
     }
 
     @Test
     public void updateDistanceToNextInstruction_shouldUpdateDistance() throws Exception {
-        adapter.instantiateItem(routeModeView.getPager(), 0);
+        adapter.instantiateItem(routeModeView.getInstructionPager(), 0);
         routeModeView.updateDistanceToNextInstruction(100);
         DistanceView distanceView =
                 (DistanceView) routeModeView.findViewByIndex(0).findViewById(R.id.distance);
@@ -195,7 +195,7 @@ public class RouteModeViewTest {
 
     @Test
     public void updateDistanceToDestination_shouldUpdateDistance() throws Exception {
-        adapter.instantiateItem(routeModeView.getPager(), 0);
+        adapter.instantiateItem(routeModeView.getInstructionPager(), 0);
         routeModeView.updateDistanceToDestination(500);
         DistanceView distanceView =
                 (DistanceView) routeModeView.findViewById(R.id.destination_distance);
@@ -214,8 +214,8 @@ public class RouteModeViewTest {
         routeModeView.setCurrentInstruction(0);
         routeModeView.showRouteComplete();
 
-        final int current = routeModeView.getPager().getCurrentItem();
-        final int size = routeModeView.getPager().getAdapter().getCount();
+        final int current = routeModeView.getInstructionPager().getCurrentItem();
+        final int size = routeModeView.getInstructionPager().getAdapter().getCount();
         assertThat(current).isEqualTo(size -1);
     }
 
