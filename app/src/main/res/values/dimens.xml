@@ -1,6 +1,7 @@
 <resources>
     <dimen name="padding_horizontal_default">16dp</dimen>
     <dimen name="padding_vertical_default">8dp</dimen>
+    <dimen name="padding_vertical_big">16dp</dimen>
     <dimen name="padding_vertical_small">4dp</dimen>
     <dimen name="instruction_padding">4dp</dimen>
     <dimen name="footer_padding">8dp</dimen>
@@ -11,4 +12,7 @@
     <dimen name="font_medium">21sp</dimen>
     <dimen name="font_medium_2">18sp</dimen>
     <dimen name="font_small">15sp</dimen>
+    <dimen name="font_tiny">9sp</dimen>
+
+    <dimen name="search_results_pager_height">75dp</dimen>
 </resources>

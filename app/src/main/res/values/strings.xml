@@ -20,6 +20,7 @@
     <string name="view_list">View List</string>
     <string name="start_navigation">Start Navigation</string>
     <string name="destination">Destination</string>
+    <string name="osm_attribution">Map data © OpenStreetMap</string>
 
     <string name="milestone_one_mile">In one mile</string>
     <string name="milestone_quarter_mile">In a quarter mile</string>

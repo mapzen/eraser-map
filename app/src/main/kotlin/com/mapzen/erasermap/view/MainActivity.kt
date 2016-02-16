@@ -16,6 +16,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.RadioButton
+import android.widget.RelativeLayout
+import android.widget.TextView
 import android.widget.Toast
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
@@ -110,6 +112,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     val routePreviewCompass: CompassView by lazy { findViewById(R.id.route_preview_compass_view) as CompassView }
     val routeModeCompass: CompassView by lazy { findViewById(R.id.route_mode_compass_view) as CompassView }
     val muteView: MuteView by lazy { findViewById(R.id.route_mode_mute_view) as MuteView }
+    val searchResultsView: SearchResultsView by lazy { findViewById(R.id.search_results) as SearchResultsView }
+    val osmAttributionText: TextView by lazy { findViewById(R.id.osm_attribution) as TextView }
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -400,7 +404,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode > 0) {
-            (findViewById(R.id.search_results) as SearchResultsView).setCurrentItem(resultCode - 1)
+            searchResultsView.setCurrentItem(resultCode - 1)
         }
     }
 
@@ -412,7 +416,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val term = presenter?.currentSearchTerm
         if (term != null) {
             searchView.setQuery(term, false)
-            if (findViewById(R.id.search_results).visibility == View.VISIBLE) {
+            if (searchResultsView.visibility == View.VISIBLE) {
                 searchView.clearFocus()
                 showActionViewAll()
             }
@@ -463,15 +467,22 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun showSearchResults(features: List<Feature>) {
         hideReverseGeolocateResult()
-        showSearchResultsPager(features)
+        showSearchResultsView(features)
         addSearchResultsToMap(features, 0)
+        layoutAttributionAboveSearchResults()
     }
 
-    private fun showSearchResultsPager(features: List<Feature>) {
-        val pager = findViewById(R.id.search_results) as SearchResultsView
-        pager.setAdapter(SearchResultsAdapter(this, features))
-        pager.visibility = View.VISIBLE
-        pager.onSearchResultsSelectedListener = this
+    private fun showSearchResultsView(features: List<Feature>) {
+        searchResultsView.setAdapter(SearchResultsAdapter(this, features))
+        searchResultsView.visibility = View.VISIBLE
+        searchResultsView.onSearchResultsSelectedListener = this
+    }
+
+    private fun layoutAttributionAboveSearchResults() {
+        val attributionLayoutParams = osmAttributionText.layoutParams as RelativeLayout.LayoutParams
+        val bottomMargin = resources.getDimensionPixelSize(R.dimen.padding_vertical_big)
+        val searchHeight = resources.getDimensionPixelSize(R.dimen.search_results_pager_height)
+        attributionLayoutParams.bottomMargin = searchHeight + bottomMargin
     }
 
     override fun showReverseGeocodeFeature(features: List<Feature>) {
@@ -482,10 +493,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             poiTapFallback = true
         }
 
-        val pager = findViewById(R.id.search_results) as SearchResultsView
-        pager.setAdapter(SearchResultsAdapter(this, features.subList(0, 1)))
-        pager.visibility = View.VISIBLE
-        pager.onSearchResultsSelectedListener = this
+        showPlaceSearchFeature(features)
 
         if (poiTapFallback) return
 
@@ -505,7 +513,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun drawTappedPoiPin() {
-        hideSearchResultsPager()
+        hideSearchResultsView()
+        layoutAttributionAlignBottom()
 
         var lngLat: LngLat? = null
 
@@ -530,10 +539,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showPlaceSearchFeature(features: List<Feature>) {
-        val pager = findViewById(R.id.search_results) as SearchResultsView
-        pager.setAdapter(SearchResultsAdapter(this, features.subList(0, 1)))
-        pager.visibility = View.VISIBLE
-        pager.onSearchResultsSelectedListener = this
+        searchResultsView.setAdapter(SearchResultsAdapter(this, features.subList(0, 1)))
+        searchResultsView.visibility = View.VISIBLE
+        searchResultsView.onSearchResultsSelectedListener = this
     }
 
     override fun addSearchResultsToMap(features: List<Feature>, activeIndex: Int) {
@@ -563,15 +571,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun centerOnCurrentFeature(features: List<Feature>) {
-        val pager = findViewById(R.id.search_results) as SearchResultsView
-        centerOnFeature(features, pager.getCurrentItem())
+        centerOnFeature(features, searchResultsView.getCurrentItem())
     }
 
     override fun centerOnFeature(features: List<Feature>, position: Int) {
         Handler().postDelayed({
             if(features.size > 0) {
-                val pager = findViewById(R.id.search_results) as SearchResultsView
-                pager.setCurrentItem(position)
+                searchResultsView.setCurrentItem(position)
                 val feature = SimpleFeature.fromFeature(features[position])
                 mapController?.setMapPosition(feature.lng(), feature.lat(), 1f)
                 mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
@@ -606,12 +612,20 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun hideSearchResults() {
-        hideSearchResultsPager()
+        hideSearchResultsView()
+        layoutAttributionAlignBottom()
         searchResults?.clear()
     }
 
-    private fun hideSearchResultsPager() {
-        (findViewById(R.id.search_results) as SearchResultsView).visibility = View.GONE
+    private fun hideSearchResultsView() {
+        searchResultsView.visibility = View.GONE
+    }
+
+    private fun layoutAttributionAlignBottom() {
+        val attributionLayoutParams = osmAttributionText.layoutParams as RelativeLayout.LayoutParams
+
+        val bottomMargin = resources.getDimensionPixelSize(R.dimen.padding_vertical_big)
+        attributionLayoutParams.bottomMargin = bottomMargin
     }
 
     override fun showProgress() {
