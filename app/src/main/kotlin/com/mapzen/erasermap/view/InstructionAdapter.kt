@@ -11,8 +11,8 @@ import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.valhalla.Instruction
 import java.util.ArrayList
 
-public class InstructionAdapter(val context: Context, val instructions: ArrayList<Instruction>,
-        val pager: RouteModeView) : PagerAdapter() {
+public class InstructionAdapter(private val context: Context,
+        private val instructions: ArrayList<Instruction>) : PagerAdapter() {
 
     override fun instantiateItem(container: ViewGroup?, position: Int): Any? {
         val instruction = instructions.get(position)
@@ -25,9 +25,18 @@ public class InstructionAdapter(val context: Context, val instructions: ArrayLis
         distance.distanceInMeters = instruction.distance
         title.text = instruction.getName()
         icon.setImageResource(iconId)
+        setDistanceViewVisibility(distance, position)
         setTagId(view, position)
         container?.addView(view)
         return view
+    }
+
+    private fun setDistanceViewVisibility(distanceView: DistanceView, position: Int) {
+        if (position == count - 1) {
+            distanceView.visibility = View.GONE
+        } else {
+            distanceView.visibility = View.VISIBLE
+        }
     }
 
     override fun getCount(): Int {

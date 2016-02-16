@@ -36,12 +36,20 @@ import javax.inject.Inject
 
 public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener {
     companion object {
-        val VIEW_TAG: String = "Instruction_"
+        const val VIEW_TAG: String = "Instruction_"
+        const val MAP_DATA_NAME_ROUTE_ICON = "route_icon"
+        const val MAP_DATA_NAME_ROUTE_LINE = "route"
+        const val MAP_DATA_PROP_TYPE = "type"
+        const val MAP_DATA_PROP_POINT = "point"
+        const val MAP_DATA_PROP_LINE = "line"
     }
 
     val mapListToggle: MapListToggleButton by lazy { findViewById(R.id.map_list_toggle) as MapListToggleButton }
     val routeCancelButton: ImageView by lazy { findViewById(R.id.route_cancel) as ImageView }
     val directionListView: DirectionListView by lazy { findViewById(R.id.direction_list_vew) as DirectionListView }
+    val distanceToDestination: DistanceView by lazy { findViewById(R.id.destination_distance) as DistanceView }
+    val instructionPager: ViewPager by lazy { findViewById(R.id.instruction_pager) as ViewPager }
+    val resumeButton: Button by lazy { findViewById(R.id.resume) as Button }
 
     var mapController: MapController? = null
         set(value) {
@@ -57,7 +65,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             field = value
         }
 
-    var pager: ViewPager? = null
     var autoPage: Boolean = true
     var route: Route? = null
     var mainPresenter: MainPresenter? = null
@@ -92,10 +99,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_mode, this, true)
         routePresenter?.routeController = this
-        (findViewById(R.id.resume) as Button).setOnClickListener {
+        resumeButton.setOnClickListener {
             routePresenter?.onResumeButtonClick()
             mainPresenter?.updateLocation()
-            pager?.currentItem = routePresenter?.currentInstructionIndex
+            instructionPager.currentItem = routePresenter?.currentInstructionIndex ?: 0
         }
 
         mapListToggle.setOnClickListener { routePresenter?.onMapListToggleClick(mapListToggle.state) }
@@ -103,7 +110,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-        if (pager?.currentItem == routePresenter?.currentInstructionIndex) {
+        if (instructionPager.currentItem == routePresenter?.currentInstructionIndex) {
             setCurrentPagerItemStyling(routePresenter?.currentInstructionIndex ?: 0);
             if (!autoPage) {
                 resumeAutoPaging()
@@ -137,12 +144,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     public fun setAdapter(adapter: PagerAdapter) {
-        pager = findViewById(R.id.instruction_pager) as ViewPager
-        pager?.adapter = adapter
-        pager?.addOnPageChangeListener(this)
-        (findViewById(R.id.destination_distance) as DistanceView).distanceInMeters =
-                (route?.getRemainingDistanceToDestination() as Int)
-        pager?.setOnTouchListener({ view, motionEvent -> onPagerTouch() })
+        instructionPager.adapter = adapter
+        instructionPager.addOnPageChangeListener(this)
+        distanceToDestination.distanceInMeters = route?.getRemainingDistanceToDestination() as Int
+        instructionPager.setOnTouchListener({ view, motionEvent -> onPagerTouch() })
     }
 
     private fun onPagerTouch(): Boolean {
@@ -151,20 +156,20 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     private fun resumeAutoPaging() {
-        pager?.currentItem = routePresenter?.currentInstructionIndex
+        instructionPager.currentItem = routePresenter?.currentInstructionIndex ?: 0
         setCurrentPagerItemStyling(routePresenter?.currentInstructionIndex ?:0)
         autoPage = true
     }
 
     private fun setCurrentPagerItemStyling(position : Int) {
-        var lastItemIndex = (pager?.adapter as InstructionAdapter).count - 1
+        var lastItemIndex = (instructionPager.adapter as InstructionAdapter).count - 1
         var itemsUntilLastInstruction = (lastItemIndex - position)
         if (itemsUntilLastInstruction == 1) {
-            (pager?.adapter as InstructionAdapter)
+            (instructionPager.adapter as InstructionAdapter)
                     .setBackgroundColorArrived(findViewByIndex(position + 1))
         }
 
-        val adapter = pager?.adapter
+        val adapter = instructionPager.adapter
         if (adapter is InstructionAdapter) {
             if (autoPage) {
                 adapter.setBackgroundColorActive(findViewByIndex(position))
@@ -179,7 +184,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     public fun findViewByIndex(index: Int): View? {
-        return pager?.findViewWithTag(VIEW_TAG + index)
+        return instructionPager.findViewWithTag(VIEW_TAG + index)
     }
 
     override fun onLocationChanged(location: Location) {
@@ -195,26 +200,25 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun showResumeButton() {
-        findViewById(R.id.resume).visibility = View.VISIBLE
+        resumeButton.visibility = View.VISIBLE
     }
 
     override fun hideResumeButton() {
-        findViewById(R.id.resume).visibility = View.GONE
+        resumeButton.visibility = View.GONE
     }
 
     override fun showRouteIcon(location: Location) {
         if (routeIcon == null) {
-            routeIcon = MapData("route_icon")
+            routeIcon = MapData(MAP_DATA_NAME_ROUTE_ICON)
             Tangram.addDataSource(routeIcon);
         }
 
         val properties = com.mapzen.tangram.Properties()
-        properties.set("type", "point");
+        properties.set(MAP_DATA_PROP_TYPE, MAP_DATA_PROP_POINT);
 
         routeIcon?.clearData()
         routeIcon?.addPoint(properties, LngLat(location.longitude, location.latitude))
         mapController?.requestRender()
-
     }
 
     override fun centerMapOnCurrentLocation() {
@@ -266,7 +270,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun setCurrentInstruction(index: Int) {
         routePresenter?.currentInstructionIndex = index
-        pager?.currentItem = index
+        instructionPager.currentItem = index
         directionListView.setCurrent(index)
         notificationCreator?.createNewNotification(
                 (findViewById(R.id.destination_name) as TextView).text.toString(),
@@ -312,16 +316,21 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun updateDistanceToDestination(meters: Int) {
-        val distanceToDestinationView = findViewById(R.id.destination_distance)
-        if (distanceToDestinationView is DistanceView) {
-            distanceToDestinationView.distanceInMeters = meters
-        }
+        distanceToDestination.distanceInMeters = meters
     }
 
     override fun showRouteComplete() {
-        findViewById(R.id.footer_wrapper)?.visibility = View.GONE
-        findViewById(R.id.resume)?.visibility = View.GONE
+        resumeButton.visibility = View.GONE
+        setCurrentInstruction(instructionPager.adapter?.count?.minus(1) ?: 0)
         notificationCreator?.killNotification()
+        distanceToDestination.distanceInMeters = 0
+        findViewById(R.id.footer_separator).visibility = View.GONE
+
+        val location = route?.getGeometry()?.get(route?.getGeometry()?.size?.minus(1) ?: 0)
+        if (location is Location) {
+            centerMapOnLocation(location)
+            showRouteIcon(location)
+        }
     }
 
     override fun showReroute(location: Location) {
@@ -344,6 +353,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         initInstructionAdapter()
         this.visibility = View.VISIBLE
         routePresenter?.onRouteStart(route)
+        findViewById(R.id.footer_separator).visibility = View.VISIBLE
     }
 
     public fun resumeRoute(destination: Feature, route: Route?) {
@@ -351,7 +361,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         initDestination(destination)
         initInstructionAdapter()
         this.visibility = View.VISIBLE
-
         routePresenter?.onRouteResume(route)
     }
 
@@ -371,14 +380,14 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     private fun initInstructionAdapter() {
         val instructions = route?.getRouteInstructions()
         if (instructions != null) {
-            val adapter = InstructionAdapter(context, instructions, this)
+            val adapter = InstructionAdapter(context, instructions)
             setAdapter(adapter)
         }
     }
 
     public fun drawRoute(route: Route) {
         val properties = com.mapzen.tangram.Properties()
-        properties.set("type", "line");
+        properties.set(MAP_DATA_PROP_TYPE, MAP_DATA_PROP_LINE);
         val geometry: ArrayList<Location>? = route.getGeometry()
         val mapGeometry: ArrayList<LngLat> = ArrayList()
         if (geometry is ArrayList<Location>) {
@@ -388,7 +397,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         }
 
         if (routeLine == null) {
-            routeLine = MapData("route")
+            routeLine = MapData(MAP_DATA_NAME_ROUTE_LINE)
             Tangram.addDataSource(routeLine);
         }
 
@@ -409,7 +418,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         val instructions = route?.getRouteInstructions()
         if (instructions != null && instructions.size > 0) {
             directionListView.setInstructions(instructions)
-            directionListView.setCurrent(pager?.currentItem ?: 0)
+            directionListView.setCurrent(instructionPager.currentItem ?: 0)
             directionListView.visibility = View.VISIBLE
         }
 

@@ -9,12 +9,16 @@ import org.robolectric.annotation.Implements;
 
 import android.app.Activity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Implements(MapController.class)
 public class ShadowMapController {
     private double lng;
     private double lat;
     private float zoom;
     private float rotation;
+    private ArrayList<Runnable> eventQueue = new ArrayList<>();
 
     public void __constructor__(Activity mainApp, MapView view) {
     }
@@ -53,5 +57,14 @@ public class ShadowMapController {
     @Implementation
     public float getMapRotation() {
         return rotation;
+    }
+
+    @Implementation
+    public void queueEvent(Runnable r) {
+        eventQueue.add(r);
+    }
+
+    public List<Runnable> getEventQueue() {
+        return eventQueue;
     }
 }

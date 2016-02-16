@@ -6,6 +6,8 @@ import com.mapzen.erasermap.R;
 import com.mapzen.erasermap.dummy.TestHelper;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
+import com.mapzen.erasermap.shadows.ShadowMapController;
+import com.mapzen.erasermap.shadows.ShadowMapData;
 import com.mapzen.erasermap.util.NotificationCreator;
 import com.mapzen.valhalla.Route;
 
@@ -16,6 +18,7 @@ import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowNotification;
 import org.robolectric.shadows.ShadowNotificationManager;
@@ -34,9 +37,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestLocation;
+import static com.mapzen.erasermap.view.RouteModeView.MAP_DATA_NAME_ROUTE_ICON;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
@@ -146,7 +152,7 @@ public class RouteModeViewTest {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP) @Test
     public void lastInstruction_shouldHaveFirstInstruction() throws Exception {
         View view = (View) adapter.instantiateItem(viewGroup,
-                routeModeView.getPager().getAdapter().getCount() - 1);
+                routeModeView.getInstructionPager().getAdapter().getCount() - 1);
         TextView instructionText = (TextView) view.findViewById(R.id.instruction_text);
         TextView distance = (TextView) view.findViewById(R.id.distance);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
@@ -175,12 +181,12 @@ public class RouteModeViewTest {
     @Test
     public void setCurrentInstruction_shouldAdvanceViewPager() throws Exception {
         routeModeView.setCurrentInstruction(1);
-        assertThat(routeModeView.getPager().getCurrentItem()).isEqualTo(1);
+        assertThat(routeModeView.getInstructionPager().getCurrentItem()).isEqualTo(1);
     }
 
     @Test
     public void updateDistanceToNextInstruction_shouldUpdateDistance() throws Exception {
-        adapter.instantiateItem(routeModeView.getPager(), 0);
+        adapter.instantiateItem(routeModeView.getInstructionPager(), 0);
         routeModeView.updateDistanceToNextInstruction(100);
         DistanceView distanceView =
                 (DistanceView) routeModeView.findViewByIndex(0).findViewById(R.id.distance);
@@ -189,7 +195,7 @@ public class RouteModeViewTest {
 
     @Test
     public void updateDistanceToDestination_shouldUpdateDistance() throws Exception {
-        adapter.instantiateItem(routeModeView.getPager(), 0);
+        adapter.instantiateItem(routeModeView.getInstructionPager(), 0);
         routeModeView.updateDistanceToDestination(500);
         DistanceView distanceView =
                 (DistanceView) routeModeView.findViewById(R.id.destination_distance);
@@ -197,17 +203,44 @@ public class RouteModeViewTest {
     }
 
     @Test
-    public void showRouteComplete_shouldHideRouteFooter() throws Exception {
-        routeModeView.showRouteComplete();
-        assertThat(routeModeView.findViewById(R.id.footer_wrapper).getVisibility())
-                .isEqualTo(View.GONE);
-    }
-
-    @Test
     public void showRouteComplete_shouldHideResumeButton() throws Exception {
         routeModeView.showRouteComplete();
         assertThat(routeModeView.findViewById(R.id.resume).getVisibility())
                 .isEqualTo(View.GONE);
+    }
+
+    @Test
+    public void showRouteComplete_shouldSetCurrentInstructionToLast() throws Exception {
+        routeModeView.setCurrentInstruction(0);
+        routeModeView.showRouteComplete();
+
+        final int current = routeModeView.getInstructionPager().getCurrentItem();
+        final int size = routeModeView.getInstructionPager().getAdapter().getCount();
+        assertThat(current).isEqualTo(size -1);
+    }
+
+    @Test
+    public void showRouteComplete_shouldCenterMapOnFinalLocation() throws Exception {
+        final ShadowMapController shadowMapController = (ShadowMapController)
+                ShadowExtractor.extract(routeModeView.getMapController());
+
+        shadowMapController.getEventQueue().clear();
+        routeModeView.showRouteComplete();
+        assertThat(shadowMapController.getEventQueue()).isNotEmpty();
+    }
+
+    @Test
+    public void showRouteComplete_shouldSetRouteIconPosition() throws Exception {
+        final ShadowMapData shadowMapData = (ShadowMapData)
+                ShadowExtractor.extract(ShadowMapData.getDataByName(MAP_DATA_NAME_ROUTE_ICON));
+        final List<Location> geometry = routeModeView.getRoute().getGeometry();
+
+        shadowMapData.getPoints().clear();
+        routeModeView.showRouteComplete();
+        assertThat(shadowMapData.getPoints().get(0).latitude)
+                .isEqualTo(geometry.get(geometry.size() - 1).getLatitude());
+        assertThat(shadowMapData.getPoints().get(0).longitude)
+                .isEqualTo(geometry.get(geometry.size() - 1).getLongitude());
     }
 
     @Test
