@@ -31,6 +31,7 @@ public interface MainViewController {
     public fun centerMapOnLocation(location: Location, zoom: Float)
     public fun showCurrentLocation(location: Location)
     public fun setMapTilt(radians: Float)
+    public fun resetMute()
     public fun toggleMute()
     public fun setMapRotation(radians: Float)
     public fun drawRoute(route: Route)
