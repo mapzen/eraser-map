@@ -252,6 +252,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         generateRoutingMode()
         vsm.viewState = ViewStateManager.ViewState.ROUTING
         routeViewController?.hideResumeButton()
+        mainViewController?.resetMute()
     }
 
     @Subscribe public fun onLocationChangeEvent(event: LocationChangeEvent) {

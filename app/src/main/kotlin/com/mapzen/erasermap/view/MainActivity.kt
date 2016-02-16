@@ -98,6 +98,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var poiTapPoint: FloatArray? = null
     var poiTapName: String? = null
     var searchView: PeliasSearchView? = null
+    var voiceNavigationController: VoiceNavigationController? = null
+    var notificationCreator: NotificationCreator? = null
 
     val findMeButton: ImageButton by lazy { findViewById(R.id.find_me) as ImageButton }
     val routePreviewView: RoutePreviewView by lazy { findViewById(R.id.route_preview) as RoutePreviewView }
@@ -133,7 +135,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         presenter?.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
         settings?.initTangramDebugFlags()
-        routeModeView.voiceNavigationController = VoiceNavigationController(this)
+        initVoiceNavigationController()
+        initNotificationCreator()
     }
 
     override protected fun onNewIntent(intent: Intent?) {
@@ -285,6 +288,18 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun initCrashReportService() {
         crashReportService?.initAndStartSession(this)
+    }
+
+    private fun initVoiceNavigationController() {
+        voiceNavigationController = VoiceNavigationController(this)
+        val routePresenter = routeModeView.routePresenter
+        if (routePresenter?.isMuted() == true) {
+            voiceNavigationController?.mute()
+        }
+    }
+
+    private fun initNotificationCreator() {
+        notificationCreator = NotificationCreator(this)
     }
 
     override fun centerMapOnLocation(location: Location, zoom: Float) {
@@ -882,11 +897,15 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun startRoutingMode(feature: Feature) {
-        resetMute()
         showRoutingMode(feature)
         routeModeView.startRoute(feature, routeManager?.route)
         setRoutingCamera()
         hideRoutePins()
+    }
+
+    override fun resetMute() {
+        val routePresenter = routeModeView.routePresenter
+        routePresenter?.setMuted(false)
     }
 
     override fun resumeRoutingMode(feature: Feature) {
@@ -906,11 +925,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         mapController?.setMapCameraType(MapController.CameraType.ISOMETRIC)
     }
 
-    private fun resetMute() {
-        val routePresenter = routeModeView.routePresenter
-        routePresenter?.setMuted(false)
-    }
-
     private fun showRoutingMode(feature: Feature) {
         hideFindMe()
         supportActionBar?.hide()
@@ -921,8 +935,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         routeModeView.mainPresenter = presenter
         routeModeView.mapController = mapController
         presenter?.routeViewController = routeModeView
-        routeModeView.voiceNavigationController = VoiceNavigationController(this)
-        routeModeView.notificationCreator = NotificationCreator(this)
+        routeModeView.voiceNavigationController = voiceNavigationController
+        routeModeView.notificationCreator = notificationCreator
     }
 
     override fun hideRoutingMode() {

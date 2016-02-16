@@ -229,8 +229,18 @@ public class MainPresenterTest {
         assertThat(subscriber.event).isNotNull()
     }
 
-    @Test fun onStartRoutingMode_shouldResetMute() {
+    @Test fun onClickStartNavigation_shouldResetMute() {
         mainController.muted = true
+        presenter.onClickStartNavigation()
+        assertThat(mainController.muted).isFalse()
+    }
+
+    @Test fun onStartRoutingMode_shouldNotResetMute() {
+        mainController.muted = true
+        mainController.startRoutingMode(getTestFeature())
+        assertThat(mainController.muted).isTrue()
+
+        mainController.muted = false
         mainController.startRoutingMode(getTestFeature())
         assertThat(mainController.muted).isFalse()
     }
@@ -378,6 +388,16 @@ public class MainPresenterTest {
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
         presenter.success(route)
         assertThat(mainController.routeLine).isEqualTo(route)
+    }
+
+    @Test fun onRerouteSuccess_shouldNotResetMute() {
+        mainController.muted = true
+        presenter.success(Route(JSONObject()))
+        assertThat(mainController.muted).isTrue()
+
+        mainController.muted = false
+        presenter.success(Route(JSONObject()))
+        assertThat(mainController.muted).isFalse()
     }
 
     @Test fun onMuteClick_shouldToggleMute() {
