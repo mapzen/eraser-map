@@ -32,6 +32,7 @@ import com.mapzen.erasermap.util.AxisAlignedBoundingBox
 import com.mapzen.erasermap.util.AxisAlignedBoundingBox.PointD
 import com.mapzen.erasermap.util.NotificationBroadcastReceiver
 import com.mapzen.erasermap.util.NotificationCreator
+import com.mapzen.erasermap.util.StringConstants
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.SimpleFeature
@@ -484,7 +485,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         hideReverseGeolocateResult()
         showSearchResultsView(features)
         addSearchResultsToMap(features, 0)
-        layoutAttributionAboveSearchResults(features)
+        layoutAttributionAboveSearchResults()
+        updateShowDebugSettings()
     }
 
     private fun showSearchResultsView(features: List<Feature>) {
@@ -499,6 +501,20 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val bottomMargin = resources.getDimensionPixelSize(R.dimen.padding_vertical_big)
         val searchHeight = resources.getDimensionPixelSize(R.dimen.search_results_pager_height)
         attributionLayoutParams.bottomMargin = searchHeight + bottomMargin
+    }
+
+    /**
+     * If the current query in search view is equal to special query, update shared preferences
+     * to show debug settings in settings fragment
+     */
+    private fun updateShowDebugSettings() {
+        if (!StringConstants.SecretSearchQuery.SHOW_DEBUG_SETTINGS_QUERY
+                .equals(searchView?.query.toString())) {
+            return;
+        }
+        var editor = PreferenceManager.getDefaultSharedPreferences(this).edit()
+        editor.putBoolean(StringConstants.Settings.SHOW_DEBUG_SETTINGS, true)
+        editor.commit()
     }
 
     override fun showReverseGeocodeFeature(features: List<Feature>) {

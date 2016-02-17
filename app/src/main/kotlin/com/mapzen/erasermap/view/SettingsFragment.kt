@@ -3,10 +3,12 @@ package com.mapzen.erasermap.view
 import android.os.Bundle
 import android.preference.Preference
 import android.preference.PreferenceFragment
+import android.preference.PreferenceManager
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.AppSettings
+import com.mapzen.erasermap.util.StringConstants
 import com.mapzen.tangram.DebugFlags
 import com.mapzen.tangram.Tangram
 
@@ -27,11 +29,15 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.preferences)
+        var sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
+        if (sharedPreferences.getBoolean(StringConstants.Settings.SHOW_DEBUG_SETTINGS, false)) {
+            addPreferencesFromResource(R.xml.debug_preferences)
+            initBuildNumberPref()
+            initTileDebugPref()
+            initLabelDebugPref()
+            initTangramInfosDebugPref()
+        }
         initDistanceUnitsPref()
-        initBuildNumberPref()
-        initTileDebugPref()
-        initLabelDebugPref()
-        initTangramInfosDebugPref()
         initEraseHistoryPref()
     }
 
