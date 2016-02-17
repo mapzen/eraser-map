@@ -27,7 +27,11 @@ public class InitActivity : AppCompatActivity() {
         initCrashReportService()
         setContentView(R.layout.splash_screen)
         supportActionBar.hide()
-        (findViewById(R.id.build_number) as TextView).text = BuildConfig.BUILD_NUMBER
+
+        if (BuildConfig.DEBUG) {
+            (findViewById(R.id.build_number) as TextView).text = BuildConfig.BUILD_NUMBER
+        }
+
         Handler().postDelayed({ startMainActivity() }, START_DELAY_IN_MS)
     }
 

@@ -19,6 +19,11 @@ def VALHALLA_API_KEY = hasProperty('valhallaApiKey') ? '"' + valhallaApiKey + '"
 def MINT_API_KEY = hasProperty('mintApiKey') ? '"' + mintApiKey + '"' : "null";
 def BUILD_NUMBER = hasProperty('buildNumber') ? '"' + buildNumber + '"' : '"DEV"';
 
+def RELEASE_STORE_FILE = hasProperty('releaseStoreFile') ? releaseStoreFile : "null";
+def RELEASE_STORE_PASSWORD = hasProperty('releaseStorePassword') ? releaseStorePassword : "null";
+def RELEASE_KEY_ALIAS = hasProperty('releaseKeyAlias') ? releaseKeyAlias : "null";
+def RELEASE_KEY_PASSWORD = hasProperty('releaseStoreFile') ? releaseKeyPassword : "null";
+
 android {
   compileSdkVersion 22
   buildToolsVersion "23.0.1"
@@ -29,37 +34,47 @@ android {
     targetSdkVersion 22
     versionCode 6
     versionName "0.4.1-SNAPSHOT"
+    buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY
+    buildConfigField "String", "PELIAS_API_KEY", PELIAS_API_KEY
+    buildConfigField "String", "VALHALLA_API_KEY", VALHALLA_API_KEY
+    buildConfigField "String", "MINT_API_KEY", MINT_API_KEY
+    buildConfigField "String", "BUILD_NUMBER", BUILD_NUMBER
   }
-  buildTypes {
-    debug {
-      buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY
-      buildConfigField "String", "PELIAS_API_KEY", PELIAS_API_KEY
-      buildConfigField "String", "VALHALLA_API_KEY", VALHALLA_API_KEY
-      buildConfigField "String", "MINT_API_KEY", MINT_API_KEY
-      buildConfigField "String", "BUILD_NUMBER", BUILD_NUMBER
-    }
-    release {
-      buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY
-      buildConfigField "String", "PELIAS_API_KEY", PELIAS_API_KEY
-      buildConfigField "String", "VALHALLA_API_KEY", VALHALLA_API_KEY
-      buildConfigField "String", "MINT_API_KEY", MINT_API_KEY
-      minifyEnabled false
-    }
-  }
-  sourceSets {
-    main.java.srcDirs += 'src/main/kotlin'
-    test.java.srcDirs += 'src/test/kotlin'
-  }
-  packagingOptions {
-    exclude 'META-INF/LICENSE.txt'
-  }
-  testOptions {
-    unitTests.returnDefaultValues = true
-  }
+
   signingConfigs {
     debug {
       storeFile file("debug.keystore")
     }
+
+    release {
+      storeFile file(RELEASE_STORE_FILE)
+      storePassword RELEASE_STORE_PASSWORD
+      keyAlias RELEASE_KEY_ALIAS
+      keyPassword RELEASE_KEY_PASSWORD
+    }
+  }
+
+  buildTypes {
+    debug {
+      signingConfig signingConfigs.debug
+    }
+    release {
+      signingConfig signingConfigs.release
+      minifyEnabled false
+    }
+  }
+
+  sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+    test.java.srcDirs += 'src/test/kotlin'
+  }
+
+  packagingOptions {
+    exclude 'META-INF/LICENSE.txt'
+  }
+
+  testOptions {
+    unitTests.returnDefaultValues = true
   }
 }
 
