@@ -484,7 +484,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         hideReverseGeolocateResult()
         showSearchResultsView(features)
         addSearchResultsToMap(features, 0)
-        layoutAttributionAboveSearchResults()
+        layoutAttributionAboveSearchResults(features)
     }
 
     private fun showSearchResultsView(features: List<Feature>) {
@@ -493,7 +493,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         searchResultsView.onSearchResultsSelectedListener = this
     }
 
-    private fun layoutAttributionAboveSearchResults() {
+    private fun layoutAttributionAboveSearchResults(features: List<Feature>) {
+        if (features.count() == 0) return
         val attributionLayoutParams = osmAttributionText.layoutParams as RelativeLayout.LayoutParams
         val bottomMargin = resources.getDimensionPixelSize(R.dimen.padding_vertical_big)
         val searchHeight = resources.getDimensionPixelSize(R.dimen.search_results_pager_height)
