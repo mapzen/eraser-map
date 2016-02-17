@@ -21,23 +21,25 @@ class SearchListViewAdapter(context: Context, resource: Int, private val searchV
         val textView = super.getView(position, convertView, parent) as TextView
         val item = getItem(position)
         textView.setCompoundDrawablesWithIntrinsicBounds(iconId, 0, 0, 0)
-
-        textView.setText(textView.text, TextView.BufferType.SPANNABLE)
-        val spannableText = textView.text as Spannable
         if( item.simpleFeature != null) {
+            var text = item.simpleFeature.name() + '\n' + item.simpleFeature.address()
+            textView.setText(text, TextView.BufferType.SPANNABLE)
+
+            val spannableText = textView.text as Spannable
             val nameLength = item.simpleFeature.name().length
             spannableText.setSpan(TextAppearanceSpan(this.context, R.style.searchAddr),
                     nameLength, textView.text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             spannableText.setSpan(TextAppearanceSpan(this.context, R.style.searchName), 0,
                     nameLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        }
-        val query = searchView.query.toString()
-        val subStringIndex = textView.text.toString().toLowerCase().indexOf(query.toLowerCase())
-        if (subStringIndex >= 0 && (query.length > 2)) {
-            spannableText.setSpan(StyleSpan(android.graphics.Typeface.BOLD), subStringIndex,
-                    subStringIndex + query.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            val query = searchView.query.toString()
+            val subStringIndex = textView.text.toString().toLowerCase().indexOf(query.toLowerCase())
+            if (subStringIndex >= 0 && (query.length > 2)) {
+                spannableText.setSpan(StyleSpan(android.graphics.Typeface.BOLD), subStringIndex,
+                        subStringIndex + query.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
-        textView.text = spannableText
+            textView.text = spannableText
+        }
         return textView
     }
 

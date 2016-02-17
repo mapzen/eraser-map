@@ -373,18 +373,22 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             searchView.setSavedSearch(savedSearch)
             searchView.setPelias(Pelias.getPelias())
             searchView.setCallback(PeliasCallback())
-            searchView.setOnSubmitListener({ presenter?.onQuerySubmit() })
+            searchView.setOnSubmitListener({
+                saveCurrentSearchTerm()
+                presenter?.onQuerySubmit()
+            })
             searchView.setIconifiedByDefault(false)
 
             searchView.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
             searchView.queryHint = "Search for place or address"
             listView.emptyView = emptyView
             restoreCurrentSearchTerm(searchView)
-
             searchView.setOnPeliasFocusChangeListener { view, b ->
                 if (b) {
                     presenter?.onExpandSearchView()
-                }
+                } else if( presenter?.resultListVisible as Boolean) {
+                        onCloseAllSearchResults()
+                    }
             }
         }
 
@@ -411,12 +415,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun showAllSearchResults(features: List<Feature>) {
         if(presenter?.resultListVisible as Boolean) {
-            presenter?.resultListVisible = false
-            optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
-            searchView?.onActionViewCollapsed()
-            searchView?.setIconified(false)
-            searchView?.clearFocus()
+            onCloseAllSearchResults()
         } else {
+            saveCurrentSearchTerm()
             presenter?.resultListVisible = true
             optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_map)
 
@@ -426,10 +427,20 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             }
             searchView?.onActionViewCollapsed()
             searchView?.onActionViewExpanded()
+            searchView?.setQuery(presenter?.currentSearchTerm, false)
             autoCompleteAdapter?.clear();
             autoCompleteAdapter?.addAll(simpleFeatures);
             autoCompleteAdapter?.notifyDataSetChanged();
         }
+    }
+
+    private fun onCloseAllSearchResults() {
+        presenter?.resultListVisible = false
+        optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
+        searchView?.onActionViewCollapsed()
+        searchView?.setIconified(false)
+        searchView?.clearFocus()
+        searchView?.setQuery(presenter?.currentSearchTerm, false)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
