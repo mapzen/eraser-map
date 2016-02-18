@@ -30,4 +30,8 @@
     <string name="less_than_one_minute">&lt;1 min</string>
     <string name="recalculating">Recalculating</string>
     <string name="diamond_separator">" ◆ "</string>
+
+    <string name="debug_settings_toast_title">Debug menu %s</string>
+    <string name="enabled">enabled</string>
+    <string name="disabled">disabled</string>
 </resources>

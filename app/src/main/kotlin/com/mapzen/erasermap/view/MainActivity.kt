@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.view
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Point
 import android.location.Location
 import android.os.Bundle
@@ -486,7 +487,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         showSearchResultsView(features)
         addSearchResultsToMap(features, 0)
         layoutAttributionAboveSearchResults()
-        updateShowDebugSettings()
+        toggleShowDebugSettings()
     }
 
     private fun showSearchResultsView(features: List<Feature>) {
@@ -504,17 +505,23 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     /**
-     * If the current query in search view is equal to special query, update shared preferences
-     * to show debug settings in settings fragment
+     * If the current query in search view is equal to special query, toggle shared preferences
+     * to show or hide debug settings in settings fragment
      */
-    private fun updateShowDebugSettings() {
+    private fun toggleShowDebugSettings() {
         if (!StringConstants.SecretSearchQuery.SHOW_DEBUG_SETTINGS_QUERY
                 .equals(searchView?.query.toString())) {
             return;
         }
-        var editor = PreferenceManager.getDefaultSharedPreferences(this).edit()
-        editor.putBoolean(StringConstants.Settings.SHOW_DEBUG_SETTINGS, true)
+        var preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        var editor = preferences.edit()
+        var prev = preferences.getBoolean(StringConstants.Settings.SHOW_DEBUG_SETTINGS, false)
+        editor.putBoolean(StringConstants.Settings.SHOW_DEBUG_SETTINGS, !prev)
         editor.commit()
+
+        var status = resources.getString(if (prev) R.string.disabled else R.string.enabled)
+        var debugToastTitle = resources.getString(R.string.debug_settings_toast_title, status)
+        Toast.makeText(this, debugToastTitle, Toast.LENGTH_SHORT).show();
     }
 
     override fun showReverseGeocodeFeature(features: List<Feature>) {
