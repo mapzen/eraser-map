@@ -255,7 +255,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun initAutoCompleteAdapter() {
         autoCompleteAdapter = SearchListViewAdapter(this, R.layout.list_item_auto_complete,
-                searchView as PeliasSearchView)
+                searchView as PeliasSearchView, savedSearch as SavedSearch)
     }
 
     private fun initFindMeButton() {
@@ -388,7 +388,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                     presenter?.onExpandSearchView()
                 } else if( presenter?.resultListVisible as Boolean) {
                         onCloseAllSearchResults()
-                    }
+                    } else {
+                    searchView?.setQuery(presenter?.currentSearchTerm, false)
+                }
             }
         }
 
