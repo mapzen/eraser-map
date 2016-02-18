@@ -24,6 +24,7 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
+import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
@@ -33,7 +34,6 @@ import com.mapzen.erasermap.util.AxisAlignedBoundingBox
 import com.mapzen.erasermap.util.AxisAlignedBoundingBox.PointD
 import com.mapzen.erasermap.util.NotificationBroadcastReceiver
 import com.mapzen.erasermap.util.NotificationCreator
-import com.mapzen.erasermap.util.StringConstants
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.SimpleFeature
@@ -486,7 +486,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         hideReverseGeolocateResult()
         showSearchResultsView(features)
         addSearchResultsToMap(features, 0)
-        layoutAttributionAboveSearchResults()
+        layoutAttributionAboveSearchResults(features)
         toggleShowDebugSettings()
     }
 
@@ -509,14 +509,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
      * to show or hide debug settings in settings fragment
      */
     private fun toggleShowDebugSettings() {
-        if (!StringConstants.SecretSearchQuery.SHOW_DEBUG_SETTINGS_QUERY
-                .equals(searchView?.query.toString())) {
+        if (!AndroidAppSettings.SHOW_DEBUG_SETTINGS_QUERY.equals(searchView?.query.toString())) {
             return;
         }
         var preferences = PreferenceManager.getDefaultSharedPreferences(this)
         var editor = preferences.edit()
-        var prev = preferences.getBoolean(StringConstants.Settings.SHOW_DEBUG_SETTINGS, false)
-        editor.putBoolean(StringConstants.Settings.SHOW_DEBUG_SETTINGS, !prev)
+        var prev = preferences.getBoolean(AndroidAppSettings.KEY_SHOW_DEBUG_SETTINGS, false)
+        editor.putBoolean(AndroidAppSettings.KEY_SHOW_DEBUG_SETTINGS, !prev)
         editor.commit()
 
         var status = resources.getString(if (prev) R.string.disabled else R.string.enabled)
