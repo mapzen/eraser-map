@@ -12,7 +12,7 @@
         android:layout_height="84dp"
         android:layout_gravity="center_vertical"
         android:layout_marginRight="8dp"
-        android:layout_weight="0.3">
+        android:layout_weight="0.25">
 
         <ImageView
             android:id="@+id/icon"
@@ -27,7 +27,7 @@
         android:layout_width="0dp"
         android:layout_height="72dp"
         android:layout_gravity="center_vertical"
-        android:layout_weight="0.7"
+        android:layout_weight="0.75"
         android:paddingRight="16dp">
 
         <com.mapzen.erasermap.view.DistanceView
