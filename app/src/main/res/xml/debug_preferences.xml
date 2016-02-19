@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/category_debug_title">
+
+        <CheckBoxPreference
+            android:key="checkbox_mock_location"
+            android:summary="@string/checkbox_mock_location_summary"
+            android:title="@string/checkbox_mock_location_title" />
+
+        <EditTextPreference
+            android:defaultValue="@string/edittext_mock_location_default_value"
+            android:dialogTitle="@string/edittext_mock_location_dialog_title"
+            android:key="edittext_mock_location"
+            android:summary="@string/edittext_mock_location_summary"
+            android:title="@string/edittext_mock_location_title" />
+
+        <CheckBoxPreference
+            android:key="checkbox_mock_route"
+            android:summary="@string/checkbox_mock_route_summary"
+            android:title="@string/checkbox_mock_route_title" />
+
+        <EditTextPreference
+            android:defaultValue="@string/edittext_mock_route_default_value"
+            android:dialogTitle="@string/edittext_mock_route_dialog_title"
+            android:key="edittext_mock_route"
+            android:summary="@string/edittext_mock_route_summary"
+            android:title="@string/edittext_mock_route_title" />
+
+        <CheckBoxPreference
+            android:key="checkbox_tile_debug"
+            android:summary="@string/checkbox_tile_debug_summary"
+            android:title="@string/checkbox_tile_debug_title" />
+
+        <CheckBoxPreference
+            android:key="checkbox_label_debug"
+            android:summary="@string/checkbox_label_debug_summary"
+            android:title="@string/checkbox_label_debug_title" />
+
+        <CheckBoxPreference
+            android:key="checkbox_tangram_infos_debug"
+            android:summary="@string/checkbox_tangram_infos_summary"
+            android:title="@string/checkbox_tangram_infos_debug" />
+
+        <com.mapzen.erasermap.view.ReadOnlyPreference
+            android:key="edittext_build_number"
+            android:title="@string/edittext_build_number_title" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

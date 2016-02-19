@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.view
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Point
 import android.location.Location
 import android.os.Bundle
@@ -23,6 +24,7 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
+import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
@@ -485,6 +487,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         showSearchResultsView(features)
         addSearchResultsToMap(features, 0)
         layoutAttributionAboveSearchResults(features)
+        toggleShowDebugSettings()
     }
 
     private fun showSearchResultsView(features: List<Feature>) {
@@ -499,6 +502,25 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val bottomMargin = resources.getDimensionPixelSize(R.dimen.padding_vertical_big)
         val searchHeight = resources.getDimensionPixelSize(R.dimen.search_results_pager_height)
         attributionLayoutParams.bottomMargin = searchHeight + bottomMargin
+    }
+
+    /**
+     * If the current query in search view is equal to special query, toggle shared preferences
+     * to show or hide debug settings in settings fragment
+     */
+    private fun toggleShowDebugSettings() {
+        if (!AndroidAppSettings.SHOW_DEBUG_SETTINGS_QUERY.equals(searchView?.query.toString())) {
+            return;
+        }
+        var preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        var editor = preferences.edit()
+        var prev = preferences.getBoolean(AndroidAppSettings.KEY_SHOW_DEBUG_SETTINGS, false)
+        editor.putBoolean(AndroidAppSettings.KEY_SHOW_DEBUG_SETTINGS, !prev)
+        editor.commit()
+
+        var status = resources.getString(if (prev) R.string.disabled else R.string.enabled)
+        var debugToastTitle = resources.getString(R.string.debug_settings_toast_title, status)
+        Toast.makeText(this, debugToastTitle, Toast.LENGTH_SHORT).show();
     }
 
     override fun showReverseGeocodeFeature(features: List<Feature>) {
