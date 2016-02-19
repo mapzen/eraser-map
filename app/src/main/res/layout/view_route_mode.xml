@@ -45,7 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
-                android:textColor="@color/dark_gray"
+                android:textColor="@color/gray"
                 android:textSize="@dimen/font_medium_2"
                 android:textStyle="bold" />
 
@@ -53,8 +53,8 @@
                 android:id="@+id/footer_separator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/dark_gray"
-                android:textSize="@dimen/font_medium_2"
+                android:textColor="@color/gray"
+                android:textSize="@dimen/font_tiny"
                 android:textStyle="bold"
                 android:text="@string/diamond_separator" />
 
@@ -66,7 +66,7 @@
                 android:fontFamily="sans-serif-condensed"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:textColor="@color/dark_gray"
+                android:textColor="@color/gray"
                 android:textSize="@dimen/font_medium_2"
                 android:textStyle="bold" />
         </LinearLayout>
