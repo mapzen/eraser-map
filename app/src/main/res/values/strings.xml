@@ -22,8 +22,10 @@
     <string name="destination">Destination</string>
     <string name="osm_attribution">Map data © OpenStreetMap</string>
 
+    <string name="milestone_two_mile">In two miles</string>
     <string name="milestone_one_mile">In one mile</string>
     <string name="milestone_quarter_mile">In a quarter mile</string>
+    <string name="milestone_three_km">In three kilometers</string>
     <string name="milestone_one_and_a_half_km">In one and a half kilometers</string>
     <string name="milestone_half_km">In a half kilometer</string>
 
