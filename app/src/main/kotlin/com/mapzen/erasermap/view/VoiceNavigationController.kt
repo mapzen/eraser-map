@@ -35,6 +35,8 @@ public class VoiceNavigationController(val activity: Activity) {
 
     private fun playMilestoneMiles(instruction: Instruction, milestone: RouteEngine.Milestone) {
         when (milestone) {
+            RouteEngine.Milestone.TWO_MILE ->
+                play(activity.getString(R.string.milestone_two_mile))
             RouteEngine.Milestone.ONE_MILE ->
                 play(activity.getString(R.string.milestone_one_mile))
             RouteEngine.Milestone.QUARTER_MILE ->
@@ -47,6 +49,8 @@ public class VoiceNavigationController(val activity: Activity) {
     private fun playMilestoneKilometers(instruction: Instruction,
             milestone: RouteEngine.Milestone) {
         when (milestone) {
+            RouteEngine.Milestone.TWO_MILE ->
+                play(activity.getString(R.string.milestone_three_km))
             RouteEngine.Milestone.ONE_MILE ->
                 play(activity.getString(R.string.milestone_one_and_a_half_km))
             RouteEngine.Milestone.QUARTER_MILE ->
