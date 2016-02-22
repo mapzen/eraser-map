@@ -24,4 +24,5 @@ public interface RouteViewController {
     public fun hideRouteLine()
     public fun showRouteDirectionList()
     public fun hideRouteDirectionList()
+    public fun updateMapZoom(zoom: Float)
 }

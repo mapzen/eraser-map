@@ -7,6 +7,7 @@ import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
+import com.mapzen.valhalla.Router
 import com.squareup.otto.Bus
 
 public class RoutePresenterImpl(private val routeEngine: RouteEngine,
@@ -109,5 +110,20 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
 
     override fun setMuted(isMuted: Boolean) {
         muted = isMuted
+    }
+
+    override fun onCenterMapOnLocation(location: Location) {
+        var threshold: Int = 0
+        when (route?.units) {
+            Router.DistanceUnits.MILES -> threshold = (Instruction.MI_TO_METERS * 2).toInt()
+            Router.DistanceUnits.KILOMETERS -> threshold = Instruction.KM_TO_METERS * 3
+        }
+
+        val instruction = route?.getCurrentInstruction()
+        if (instruction != null && instruction.liveDistanceToNext > threshold) {
+            routeController?.updateMapZoom(MainPresenter.LONG_MANEUVER_ZOOM)
+        } else {
+            routeController?.updateMapZoom(MainPresenter.ROUTING_ZOOM)
+        }
     }
 }
