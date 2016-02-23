@@ -50,6 +50,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     val distanceToDestination: DistanceView by lazy { findViewById(R.id.destination_distance) as DistanceView }
     val instructionPager: ViewPager by lazy { findViewById(R.id.instruction_pager) as ViewPager }
     val resumeButton: Button by lazy { findViewById(R.id.resume) as Button }
+    val destinationNameTextView: TextView by lazy { findViewById(R.id.destination_name) as TextView }
 
     var mapController: MapController? = null
         set(value) {
@@ -273,7 +274,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         instructionPager.currentItem = index
         directionListView.setCurrent(index)
         notificationCreator?.createNewNotification(
-                (findViewById(R.id.destination_name) as TextView).text.toString(),
+                destinationNameTextView.text.toString(),
                 route?.getRouteInstructions()?.get(index)?.getHumanTurnInstruction().toString())
     }
 
@@ -374,7 +375,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     private fun initDestination(destination: Feature) {
         val simpleFeature = SimpleFeature.fromFeature(destination)
-        (findViewById(R.id.destination_name) as TextView).text = simpleFeature.label()
+        destinationNameTextView.text = simpleFeature.name()
     }
 
     private fun initInstructionAdapter() {
