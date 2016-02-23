@@ -167,7 +167,7 @@ public class RouteModeViewTest {
         TextView distance = (TextView) startActivity.findViewById(R.id.destination_distance);
         TextView destinationText = (TextView) startActivity.findViewById(R.id.destination_name);
         assertThat(distance.getText().toString()).isEqualTo("1.2 mi");
-        assertThat(destinationText.getText()).isEqualTo(TestHelper.TEST_LABEL);
+        assertThat(destinationText.getText()).isEqualTo(TestHelper.TEST_NAME);
     }
 
     @Test
@@ -261,7 +261,7 @@ public class RouteModeViewTest {
     public void shouldGenerateNotificationOnFirstInstruction() throws Exception {
         ShadowNotificationManager sManager = getRoutingNotificationManager();
         ShadowNotification sNotification = Shadows.shadowOf(sManager.getAllNotifications().get(0));
-        assertThat(sNotification.getContentTitle()).isEqualTo("Name, Local Admin, Admin1 Abbr");
+        assertThat(sNotification.getContentTitle()).isEqualTo("Name");
         assertThat(sNotification.getContentText()).isEqualTo("Go north on Adalbertstraße.");
         assertThat(sManager.getAllNotifications().get(0).actions[0].title)
                 .isEqualTo("Exit Navigation");
@@ -272,7 +272,7 @@ public class RouteModeViewTest {
         View view = (View) adapter.instantiateItem(viewGroup, 1);
         ShadowNotificationManager sManager = getRoutingNotificationManager();
         ShadowNotification sNotification = Shadows.shadowOf(sManager.getAllNotifications().get(0));
-        assertThat(sNotification.getContentTitle()).isEqualTo("Name, Local Admin, Admin1 Abbr");
+        assertThat(sNotification.getContentTitle()).isEqualTo("Name");
         assertThat(sNotification.getContentText()).isEqualTo("Go north on Adalbertstraße.");
         NotificationManager manager = (NotificationManager) startActivity.getSystemService(
                 Context.NOTIFICATION_SERVICE);
