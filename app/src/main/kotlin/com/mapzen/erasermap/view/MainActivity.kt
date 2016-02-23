@@ -760,12 +760,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         // Determine the bounds of the current view in longitude and latitude
         val screen = Point()
         windowManager.defaultDisplay.getSize(screen)
-        val viewMin = mapController?.coordinatesAtScreenPosition(0.0, 0.0) ?: LngLat()
-        val viewMax = mapController?.coordinatesAtScreenPosition(screen.x.toDouble(), screen.y.toDouble()) ?: LngLat()
+        // Take half of the y dimension to allow space for other UI elements
+        val viewMin = mapController?.coordinatesAtScreenPosition(0.0, screen.y.toDouble() * 0.25) ?: LngLat()
+        val viewMax = mapController?.coordinatesAtScreenPosition(screen.x.toDouble(), screen.y.toDouble() * 0.75) ?: LngLat()
 
         // Determine the amount of re-scaling needed to view the route
-        val scaleX = routeBounds.width / (viewMax.longitude - viewMin.longitude)
-        val scaleY = routeBounds.height / (viewMax.latitude - viewMin.latitude)
+        val scaleX = routeBounds.width / Math.abs(viewMax.longitude - viewMin.longitude)
+        val scaleY = routeBounds.height / Math.abs(viewMax.latitude - viewMin.latitude)
         val zoomDelta = -Math.log(Math.max(scaleX, scaleY)) / Math.log(2.0)
 
         // Update map position and zoom
