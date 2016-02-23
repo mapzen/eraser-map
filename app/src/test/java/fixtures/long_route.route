@@ -1,0 +1,75 @@
+{
+trip: {
+status: 0,
+status_message: "Found route between points",
+legs: [
+{
+shape: "g{yulA`q_clCpa@}qAjAwDrAeE~Nud@`BcFjAeE`g@}|Ase@c[se@e[ye@c[_i@bcBm_@flA",
+summary: {
+length: 0.879,
+time: 133
+},
+maneuvers: [
+{
+begin_shape_index: 0,
+length: 0.37,
+end_shape_index: 7,
+instruction: "Go southeast on West 26th Street.",
+street_names: [
+"West 26th Street"
+],
+type: 1,
+time: 0
+},
+{
+begin_shape_index: 7,
+length: 10000.237,
+end_shape_index: 10,
+instruction: "Turn left onto Madison Avenue.",
+street_names: [
+"Madison Avenue"
+],
+type: 15,
+time: 34
+},
+{
+begin_shape_index: 10,
+length: 10000.272,
+end_shape_index: 12,
+instruction: "Turn left onto East 29th Street.",
+street_names: [
+"East 29th Street"
+],
+type: 15,
+time: 46
+},
+{
+begin_shape_index: 12,
+length: 0,
+end_shape_index: 12,
+instruction: "You have arrived at your destination.",
+type: 4,
+time: 0
+}
+]
+}
+],
+units: "kilometers",
+summary: {
+length: 0.879,
+time: 133
+},
+locations: [
+{
+lon: -73.990433,
+lat: 40.744377,
+type: "break"
+},
+{
+lon: -73.988075,
+lat: 40.745811,
+type: "break"
+}
+]
+}
+}
