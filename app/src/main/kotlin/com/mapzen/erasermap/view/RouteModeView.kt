@@ -266,7 +266,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun updateMapZoom(zoom: Float) {
         mapController?.queueEvent {
-            mapController?.mapZoom = zoom
+            mapController?.setMapZoom(zoom, 1f)
         }
     }
 

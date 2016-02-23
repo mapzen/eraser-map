@@ -154,5 +154,19 @@ public class RoutePresenterTest {
         routePresenter.onCenterMapOnLocation(location as Location)
         assertThat(routeController.mapZoom).isEqualTo(MainPresenter.LONG_MANEUVER_ZOOM)
     }
+
+    @Test fun onCenterMapOnLocation_shouldNotChangeZoomLevelForRelativelyShortManeuvers() {
+        val route = Route(getFixture("long_route"))
+        var location = route.getRouteInstructions()?.get(0)?.location
+        routeEngine.setListener(routeListener)
+        routeEngine.route = route
+        routePresenter.onRouteStart(route)
+        routePresenter.onCenterMapOnLocation(location as Location)
+        assertThat(routeController.mapZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
+        location = route.getRouteInstructions()?.get(2)?.location
+        routeEngine.onLocationChanged(location)
+        routePresenter.onCenterMapOnLocation(location as Location)
+        assertThat(routeController.mapZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
+    }
 }
 
