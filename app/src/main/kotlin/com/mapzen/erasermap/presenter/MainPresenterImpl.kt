@@ -138,6 +138,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     override fun onExpandSearchView() {
         vsm.viewState = ViewStateManager.ViewState.SEARCH
+        mainViewController?.hideSettingsBtn()
     }
 
     override fun onCollapseSearchView() {
@@ -147,7 +148,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
         mainViewController?.hideSearchResults()
         mainViewController?.hideActionViewAll()
-        mainViewController?.clearQuery()
+        if (vsm.viewState != ViewStateManager.ViewState.ROUTE_PREVIEW) {
+            mainViewController?.clearQuery()
+            mainViewController?.showSettingsBtn()
+        }
     }
 
     override fun onQuerySubmit() {

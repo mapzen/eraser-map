@@ -21,6 +21,7 @@ public interface MainViewController {
     public fun showActionViewAll()
     public fun hideActionViewAll()
     public fun collapseSearchView()
+    public fun expandSearchView()
     public fun clearQuery()
     public fun showRoutePreview(location: Location, feature: Feature)
     public fun hideRoutePreview()
@@ -42,4 +43,6 @@ public interface MainViewController {
     public fun emptyPlaceSearch()
     public fun overridePlaceFeature(feature: Feature)
     public fun drawTappedPoiPin()
+    public fun hideSettingsBtn()
+    public fun showSettingsBtn()
 }

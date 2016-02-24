@@ -174,6 +174,25 @@ public class MainPresenterTest {
         assertThat(mainController.queryText).isEmpty()
     }
 
+    @Test fun onCollapseSearchView_shouldShowActionSettings() {
+        mainController.isSettingsVisible = false
+        presenter.onCollapseSearchView()
+        assertThat(mainController.isSettingsVisible).isTrue()
+    }
+
+    @Test fun onCollapseSearchView_shouldNotShowActionSettingsIfViewStateSearchPreview() {
+        vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
+        mainController.isSettingsVisible = false
+        presenter.onCollapseSearchView()
+        assertThat(mainController.isSettingsVisible).isFalse()
+    }
+
+    @Test fun onExpandSearchView_shouldHideActionSettings() {
+        mainController.isSettingsVisible = true
+        presenter.onExpandSearchView()
+        assertThat(mainController.isSettingsVisible).isFalse()
+    }
+
     @Test fun onRoutePreviewEvent_shouldCollapseSearchView() {
         mainController.isSearchVisible = true
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
