@@ -416,7 +416,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showAllSearchResults(features: List<Feature>) {
-        if (presenter?.resultListVisible as Boolean) {
+        if(presenter?.resultListVisible as Boolean) {
             onCloseAllSearchResults()
         } else {
             saveCurrentSearchTerm()
@@ -429,11 +429,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             }
             searchView?.onActionViewCollapsed()
             searchView?.onActionViewExpanded()
+            searchView?.disableAutoComplete()
+            searchView?.setQuery(presenter?.currentSearchTerm, false)
             autoCompleteAdapter?.clear();
             autoCompleteAdapter?.addAll(simpleFeatures);
             autoCompleteAdapter?.notifyDataSetChanged();
-            searchView?.disableAutoComplete()
-            searchView?.setQuery(presenter?.currentSearchTerm, false)
             (findViewById(R.id.auto_complete) as AutoCompleteListView)
                     .setOnItemClickListener { parent, view, position, id ->
                         (findViewById(R.id.search_results) as SearchResultsView).setCurrentItem(position)
@@ -444,7 +444,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun onCloseAllSearchResults() {
-        (findViewById(R.id.auto_complete) as AutoCompleteListView).setOnItemClickListener(searchView?.ItemClick()?.invoke())
+        (findViewById(R.id.auto_complete) as AutoCompleteListView)
+            .setOnItemClickListener(searchView?.OnItemClickHandler()?.invoke())
         presenter?.resultListVisible = false
         optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
         searchView?.onActionViewCollapsed()
@@ -480,8 +481,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         private val TAG: String = "PeliasCallback"
 
         override fun success(result: Result?, response: Response?) {
-                presenter?.onSearchResultsAvailable(result)
-                optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
+            presenter?.onSearchResultsAvailable(result)
+            optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
         }
 
         override fun failure(error: RetrofitError?) {

@@ -24,7 +24,7 @@ class SearchListViewAdapter(context: Context, resource: Int, private val searchV
         val item = getItem(position)
         savedSearch?.deserialize(PreferenceManager.getDefaultSharedPreferences(context)
                 .getString(SavedSearch.TAG, null))
-        textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_recent, 0, 0, 0)
+        textView.setCompoundDrawablesWithIntrinsicBounds(iconId, 0, 0, 0)
 
         if( item.simpleFeature != null) {
             var text = item.simpleFeature.name() + '\n' + item.simpleFeature.address()
