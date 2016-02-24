@@ -20,11 +20,11 @@ import android.widget.RadioButton
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
-import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AndroidAppSettings
+import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
@@ -86,6 +86,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var tileHttpHandler: TileHttpHandler? = null
         @Inject set
     var mapzenLocation: MapzenLocation? = null
+        @Inject set
+    var keys: ApiKeys? = null
         @Inject set
 
     var app: EraserMapApplication? = null
@@ -366,7 +368,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             listView.adapter = autoCompleteAdapter
             val pelias = Pelias.getPelias()
             pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
-            pelias.setApiKey(BuildConfig.PELIAS_API_KEY)
+            pelias.setApiKey(keys?.searchKey)
             searchView.setAutoCompleteListView(listView)
             searchView.setSavedSearch(savedSearch)
             searchView.setPelias(Pelias.getPelias())

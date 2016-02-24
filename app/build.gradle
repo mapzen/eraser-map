@@ -132,4 +132,6 @@ dependencies {
     exclude group: 'org.apache.httpcomponents', module: 'httpclient'
   }
   testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+  releaseCompile 'com.mapzen.android:leyndo:0.0.1-SNAPSHOT'
 }

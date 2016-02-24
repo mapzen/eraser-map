@@ -2,6 +2,7 @@ package com.mapzen.erasermap;
 
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.AndroidAppSettings;
+import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.model.AppSettings;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
@@ -56,20 +57,16 @@ public class AndroidModule {
         return new MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm);
     }
 
-    @Provides @Singleton RouteManager provideRouteManager(AppSettings settings) {
-        ValhallaRouteManager manager = new ValhallaRouteManager(settings,
+    @Provides @Singleton RouteManager provideRouteManager(AppSettings settings, ApiKeys keys) {
+        final ValhallaRouteManager manager = new ValhallaRouteManager(settings,
                 new ValhallaRouterFactory());
-        if (BuildConfig.VALHALLA_API_KEY != null) {
-            manager.setApiKey(BuildConfig.VALHALLA_API_KEY);
-        }
+        manager.setApiKey(keys.getRoutingKey());
         return manager;
     }
 
-    @Provides @Singleton TileHttpHandler provideTileHttpHandler() {
-        TileHttpHandler handler = new TileHttpHandler(application);
-        if (BuildConfig.VECTOR_TILE_API_KEY != null) {
-            handler.setApiKey(BuildConfig.VECTOR_TILE_API_KEY);
-        }
+    @Provides @Singleton TileHttpHandler provideTileHttpHandler(ApiKeys keys) {
+        final TileHttpHandler handler = new TileHttpHandler(application);
+        handler.setApiKey(keys.getTilesKey());
         return handler;
     }
 
