@@ -62,6 +62,13 @@ android {
       signingConfig signingConfigs.release
       minifyEnabled false
     }
+
+    productFlavors {
+      dev {
+      }
+      prod {
+      }
+    }
   }
 
   sourceSets {
@@ -103,6 +110,16 @@ repositories {
   maven { url "https://mint.splunk.com/gradle/" }
 }
 
+ext {
+  flavorType = "Dev"
+}
+
+gradle.startParameter.getTaskNames().each { task ->
+  if(task.contains("Prod")){
+    flavorType = "Prod"
+  }
+}
+
 dependencies {
   compile 'com.android.support:appcompat-v7:22.2.0'
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -133,5 +150,8 @@ dependencies {
   }
   testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-  releaseCompile 'com.mapzen.android:leyndo:0.0.1-SNAPSHOT'
+  if (flavorType == 'Prod') {
+    println("Including production only dependencies...")
+    compile 'com.mapzen.android:leyndo:0.0.1-SNAPSHOT'
+  }
 }
