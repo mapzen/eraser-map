@@ -12,7 +12,7 @@ public interface MainPresenter {
         val LONG_MANEUVER_ZOOM: Float = 15f
         val DEFAULT_ZOOM: Float = 16f
         val ROUTING_ZOOM: Float = 18f
-        val ROUTING_TILT: Float = 0.83f // 47.5°
+        val ROUTING_TILT: Float = 0.96f // 55°
     }
 
     public var mainViewController: MainViewController?
