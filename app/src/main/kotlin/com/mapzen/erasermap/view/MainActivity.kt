@@ -1,7 +1,6 @@
 package com.mapzen.erasermap.view
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Point
 import android.location.Location
 import android.os.Bundle
@@ -88,6 +87,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var mapzenLocation: MapzenLocation? = null
         @Inject set
     var keys: ApiKeys? = null
+        @Inject set
+    var pelias: Pelias? = null
         @Inject set
 
     var app: EraserMapApplication? = null
@@ -366,9 +367,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             searchView.setRecentSearchIconResourceId(R.drawable.ic_recent)
             searchView.setAutoCompleteIconResourceId(R.drawable.ic_pin_c)
             listView.adapter = autoCompleteAdapter
-            val pelias = Pelias.getPelias()
-            pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
-            pelias.setApiKey(keys?.searchKey)
+            pelias?.setLocationProvider(presenter?.getPeliasLocationProvider())
+            pelias?.setApiKey(keys?.searchKey)
             searchView.setAutoCompleteListView(listView)
             searchView.setSavedSearch(savedSearch)
             searchView.setPelias(Pelias.getPelias())
@@ -626,8 +626,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun placeSearch(gid: String) {
-        val pelias = Pelias.getPelias()
-        pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
+        pelias?.setLocationProvider(presenter?.getPeliasLocationProvider())
         pelias?.place(gid, (PlaceCallback()))
     }
 
@@ -638,12 +637,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun reverseGeolocate(screenX: Float, screenY: Float) {
-        val pelias = Pelias.getPelias()
-        pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
+        pelias?.setLocationProvider(presenter?.getPeliasLocationProvider())
         var coords = mapController?.coordinatesAtScreenPosition(screenX.toDouble(), screenY.toDouble())
         presenter?.currentFeature = getGenericLocationFeature(coords?.latitude as Double,
                 coords?.longitude as Double)
-        pelias.reverse(coords?.latitude as Double, coords?.longitude as Double,
+        pelias?.reverse(coords?.latitude as Double, coords?.longitude as Double,
                 ReversePeliasCallback())
     }
 

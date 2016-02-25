@@ -3,6 +3,7 @@ package com.mapzen.erasermap.model
 import com.mapzen.valhalla.JSON
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
+import retrofit.RestAdapter
 import java.util.ArrayList
 
 public class TestRouter : Router {
@@ -11,6 +12,7 @@ public class TestRouter : Router {
     public var units: Router.DistanceUnits = Router.DistanceUnits.MILES
     public var bearing: Float = 0f
     public var name: String? = null
+    public var logLevel: RestAdapter.LogLevel = RestAdapter.LogLevel.BASIC
 
     override fun clearLocations(): Router {
         locations.clear()
@@ -73,6 +75,11 @@ public class TestRouter : Router {
 
     override fun setDistanceUnits(units: Router.DistanceUnits): Router {
         this.units = units
+        return this
+    }
+
+    override fun setLogLevel(logLevel: RestAdapter.LogLevel): Router {
+        this.logLevel = logLevel
         return this
     }
 }

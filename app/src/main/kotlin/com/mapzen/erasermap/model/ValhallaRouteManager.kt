@@ -1,13 +1,16 @@
 package com.mapzen.erasermap.model
 
 import android.location.Location
+import com.mapzen.pelias.BuildConfig
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
+import retrofit.RestAdapter
 
-public class ValhallaRouteManager(val settings: AppSettings, val routerFactory: RouterFactory) : RouteManager {
+public class ValhallaRouteManager(val settings: AppSettings,
+        val routerFactory: RouterFactory) : RouteManager {
     override var apiKey: String = ""
     override var origin: Location? = null
     override var destination: Feature? = null
@@ -76,7 +79,9 @@ public class ValhallaRouteManager(val settings: AppSettings, val routerFactory: 
     }
 
     private fun getInitializedRouter(type: Router.Type): Router {
-        val router = routerFactory.getRouter().setApiKey(apiKey)
+        val logLevel = if (BuildConfig.DEBUG) RestAdapter.LogLevel.FULL else
+            RestAdapter.LogLevel.NONE
+        val router = routerFactory.getRouter().setApiKey(apiKey).setLogLevel(logLevel)
         when(type) {
             Router.Type.DRIVING -> return router.setDriving()
             Router.Type.WALKING -> return router.setWalking()
