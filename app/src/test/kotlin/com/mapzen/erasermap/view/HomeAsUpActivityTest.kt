@@ -15,7 +15,7 @@ import org.robolectric.fakes.RoboMenuItem
 @RunWith(PrivateMapsTestRunner::class)
 @Config(constants = BuildConfig::class, sdk=intArrayOf(21))
 public class HomeAsUpActivityTest {
-    var homeAsUpActivity = setupActivity(javaClass<HomeAsUpActivity>())
+    var homeAsUpActivity = setupActivity(HomeAsUpActivity::class.java)
 
     @Test
     public fun shouldNotBeNull() {

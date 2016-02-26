@@ -35,6 +35,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     override var mainViewController: MainViewController? = null
     override var routeViewController: RouteViewController? = null
     override var currentSearchTerm: String? = null
+    override var resultListVisible = false
 
     private var searchResults: Result? = null
     private var destination: Feature? = null
@@ -193,6 +194,9 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     }
 
     override fun onBackPressed() {
+        if(vsm.viewState == SEARCH || vsm.viewState == SEARCH_RESULTS ) {
+            currentSearchTerm = null
+        }
         when (vsm.viewState) {
             DEFAULT -> onBackPressedStateDefault()
             SEARCH -> onBackPressedStateSearch()
@@ -201,6 +205,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             ROUTING -> onBackPressedStateRouting()
             ROUTE_DIRECTION_LIST -> onBackPressedStateRouteDirectionList()
         }
+        resultListVisible = false
     }
 
     private fun onBackPressedStateDefault() {
@@ -229,6 +234,11 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
                 mainViewController?.showReverseGeocodeFeature(searchResults?.features)
             } else {
                 mainViewController?.showSearchResults(searchResults?.features)
+                var numFeatures = 0
+                numFeatures = (searchResults?.features?.size as Int)
+                if(numFeatures > 1) {
+                    mainViewController?.showActionViewAll()
+                }
             }
         }
     }
