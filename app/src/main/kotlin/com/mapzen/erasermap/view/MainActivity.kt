@@ -381,7 +381,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             })
             searchView.setIconifiedByDefault(false)
 
-            searchView.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI
+            searchView.imeOptions += EditorInfo.IME_FLAG_NO_EXTRACT_UI
             searchView.queryHint = "Search for place or address"
             listView.emptyView = emptyView
             restoreCurrentSearchTerm(searchView)
