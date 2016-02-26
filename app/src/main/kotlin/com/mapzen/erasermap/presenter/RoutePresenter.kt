@@ -28,5 +28,5 @@ public interface RoutePresenter {
     public fun onMuteClicked()
     public fun isMuted(): Boolean
     public fun setMuted(mute: Boolean)
-    public fun onCenterMapOnLocation(location: Location)
+    public fun mapZoomLevelForCenterMapOnLocation(location: Location): Float
 }

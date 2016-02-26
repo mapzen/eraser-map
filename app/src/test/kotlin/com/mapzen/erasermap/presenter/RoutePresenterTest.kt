@@ -147,12 +147,12 @@ public class RoutePresenterTest {
         routeEngine.setListener(routeListener)
         routeEngine.route = route
         routePresenter.onRouteStart(route)
-        routePresenter.onCenterMapOnLocation(location as Location)
-        assertThat(routeController.mapZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
+        var routingZoom = routePresenter.mapZoomLevelForCenterMapOnLocation(location as Location)
+        assertThat(routingZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
         location = route.getRouteInstructions()?.get(1)?.location
         routeEngine.onLocationChanged(location)
-        routePresenter.onCenterMapOnLocation(location as Location)
-        assertThat(routeController.mapZoom).isEqualTo(MainPresenter.LONG_MANEUVER_ZOOM)
+        var longManeuverZoom = routePresenter.mapZoomLevelForCenterMapOnLocation(location as Location)
+        assertThat(longManeuverZoom).isEqualTo(MainPresenter.LONG_MANEUVER_ZOOM)
     }
 
     @Test fun onCenterMapOnLocation_shouldNotChangeZoomLevelForRelativelyShortManeuvers() {
@@ -161,12 +161,12 @@ public class RoutePresenterTest {
         routeEngine.setListener(routeListener)
         routeEngine.route = route
         routePresenter.onRouteStart(route)
-        routePresenter.onCenterMapOnLocation(location as Location)
-        assertThat(routeController.mapZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
+        var routingZoom = routePresenter.mapZoomLevelForCenterMapOnLocation(location as Location)
+        assertThat(routingZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
         location = route.getRouteInstructions()?.get(2)?.location
         routeEngine.onLocationChanged(location)
-        routePresenter.onCenterMapOnLocation(location as Location)
-        assertThat(routeController.mapZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
+        routingZoom = routePresenter.mapZoomLevelForCenterMapOnLocation(location as Location)
+        assertThat(routingZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
     }
 }
 
