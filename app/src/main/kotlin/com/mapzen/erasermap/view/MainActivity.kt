@@ -1,7 +1,6 @@
 package com.mapzen.erasermap.view
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Point
 import android.location.Location
 import android.os.Bundle
@@ -20,11 +19,11 @@ import android.widget.RadioButton
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
-import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AndroidAppSettings
+import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
@@ -87,6 +86,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var tileHttpHandler: TileHttpHandler? = null
         @Inject set
     var mapzenLocation: MapzenLocation? = null
+        @Inject set
+    var keys: ApiKeys? = null
+        @Inject set
+    var pelias: Pelias? = null
         @Inject set
 
     var app: EraserMapApplication? = null
@@ -366,9 +369,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             searchView.setAutoCompleteIconResourceId(R.drawable.ic_pin_c)
             initAutoCompleteAdapter()
             listView.adapter = autoCompleteAdapter
-            val pelias = Pelias.getPelias()
-            pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
-            pelias.setApiKey(BuildConfig.PELIAS_API_KEY)
+            pelias?.setLocationProvider(presenter?.getPeliasLocationProvider())
+            pelias?.setApiKey(keys?.searchKey)
             searchView.setAutoCompleteListView(listView)
             searchView.setSavedSearch(savedSearch)
             searchView.setPelias(Pelias.getPelias())
@@ -661,8 +663,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun placeSearch(gid: String) {
-        val pelias = Pelias.getPelias()
-        pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
+        pelias?.setLocationProvider(presenter?.getPeliasLocationProvider())
         pelias?.place(gid, (PlaceCallback()))
     }
 
@@ -673,12 +674,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun reverseGeolocate(screenX: Float, screenY: Float) {
-        val pelias = Pelias.getPelias()
-        pelias.setLocationProvider(presenter?.getPeliasLocationProvider())
+        pelias?.setLocationProvider(presenter?.getPeliasLocationProvider())
         var coords = mapController?.coordinatesAtScreenPosition(screenX.toDouble(), screenY.toDouble())
         presenter?.currentFeature = getGenericLocationFeature(coords?.latitude as Double,
                 coords?.longitude as Double)
-        pelias.reverse(coords?.latitude as Double, coords?.longitude as Double,
+        pelias?.reverse(coords?.latitude as Double, coords?.longitude as Double,
                 ReversePeliasCallback())
     }
 

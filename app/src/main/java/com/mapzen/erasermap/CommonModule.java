@@ -1,10 +1,12 @@
 package com.mapzen.erasermap;
 
+import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.presenter.RouteEngineListener;
 import com.mapzen.erasermap.presenter.RoutePresenter;
 import com.mapzen.erasermap.presenter.RoutePresenterImpl;
 import com.mapzen.erasermap.presenter.ViewStateManager;
 import com.mapzen.helpers.RouteEngine;
+import com.mapzen.pelias.Pelias;
 import com.mapzen.pelias.SavedSearch;
 
 import com.squareup.otto.Bus;
@@ -13,6 +15,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import retrofit.RestAdapter;
 
 @Module
 public class CommonModule {
@@ -35,5 +38,15 @@ public class CommonModule {
 
     @Provides @Singleton ViewStateManager provideViewStateManager() {
         return new ViewStateManager();
+    }
+
+    @Provides @Singleton ApiKeys provideApiKeys() {
+        return new ApiKeys("", "", "");
+    }
+
+    @Provides @Singleton Pelias providePelias() {
+        final RestAdapter.LogLevel logLevel = BuildConfig.DEBUG ?
+                RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE;
+        return Pelias.getPelias(logLevel);
     }
 }
