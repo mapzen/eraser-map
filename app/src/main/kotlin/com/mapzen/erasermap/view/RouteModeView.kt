@@ -231,7 +231,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun centerMapOnLocation(location: Location) {
         currentSnapLocation = location
-        routePresenter?.onCenterMapOnLocation(location)
         mapController?.queueEvent {
 
             // Record the initial view configuration
@@ -242,6 +241,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             mapController?.mapPosition = LngLat(location.longitude, location.latitude)
             mapController?.mapRotation = getBearingInRadians(location)
             mapController?.mapTilt = MainPresenter.ROUTING_TILT
+            mapController?.mapZoom = routePresenter?.mapZoomLevelForCenterMapOnLocation(location)
 
             // Get the width and height of the window
             val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
