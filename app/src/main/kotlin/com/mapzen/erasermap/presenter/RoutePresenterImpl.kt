@@ -7,6 +7,7 @@ import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
+import com.mapzen.valhalla.Router
 import com.squareup.otto.Bus
 
 public class RoutePresenterImpl(private val routeEngine: RouteEngine,
@@ -109,5 +110,34 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
 
     override fun setMuted(isMuted: Boolean) {
         muted = isMuted
+    }
+
+    /**
+     * When we center the map on a location we want to dynamically change the map's zoom level.
+     * We will zoom the map out if the current maneuver is long and we are still far away from
+     * completing it. If the maneuver is relatively short we won't adjust the zoom level which will
+     * prevent changing the zoom too frequently
+     */
+    override fun onCenterMapOnLocation(location: Location) {
+        var liveDistanceThreshold: Int = 0
+        var distanceThreshold: Int = 0
+                when (route?.units) {
+            Router.DistanceUnits.MILES -> {
+                liveDistanceThreshold = (Instruction.MI_TO_METERS * 2).toInt()
+                distanceThreshold = (Instruction.MI_TO_METERS * 3).toInt()
+            }
+            Router.DistanceUnits.KILOMETERS -> {
+                liveDistanceThreshold = Instruction.KM_TO_METERS * 3
+                distanceThreshold = Instruction.KM_TO_METERS * 3
+            }
+        }
+
+        val instruction = route?.getCurrentInstruction()
+        if (instruction != null && instruction.liveDistanceToNext > liveDistanceThreshold
+                && instruction.distance > distanceThreshold) {
+            routeController?.updateMapZoom(MainPresenter.LONG_MANEUVER_ZOOM)
+        } else {
+            routeController?.updateMapZoom(MainPresenter.ROUTING_ZOOM)
+        }
     }
 }

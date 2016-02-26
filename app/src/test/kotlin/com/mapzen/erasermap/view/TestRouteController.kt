@@ -13,6 +13,7 @@ public class TestRouteController : RouteViewController {
     public var alert: Int = -1
     public var pre: Int = -1
     public var post: Int = -1
+    public var mapZoom: Float? = 0f
 
     override fun onLocationChanged(location: Location) {
         this.location = location
@@ -37,6 +38,7 @@ public class TestRouteController : RouteViewController {
     }
 
     override fun setCurrentInstruction(index: Int) {
+
     }
 
     override fun setMilestone(index: Int, milestone: RouteEngine.Milestone) {
@@ -83,5 +85,9 @@ public class TestRouteController : RouteViewController {
 
     override fun hideRouteDirectionList() {
         isDirectionListVisible = false
+    }
+
+    override fun updateMapZoom(zoom: Float) {
+        mapZoom = zoom
     }
 }

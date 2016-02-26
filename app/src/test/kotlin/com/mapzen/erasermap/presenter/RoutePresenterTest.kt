@@ -7,13 +7,17 @@ import com.mapzen.erasermap.model.event.RouteCancelEvent
 import com.mapzen.erasermap.view.MapListToggleButton
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.helpers.RouteEngine
+import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 public class RoutePresenterTest {
     val routeEngine = RouteEngine()
     val routeListener = RouteEngineListener()
@@ -136,4 +140,33 @@ public class RoutePresenterTest {
             this.event = event
         }
     }
+
+    @Test fun onCenterMapOnLocation_shouldDynamicallySetZoom() {
+        val route = Route(getFixture("long_route"))
+        var location = route.getRouteInstructions()?.get(0)?.location
+        routeEngine.setListener(routeListener)
+        routeEngine.route = route
+        routePresenter.onRouteStart(route)
+        routePresenter.onCenterMapOnLocation(location as Location)
+        assertThat(routeController.mapZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
+        location = route.getRouteInstructions()?.get(1)?.location
+        routeEngine.onLocationChanged(location)
+        routePresenter.onCenterMapOnLocation(location as Location)
+        assertThat(routeController.mapZoom).isEqualTo(MainPresenter.LONG_MANEUVER_ZOOM)
+    }
+
+    @Test fun onCenterMapOnLocation_shouldNotChangeZoomLevelForRelativelyShortManeuvers() {
+        val route = Route(getFixture("long_route"))
+        var location = route.getRouteInstructions()?.get(0)?.location
+        routeEngine.setListener(routeListener)
+        routeEngine.route = route
+        routePresenter.onRouteStart(route)
+        routePresenter.onCenterMapOnLocation(location as Location)
+        assertThat(routeController.mapZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
+        location = route.getRouteInstructions()?.get(2)?.location
+        routeEngine.onLocationChanged(location)
+        routePresenter.onCenterMapOnLocation(location as Location)
+        assertThat(routeController.mapZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
+    }
 }
+

@@ -231,16 +231,16 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun centerMapOnLocation(location: Location) {
         currentSnapLocation = location
+        routePresenter?.onCenterMapOnLocation(location)
         mapController?.queueEvent {
 
             // Record the initial view configuration
             val lastPosition = mapController?.mapPosition
             val lastRotation = mapController?.mapRotation
 
-            // Update position, rotation, tilt, and zoom for new location
+            // Update position, rotation, tilt for new location
             mapController?.mapPosition = LngLat(location.longitude, location.latitude)
             mapController?.mapRotation = getBearingInRadians(location)
-            mapController?.mapZoom = MainPresenter.ROUTING_ZOOM
             mapController?.mapTilt = MainPresenter.ROUTING_TILT
 
             // Get the width and height of the window
@@ -262,6 +262,12 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             // Begin easing to the next view
             mapController?.setMapPosition(nextPosition.longitude, nextPosition.latitude, 1f, MapController.EaseType.LINEAR)
             mapController?.setMapRotation(nextRotation, 1f, MapController.EaseType.LINEAR)
+        }
+    }
+
+    override fun updateMapZoom(zoom: Float) {
+        mapController?.queueEvent {
+            mapController?.setMapZoom(zoom, 1f)
         }
     }
 
