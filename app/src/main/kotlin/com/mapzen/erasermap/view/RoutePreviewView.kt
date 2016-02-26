@@ -76,4 +76,14 @@ public class RoutePreviewView : RelativeLayout {
         viewListButton = findViewById(R.id.view_list) as Button?
         startNavigationButton = findViewById(R.id.start_navigation) as Button?
     }
+
+    public fun disableStartNavigation() {
+        startNavigationButton?.visibility = GONE
+        viewListButton?.visibility = GONE
+    }
+
+    public fun enableStartNavigation() {
+        startNavigationButton?.visibility = VISIBLE
+        viewListButton?.visibility = VISIBLE
+    }
 }
