@@ -118,13 +118,15 @@
     <Button
         android:id="@+id/resume"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="44dp"
         android:layout_alignParentRight="true"
         android:layout_above="@+id/osm_attribution"
         android:layout_marginBottom="@dimen/padding_vertical"
         android:layout_marginRight="@dimen/padding_horizontal_default"
         android:text="@string/resume"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:textColor="@color/dark_gray"
+        android:background="@drawable/bg_route_header"/>
 
     <TextView
         android:id="@+id/osm_attribution"
