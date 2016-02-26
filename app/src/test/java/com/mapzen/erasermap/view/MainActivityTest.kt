@@ -236,6 +236,15 @@ public class MainActivityTest {
     }
 
     @Test
+    public fun showRoutePreviewFailure_shouldHideStartNavigation() {
+        activity.showRoutePreview(getTestLocation(), getTestFeature())
+        activity.failure(0)
+        Robolectric.flushForegroundThreadScheduler()
+        assertThat(activity.findViewById(R.id.start_navigation).visibility).isEqualTo(View.GONE)
+        assertThat(activity.findViewById(R.id.view_list).visibility).isEqualTo(View.GONE)
+    }
+
+    @Test
     public fun centerOnMapLocation_shouldAddPointToMap() {
         activity.centerMapOnLocation(getTestLocation(), MainPresenter.DEFAULT_ZOOM)
         val shadowFindMe = ShadowExtractor.extract(activity.findMe) as ShadowMapData

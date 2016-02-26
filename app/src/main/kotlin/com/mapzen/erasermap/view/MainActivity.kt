@@ -766,6 +766,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         })
         updateRoutePreview()
         routeModeView.drawRoute(route)
+        routePreviewView.enableStartNavigation()
         hideProgress()
     }
 
@@ -865,10 +866,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 handleRouteFailure()
             }
         })
-
         updateRoutePreview()
         hideProgress()
         Toast.makeText(this@MainActivity, "No route found", Toast.LENGTH_LONG).show()
+        routePreviewView.disableStartNavigation()
     }
 
     override fun hideRoutePreview() {
