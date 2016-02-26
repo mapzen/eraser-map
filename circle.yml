@@ -3,7 +3,8 @@ machine:
     version: jruby-1.7.12
   environment:
     ANDROID_HOME: /usr/local/android-sdk-linux
-    JAVA_OPTS: "-Xmx512m -XX:MaxPermSize=512m"
+    JAVA_OPTS: "-Xmx256m -XX:MaxPermSize=256m"
+    TEST_OPTS: "-PmintApiKey=$MINT_API_KEY -PvectorTileApiKey=$VECTOR_TILE_API_KEY -PpeliasApiKey=$PELIAS_API_KEY -PvalhallaApiKey=$VALHALLA_API_KEY -PbuildNumber=$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM"
 
 dependencies:
   pre:
@@ -13,8 +14,14 @@ dependencies:
     - git submodule init; git submodule update
 
 test:
+  pre:
+    - ./gradlew assembleDevDebug $TEST_OPTS
   override:
-    - ./gradlew --refresh-dependencies -PmintApiKey=$MINT_API_KEY -PvectorTileApiKey=$VECTOR_TILE_API_KEY -PpeliasApiKey=$PELIAS_API_KEY -PvalhallaApiKey=$VALHALLA_API_KEY -PbuildNumber=$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM
+    - case $CIRCLE_NODE_INDEX in 0) ./gradlew testDevDebug --tests='*.model.*' $TEST_OPTS ;; 1) ./gradlew testDevDebug --tests='*.view.*' $TEST_OPTS ;; 2) ./gradlew testDevDebug --tests='*.presenter.*' $TEST_OPTS ;; esac:
+        parallel: true
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit
+    - cp app/build/test-results/devDebug/*.xml $CIRCLE_TEST_REPORTS/junit
 
 deployment:
   all:
