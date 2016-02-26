@@ -387,13 +387,14 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             restoreCurrentSearchTerm(searchView)
             searchView.setOnPeliasFocusChangeListener { view, b ->
                 if (b) {
-                    presenter?.onExpandSearchView()
+                    expandSearchView()
                 } else if( presenter?.resultListVisible as Boolean) {
                         onCloseAllSearchResults()
                     } else {
                     searchView?.setQuery(presenter?.currentSearchTerm, false)
                 }
             }
+            searchView.setOnBackPressListener { collapseSearchView() }
         }
 
         return true
@@ -727,8 +728,20 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         presenter?.onCollapseSearchView()
     }
 
+    override fun expandSearchView() {
+        presenter?.onExpandSearchView()
+    }
+
     override fun clearQuery() {
         searchView?.setQuery("", false)
+    }
+
+    override fun hideSettingsBtn() {
+        optionsMenu?.findItem(R.id.action_settings)?.setVisible(false)
+    }
+
+    override fun showSettingsBtn() {
+        optionsMenu?.findItem(R.id.action_settings)?.setVisible(true)
     }
 
     override fun showRoutePreview(location: Location, feature: Feature) {

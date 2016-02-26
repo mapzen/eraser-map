@@ -29,6 +29,7 @@ public class TestMainController : MainViewController {
     public var isCenteredOnTappedFeature: Boolean = false
     public var isReverseGeocodeVisible: Boolean = false
     public var isPlaceResultOverridden: Boolean = false
+    public var isSettingsVisible: Boolean = false
 
     override fun showSearchResults(features: List<Feature>) {
         searchResults = features
@@ -75,6 +76,9 @@ public class TestMainController : MainViewController {
 
     override fun collapseSearchView() {
         isSearchVisible = false
+    }
+
+    override fun expandSearchView() {
     }
 
     override fun clearQuery() {
@@ -171,5 +175,13 @@ public class TestMainController : MainViewController {
 
     override fun drawTappedPoiPin() {
         //empty
+    }
+
+    override fun hideSettingsBtn() {
+        isSettingsVisible = false
+    }
+
+    override fun showSettingsBtn() {
+        isSettingsVisible = true
     }
 }
