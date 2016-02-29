@@ -1,4 +1,7 @@
-package com.mapzen.erasermap;
+package com.mapzen.erasermap.model;
+
+import com.mapzen.erasermap.BuildConfig;
+import com.mapzen.erasermap.PrivateMapsTestRunner;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

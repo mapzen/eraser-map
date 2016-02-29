@@ -3,6 +3,7 @@ package com.mapzen.erasermap.shadows;
 import com.mapzen.tangram.LngLat;
 import com.mapzen.tangram.MapController;
 import com.mapzen.tangram.MapView;
+import com.mapzen.tangram.TouchInput;
 
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -21,6 +22,9 @@ public class ShadowMapController {
     private ArrayList<Runnable> eventQueue = new ArrayList<>();
 
     public void __constructor__(Activity mainApp, MapView view) {
+    }
+
+    public void __constructor__(Activity mainApp, MapView view, String sceneFilePath) {
     }
 
     @Implementation
@@ -66,5 +70,35 @@ public class ShadowMapController {
 
     public List<Runnable> getEventQueue() {
         return eventQueue;
+    }
+
+    @Implementation
+    public void setLongPressResponder(final TouchInput.LongPressResponder responder) {
+        // Do nothing
+    }
+
+    @Implementation
+    public void setTapResponder(final TouchInput.TapResponder responder) {
+        // Do nothing
+    }
+
+    @Implementation
+    public void setDoubleTapResponder(final TouchInput.DoubleTapResponder responder) {
+        // Do nothing
+    }
+
+    @Implementation
+    public void setRotateResponder(final TouchInput.RotateResponder responder) {
+        // Do nothing
+    }
+
+    @Implementation
+    public void setPanResponder(final TouchInput.PanResponder responder) {
+        // Do nothing
+    }
+
+    @Implementation
+    public void requestRender() {
+        // Do nothing
     }
 }

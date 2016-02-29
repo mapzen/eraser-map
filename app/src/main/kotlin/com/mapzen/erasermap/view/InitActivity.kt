@@ -10,8 +10,8 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.SimpleCrypt
 import com.mapzen.erasermap.model.ApiKeys
+import com.mapzen.erasermap.model.SimpleCrypt
 import javax.inject.Inject
 
 public class InitActivity : AppCompatActivity() {
