@@ -9,7 +9,7 @@
     android:layout_marginTop="8dp"
     android:gravity="center"
     android:paddingLeft="8dp"
-    android:background="@drawable/bg_route_header">
+    android:background="@drawable/bg_white_gray_border">
 
     <ImageView
         android:layout_width="wrap_content"

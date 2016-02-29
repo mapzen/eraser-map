@@ -5,6 +5,7 @@
     <color name="color_accent">#06a6d4</color>
     <color name="color_accent_dark">#1b7d93</color>
     <color name="color_route">#06a6d4</color>
+    <color name="color_border">#999</color>
 
     <color name="light_gray">#E8E8E8</color>
     <color name="gray">#A3ABAD</color>

@@ -29,7 +29,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="@dimen/padding_horizontal_default"
         android:layout_marginBottom="@dimen/padding_vertical_default"
-        android:background="@drawable/bg_route_header"
+        android:background="@drawable/bg_white_gray_border"
         android:src="@drawable/ic_find_me"
         tools:ignore="RtlHardcoded" />
 
