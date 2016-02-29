@@ -78,12 +78,13 @@ public class RoutePreviewView : RelativeLayout {
     }
 
     public fun disableStartNavigation() {
-        startNavigationButton?.visibility = GONE
-        viewListButton?.visibility = GONE
+        startNavigationButton?.isEnabled = false
+        viewListButton?.isEnabled = false
     }
 
     public fun enableStartNavigation() {
-        startNavigationButton?.visibility = VISIBLE
-        viewListButton?.visibility = VISIBLE
+        startNavigationButton?.isEnabled = true
+        viewListButton?.isEnabled = true
     }
+
 }
