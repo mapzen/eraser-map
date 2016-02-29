@@ -113,24 +113,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="8dp"
+            android:layout_margin="16dp"
             style="?android:attr/buttonBarStyle">
 
             <Button
                 android:id="@+id/view_list"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
+                android:layout_weight="0.35"
                 android:text="@string/view_list"
-                style="?android:attr/buttonBarButtonStyle" />
+                android:layout_marginRight="4dp"
+                style="@style/EraserMapButton" />
 
             <Button
                 android:id="@+id/start_navigation"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
+                android:layout_weight="0.65"
                 android:text="@string/start_navigation"
-                style="?android:attr/buttonBarButtonStyle" />
+                android:layout_marginLeft="4dp"
+                style="@style/EraserMapButton" />
 
         </LinearLayout>
     </LinearLayout>
