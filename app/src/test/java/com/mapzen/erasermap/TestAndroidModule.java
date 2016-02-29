@@ -1,7 +1,5 @@
 package com.mapzen.erasermap;
 
-import android.content.Context;
-
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.AppSettings;
 import com.mapzen.erasermap.model.MapzenLocation;
@@ -13,9 +11,13 @@ import com.mapzen.erasermap.model.TileHttpHandler;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.erasermap.presenter.ViewStateManager;
+import com.mapzen.pelias.Pelias;
+
 import com.squareup.otto.Bus;
 
 import org.mockito.Mockito;
+
+import android.content.Context;
 
 import javax.inject.Singleton;
 
@@ -68,5 +70,9 @@ public class TestAndroidModule {
 
     @Provides @Singleton Bus provideBus() {
         return new Bus();
+    }
+
+    @Provides @Singleton Pelias providePelias() {
+        return Mockito.mock(Pelias.class);
     }
 }

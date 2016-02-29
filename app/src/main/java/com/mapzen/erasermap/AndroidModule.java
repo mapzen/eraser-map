@@ -13,6 +13,7 @@ import com.mapzen.erasermap.model.ValhallaRouterFactory;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.erasermap.presenter.ViewStateManager;
+import com.mapzen.pelias.Pelias;
 
 import com.squareup.otto.Bus;
 
@@ -22,6 +23,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import retrofit.RestAdapter;
 
 @Module
 public class AndroidModule {
@@ -72,5 +74,11 @@ public class AndroidModule {
 
     @Provides @Singleton Bus provideBus() {
         return new Bus();
+    }
+
+    @Provides @Singleton Pelias providePelias() {
+        final RestAdapter.LogLevel logLevel = BuildConfig.DEBUG ?
+                RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE;
+        return Pelias.getPelias(logLevel);
     }
 }

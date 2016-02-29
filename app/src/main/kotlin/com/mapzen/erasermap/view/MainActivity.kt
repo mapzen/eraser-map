@@ -373,7 +373,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             pelias?.setApiKey(keys?.searchKey)
             searchView.setAutoCompleteListView(listView)
             searchView.setSavedSearch(savedSearch)
-            searchView.setPelias(Pelias.getPelias())
+            searchView.setPelias(pelias)
             searchView.setCallback(PeliasCallback())
             searchView.setOnSubmitListener({
                 saveCurrentSearchTerm()
