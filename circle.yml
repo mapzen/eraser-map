@@ -4,7 +4,7 @@ machine:
   environment:
     ANDROID_HOME: /usr/local/android-sdk-linux
     JAVA_OPTS: "-Xmx256m -XX:MaxPermSize=256m"
-    TEST_OPTS: "-PmintApiKey=$MINT_API_KEY -PvectorTileApiKey=$VECTOR_TILE_API_KEY -PpeliasApiKey=$PELIAS_API_KEY -PvalhallaApiKey=$VALHALLA_API_KEY -PbuildNumber=$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM"
+    TEST_OPTS: "-PmintApiKey=mint_test_key -PvectorTileApiKey=tile_test_key -PpeliasApiKey=search_test_key -PvalhallaApiKey=route_test_key -PbuildNumber=test_build_number"
 
 dependencies:
   pre:
@@ -14,8 +14,6 @@ dependencies:
     - git submodule init; git submodule update
 
 test:
-  pre:
-    - ./gradlew assembleDevDebug $TEST_OPTS
   override:
     - case $CIRCLE_NODE_INDEX in 0) ./gradlew testDevDebug --tests='*.model.*' $TEST_OPTS ;; 1) ./gradlew testDevDebug --tests='*.view.*' $TEST_OPTS ;; 2) ./gradlew testDevDebug --tests='*.presenter.*' $TEST_OPTS ;; esac:
         parallel: true
@@ -27,10 +25,12 @@ deployment:
   all:
     branch: /^(?!master).*$/
     commands:
+      - ./gradlew assembleDevDebug -PmintApiKey=$MINT_API_KEY -PvectorTileApiKey=$VECTOR_TILE_API_KEY -PpeliasApiKey=$PELIAS_API_KEY -PvalhallaApiKey=$VALHALLA_API_KEY -PbuildNumber=$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM
       - s3cmd put app/build/outputs/apk/app-dev-debug.apk s3://android.mapzen.com/erasermap-development/$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM.apk
       - scripts/upload-release.sh
   master:
     branch: master
     commands:
+      - ./gradlew assembleDevDebug -PmintApiKey=$MINT_API_KEY -PvectorTileApiKey=$VECTOR_TILE_API_KEY -PpeliasApiKey=$PELIAS_API_KEY -PvalhallaApiKey=$VALHALLA_API_KEY -PbuildNumber=$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM
       - s3cmd put app/build/outputs/apk/app-dev-debug.apk s3://android.mapzen.com/erasermap-latest.apk
       - s3cmd put app/build/outputs/apk/app-dev-debug.apk s3://android.mapzen.com/erasermap-snapshots/master-$CIRCLE_BUILD_NUM.apk
