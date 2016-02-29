@@ -15,6 +15,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -122,6 +123,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     val muteView: MuteView by lazy { findViewById(R.id.route_mode_mute_view) as MuteView }
     val searchResultsView: SearchResultsView by lazy { findViewById(R.id.search_results) as SearchResultsView }
     val osmAttributionText: TextView by lazy { findViewById(R.id.osm_attribution) as TextView }
+    val routePreviewDistanceTimeLayout: LinearLayout by lazy { findViewById(R.id.route_preview_distance_time_view) as LinearLayout }
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -773,7 +775,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             if (routeModeView.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
                 routePreviewView.visibility = View.VISIBLE
-                findViewById(R.id.route_preview_distance_time_view).visibility = View.VISIBLE
+                routePreviewDistanceTimeLayout.visibility = View.VISIBLE
                 zoomToShowRoute(route.getGeometry().toTypedArray())
             }
         })
@@ -875,7 +877,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             if (routeModeView.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
                 routePreviewView.visibility = View.VISIBLE
-                findViewById(R.id.route_preview_distance_time_view).visibility = View.GONE
+                routePreviewDistanceTimeLayout.visibility = View.INVISIBLE
                 handleRouteFailure()
             }
         })
@@ -1099,4 +1101,5 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         startPin = null
         endPin = null
     }
+
 }

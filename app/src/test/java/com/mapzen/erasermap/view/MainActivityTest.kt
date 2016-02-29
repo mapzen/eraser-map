@@ -236,12 +236,21 @@ public class MainActivityTest {
     }
 
     @Test
-    public fun showRoutePreviewFailure_shouldHideStartNavigation() {
+    public fun showRoutePreviewFailure_shouldDisableStartNavigation() {
         activity.showRoutePreview(getTestLocation(), getTestFeature())
         activity.failure(0)
         Robolectric.flushForegroundThreadScheduler()
-        assertThat(activity.findViewById(R.id.start_navigation).visibility).isEqualTo(View.GONE)
-        assertThat(activity.findViewById(R.id.view_list).visibility).isEqualTo(View.GONE)
+        assertThat(activity.findViewById(R.id.start_navigation).isEnabled).isEqualTo(false)
+        assertThat(activity.findViewById(R.id.view_list).isEnabled).isEqualTo(false)
+    }
+
+    @Test
+    public fun showRoutePreviewFailure_shouldHideTimeDistance() {
+        activity.showRoutePreview(getTestLocation(), getTestFeature())
+        activity.failure(0)
+        Robolectric.flushForegroundThreadScheduler()
+        assertThat(activity.routePreviewDistanceTimeLayout.getVisibility()).isEqualTo(
+                View.INVISIBLE)
     }
 
     @Test
