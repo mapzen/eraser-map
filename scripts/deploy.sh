@@ -10,6 +10,6 @@ if [ -z ${PERFORM_RELEASE} ]
     scripts/install-leyndo.sh
     cd app && git clone $CONFIG_REPO
     cd ..
-    ./gradlew assembleProdRelease -PvectorTileApiKey=$VECTOR_TILE_API_KEY_PROD -PpeliasApiKey=$PELIAS_API_KEY_PROD -PvalhallaApiKey=$VALHALLA_API_KEY_PROD -PbuildNumber=$RELEASE_TAG -PreleaseStoreFile=$RELEASE_STORE_FILE -PreleaseStorePassword="$RELEASE_STORE_PASSWORD" -PreleaseKeyAlias=$RELEASE_KEY_ALIAS -PreleaseKeyPassword="$RELEASE_KEY_PASSWORD"
+    ./gradlew clean assembleProdRelease -PvectorTileApiKey=$VECTOR_TILE_API_KEY_PROD -PpeliasApiKey=$PELIAS_API_KEY_PROD -PvalhallaApiKey=$VALHALLA_API_KEY_PROD -PbuildNumber=$RELEASE_TAG -PreleaseStoreFile=$RELEASE_STORE_FILE -PreleaseStorePassword="$RELEASE_STORE_PASSWORD" -PreleaseKeyAlias=$RELEASE_KEY_ALIAS -PreleaseKeyPassword="$RELEASE_KEY_PASSWORD"
     s3cmd put app/build/outputs/apk/app-prod-release.apk s3://android.mapzen.com/erasermap-releases/$RELEASE_TAG.apk
 fi
