@@ -30,8 +30,3 @@ deployment:
     branch: master
     commands:
       - scripts/deploy-master.sh
-  release:
-    branch: production
-    commands:
-      - git clone $CONFIG_REPO
-      - ./gradlew assembleProdRelease -PvectorTileApiKey=$VECTOR_TILE_API_KEY_PROD -PpeliasApiKey=$PELIAS_API_KEY_PROD -PvalhallaApiKey=$VALHALLA_API_KEY_PROD -PbuildNumber=$CIRCLE_BRANCH-$CIRCLE_BUILD_NUM -PreleaseStoreFile=$RELEASE_STORE_FILE -PreleaseStorePassword=$RELEASE_STORE_PASSWORD -PreleaseKeyAlias=$RELEASE_KEY_ALIAS -PreleaseKeyPassword=$RELEASE_KEY_PASSWORD
