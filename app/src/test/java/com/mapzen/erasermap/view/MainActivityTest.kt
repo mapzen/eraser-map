@@ -31,6 +31,7 @@ import com.mapzen.valhalla.Router
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Offset.offset
 import org.json.JSONObject
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -48,6 +49,12 @@ public class MainActivityTest {
     val activity = Robolectric.setupActivity<MainActivity>(MainActivity::class.java)
     val locationManager = activity.getSystemService(LOCATION_SERVICE) as LocationManager
     val shadowLocationManager = shadowOf(locationManager)
+
+    @After
+    public fun tearDown() {
+        System.out.println("tearDown")
+        activity.finish()
+    }
 
     @Test
     public fun shouldNotBeNull() {
