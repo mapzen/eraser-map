@@ -7,6 +7,7 @@ import android.view.WindowManager
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
+import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.model.event.LocationChangeEvent
 import com.mapzen.erasermap.model.event.RouteEvent
@@ -71,10 +72,14 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
         val displacement = if (previous != null) previous.distanceTo(location) else Float.MAX_VALUE
 
         if (displacement > LOCATION_UPDATE_SMALLEST_DISPLACEMENT) {
-            Log.d("MapzenLocation", "onLocationChanged: " + location)
+            if (BuildConfig.DEBUG) {
+                Log.d("MapzenLocation", "onLocationChanged: " + location)
+            }
             bus.post(LocationChangeEvent(location))
         } else {
-            Log.d("MapzenLocation", "no significant change")
+            if (BuildConfig.DEBUG) {
+                Log.d("MapzenLocation", "no significant change")
+            }
         }
 
         previousLocation = location
