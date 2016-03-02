@@ -45,4 +45,5 @@ public interface MainViewController {
     public fun drawTappedPoiPin()
     public fun hideSettingsBtn()
     public fun showSettingsBtn()
+    public fun onBackPressed()
 }
