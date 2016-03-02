@@ -1,6 +1,5 @@
 package com.mapzen.erasermap.view
 
-import android.content.ComponentName
 import android.content.Context.LOCATION_SERVICE
 import android.location.Location
 import android.location.LocationManager
@@ -38,22 +37,24 @@ import org.robolectric.Robolectric
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.fakes.RoboMenu
-import org.robolectric.fakes.RoboMenuItem
 import org.robolectric.internal.ShadowExtractor
-import org.robolectric.shadows.ShadowApplication
+import org.robolectric.util.ActivityController
 import java.util.ArrayList
 
 @RunWith(PrivateMapsTestRunner::class)
 @Config(constants = BuildConfig::class, sdk=intArrayOf(21))
 public class MainActivityTest {
-    val activity = Robolectric.setupActivity<MainActivity>(MainActivity::class.java)
+    val activityController = ActivityController.of<MainActivity>(Robolectric.getShadowsAdapter(), MainActivity::class.java)
+    val activity = activityController.setup().get()
     val locationManager = activity.getSystemService(LOCATION_SERVICE) as LocationManager
     val shadowLocationManager = shadowOf(locationManager)
 
     @After
     public fun tearDown() {
         System.out.println("tearDown")
-        activity.finish()
+        if (!activity.isDestroyed) {
+            activityController.pause().stop().destroy()
+        }
     }
 
     @Test
