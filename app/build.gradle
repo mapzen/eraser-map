@@ -86,6 +86,7 @@ android {
 }
 
 tasks.withType(Test) {
+  jvmArgs '-XX:MaxPermSize=512m'
   testLogging {
     exceptionFormat "full"
     events "started", "skipped", "passed", "failed"
