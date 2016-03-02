@@ -137,7 +137,7 @@ dependencies {
     exclude group: 'org.apache.commons', module: 'commons-io'
   }
   compile 'com.splunk.mint:mint:4.2.1'
-  compile 'com.squareup.okhttp:okhttp:2.4.0'
+  compile 'com.squareup.okhttp3:okhttp:3.2.0'
   compile 'com.mapzen.android:speakerbox:1.2.0'
 
   testCompile 'junit:junit:4.12'
