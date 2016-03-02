@@ -15,8 +15,13 @@
     <PreferenceCategory android:title="@string/category_privacy_title">
 
         <com.mapzen.erasermap.view.ReadOnlyPreference
-            android:key = "edittext_erase_history"
+            android:key="edittext_erase_history"
             android:title="@string/edittext_erase_history_title" />
+
+        <CheckBoxPreference
+            android:key="checkbox_cache_search_results"
+            android:title="@string/checkbox_cache_search_results"
+            android:defaultValue="true" />
 
     </PreferenceCategory>
 

@@ -28,8 +28,10 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.preferences)
+        PreferenceManager.setDefaultValues(activity, R.xml.preferences, false);
         var sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
         if (sharedPreferences.getBoolean(AndroidAppSettings.KEY_SHOW_DEBUG_SETTINGS, false)) {
+            PreferenceManager.setDefaultValues(activity, R.xml.debug_preferences, false);
             addPreferencesFromResource(R.xml.debug_preferences)
             initBuildNumberPref()
             initTileDebugPref()
@@ -60,6 +62,10 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
                 updateTangramInfosDebugPref(value)
                 return true
             }
+            if (AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY.equals(preference.key)) {
+                updateCacheSearchResults(value)
+                return true
+            }
         }
 
         return false
@@ -67,7 +73,7 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
 
     override fun onPreferenceClick(p0: Preference?): Boolean {
         if(AndroidAppSettings.KEY_ERASE_HISTORY.equals(p0?.key)) {
-            (getActivity() as SettingsActivity).clearHistory()
+            getSettingsActivity().clearHistory("History Erased")
             return true
         }
         return false
@@ -106,6 +112,13 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
         Tangram.setDebugFlag(DebugFlags.TANGRAM_INFOS, value)
     }
 
+    private fun updateCacheSearchResults(value: Boolean) {
+        settings?.isCacheSearchResultsEnabled = value
+        var status = if (value == true) "Enabled" else "Disabled"
+        var title = "Cache Search Results " + status
+        getSettingsActivity().clearHistory(title)
+    }
+
     private fun initLabelDebugPref() {
         findPreference(AndroidAppSettings.KEY_LABEL_DEBUG_ENABLED).onPreferenceChangeListener = this
         updateLabelDebugPref(settings?.isLabelDebugEnabled ?: false)
@@ -121,5 +134,12 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
 
     private fun initEraseHistoryPref() {
         findPreference(AndroidAppSettings.KEY_ERASE_HISTORY).onPreferenceClickListener = this
+
+        findPreference(AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY).onPreferenceChangeListener = this
+
+    }
+
+    private fun getSettingsActivity(): SettingsActivity {
+        return activity as SettingsActivity
     }
 }

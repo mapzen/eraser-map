@@ -3,7 +3,7 @@ package com.mapzen.erasermap.model
 import android.app.Application
 import android.os.Build
 import com.mapzen.tangram.HttpHandler
-import com.squareup.okhttp.Callback
+import okhttp3.Callback
 import java.io.File
 
 public class TileHttpHandler(application: Application) : HttpHandler() {

@@ -55,5 +55,6 @@
     <string name="edittext_send_feedback_title">Send feedback</string>
 
     <!-- Erase History -->
-    <string name="edittext_erase_history_title">Erase History</string>
+    <string name="edittext_erase_history_title">Erase Search History</string>
+    <string name="checkbox_cache_search_results">Cache Search History</string>
 </resources>
