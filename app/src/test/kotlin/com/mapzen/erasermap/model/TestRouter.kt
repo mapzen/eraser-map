@@ -82,4 +82,12 @@ public class TestRouter : Router {
         this.logLevel = logLevel
         return this
     }
+
+    override fun isDntEnabled(): Boolean {
+        return true
+    }
+
+    override fun setDntEnabled(enabled: Boolean): Router {
+        return this
+    }
 }
