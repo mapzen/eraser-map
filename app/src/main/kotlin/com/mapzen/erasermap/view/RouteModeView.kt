@@ -252,7 +252,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             val screenHeight = point.y.toDouble()
 
             // Find the view that will place the current location marker in the lower quarter of the window
-            val nextPosition = mapController?.coordinatesAtScreenPosition(screenWidth/2, screenHeight/4) ?: LngLat()
+            val nextPosition = mapController?.coordinatesAtScreenPosition(screenWidth/2, screenHeight/3.5) ?: LngLat()
             val nextRotation = getBearingInRadians(location)
 
             // Return to our initial view to prepare for easing to the next view
