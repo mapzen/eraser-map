@@ -203,6 +203,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         saveCurrentSearchTerm()
         routeModeView.clearRoute()
         findMe?.clear()
+        killNotifications()
     }
 
     private fun initMapController() {
@@ -936,9 +937,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         startNavigationButton.setOnClickListener({ presenter?.onClickStartNavigation() })
     }
 
+    private fun killNotifications() {
+        routeModeView.notificationCreator?.killNotification()
+    }
+
     override fun onBackPressed() {
         if(findViewById(R.id.route_mode).visibility == View.VISIBLE) {
-            routeModeView.notificationCreator?.killNotification()
+            killNotifications()
         }
         presenter?.onBackPressed()
     }

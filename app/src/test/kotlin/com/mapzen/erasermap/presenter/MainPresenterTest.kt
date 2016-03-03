@@ -471,8 +471,12 @@ public class MainPresenterTest {
     }
 
     @Test fun onRouteCancelEvent_shouldPopBackStack() {
-        vsm.viewState = ROUTING
+        mainController.popBackStack = false
         presenter.onRouteCancelEvent(RouteCancelEvent())
+        assertThat(mainController.popBackStack).isTrue()
+
+        vsm.viewState = ROUTING
+        presenter.onBackPressed()
         assertThat(vsm.viewState).isEqualTo(ROUTE_PREVIEW)
     }
 
