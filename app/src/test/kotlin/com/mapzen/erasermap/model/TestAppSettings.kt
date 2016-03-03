@@ -14,6 +14,7 @@ public class TestAppSettings : AppSettings {
     override var isTileDebugEnabled: Boolean = false
     override var isLabelDebugEnabled: Boolean = false
     override var isTangramInfosDebugEnabled: Boolean = false
+    override var isCacheSearchResultsEnabled: Boolean = true
 
     override fun initTangramDebugFlags() {
     }

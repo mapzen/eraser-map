@@ -73,7 +73,7 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
 
     override fun onPreferenceClick(p0: Preference?): Boolean {
         if(AndroidAppSettings.KEY_ERASE_HISTORY.equals(p0?.key)) {
-            getSettingsActivity().clearHistory("History Erased")
+            getSettingsActivity().clearHistory(getString(R.string.history_erased))
             return true
         }
         return false
@@ -114,8 +114,8 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
 
     private fun updateCacheSearchResults(value: Boolean) {
         settings?.isCacheSearchResultsEnabled = value
-        var status = if (value == true) "Enabled" else "Disabled"
-        var title = "Cache Search Results " + status
+        var status = getString(if (value == true) R.string.enabled else R.string.disabled)
+        var title = getString(R.string.cache_search_results_status, status)
         getSettingsActivity().clearHistory(title)
     }
 

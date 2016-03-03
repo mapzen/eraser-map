@@ -62,8 +62,7 @@ import java.util.ArrayList
 import javax.inject.Inject
 
 public class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
-        SearchResultsView.OnSearchResultSelectedListener,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        SearchResultsView.OnSearchResultSelectedListener {
 
     companion object {
         @JvmStatic val MAP_DATA_PROP_SEARCHINDEX = "searchIndex"
@@ -147,7 +146,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         settings?.initTangramDebugFlags()
         initVoiceNavigationController()
         initNotificationCreator()
-        initPreferencesListener()
     }
 
     override protected fun onNewIntent(intent: Intent?) {
@@ -186,6 +184,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         app?.onActivityResume()
         autoCompleteAdapter?.clear()
         autoCompleteAdapter?.notifyDataSetChanged()
+        invalidateOptionsMenu()
     }
 
     override public fun onPause() {
@@ -207,8 +206,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         saveCurrentSearchTerm()
         routeModeView.clearRoute()
         findMe?.clear()
-        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        preferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     private fun initMapController() {
@@ -316,11 +313,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         notificationCreator = NotificationCreator(this)
     }
 
-    private fun initPreferencesListener() {
-        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        preferences.registerOnSharedPreferenceChangeListener(this)
-    }
-
     override fun centerMapOnLocation(location: Location, zoom: Float) {
         mapController?.setMapPosition(location.longitude, location.latitude)
         mapController?.mapZoom = zoom
@@ -412,6 +404,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             searchView.setCacheSearchResults(cacheSearches)
         }
 
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val cacheSearches = prefs?.getBoolean(AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY, true)
+        searchView?.setCacheSearchResults(cacheSearches)
         return true
     }
 
@@ -1066,13 +1065,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         }
         poiTapName = null
         poiTapPoint = null
-    }
-
-    override fun onSharedPreferenceChanged(preferences: SharedPreferences?, key: String?) {
-        if (AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY.equals(key)) {
-            val cacheSearches = preferences?.getBoolean(key, true) as Boolean
-            searchView?.setCacheSearchResults(cacheSearches)
-        }
     }
 
     private fun exitNavigation() {
