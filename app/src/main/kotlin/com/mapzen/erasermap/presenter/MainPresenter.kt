@@ -1,7 +1,7 @@
 package com.mapzen.erasermap.presenter
 
 import android.location.Location
-import com.mapzen.erasermap.view.MainViewController
+import com.mapzen.erasermap.controller.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature

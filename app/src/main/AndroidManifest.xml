@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".view.MainActivity"
+            android:name=".controller.MainActivity"
             android:launchMode="singleTask"
             android:label="@string/app_name" />
         <activity

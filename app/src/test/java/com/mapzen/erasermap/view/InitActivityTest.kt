@@ -2,6 +2,7 @@ package com.mapzen.erasermap.view
 
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.PrivateMapsTestRunner
+import com.mapzen.erasermap.controller.MainActivity
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith

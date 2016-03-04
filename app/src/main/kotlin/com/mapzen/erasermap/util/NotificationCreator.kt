@@ -14,7 +14,7 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.app.TaskStackBuilder
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.service.NotificationService
-import com.mapzen.erasermap.view.MainActivity
+import com.mapzen.erasermap.controller.MainActivity
 
 public class NotificationCreator(private val mainActivity: Activity) {
     private var builder: NotificationCompat.Builder? = null
