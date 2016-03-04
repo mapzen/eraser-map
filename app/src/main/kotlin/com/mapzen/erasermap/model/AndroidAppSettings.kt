@@ -22,6 +22,7 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
         public val KEY_TANGRAM_INFOS_DEBUG_ENABLED: String = "checkbox_tangram_infos_debug"
         public val KEY_BUILD_NUMBER: String = "edittext_build_number"
         public val KEY_ERASE_HISTORY: String = "edittext_erase_history"
+        public val KEY_CACHE_SEARCH_HISTORY: String = "checkbox_cache_search_results"
         public val SHOW_DEBUG_SETTINGS_QUERY = "!!!!!!!!"
         public val KEY_SHOW_DEBUG_SETTINGS = "show_debug_settings"
     }
@@ -142,6 +143,14 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
             }
         }
     }
+
+    override var isCacheSearchResultsEnabled: Boolean
+        get() {
+            return prefs.getBoolean(KEY_CACHE_SEARCH_HISTORY, true)
+        }
+        set(value) {
+            prefs.edit().putBoolean(KEY_CACHE_SEARCH_HISTORY, value).commit()
+        }
 
     override fun initTangramDebugFlags() {
         Tangram.setDebugFlag(DebugFlags.TILE_BOUNDS, isTileDebugEnabled)

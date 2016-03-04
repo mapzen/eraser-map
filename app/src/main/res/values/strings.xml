@@ -32,7 +32,11 @@
     <string name="less_than_one_minute">&lt;1 min</string>
     <string name="diamond_separator">" ◆ "</string>
 
-    <string name="debug_settings_toast_title">Debug menu %s</string>
-    <string name="enabled">enabled</string>
-    <string name="disabled">disabled</string>
+    <string name="debug_settings_toast_title">Debug Menu %s</string>
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
+
+    <string name="history_erased">History Erased</string>
+    <string name="cache_search_results_status">Cache Search Results %s</string>
+
 </resources>

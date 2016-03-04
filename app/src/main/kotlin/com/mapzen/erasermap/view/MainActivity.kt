@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.view
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Point
 import android.location.Location
 import android.os.Bundle
@@ -124,6 +125,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     val searchResultsView: SearchResultsView by lazy { findViewById(R.id.search_results) as SearchResultsView }
     val osmAttributionText: TextView by lazy { findViewById(R.id.osm_attribution) as TextView }
     val routePreviewDistanceTimeLayout: LinearLayout by lazy { findViewById(R.id.route_preview_distance_time_view) as LinearLayout }
+    val autocompleteListView: AutoCompleteListView by lazy { findViewById(R.id.auto_complete) as AutoCompleteListView }
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -182,6 +184,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         app?.onActivityResume()
         autoCompleteAdapter?.clear()
         autoCompleteAdapter?.notifyDataSetChanged()
+        invalidateOptionsMenu()
     }
 
     override public fun onPause() {
@@ -361,19 +364,18 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT))
         supportActionBar.displayOptions = supportActionBar.displayOptions or
                 ActionBar.DISPLAY_SHOW_CUSTOM
-        val listView = findViewById(R.id.auto_complete) as AutoCompleteListView
         val emptyView = findViewById(android.R.id.empty)
-        listView.hideHeader()
+        autocompleteListView.hideHeader()
 
         if (searchView is PeliasSearchView) {
             this.searchView = searchView
             searchView.setRecentSearchIconResourceId(R.drawable.ic_recent)
             searchView.setAutoCompleteIconResourceId(R.drawable.ic_pin_c)
             initAutoCompleteAdapter()
-            listView.adapter = autoCompleteAdapter
+            autocompleteListView.adapter = autoCompleteAdapter
             pelias?.setLocationProvider(presenter?.getPeliasLocationProvider())
             pelias?.setApiKey(keys?.searchKey)
-            searchView.setAutoCompleteListView(listView)
+            searchView.setAutoCompleteListView(autocompleteListView)
             searchView.setSavedSearch(savedSearch)
             searchView.setPelias(pelias)
             searchView.setCallback(PeliasCallback())
@@ -385,7 +387,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
             searchView.imeOptions += EditorInfo.IME_FLAG_NO_EXTRACT_UI
             searchView.queryHint = "Search for place or address"
-            listView.emptyView = emptyView
+            autocompleteListView.emptyView = emptyView
             restoreCurrentSearchTerm(searchView)
             searchView.setOnPeliasFocusChangeListener { view, b ->
                 if (b) {
@@ -397,8 +399,18 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 }
             }
             searchView.setOnBackPressListener { collapseSearchView() }
+            val cacheSearches = PreferenceManager.getDefaultSharedPreferences(this)
+                    .getBoolean(AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY, true)
+            searchView.setCacheSearchResults(cacheSearches)
         }
 
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val cacheSearches = prefs?.getBoolean(AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY, true)
+        searchView?.setCacheSearchResults(cacheSearches)
         return true
     }
 
@@ -439,8 +451,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             autoCompleteAdapter?.clear();
             autoCompleteAdapter?.addAll(simpleFeatures);
             autoCompleteAdapter?.notifyDataSetChanged();
-            (findViewById(R.id.auto_complete) as AutoCompleteListView)
-                    .setOnItemClickListener { parent, view, position, id ->
+            autocompleteListView.setOnItemClickListener { parent, view, position, id ->
                         (findViewById(R.id.search_results) as SearchResultsView).setCurrentItem(position)
                         onCloseAllSearchResults()
 
@@ -449,8 +460,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun onCloseAllSearchResults() {
-        (findViewById(R.id.auto_complete) as AutoCompleteListView)
-            .setOnItemClickListener(searchView?.OnItemClickHandler()?.invoke())
+        autocompleteListView.onItemClickListener = searchView?.OnItemClickHandler()?.invoke()
         presenter?.resultListVisible = false
         optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
         searchView?.onActionViewCollapsed()
@@ -1101,5 +1111,4 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         startPin = null
         endPin = null
     }
-
 }

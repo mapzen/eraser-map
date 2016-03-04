@@ -13,6 +13,7 @@ public interface AppSettings {
     public var isTileDebugEnabled: Boolean
     public var isLabelDebugEnabled: Boolean
     public var isTangramInfosDebugEnabled: Boolean
+    public var isCacheSearchResultsEnabled: Boolean
 
     public fun initTangramDebugFlags()
 }
