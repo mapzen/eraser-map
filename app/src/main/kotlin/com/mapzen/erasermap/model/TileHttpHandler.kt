@@ -9,6 +9,8 @@ import java.io.File
 public class TileHttpHandler(application: Application) : HttpHandler() {
     companion object {
         @JvmStatic val KITKAT = 19
+        @JvmStatic val HEADER_DNT = "DNT"
+        @JvmStatic val VALUE_HEADER_DNT = "1"
     }
 
     init {
@@ -16,6 +18,7 @@ public class TileHttpHandler(application: Application) : HttpHandler() {
             val httpCache = File(application.externalCacheDir.absolutePath + "/tile_cache")
             setCache(httpCache, 30 * 1024 * 1024)
         }
+        okRequestBuilder.addHeader(HEADER_DNT, VALUE_HEADER_DNT)
     }
 
     var apiKey: String? = null
