@@ -10,6 +10,7 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
+import com.mapzen.erasermap.controller.MainActivity
 import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.SimpleCrypt
 import javax.inject.Inject

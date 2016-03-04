@@ -15,7 +15,7 @@ import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_DIRECTION
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_PREVIEW
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTING
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
-import com.mapzen.erasermap.view.TestMainController
+import com.mapzen.erasermap.controller.TestMainController
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result

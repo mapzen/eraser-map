@@ -1,7 +1,7 @@
-package com.mapzen.erasermap.view
+package com.mapzen.erasermap.controller
 
-import android.location.Location
 import android.graphics.PointF
+import android.location.Location
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.valhalla.Route
 
