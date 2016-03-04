@@ -33,7 +33,7 @@ android {
     minSdkVersion 15
     targetSdkVersion 22
     versionCode 9
-    versionName "0.5.1"
+    versionName "0.6-SNAPSHOT"
     buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY
     buildConfigField "String", "PELIAS_API_KEY", PELIAS_API_KEY
     buildConfigField "String", "VALHALLA_API_KEY", VALHALLA_API_KEY
