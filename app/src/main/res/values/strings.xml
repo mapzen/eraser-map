@@ -19,6 +19,7 @@
     <string name="resume">Resume</string>
     <string name="view_list">View List</string>
     <string name="start_navigation">Start Navigation</string>
+    <string name="exit_navigation">Exit Navigation</string>
     <string name="destination">Destination</string>
     <string name="osm_attribution">Map data © OpenStreetMap</string>
 

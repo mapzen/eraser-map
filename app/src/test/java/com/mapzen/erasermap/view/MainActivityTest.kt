@@ -43,7 +43,7 @@ import org.robolectric.shadows.ShadowApplication
 import java.util.ArrayList
 
 @RunWith(PrivateMapsTestRunner::class)
-@Config(constants = BuildConfig::class, sdk=intArrayOf(21))
+@Config(constants = BuildConfig::class, sdk = intArrayOf(21))
 public class MainActivityTest {
     val activity = Robolectric.setupActivity<MainActivity>(MainActivity::class.java)
     val locationManager = activity.getSystemService(LOCATION_SERVICE) as LocationManager

@@ -30,6 +30,7 @@ public class TestMainController : MainViewController {
     public var isReverseGeocodeVisible: Boolean = false
     public var isPlaceResultOverridden: Boolean = false
     public var isSettingsVisible: Boolean = false
+    public var popBackStack: Boolean = false
 
     override fun showSearchResults(features: List<Feature>) {
         searchResults = features
@@ -183,5 +184,9 @@ public class TestMainController : MainViewController {
 
     override fun showSettingsBtn() {
         isSettingsVisible = true
+    }
+
+    override fun onBackPressed() {
+        popBackStack = true
     }
 }

@@ -187,7 +187,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     }
 
     @Subscribe public fun onRouteCancelEvent(event: RouteCancelEvent) {
-        onBackPressed()
+        mainViewController?.onBackPressed()
     }
 
     override fun updateLocation() {
