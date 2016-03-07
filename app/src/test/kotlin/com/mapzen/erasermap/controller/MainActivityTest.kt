@@ -1,4 +1,4 @@
-package com.mapzen.erasermap.view
+package com.mapzen.erasermap.controller
 
 import android.content.ComponentName
 import android.content.Context.LOCATION_SERVICE
@@ -22,6 +22,7 @@ import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.shadows.ShadowMapData
 import com.mapzen.erasermap.shadows.ShadowTangram
+import com.mapzen.erasermap.view.RouteModeView
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
@@ -43,7 +44,7 @@ import org.robolectric.shadows.ShadowApplication
 import java.util.ArrayList
 
 @RunWith(PrivateMapsTestRunner::class)
-@Config(constants = BuildConfig::class, sdk=intArrayOf(21))
+@Config(constants = BuildConfig::class, sdk = intArrayOf(21))
 public class MainActivityTest {
     val activity = Robolectric.setupActivity<MainActivity>(MainActivity::class.java)
     val locationManager = activity.getSystemService(LOCATION_SERVICE) as LocationManager

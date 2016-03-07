@@ -6,7 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.mapzen.erasermap.EraserMapApplication
-import com.mapzen.erasermap.view.MainActivity
+import com.mapzen.erasermap.controller.MainActivity
 
 public class NotificationBroadcastReceiver : BroadcastReceiver() {
 

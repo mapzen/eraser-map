@@ -23,12 +23,12 @@ public class SettingsActivity : HomeAsUpActivity() {
                 .commit()
     }
 
-    public fun clearHistory() {
+    public fun clearHistory(title: String) {
         savedSearch?.clear()
         PreferenceManager.getDefaultSharedPreferences(this)
                 .edit()
                 .putString(SavedSearch.TAG, savedSearch?.serialize())
                 .commit()
-        Toast.makeText(this@SettingsActivity, "History Erased", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@SettingsActivity, title, Toast.LENGTH_SHORT).show()
     }
 }

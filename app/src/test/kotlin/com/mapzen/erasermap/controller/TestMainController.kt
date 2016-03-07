@@ -1,7 +1,7 @@
-package com.mapzen.erasermap.view
+package com.mapzen.erasermap.controller
 
-import android.location.Location
 import android.graphics.PointF
+import android.location.Location
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.valhalla.Route
 
@@ -30,6 +30,7 @@ public class TestMainController : MainViewController {
     public var isReverseGeocodeVisible: Boolean = false
     public var isPlaceResultOverridden: Boolean = false
     public var isSettingsVisible: Boolean = false
+    public var popBackStack: Boolean = false
 
     override fun showSearchResults(features: List<Feature>) {
         searchResults = features
@@ -183,5 +184,9 @@ public class TestMainController : MainViewController {
 
     override fun showSettingsBtn() {
         isSettingsVisible = true
+    }
+
+    override fun onBackPressed() {
+        popBackStack = true
     }
 }

@@ -1,15 +1,20 @@
 package com.mapzen.erasermap.util
 
-import com.mapzen.erasermap.R
-
 import android.app.Activity
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
+import android.content.SharedPreferences
+import android.os.IBinder
+import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.TaskStackBuilder
-import com.mapzen.erasermap.view.MainActivity
+import com.mapzen.erasermap.R
+import com.mapzen.erasermap.service.NotificationService
+import com.mapzen.erasermap.controller.MainActivity
 
 public class NotificationCreator(private val mainActivity: Activity) {
     private var builder: NotificationCompat.Builder? = null
@@ -19,13 +24,33 @@ public class NotificationCreator(private val mainActivity: Activity) {
     private var exitNavigationIntent: Intent? = null
     private var pendingNotificationIntent: PendingIntent? = null
     private var pendingExitNavigationIntent: PendingIntent? = null
-    private val mNotificationManager: NotificationManager
+    private val notificationManager: NotificationManager
+    private val serviceConnection: NotificationServiceConnection
+    private val preferences: SharedPreferences
+    private val serviceIntent: Intent
 
-    init {
-        mNotificationManager = mainActivity.getSystemService(
-                Context.NOTIFICATION_SERVICE) as NotificationManager
+    companion object {
+        val EXIT_NAVIGATION = "exit_navigation"
+        val NOTIFICATION_TAG_ROUTE = "route"
     }
 
+    init {
+        notificationManager = mainActivity.getSystemService(
+                Context.NOTIFICATION_SERVICE) as NotificationManager
+        serviceConnection = NotificationServiceConnection(mainActivity)
+        preferences = PreferenceManager.getDefaultSharedPreferences(mainActivity)
+        serviceIntent = Intent(mainActivity, NotificationService::class.java)
+    }
+
+    /**
+     * All notifications created through this class should be killed using the
+     * {@link NotificationCreator#killNotification()}, do not call
+     * {@link NotificationManager#cancelAll()} directly
+     *
+     * Before we create a notification, we bind to a stub service so that when app is killed
+     * {@link MainActivity#onDestroy} is reliably called. This triggers a
+     * call to {@link NotificationCreator#killNotification} which removes notification from manager
+     */
     fun createNewNotification(title: String, content: String) {
         initBuilder(title, content)
         initBigTextStyle(title, content)
@@ -33,10 +58,12 @@ public class NotificationCreator(private val mainActivity: Activity) {
         initNotificationIntent()
         initExitNavigationIntent()
         initStackBuilder(notificationIntent)
-        builder?.addAction(R.drawable.ic_dismiss, "Exit Navigation", pendingExitNavigationIntent)
+        builder?.addAction(R.drawable.ic_dismiss, mainActivity.getString(R.string.exit_navigation),
+                pendingExitNavigationIntent)
         builder?.setContentIntent(PendingIntent.getActivity(
                 mainActivity.applicationContext, 0, notificationIntent, 0))
-        mNotificationManager.notify("route", 0, builder!!.build())
+        mainActivity.bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
+        notificationManager.notify(NOTIFICATION_TAG_ROUTE, 0, builder!!.build())
     }
 
     private fun initExitNavigationIntent() {
@@ -77,11 +104,34 @@ public class NotificationCreator(private val mainActivity: Activity) {
     }
 
     public fun killNotification() {
-        val notificationManager = mainActivity.getSystemService(Activity.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancelAll()
+        serviceConnection.service?.stopService(serviceIntent)
     }
 
-    companion object {
-        val EXIT_NAVIGATION = "exit_navigation"
+    /**
+     * In charge of starting the stub service we bind to
+     */
+    private class NotificationServiceConnection: ServiceConnection {
+
+        public val activity: Activity
+        public var service: NotificationService? = null
+
+        constructor(activity: Activity) {
+            this.activity = activity
+        }
+
+        override fun onServiceConnected(component: ComponentName?, inBinder: IBinder?) {
+            if (inBinder == null) {
+                return
+            }
+            val binder = inBinder as NotificationService.NotificationBinder
+            val intent: Intent = Intent(activity, NotificationService::class.java)
+            this.service = binder.service
+            binder.service?.startService(intent)
+        }
+
+        override fun onServiceDisconnected(component: ComponentName?) {
+        }
+
     }
 }

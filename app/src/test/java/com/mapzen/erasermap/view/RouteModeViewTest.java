@@ -3,6 +3,7 @@ package com.mapzen.erasermap.view;
 import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
+import com.mapzen.erasermap.controller.MainActivity;
 import com.mapzen.erasermap.dummy.TestHelper;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;

@@ -341,7 +341,6 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun showReroute(location: Location) {
-        voiceNavigationController?.playRecalculating()
         mainPresenter?.onReroute(location)
     }
 
