@@ -110,7 +110,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var optionsMenu: Menu? = null
     var findMe: MapData? = null
     var searchResults: MapData? = null
-    var reverseGeocodeData: MapData? = null
     var startPin: MapData? = null
     var endPin: MapData? = null
     var poiTapPoint: FloatArray? = null
@@ -217,6 +216,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         routeModeView.clearRoute()
         findMe?.clear()
         killNotifications()
+        Tangram.clearDataSource(presenter?.reverseGeocodeData, true, true)
     }
 
     private fun initMapController() {
@@ -269,6 +269,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 }
         })
         mapController?.setHttpHandler(tileHttpHandler)
+
         mapzenLocation?.mapController = mapController
     }
 
@@ -603,12 +604,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         val properties = com.mapzen.tangram.Properties()
         properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
-        if (reverseGeocodeData == null) {
-            reverseGeocodeData = MapData("reverse_geocode")
-            Tangram.addDataSource(reverseGeocodeData)
+        if (presenter?.reverseGeocodeData == null) {
+            presenter?.reverseGeocodeData = MapData("reverse_geocode")
+            Tangram.addDataSource(presenter?.reverseGeocodeData)
         }
-        reverseGeocodeData?.clear()
-        reverseGeocodeData?.addPoint(properties, lngLat)
+        presenter?.reverseGeocodeData?.clear()
+        presenter?.reverseGeocodeData?.addPoint(properties, lngLat)
 
         mapController?.requestRender()
     }
@@ -629,12 +630,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
 
         // hijack reverseGeocodeData for tappedPoiPin
-        if (reverseGeocodeData == null) {
-            reverseGeocodeData = MapData("reverse_geocode")
-            Tangram.addDataSource(reverseGeocodeData)
+        if (presenter?.reverseGeocodeData == null) {
+            presenter?.reverseGeocodeData = MapData("reverse_geocode")
+            Tangram.addDataSource(presenter?.reverseGeocodeData)
         }
-        reverseGeocodeData?.clear()
-        reverseGeocodeData?.addPoint(properties, lngLat)
+        presenter?.reverseGeocodeData?.clear()
+        presenter?.reverseGeocodeData?.addPoint(properties, lngLat)
 
         mapController?.requestRender()
     }
@@ -707,7 +708,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun hideReverseGeolocateResult() {
-        reverseGeocodeData?.clear()
+        presenter?.reverseGeocodeData?.clear()
     }
 
     override fun hideSearchResults() {
