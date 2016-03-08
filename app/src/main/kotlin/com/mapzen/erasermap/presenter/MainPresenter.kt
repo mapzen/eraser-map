@@ -23,6 +23,9 @@ public interface MainPresenter {
     public var routingEnabled: Boolean
     public var resultListVisible: Boolean
     public var reverseGeocodeData: MapData?
+    public var searchResultsData: MapData?
+    public var reverseGeo: Boolean
+
 
     public fun onSearchResultsAvailable(result: Result?)
     public fun onReverseGeocodeResultsAvailable(searchResults: Result?)

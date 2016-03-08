@@ -109,7 +109,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var autoCompleteAdapter: AutoCompleteAdapter? = null
     var optionsMenu: Menu? = null
     var findMe: MapData? = null
-    var searchResults: MapData? = null
     var startPin: MapData? = null
     var endPin: MapData? = null
     var poiTapPoint: FloatArray? = null
@@ -216,7 +215,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         routeModeView.clearRoute()
         findMe?.clear()
         killNotifications()
-        Tangram.clearDataSource(presenter?.reverseGeocodeData, true, true)
     }
 
     private fun initMapController() {
@@ -269,7 +267,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 }
         })
         mapController?.setHttpHandler(tileHttpHandler)
-
         mapzenLocation?.mapController = mapController
     }
 
@@ -370,8 +367,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         optionsMenu = menu
-
-        val searchView = PeliasSearchView(this)
+        searchView = PeliasSearchView(this)
         supportActionBar.setCustomView(searchView,ActionBar.LayoutParams(
                 ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT))
         supportActionBar.displayOptions = supportActionBar.displayOptions or
@@ -379,43 +375,38 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val emptyView = findViewById(android.R.id.empty)
         autocompleteListView.hideHeader()
 
-        if (searchView is PeliasSearchView) {
-            this.searchView = searchView
-            searchView.setRecentSearchIconResourceId(R.drawable.ic_recent)
-            searchView.setAutoCompleteIconResourceId(R.drawable.ic_pin_c)
-            initAutoCompleteAdapter()
-            autocompleteListView.adapter = autoCompleteAdapter
-            pelias?.setLocationProvider(presenter?.getPeliasLocationProvider())
-            pelias?.setApiKey(keys?.searchKey)
-            searchView.setAutoCompleteListView(autocompleteListView)
-            searchView.setSavedSearch(savedSearch)
-            searchView.setPelias(pelias)
-            searchView.setCallback(PeliasCallback())
-            searchView.setOnSubmitListener({
-                saveCurrentSearchTerm()
-                presenter?.onQuerySubmit()
-            })
-            searchView.setIconifiedByDefault(false)
-
-            searchView.imeOptions += EditorInfo.IME_FLAG_NO_EXTRACT_UI
-            searchView.queryHint = "Search for place or address"
-            autocompleteListView.emptyView = emptyView
-            restoreCurrentSearchTerm(searchView)
-            searchView.setOnPeliasFocusChangeListener { view, b ->
-                if (b) {
-                    expandSearchView()
-                } else if( presenter?.resultListVisible as Boolean) {
-                        onCloseAllSearchResults()
-                    } else {
-                    searchView?.setQuery(presenter?.currentSearchTerm, false)
-                }
+        searchView?.setRecentSearchIconResourceId(R.drawable.ic_recent)
+        searchView?.setAutoCompleteIconResourceId(R.drawable.ic_pin_c)
+        initAutoCompleteAdapter()
+        autocompleteListView.adapter = autoCompleteAdapter
+        pelias?.setLocationProvider(presenter?.getPeliasLocationProvider())
+        pelias?.setApiKey(keys?.searchKey)
+        searchView?.setAutoCompleteListView(autocompleteListView)
+        searchView?.setSavedSearch(savedSearch)
+        searchView?.setPelias(pelias)
+        searchView?.setCallback(PeliasCallback())
+        searchView?.setOnSubmitListener({
+            saveCurrentSearchTerm()
+            presenter?.onQuerySubmit()
+        })
+        searchView?.setIconifiedByDefault(false)
+        searchView!!.imeOptions += EditorInfo.IME_FLAG_NO_EXTRACT_UI
+        searchView?.queryHint = "Search for place or address"
+        autocompleteListView.emptyView = emptyView
+        restoreCurrentSearchTerm(searchView!!)
+        searchView?.setOnPeliasFocusChangeListener { view, b ->
+            if (b) {
+                expandSearchView()
+            } else if( presenter?.resultListVisible as Boolean) {
+                    onCloseAllSearchResults()
+                } else {
+                searchView?.setQuery(presenter?.currentSearchTerm, false)
             }
-            searchView.setOnBackPressListener { collapseSearchView() }
-            val cacheSearches = PreferenceManager.getDefaultSharedPreferences(this)
-                    .getBoolean(AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY, true)
-            searchView.setCacheSearchResults(cacheSearches)
         }
-
+        searchView?.setOnBackPressListener { collapseSearchView() }
+        val cacheSearches = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY, true)
+        searchView?.setCacheSearchResults(cacheSearches)
         return true
     }
 
@@ -496,9 +487,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val term = presenter?.currentSearchTerm
         if (term != null) {
             searchView.setQuery(term, false)
-            if (searchResultsView.visibility == View.VISIBLE) {
+            if (searchResultsView.visibility == View.VISIBLE && presenter?.reverseGeo == false) {
                 searchView.clearFocus()
                 showActionViewAll()
+            } else {
+                hideActionViewAll()
             }
             presenter?.currentSearchTerm = null
         }
@@ -588,6 +581,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showReverseGeocodeFeature(features: List<Feature>) {
+        hideSearchResults()
+        centerOnCurrentFeature(features)
+        layoutAttributionAboveSearchResults(features)
+
         var poiTapFallback = false
         if (poiTapPoint != null) {
             // Fallback for a failed Pelias Place Callback
@@ -649,13 +646,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun addSearchResultsToMap(features: List<Feature>, activeIndex: Int) {
         centerOnCurrentFeature(features)
 
-        if (searchResults == null) {
-            searchResults = MapData("search")
-            Tangram.addDataSource(searchResults)
+        if (presenter?.searchResultsData == null) {
+            presenter?.searchResultsData = MapData("search")
+            Tangram.addDataSource(presenter?.searchResultsData)
         }
 
         var featureCount: Int = 0
-        searchResults?.clear()
+        presenter?.searchResultsData?.clear()
         for (feature in features) {
             val simpleFeature = SimpleFeature.fromFeature(feature)
             val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
@@ -666,7 +663,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             } else {
                 properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_INACTIVE);
             }
-            searchResults?.addPoint(properties, lngLat)
+            presenter?.searchResultsData?.addPoint(properties, lngLat)
             featureCount++
         }
         mapController?.requestRender()
@@ -714,7 +711,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun hideSearchResults() {
         hideSearchResultsView()
         layoutAttributionAlignBottom()
-        searchResults?.clear()
+        presenter?.searchResultsData?.clear()
     }
 
     private fun hideSearchResultsView() {
