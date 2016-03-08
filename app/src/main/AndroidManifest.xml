@@ -22,9 +22,6 @@
             android:launchMode="singleTask"
             android:label="@string/app_name" />
         <activity
-            android:name=".view.SearchResultsListActivity"
-            android:label="@string/search_results" />
-        <activity
             android:name=".view.InstructionListActivity"
             android:label="@string/instruction_list" />
         <activity
