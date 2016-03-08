@@ -276,7 +276,7 @@ public class MainActivityTest {
         features.add(getTestFeature())
         features.add(getTestFeature())
         activity.showSearchResults(features)
-        val shadowSearchResults = ShadowExtractor.extract(activity.searchResults) as ShadowMapData
+        val shadowSearchResults = ShadowExtractor.extract(activity.presenter?.searchResultsData) as ShadowMapData
         assertThat(shadowSearchResults.points).hasSize(3)
     }
 
@@ -288,7 +288,7 @@ public class MainActivityTest {
         features.add(getTestFeature())
         activity.showSearchResults(features)
         activity.showSearchResults(features)
-        val shadowSearchResults = ShadowExtractor.extract(activity.searchResults) as ShadowMapData
+        val shadowSearchResults = ShadowExtractor.extract(activity.presenter?.searchResultsData) as ShadowMapData
         assertThat(shadowSearchResults.points).hasSize(3)
     }
 
