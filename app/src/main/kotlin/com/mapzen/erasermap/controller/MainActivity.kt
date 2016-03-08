@@ -109,6 +109,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var autoCompleteAdapter: AutoCompleteAdapter? = null
     var optionsMenu: Menu? = null
     var findMe: MapData? = null
+    var reverseGeocodeData: MapData? = null
+    var searchResultsData: MapData? = null
     var startPin: MapData? = null
     var endPin: MapData? = null
     var poiTapPoint: FloatArray? = null
@@ -214,6 +216,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         saveCurrentSearchTerm()
         routeModeView.clearRoute()
         findMe?.clear()
+        reverseGeocodeData?.clear()
+        searchResultsData?.clear()
         killNotifications()
     }
 
@@ -601,12 +605,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
         val properties = com.mapzen.tangram.Properties()
         properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
-        if (presenter?.reverseGeocodeData == null) {
-            presenter?.reverseGeocodeData = MapData("reverse_geocode")
-            Tangram.addDataSource(presenter?.reverseGeocodeData)
+        if (reverseGeocodeData == null) {
+            reverseGeocodeData = MapData("reverse_geocode")
+            Tangram.addDataSource(reverseGeocodeData)
         }
-        presenter?.reverseGeocodeData?.clear()
-        presenter?.reverseGeocodeData?.addPoint(properties, lngLat)
+        reverseGeocodeData?.clear()
+        reverseGeocodeData?.addPoint(properties, lngLat)
 
         mapController?.requestRender()
     }
@@ -627,12 +631,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
 
         // hijack reverseGeocodeData for tappedPoiPin
-        if (presenter?.reverseGeocodeData == null) {
-            presenter?.reverseGeocodeData = MapData("reverse_geocode")
-            Tangram.addDataSource(presenter?.reverseGeocodeData)
+        if (reverseGeocodeData == null) {
+            reverseGeocodeData = MapData("reverse_geocode")
+            Tangram.addDataSource(reverseGeocodeData)
         }
-        presenter?.reverseGeocodeData?.clear()
-        presenter?.reverseGeocodeData?.addPoint(properties, lngLat)
+        reverseGeocodeData?.clear()
+        reverseGeocodeData?.addPoint(properties, lngLat)
 
         mapController?.requestRender()
     }
@@ -646,13 +650,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun addSearchResultsToMap(features: List<Feature>, activeIndex: Int) {
         centerOnCurrentFeature(features)
 
-        if (presenter?.searchResultsData == null) {
-            presenter?.searchResultsData = MapData("search")
-            Tangram.addDataSource(presenter?.searchResultsData)
+        if (searchResultsData == null) {
+            searchResultsData = MapData("search")
+            Tangram.addDataSource(searchResultsData)
         }
 
         var featureCount: Int = 0
-        presenter?.searchResultsData?.clear()
+        searchResultsData?.clear()
         for (feature in features) {
             val simpleFeature = SimpleFeature.fromFeature(feature)
             val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
@@ -663,7 +667,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             } else {
                 properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_INACTIVE);
             }
-            presenter?.searchResultsData?.addPoint(properties, lngLat)
+            searchResultsData?.addPoint(properties, lngLat)
             featureCount++
         }
         mapController?.requestRender()
@@ -705,13 +709,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun hideReverseGeolocateResult() {
-        presenter?.reverseGeocodeData?.clear()
+        reverseGeocodeData?.clear()
     }
 
     override fun hideSearchResults() {
         hideSearchResultsView()
         layoutAttributionAlignBottom()
-        presenter?.searchResultsData?.clear()
+        searchResultsData?.clear()
     }
 
     private fun hideSearchResultsView() {

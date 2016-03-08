@@ -6,7 +6,6 @@ import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
-import com.mapzen.tangram.MapData
 
 public interface MainPresenter {
     companion object {
@@ -22,8 +21,6 @@ public interface MainPresenter {
     public var currentFeature: Feature?
     public var routingEnabled: Boolean
     public var resultListVisible: Boolean
-    public var reverseGeocodeData: MapData?
-    public var searchResultsData: MapData?
     public var reverseGeo: Boolean
 
 
