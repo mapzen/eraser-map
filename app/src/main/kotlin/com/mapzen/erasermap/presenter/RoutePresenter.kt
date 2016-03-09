@@ -25,8 +25,5 @@ public interface RoutePresenter {
     public fun onRouteClear()
     public fun onMapListToggleClick(state: MapListToggleButton.MapListState)
     public fun onRouteCancelButtonClick()
-    public fun onMuteClicked()
-    public fun isMuted(): Boolean
-    public fun setMuted(mute: Boolean)
     public fun mapZoomLevelForCenterMapOnLocation(location: Location): Float
 }

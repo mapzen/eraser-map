@@ -17,7 +17,7 @@ public class VoiceNavigationController(val activity: Activity) {
 
     init {
         val app = activity.application as EraserMapApplication
-        app?.component()?.inject(this@VoiceNavigationController)
+        app.component().inject(this)
         speakerbox.setQueueMode(TextToSpeech.QUEUE_ADD)
     }
 
@@ -83,4 +83,7 @@ public class VoiceNavigationController(val activity: Activity) {
         speakerbox.unmute()
     }
 
+    public fun isMuted(): Boolean {
+        return speakerbox.isMuted
+    }
 }

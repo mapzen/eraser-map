@@ -12,6 +12,7 @@ import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.erasermap.presenter.ViewStateManager;
 import com.mapzen.pelias.Pelias;
+import com.mapzen.speakerbox.Speakerbox;
 
 import com.squareup.otto.Bus;
 
@@ -74,5 +75,9 @@ public class TestAndroidModule {
 
     @Provides @Singleton Pelias providePelias() {
         return Mockito.mock(Pelias.class);
+    }
+
+    @Provides @Singleton Speakerbox provideSpeakerbox() {
+        return Mockito.mock(Speakerbox.class);
     }
 }

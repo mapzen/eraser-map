@@ -104,7 +104,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     var pelias: Pelias? = null
         @Inject set
 
-    var app: EraserMapApplication? = null
+    lateinit var app: EraserMapApplication
     var mapController : MapController? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
     var optionsMenu: Menu? = null
@@ -140,12 +140,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         app = application as EraserMapApplication
-        app?.component()?.inject(this)
+        app.component().inject(this)
         initCrashReportService()
         setContentView(R.layout.activity_main)
         presenter?.mainViewController = this
         initMapController()
         initFindMeButton()
+        initVoiceNavigationController() // must initialize this before calling initMute
         initMute()
         initCompass()
         initReverseButton()
@@ -154,7 +155,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         presenter?.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
         settings?.initTangramDebugFlags()
-        initVoiceNavigationController()
         initNotificationCreator()
     }
 
@@ -285,8 +285,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun updateMute() {
-        val routePresenter = routeModeView.routePresenter
-        muteView.setMuted(routePresenter?.isMuted() != true)
+        muteView.setMuted(voiceNavigationController?.isMuted() != true)
     }
 
     private fun initMute() {
@@ -314,10 +313,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun initVoiceNavigationController() {
         voiceNavigationController = VoiceNavigationController(this)
-        val routePresenter = routeModeView.routePresenter
-        if (routePresenter?.isMuted() == true) {
-            voiceNavigationController?.mute()
-        }
     }
 
     private fun initNotificationCreator() {
@@ -344,18 +339,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun toggleMute() {
-        //Update cached value of routePresenter.isMuted
-        val routePresenter = routeModeView.routePresenter
-        routePresenter?.onMuteClicked()
-
-        val muted = (routePresenter?.isMuted() == true)
-        muteView.setMuted(!muted)
-
-        //Actually mute or unmute the speakerbox based on current value
+        val muted = (voiceNavigationController?.isMuted() == true)
         if (muted) {
-            routeModeView.voiceNavigationController?.mute()
+            muteView.setMuted(true)
+            voiceNavigationController?.unmute()
         } else {
-            routeModeView.voiceNavigationController?.unmute()
+            muteView.setMuted(false)
+            voiceNavigationController?.mute()
         }
     }
 
@@ -1006,8 +996,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun resetMute() {
-        val routePresenter = routeModeView.routePresenter
-        routePresenter?.setMuted(false)
+        voiceNavigationController?.unmute()
+        muteView.setMuted(true)
     }
 
     override fun resumeRoutingMode(feature: Feature) {
@@ -1080,6 +1070,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         }
         poiTapName = null
         poiTapPoint = null
+    }
+
+    override fun stopSpeaker() {
+        voiceNavigationController?.stop()
     }
 
     private fun exitNavigation() {
