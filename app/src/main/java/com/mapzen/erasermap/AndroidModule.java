@@ -14,6 +14,7 @@ import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.erasermap.presenter.ViewStateManager;
 import com.mapzen.pelias.Pelias;
+import com.mapzen.speakerbox.Speakerbox;
 
 import com.squareup.otto.Bus;
 
@@ -80,5 +81,9 @@ public class AndroidModule {
         final RestAdapter.LogLevel logLevel = BuildConfig.DEBUG ?
                 RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE;
         return Pelias.getPelias(logLevel);
+    }
+
+    @Provides @Singleton Speakerbox provideSpeakerbox() {
+        return new Speakerbox(application);
     }
 }

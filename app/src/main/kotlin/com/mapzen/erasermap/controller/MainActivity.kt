@@ -286,7 +286,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun updateMute() {
         val routePresenter = routeModeView.routePresenter
-        muteView.setMuted(!(routePresenter?.isMuted() == true))
+        muteView.setMuted(routePresenter?.isMuted() != true)
     }
 
     private fun initMute() {
