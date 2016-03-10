@@ -85,24 +85,16 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     public val requestCodeSearchResults: Int = 0x01
 
-    var savedSearch: SavedSearch? = null
-        @Inject set
-    var presenter: MainPresenter? = null
-        @Inject set
-    var crashReportService: CrashReportService? = null
-        @Inject set
-    var routeManager: RouteManager? = null
-        @Inject set
-    var settings: AppSettings? = null
-        @Inject set
-    var tileHttpHandler: TileHttpHandler? = null
-        @Inject set
-    var mapzenLocation: MapzenLocation? = null
-        @Inject set
-    var keys: ApiKeys? = null
-        @Inject set
-    var pelias: Pelias? = null
-        @Inject set
+
+    @Inject lateinit var savedSearch: SavedSearch
+    @Inject lateinit var presenter: MainPresenter
+    @Inject lateinit var crashReportService: CrashReportService
+    @Inject lateinit var routeManager: RouteManager
+    @Inject lateinit var settings: AppSettings
+    @Inject lateinit var tileHttpHandler: TileHttpHandler
+    @Inject lateinit var mapzenLocation: MapzenLocation
+    @Inject lateinit var keys: ApiKeys
+    @Inject lateinit var pelias: Pelias
 
     lateinit var app: EraserMapApplication
     var mapController : MapController? = null
@@ -143,7 +135,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         app.component().inject(this)
         initCrashReportService()
         setContentView(R.layout.activity_main)
-        presenter?.mainViewController = this
+        presenter.mainViewController = this
         initMapController()
         initFindMeButton()
         initVoiceNavigationController() // must initialize this before calling initMute
@@ -151,10 +143,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         initCompass()
         initReverseButton()
         initMapRotateListener()
-        presenter?.onCreate()
-        presenter?.onRestoreViewState()
+        presenter.onCreate()
+        presenter.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        settings?.initTangramDebugFlags()
+        settings.initTangramDebugFlags()
+        initVoiceNavigationController()
         initNotificationCreator()
     }
 
@@ -170,7 +163,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun initMapRotateListener() {
         mapController?.setRotateResponder(TouchInput.RotateResponder {
-            x, y, rotation -> presenter?.onMapMotionEvent() ?: false
+            x, y, rotation -> presenter.onMapMotionEvent() ?: false
         })
     }
 
@@ -190,7 +183,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override public fun onResume() {
         super.onResume()
-        presenter?.onResume()
+        presenter.onResume()
         app?.onActivityResume()
         autoCompleteAdapter?.clear()
         autoCompleteAdapter?.notifyDataSetChanged()
@@ -199,7 +192,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override public fun onPause() {
         super.onPause()
-        presenter?.onPause()
+        presenter.onPause()
         app?.onActivityPause()
     }
 
@@ -225,7 +218,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val mapView = findViewById(R.id.map) as MapView
         mapController = MapController(this, mapView, "style/eraser-map.yaml")
         mapController?.setLongPressResponder({
-            x, y -> presenter?.onReverseGeoRequested(x, y)
+            x, y -> presenter.onReverseGeoRequested(x, y)
         })
         mapController?.setTapResponder(object: TouchInput.TapResponder {
             override fun onSingleTapUp(x: Float, y: Float): Boolean = false
@@ -257,33 +250,33 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
                 }
                 if (properties.contains(MAP_DATA_PROP_SEARCHINDEX)) {
                     val searchIndex = properties.getNumber(MAP_DATA_PROP_SEARCHINDEX).toInt()
-                    presenter?.onSearchResultTapped(searchIndex)
+                    presenter.onSearchResultTapped(searchIndex)
                 } else {
                     if (properties.contains(MAP_DATA_PROP_ID)) {
                         val featureID = properties.getNumber(MAP_DATA_PROP_ID).toLong()
-                        presenter?.onPlaceSearchRequested("osm:venue:$featureID")
+                        presenter.onPlaceSearchRequested("osm:venue:$featureID")
                     } else {
                         if (poiTapPoint != null) {
-                            presenter?.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(),
+                            presenter.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(),
                                     poiTapPoint?.get(0)?.toFloat())
                         }
                     }
                 }
         })
         mapController?.setHttpHandler(tileHttpHandler)
-        mapzenLocation?.mapController = mapController
+        mapzenLocation.mapController = mapController
     }
 
     private fun initAutoCompleteAdapter() {
         autoCompleteAdapter = SearchListViewAdapter(this, R.layout.list_item_auto_complete,
-                searchView as PeliasSearchView, savedSearch as SavedSearch)
+                searchView as PeliasSearchView, savedSearch)
     }
 
     private fun initFindMeButton() {
         findMe = MapData("find_me")
         Tangram.addDataSource(findMe)
         findMeButton.visibility = View.VISIBLE
-        findMeButton.setOnClickListener({ presenter?.onFindMeButtonClick() })
+        findMeButton.setOnClickListener({ presenter.onFindMeButtonClick() })
     }
 
     private fun updateMute() {
@@ -293,24 +286,24 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun initMute() {
         updateMute()
         muteView.setOnClickListener({
-            presenter?.onMuteClick()
+            presenter.onMuteClick()
         })
     }
 
     private fun initCompass() {
         compass.setOnClickListener({
-            presenter?.onCompassClick()
+            presenter.onCompassClick()
         })
         routePreviewCompass.setOnClickListener({
-            presenter?.onCompassClick()
+            presenter.onCompassClick()
         })
         routeModeCompass.setOnClickListener({
-            presenter?.onCompassClick()
+            presenter.onCompassClick()
         })
     }
 
     private fun initCrashReportService() {
-        crashReportService?.initAndStartSession(this)
+        crashReportService.initAndStartSession(this)
     }
 
     private fun initVoiceNavigationController() {
@@ -373,15 +366,15 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         searchView?.setAutoCompleteIconResourceId(R.drawable.ic_pin_c)
         initAutoCompleteAdapter()
         autocompleteListView.adapter = autoCompleteAdapter
-        pelias?.setLocationProvider(presenter?.getPeliasLocationProvider())
-        pelias?.setApiKey(keys?.searchKey)
+        pelias.setLocationProvider(presenter.getPeliasLocationProvider())
+        pelias.setApiKey(keys.searchKey)
         searchView?.setAutoCompleteListView(autocompleteListView)
         searchView?.setSavedSearch(savedSearch)
         searchView?.setPelias(pelias)
         searchView?.setCallback(PeliasCallback())
         searchView?.setOnSubmitListener({
             saveCurrentSearchTerm()
-            presenter?.onQuerySubmit()
+            presenter.onQuerySubmit()
         })
         searchView?.setIconifiedByDefault(false)
         searchView!!.imeOptions += EditorInfo.IME_FLAG_NO_EXTRACT_UI
@@ -391,10 +384,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         searchView?.setOnPeliasFocusChangeListener { view, b ->
             if (b) {
                 expandSearchView()
-            } else if( presenter?.resultListVisible as Boolean) {
+            } else if(presenter.resultListVisible) {
                     onCloseAllSearchResults()
                 } else {
-                searchView?.setQuery(presenter?.currentSearchTerm, false)
+                searchView?.setQuery(presenter.currentSearchTerm, false)
             }
         }
         searchView?.setOnBackPressListener { collapseSearchView() }
@@ -426,15 +419,15 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun onActionViewAll() {
-        presenter?.onViewAllSearchResults()
+        presenter.onViewAllSearchResults()
     }
 
     override fun showAllSearchResults(features: List<Feature>) {
-        if(presenter?.resultListVisible as Boolean) {
+        if(presenter.resultListVisible as Boolean) {
             onCloseAllSearchResults()
         } else {
             saveCurrentSearchTerm()
-            presenter?.resultListVisible = true
+            presenter.resultListVisible = true
             optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_map)
 
             val simpleFeatures: ArrayList<AutoCompleteItem> = ArrayList()
@@ -444,7 +437,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             searchView?.onActionViewCollapsed()
             searchView?.onActionViewExpanded()
             searchView?.disableAutoComplete()
-            searchView?.setQuery(presenter?.currentSearchTerm, false)
+            searchView?.setQuery(presenter.currentSearchTerm, false)
             autoCompleteAdapter?.clear();
             autoCompleteAdapter?.addAll(simpleFeatures);
             autoCompleteAdapter?.notifyDataSetChanged();
@@ -458,13 +451,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun onCloseAllSearchResults() {
         autocompleteListView.onItemClickListener = searchView?.OnItemClickHandler()?.invoke()
-        presenter?.resultListVisible = false
+        presenter.resultListVisible = false
         optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
         searchView?.onActionViewCollapsed()
         searchView?.setIconified(false)
         searchView?.clearFocus()
         searchView?.disableAutoComplete()
-        searchView?.setQuery(presenter?.currentSearchTerm, false)
+        searchView?.setQuery(presenter.currentSearchTerm, false)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -474,11 +467,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun saveCurrentSearchTerm() {
-        presenter?.currentSearchTerm = searchView?.query.toString()
+        presenter.currentSearchTerm = searchView?.query.toString()
     }
 
     private fun restoreCurrentSearchTerm(searchView: PeliasSearchView) {
-        val term = presenter?.currentSearchTerm
+        val term = presenter.currentSearchTerm
         if (term != null) {
             searchView.setQuery(term, false)
             if (searchResultsView.visibility == View.VISIBLE && presenter?.reverseGeo == false) {
@@ -487,7 +480,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             } else {
                 hideActionViewAll()
             }
-            presenter?.currentSearchTerm = null
+            presenter.currentSearchTerm = null
         }
     }
 
@@ -495,7 +488,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         private val TAG: String = "PeliasCallback"
 
         override fun success(result: Result?, response: Response?) {
-            presenter?.onSearchResultsAvailable(result)
+            presenter.onSearchResultsAvailable(result)
             optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
         }
 
@@ -511,7 +504,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         private val TAG: String = "ReversePeliasCallback"
 
         override fun success(result: Result?, response: Response?) {
-            presenter?.onReverseGeocodeResultsAvailable(result)
+            presenter.onReverseGeocodeResultsAvailable(result)
         }
 
         override fun failure(error: RetrofitError?) {
@@ -524,7 +517,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         private val TAG: String = "PlaceCallback"
 
         override fun success(result: Result?, response: Response?) {
-            presenter?.onPlaceSearchResultsAvailable(result)
+            presenter.onPlaceSearchResultsAvailable(result)
         }
 
         override fun failure(error: RetrofitError?) {
@@ -678,22 +671,22 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun placeSearch(gid: String) {
-        pelias?.setLocationProvider(presenter?.getPeliasLocationProvider())
-        pelias?.place(gid, (PlaceCallback()))
+        pelias.setLocationProvider(presenter.getPeliasLocationProvider())
+        pelias.place(gid, (PlaceCallback()))
     }
 
     override fun emptyPlaceSearch() {
         if (poiTapPoint != null) {
-            presenter?.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(), poiTapPoint?.get(1)?.toFloat())
+            presenter.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(), poiTapPoint?.get(1)?.toFloat())
         }
     }
 
     override fun reverseGeolocate(screenX: Float, screenY: Float) {
-        pelias?.setLocationProvider(presenter?.getPeliasLocationProvider())
+        pelias.setLocationProvider(presenter.getPeliasLocationProvider())
         var coords = mapController?.coordinatesAtScreenPosition(screenX.toDouble(), screenY.toDouble())
-        presenter?.currentFeature = getGenericLocationFeature(coords?.latitude as Double,
+        presenter.currentFeature = getGenericLocationFeature(coords?.latitude as Double,
                 coords?.longitude as Double)
-        pelias?.reverse(coords?.latitude as Double, coords?.longitude as Double,
+        pelias.reverse(coords?.latitude as Double, coords?.longitude as Double,
                 ReversePeliasCallback())
     }
 
@@ -727,7 +720,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun onSearchResultSelected(position: Int) {
-        presenter?.onSearchResultSelected(position)
+        presenter.onSearchResultSelected(position)
     }
 
     override fun showActionViewAll() {
@@ -739,11 +732,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun collapseSearchView() {
-        presenter?.onCollapseSearchView()
+        presenter.onCollapseSearchView()
     }
 
     override fun expandSearchView() {
-        presenter?.onExpandSearchView()
+        presenter.onExpandSearchView()
     }
 
     override fun clearQuery() {
@@ -759,13 +752,13 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showRoutePreview(location: Location, feature: Feature) {
-        routeManager?.origin = location
-        routeManager?.destination = feature
+        routeManager.origin = location
+        routeManager.destination = feature
 
         if (location.hasBearing()) {
-            routeManager?.bearing = location.bearing
+            routeManager.bearing = location.bearing
         } else {
-            routeManager?.bearing = null
+            routeManager.bearing = null
         }
 
         routePreviewView.destination = SimpleFeature.fromFeature(feature)
@@ -781,7 +774,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun success(route: Route) {
-        routeManager?.route = route
+        routeManager.route = route
         routePreviewView.route = route
         runOnUiThread ({
             if (routeModeView.visibility != View.VISIBLE) {
@@ -868,8 +861,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         hideRoutePins()
         routeModeView.hideRouteLine()
 
-        val origin = routeManager?.origin
-        val destination = routeManager?.destination
+        val origin = routeManager.origin
+        val destination = routeManager.destination
         if (origin is Location && destination is Feature) {
             val destinationFeature = SimpleFeature.fromFeature(destination)
             val start = LngLat(origin.longitude, origin.latitude)
@@ -902,7 +895,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun hideRoutePreview() {
         if((findViewById(R.id.route_mode) as RouteModeView).visibility != View.VISIBLE) {
             supportActionBar?.show()
-            routeManager?.reverse = false
+            routeManager.reverse = false
             findViewById(R.id.route_preview).visibility = View.GONE
             hideRoutePins()
         }
@@ -910,42 +903,42 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     private fun route() {
         showProgress()
-        routeManager?.fetchRoute(this)
+        routeManager.fetchRoute(this)
     }
 
     private fun updateRoutePreview() {
         byCar.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                routeManager?.type = Router.Type.DRIVING
+                routeManager.type = Router.Type.DRIVING
                 route()
             }
         }
 
         byBike.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                routeManager?.type = Router.Type.BIKING
+                routeManager.type = Router.Type.BIKING
                 route()
             }
         }
 
         byFoot.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                routeManager?.type = Router.Type.WALKING
+                routeManager.type = Router.Type.WALKING
                 route()
             }
         }
     }
 
     private fun reverse() {
-        routeManager?.toggleReverse()
-        routePreviewView.reverse = routeManager?.reverse ?: false
+        routeManager.toggleReverse()
+        routePreviewView.reverse = routeManager.reverse ?: false
         route()
     }
 
     private fun initReverseButton() {
         reverseButton.setOnClickListener({ reverse() })
-        viewListButton.setOnClickListener({ presenter?.onClickViewList() })
-        startNavigationButton.setOnClickListener({ presenter?.onClickStartNavigation() })
+        viewListButton.setOnClickListener({ presenter.onClickViewList() })
+        startNavigationButton.setOnClickListener({ presenter.onClickStartNavigation() })
     }
 
     private fun killNotifications() {
@@ -956,7 +949,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         if(findViewById(R.id.route_mode).visibility == View.VISIBLE) {
             killNotifications()
         }
-        presenter?.onBackPressed()
+        presenter.onBackPressed()
     }
 
     override fun shutDown() {
@@ -967,7 +960,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val instructionStrings = ArrayList<String>()
         val instructionType = ArrayList<Int>()
         val instructionDistance = ArrayList<Int>()
-        val instructions = routeManager?.route?.getRouteInstructions()
+        val instructions = routeManager.route?.getRouteInstructions()
         if (instructions != null) {
             for(instruction in instructions) {
                 val humanInstruction = instruction.getHumanTurnInstruction()
@@ -979,19 +972,19 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             }
         }
 
-        val simpleFeature = SimpleFeature.fromFeature(routeManager?.destination)
+        val simpleFeature = SimpleFeature.fromFeature(routeManager.destination)
         val intent = Intent(this, InstructionListActivity::class.java)
         intent.putExtra(InstructionListActivity.EXTRA_STRINGS, instructionStrings)
         intent.putExtra(InstructionListActivity.EXTRA_TYPES, instructionType)
         intent.putExtra(InstructionListActivity.EXTRA_DISTANCES, instructionDistance)
         intent.putExtra(InstructionListActivity.EXTRA_DESTINATION, simpleFeature.name())
-        intent.putExtra(InstructionListActivity.EXTRA_REVERSE, routeManager?.reverse)
+        intent.putExtra(InstructionListActivity.EXTRA_REVERSE, routeManager.reverse)
         startActivityForResult(intent, requestCodeSearchResults)
     }
 
     override fun startRoutingMode(feature: Feature) {
         showRoutingMode(feature)
-        routeModeView.startRoute(feature, routeManager?.route)
+        routeModeView.startRoute(feature, routeManager.route)
         setRoutingCamera()
         hideRoutePins()
     }
@@ -1003,11 +996,11 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun resumeRoutingMode(feature: Feature) {
         showRoutingMode(feature)
-        val route = routeManager?.route
+        val route = routeManager.route
         if (route is Route) {
             drawRoute(route)
         }
-        routeModeView.resumeRoute(feature, routeManager?.route)
+        routeModeView.resumeRoute(feature, routeManager.route)
     }
 
     private fun setRoutingCamera() {
@@ -1022,12 +1015,12 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         hideFindMe()
         supportActionBar?.hide()
         updateMute()
-        routeManager?.destination = feature
-        routeManager?.reverse = false
+        routeManager.destination = feature
+        routeManager.reverse = false
         routePreviewView.visibility = View.GONE
         routeModeView.mainPresenter = presenter
         routeModeView.mapController = mapController
-        presenter?.routeViewController = routeModeView
+        presenter.routeViewController = routeModeView
         routeModeView.voiceNavigationController = voiceNavigationController
         routeModeView.notificationCreator = notificationCreator
     }
@@ -1035,10 +1028,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     override fun hideRoutingMode() {
         setDefaultCamera()
         initFindMeButton()
-        presenter?.routingEnabled = false
+        presenter.routingEnabled = false
         routeModeView.visibility = View.GONE
-        val location = routeManager?.origin
-        val feature = routeManager?.destination
+        val location = routeManager.origin
+        val feature = routeManager.destination
         if (location is Location && feature is Feature) {
             showRoutePreview(location, feature)
         }
@@ -1080,14 +1073,14 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun exitNavigation() {
         initFindMeButton()
         routeModeView.voiceNavigationController?.stop()
-        presenter?.routingEnabled = false
+        presenter.routingEnabled = false
         routeModeView.clearRoute()
         routeModeView.route = null
         routeModeView.hideRouteIcon()
         routeModeView.visibility = View.GONE
         supportActionBar?.show()
         findViewById(R.id.route_preview).visibility = View.GONE
-        presenter?.onExitNavigation()
+        presenter.onExitNavigation()
         mapController?.setPanResponder(null)
     }
 

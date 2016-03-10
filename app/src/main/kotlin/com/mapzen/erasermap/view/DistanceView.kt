@@ -9,6 +9,9 @@ import com.mapzen.helpers.DistanceFormatter
 import javax.inject.Inject
 
 public class DistanceView(context: Context, attrs: AttributeSet) : TextView(context, attrs) {
+
+    @Inject lateinit var settings: AppSettings
+
     init {
         (context.applicationContext as EraserMapApplication).component().inject(this)
     }
@@ -16,9 +19,6 @@ public class DistanceView(context: Context, attrs: AttributeSet) : TextView(cont
     public var distanceInMeters: Int = 0
         set (value) {
             field = value
-            text = DistanceFormatter.format(value, true, settings?.distanceUnits)
+            text = DistanceFormatter.format(value, true, settings.distanceUnits)
         }
-
-    public var settings: AppSettings? = null
-        @Inject set
 }

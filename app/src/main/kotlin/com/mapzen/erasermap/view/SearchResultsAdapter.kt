@@ -17,8 +17,7 @@ import javax.inject.Inject
 public class SearchResultsAdapter(val context: Context, val features: List<Feature>)
         : PagerAdapter() {
 
-    var bus: Bus? = null
-        @Inject set
+    @Inject lateinit var bus: Bus
 
     init {
         (context.applicationContext as EraserMapApplication).component()
@@ -33,7 +32,7 @@ public class SearchResultsAdapter(val context: Context, val features: List<Featu
         val start = view.findViewById(R.id.preview) as ImageButton
         title.text = simpleFeature.name()
         address.text = simpleFeature.address()
-        start.setOnClickListener { bus?.post(RoutePreviewEvent(features.get(position))) }
+        start.setOnClickListener { bus.post(RoutePreviewEvent(features.get(position))) }
         container?.addView(view)
         return view
     }
