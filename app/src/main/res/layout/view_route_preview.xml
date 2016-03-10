@@ -30,6 +30,7 @@
         android:layout_marginBottom="@dimen/padding_vertical_big"
         android:layout_marginRight="@dimen/padding_horizontal_default"
         android:text="@string/osm_attribution"
+        android:textColor="@color/dark_gray"
         android:textSize="@dimen/font_tiny" />
 
     <LinearLayout
@@ -61,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/dark_gray"
-                android:textSize="@dimen/font_small"
+                android:textSize="@dimen/font_tiny"
                 android:text="@string/diamond_separator" />
 
             <com.mapzen.erasermap.view.TimeView
@@ -124,7 +125,7 @@
                 android:text="@string/view_list"
                 android:layout_marginRight="4dp"
                 android:background="@drawable/bg_black_gray_border"
-                android:textColor="@color/color_primary"
+                android:textColor="@color/color_accent"
                 style="?android:attr/buttonBarButtonStyle" />
 
             <Button
