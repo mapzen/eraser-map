@@ -40,8 +40,12 @@ public class VoiceNavigationController(val activity: Activity) {
                 play(activity.getString(R.string.milestone_two_mile))
             RouteEngine.Milestone.ONE_MILE ->
                 play(activity.getString(R.string.milestone_one_mile))
-            RouteEngine.Milestone.QUARTER_MILE ->
-                play(activity.getString(R.string.milestone_quarter_mile))
+            RouteEngine.Milestone.QUARTER_MILE -> {
+                if (instruction.getIntegerInstruction() != instruction.MERGE) {
+                    play(activity.getString(R.string.milestone_quarter_mile))
+                }
+            }
+
         }
 
         play(instruction.getVerbalTransitionAlertInstruction())
@@ -54,8 +58,11 @@ public class VoiceNavigationController(val activity: Activity) {
                 play(activity.getString(R.string.milestone_three_km))
             RouteEngine.Milestone.ONE_MILE ->
                 play(activity.getString(R.string.milestone_one_and_a_half_km))
-            RouteEngine.Milestone.QUARTER_MILE ->
-                play(activity.getString(R.string.milestone_half_km))
+            RouteEngine.Milestone.QUARTER_MILE -> {
+                if (instruction.getIntegerInstruction() != instruction.MERGE) {
+                    play(activity.getString(R.string.milestone_half_km))
+                }
+            }
         }
 
         play(instruction.getVerbalTransitionAlertInstruction())

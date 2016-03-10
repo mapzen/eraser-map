@@ -37,6 +37,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver android:name=".receiver.MockLocationReceiver">
+            <intent-filter>
+                <action android:name="com.mapzen.erasermap.SET_MOCK_LOCATION" />
+            </intent-filter>
+        </receiver>
         <receiver android:name=".util.NotificationBroadcastReceiver"/>
         <service android:name=".service.NotificationService"/>
     </application>
