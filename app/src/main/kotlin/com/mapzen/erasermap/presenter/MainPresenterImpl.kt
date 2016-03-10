@@ -123,6 +123,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
                 mainViewController?.showSearchResults(searchResults?.features)
             } else {
                 mainViewController?.showReverseGeocodeFeature(searchResults?.features)
+                mainViewController?.centerOnCurrentFeature(searchResults?.features)
             }
         }
     }

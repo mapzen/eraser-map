@@ -586,7 +586,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun showReverseGeocodeFeature(features: List<Feature>) {
         hideSearchResults()
-        centerOnCurrentFeature(features)
         layoutAttributionAboveSearchResults(features)
 
         var poiTapFallback = false
