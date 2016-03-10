@@ -21,6 +21,8 @@ public interface MainPresenter {
     public var currentFeature: Feature?
     public var routingEnabled: Boolean
     public var resultListVisible: Boolean
+    public var reverseGeo: Boolean
+
 
     public fun onSearchResultsAvailable(result: Result?)
     public fun onReverseGeocodeResultsAvailable(searchResults: Result?)
