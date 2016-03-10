@@ -30,6 +30,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         val routeManager: RouteManager, val settings: AppSettings, val vsm: ViewStateManager)
         : MainPresenter, RouteCallback {
 
+    companion object {
+        private val TAG = MainPresenterImpl::class.java.simpleName
+    }
+
     override var currentFeature: Feature? = null
     override var routingEnabled : Boolean = false
     override var mainViewController: MainViewController? = null
@@ -41,6 +45,14 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     private var destination: Feature? = null
     private var initialized = false
     private var reverseGeo = false
+
+    /**
+     * We will migrate to Retrofit2 where we will have ability to cancel requests. Before then,
+     * we want to ignore all {@link RouteManager#fetchRoute} requests until we receive a
+     * result for existing request. Flag indicates we have already issued request for new route and
+     * are awaiting response
+     */
+    private var waitingForRoute = false
 
     init {
         bus.register(this)
@@ -344,12 +356,16 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         } else {
             routeManager.bearing = null
         }
-        routeManager.fetchRoute(this)
+        if (!waitingForRoute) {
+            waitingForRoute = true
+            routeManager.fetchRoute(this)
+        }
     }
 
     override fun failure(statusCode: Int) {
         mainViewController?.hideProgress()
-        Log.e("MainPresenterImpl", "Error fetching new route: " + statusCode)
+        Log.e(TAG, "Error fetching new route: " + statusCode)
+        waitingForRoute = false
     }
 
     override fun success(route: Route) {
@@ -357,6 +373,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         routeManager.route = route
         generateRoutingMode()
         mainViewController?.drawRoute(route)
+        waitingForRoute = false
     }
 
     private fun generateRoutePreview() {
