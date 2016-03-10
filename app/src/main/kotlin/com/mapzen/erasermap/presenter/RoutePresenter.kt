@@ -26,4 +26,5 @@ public interface RoutePresenter {
     public fun onMapListToggleClick(state: MapListToggleButton.MapListState)
     public fun onRouteCancelButtonClick()
     public fun mapZoomLevelForCenterMapOnLocation(location: Location): Float
+    public fun isTrackingCurrentLocation(): Boolean
 }
