@@ -2,16 +2,22 @@ package com.mapzen.erasermap.view
 
 import android.app.Activity
 import android.speech.tts.TextToSpeech
+import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.speakerbox.Speakerbox
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Router
+import javax.inject.Inject
 
 public class VoiceNavigationController(val activity: Activity) {
-    private val speakerbox = Speakerbox(activity)
+
+    @Inject
+    lateinit var speakerbox: Speakerbox
 
     init {
+        val app = activity.application as EraserMapApplication
+        app.component().inject(this)
         speakerbox.setQueueMode(TextToSpeech.QUEUE_ADD)
     }
 
@@ -65,7 +71,9 @@ public class VoiceNavigationController(val activity: Activity) {
     public fun playPost(instruction: Instruction): Unit =
             play(instruction.getVerbalPostTransitionInstruction())
 
-    private fun play(text: String): Unit = speakerbox.play(text)
+    private fun play(text: String) {
+        speakerbox.play(text)
+    }
 
     public fun mute() {
         speakerbox.mute()
@@ -75,4 +83,7 @@ public class VoiceNavigationController(val activity: Activity) {
         speakerbox.unmute()
     }
 
+    public fun isMuted(): Boolean {
+        return speakerbox.isMuted
+    }
 }

@@ -45,4 +45,5 @@ public interface MainViewController {
     public fun hideSettingsBtn()
     public fun showSettingsBtn()
     public fun onBackPressed()
+    public fun stopSpeaker()
 }

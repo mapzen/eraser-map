@@ -189,4 +189,8 @@ public class TestMainController : MainViewController {
     override fun onBackPressed() {
         popBackStack = true
     }
+
+    override fun stopSpeaker() {
+
+    }
 }

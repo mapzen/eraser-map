@@ -255,6 +255,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     private fun onBackPressedStateRouting() {
         vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
         mainViewController?.hideRoutingMode()
+        mainViewController?.stopSpeaker()
     }
 
     private fun onBackPressedStateRouteDirectionList() {
@@ -268,10 +269,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     override fun onClickStartNavigation() {
         bus.post(RouteEvent())
+        mainViewController?.resetMute() //must call before generateRoutingMode()
         generateRoutingMode()
         vsm.viewState = ViewStateManager.ViewState.ROUTING
         routeViewController?.hideResumeButton()
-        mainViewController?.resetMute()
     }
 
     @Subscribe public fun onLocationChangeEvent(event: LocationChangeEvent) {
