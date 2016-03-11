@@ -16,6 +16,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.lang.Boolean
 
 @RunWith(RobolectricTestRunner::class)
 public class RoutePresenterTest {
@@ -41,6 +42,15 @@ public class RoutePresenterTest {
         routeEngine.route = route1
         routePresenter.onRouteStart(route2)
         assertThat(routeEngine.route).isEqualTo(route2)
+    }
+
+    @Test fun onRouteStart_shouldResetTrackingLocation() {
+        routePresenter.onRouteStart(Route(getFixture("valhalla_route")))
+        assertThat(routePresenter.isTrackingCurrentLocation()).isTrue()
+        routePresenter.onInstructionPagerTouch()
+        assertThat(routePresenter.isTrackingCurrentLocation()).isFalse()
+        routePresenter.onRouteStart(Route(getFixture("valhalla_route")))
+        assertThat(routePresenter.isTrackingCurrentLocation()).isTrue()
     }
 
     @Test fun onRouteResume_shouldNotResetRouteEngine() {

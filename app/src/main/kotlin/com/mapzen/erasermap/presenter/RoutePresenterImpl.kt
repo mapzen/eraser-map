@@ -36,6 +36,7 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
         currentInstructionIndex = 0
         routeController?.setCurrentInstruction(0)
         routeEngine.route = route
+        isTrackingCurrentLocation = true
     }
 
     override fun onRouteResume(route: Route?) {
@@ -99,6 +100,10 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
         bus.post(RouteCancelEvent())
     }
 
+    override fun isTrackingCurrentLocation(): Boolean {
+        return isTrackingCurrentLocation
+    }
+    
     /**
      * When we center the map on a location we want to dynamically change the map's zoom level.
      * We will zoom the map out if the current maneuver is long and we are still far away from
