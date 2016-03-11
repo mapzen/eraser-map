@@ -9,6 +9,8 @@ import android.location.Location
 import android.util.Log
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.model.AppSettings
+import com.mapzen.erasermap.model.event.LocationChangeEvent
+import com.squareup.otto.Bus
 import javax.inject.Inject
 
 /**
@@ -21,6 +23,7 @@ public class MockLocationReceiver : BroadcastReceiver() {
     val TAG = MockLocationReceiver::class.java.simpleName
 
     @Inject lateinit var settings: AppSettings
+    @Inject lateinit var bus: Bus
 
     companion object {
         const val LAT = "lat"
@@ -31,6 +34,11 @@ public class MockLocationReceiver : BroadcastReceiver() {
         val app = context?.applicationContext as EraserMapApplication
         app.component().inject(this)
 
+        if (!settings.isMockLocationEnabled) {
+            Log.d(TAG, "[ignoring broadcast, mock location is not enabled...]")
+            return
+        }
+
         val lat = intent?.getStringExtra(LAT)
         val lng = intent?.getStringExtra(LNG)
         if (lat != null && lng != null) {
@@ -38,6 +46,7 @@ public class MockLocationReceiver : BroadcastReceiver() {
             location.latitude = lat.toDouble()
             location.longitude = lng.toDouble()
             settings.mockLocation = location
+            bus.post(LocationChangeEvent(location))
             Log.d(TAG, "[mock location set] ($lat, $lng)")
         }
     }
