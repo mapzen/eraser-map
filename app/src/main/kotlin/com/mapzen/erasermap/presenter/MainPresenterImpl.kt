@@ -290,6 +290,8 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     @Subscribe public fun onLocationChangeEvent(event: LocationChangeEvent) {
         if (routingEnabled) {
             routeViewController?.onLocationChanged(event.location)
+        } else {
+            mainViewController?.showCurrentLocation(event.location)
         }
     }
 

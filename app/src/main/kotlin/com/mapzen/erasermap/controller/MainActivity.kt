@@ -752,6 +752,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     override fun showRoutePreview(location: Location, feature: Feature) {
+        showCurrentLocation(location)
+
         routeManager.origin = location
         routeManager.destination = feature
 
