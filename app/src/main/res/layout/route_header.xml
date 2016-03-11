@@ -75,6 +75,7 @@
         android:paddingRight="0dp"
         android:src="@drawable/ic_switch"
         android:contentDescription="Reverse"
+        android:background="?attr/selectableItemBackgroundBorderless"
         style="?android:attr/buttonBarButtonStyle"/>
 
 </LinearLayout>

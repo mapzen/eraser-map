@@ -13,9 +13,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:background="@android:color/transparent"
-        android:paddingBottom="8dp"
-        android:paddingLeft="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="8dp"
         android:src="@drawable/ic_route_start" />
 
     <TextView
