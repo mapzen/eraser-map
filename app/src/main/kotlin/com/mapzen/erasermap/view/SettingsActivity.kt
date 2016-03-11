@@ -9,10 +9,8 @@ import com.mapzen.pelias.SavedSearch
 import javax.inject.Inject
 
 public class SettingsActivity : HomeAsUpActivity() {
-    var savedSearch: SavedSearch? = null
-        @Inject set
-    var settings: AppSettings? = null
-        @Inject set
+    @Inject lateinit var savedSearch: SavedSearch
+    @Inject lateinit var settings: AppSettings
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,10 +22,10 @@ public class SettingsActivity : HomeAsUpActivity() {
     }
 
     public fun clearHistory(title: String) {
-        savedSearch?.clear()
+        savedSearch.clear()
         PreferenceManager.getDefaultSharedPreferences(this)
                 .edit()
-                .putString(SavedSearch.TAG, savedSearch?.serialize())
+                .putString(SavedSearch.TAG, savedSearch.serialize())
                 .commit()
         Toast.makeText(this@SettingsActivity, title, Toast.LENGTH_SHORT).show()
     }

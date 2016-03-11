@@ -20,10 +20,8 @@ public class InitActivity : AppCompatActivity() {
         @JvmStatic public val START_DELAY_IN_MS: Long = 1200
     }
 
-    var crashReportService: CrashReportService? = null
-        @Inject set
-    var keys: ApiKeys? = null
-        @Inject set
+    @Inject lateinit var crashReportService: CrashReportService
+    @Inject lateinit var keys: ApiKeys
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,14 +45,14 @@ public class InitActivity : AppCompatActivity() {
             showApiKeyDialog()
         } else {
             if (BuildConfig.DEBUG) {
-                keys?.tilesKey = BuildConfig.VECTOR_TILE_API_KEY
-                keys?.searchKey = BuildConfig.PELIAS_API_KEY
-                keys?.routingKey = BuildConfig.VALHALLA_API_KEY
+                keys.tilesKey = BuildConfig.VECTOR_TILE_API_KEY
+                keys.searchKey = BuildConfig.PELIAS_API_KEY
+                keys.routingKey = BuildConfig.VALHALLA_API_KEY
             } else {
                 val crypt = SimpleCrypt(application)
-                keys?.tilesKey = crypt.decode(BuildConfig.VECTOR_TILE_API_KEY)
-                keys?.searchKey = crypt.decode(BuildConfig.PELIAS_API_KEY)
-                keys?.routingKey = crypt.decode(BuildConfig.VALHALLA_API_KEY)
+                keys.tilesKey = crypt.decode(BuildConfig.VECTOR_TILE_API_KEY)
+                keys.searchKey = crypt.decode(BuildConfig.PELIAS_API_KEY)
+                keys.routingKey = crypt.decode(BuildConfig.VALHALLA_API_KEY)
             }
 
             startActivity(Intent(applicationContext, MainActivity::class.java))
@@ -63,7 +61,7 @@ public class InitActivity : AppCompatActivity() {
     }
 
     private fun initCrashReportService() {
-        crashReportService?.initAndStartSession(this)
+        crashReportService.initAndStartSession(this)
     }
 
     private fun showApiKeyDialog() {

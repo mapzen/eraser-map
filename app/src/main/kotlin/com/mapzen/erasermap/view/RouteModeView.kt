@@ -71,10 +71,8 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     var mainPresenter: MainPresenter? = null
     var voiceNavigationController: VoiceNavigationController? = null
     var notificationCreator: NotificationCreator? = null
-    var routePresenter: RoutePresenter? = null
-        @Inject set
-    var settings: AppSettings? = null
-        @Inject set
+    @Inject lateinit var routePresenter: RoutePresenter
+    @Inject lateinit var settings: AppSettings
 
     private var currentSnapLocation: Location? = null
     private var routeIcon: MapData? = null
@@ -99,20 +97,20 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         (context.applicationContext as EraserMapApplication).component().inject(this@RouteModeView)
         (getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_mode, this, true)
-        routePresenter?.routeController = this
+        routePresenter.routeController = this
         resumeButton.setOnClickListener {
-            routePresenter?.onResumeButtonClick()
+            routePresenter.onResumeButtonClick()
             mainPresenter?.updateLocation()
-            instructionPager.currentItem = routePresenter?.currentInstructionIndex ?: 0
+            instructionPager.currentItem = routePresenter.currentInstructionIndex ?: 0
         }
 
-        mapListToggle.setOnClickListener { routePresenter?.onMapListToggleClick(mapListToggle.state) }
-        routeCancelButton.setOnClickListener { routePresenter?.onRouteCancelButtonClick() }
+        mapListToggle.setOnClickListener { routePresenter.onMapListToggleClick(mapListToggle.state) }
+        routeCancelButton.setOnClickListener { routePresenter.onRouteCancelButtonClick() }
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-        if (instructionPager.currentItem == routePresenter?.currentInstructionIndex) {
-            setCurrentPagerItemStyling(routePresenter?.currentInstructionIndex ?: 0);
+        if (instructionPager.currentItem == routePresenter.currentInstructionIndex) {
+            setCurrentPagerItemStyling(routePresenter.currentInstructionIndex ?: 0);
             if (!autoPage) {
                 resumeAutoPaging()
             }
@@ -123,11 +121,11 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun onPageSelected(position: Int) {
-        setCurrentPagerItemStyling(routePresenter?.currentInstructionIndex ?: 0);
+        setCurrentPagerItemStyling(routePresenter.currentInstructionIndex ?: 0);
         val instruction = route?.getRouteInstructions()?.get(position)
         if (instruction is Instruction) {
             if (userScrollChange) {
-                routePresenter?.onInstructionSelected(instruction)
+                routePresenter.onInstructionSelected(instruction)
             }
         }
     }
@@ -152,13 +150,13 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     private fun onPagerTouch(): Boolean {
-        routePresenter?.onInstructionPagerTouch()
+        routePresenter.onInstructionPagerTouch()
         return false
     }
 
     private fun resumeAutoPaging() {
-        instructionPager.currentItem = routePresenter?.currentInstructionIndex ?: 0
-        setCurrentPagerItemStyling(routePresenter?.currentInstructionIndex ?:0)
+        instructionPager.currentItem = routePresenter.currentInstructionIndex ?: 0
+        setCurrentPagerItemStyling(routePresenter.currentInstructionIndex ?:0)
         autoPage = true
     }
 
@@ -190,12 +188,12 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun onLocationChanged(location: Location) {
         if (route != null) {
-            routePresenter?.onLocationChanged(location)
+            routePresenter.onLocationChanged(location)
         }
     }
 
     private fun onMapPan(deltaX: Float, deltaY: Float): Boolean {
-        routePresenter?.onMapPan(deltaX, deltaY)
+        routePresenter.onMapPan(deltaX, deltaY)
         mainPresenter?.onMapMotionEvent()
         return false
     }
@@ -241,7 +239,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             mapController?.mapPosition = LngLat(location.longitude, location.latitude)
             mapController?.mapRotation = getBearingInRadians(location)
             mapController?.mapTilt = MainPresenter.ROUTING_TILT
-            mapController?.mapZoom = routePresenter?.mapZoomLevelForCenterMapOnLocation(location)
+            mapController?.mapZoom = routePresenter.mapZoomLevelForCenterMapOnLocation(location)
 
             // Get the width and height of the window
             val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -272,11 +270,11 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun updateSnapLocation(location: Location) {
-        routePresenter?.onUpdateSnapLocation(location)
+        routePresenter.onUpdateSnapLocation(location)
     }
 
     override fun setCurrentInstruction(index: Int) {
-        routePresenter?.currentInstructionIndex = index
+        routePresenter.currentInstructionIndex = index
         instructionPager.currentItem = index
         directionListView.setCurrent(index)
         notificationCreator?.createNewNotification(
@@ -286,7 +284,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun setMilestone(index: Int, milestone: RouteEngine.Milestone) {
         val instruction = route?.getRouteInstructions()?.get(index)
-        val units = settings?.distanceUnits
+        val units = settings.distanceUnits
         if (instruction is Instruction && units is Router.DistanceUnits) {
             voiceNavigationController?.playMilestone(instruction, milestone, units)
         }
@@ -315,7 +313,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun updateDistanceToNextInstruction(meters: Int) {
-        val currentInstructionView = findViewByIndex(routePresenter?.currentInstructionIndex ?: 0)
+        val currentInstructionView = findViewByIndex(routePresenter.currentInstructionIndex ?: 0)
         val distanceToNextView = currentInstructionView?.findViewById(R.id.distance)
         if (distanceToNextView is DistanceView) {
             distanceToNextView.distanceInMeters = meters
@@ -358,7 +356,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         initDestination(destination)
         initInstructionAdapter()
         this.visibility = View.VISIBLE
-        routePresenter?.onRouteStart(route)
+        routePresenter.onRouteStart(route)
         findViewById(R.id.footer_separator).visibility = View.VISIBLE
     }
 
@@ -367,7 +365,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         initDestination(destination)
         initInstructionAdapter()
         this.visibility = View.VISIBLE
-        routePresenter?.onRouteResume(route)
+        routePresenter.onRouteResume(route)
     }
 
     private fun initStartLocation() {
@@ -417,7 +415,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     public fun clearRoute() {
-        routePresenter?.onRouteClear()
+        routePresenter.onRouteClear()
     }
 
     override fun showRouteDirectionList() {
