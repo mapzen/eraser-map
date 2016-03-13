@@ -274,6 +274,21 @@ public class MainPresenterTest {
         assertThat(routeController.location).isNotNull()
     }
 
+    @Test fun onLocationChanged_shouldUpdateCurrentLocationAlways() {
+        mainController.puckPosition = getTestLocation()
+        presenter.routingEnabled = false
+        val location = TestHelper.getTestLocation(40.0, 80.0)
+        presenter.onLocationChangeEvent(LocationChangeEvent(location))
+        assertThat(mainController.puckPosition?.latitude).isEqualTo(location.latitude)
+        assertThat(mainController.puckPosition?.longitude).isEqualTo(location.longitude)
+
+        mainController.puckPosition = getTestLocation()
+        presenter.routingEnabled = true
+        presenter.onLocationChangeEvent(LocationChangeEvent(location))
+        assertThat(mainController.puckPosition?.latitude).isEqualTo(location.latitude)
+        assertThat(mainController.puckPosition?.longitude).isEqualTo(location.longitude)
+    }
+
     @Test fun onSearchResultSelected_shouldCenterOnCurrentFeature() {
         val result = Result()
         val features = ArrayList<Feature>()
