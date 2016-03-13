@@ -28,6 +28,9 @@ public class VoiceNavigationController(val activity: Activity) {
             milestone: RouteEngine.Milestone,
             units: Router.DistanceUnits) {
 
+        if (instruction.getVerbalTransitionAlertInstruction().length == 0) {
+            return
+        }
         when (units) {
             Router.DistanceUnits.MILES -> playMilestoneMiles(instruction, milestone)
             Router.DistanceUnits.KILOMETERS -> playMilestoneKilometers(instruction, milestone)

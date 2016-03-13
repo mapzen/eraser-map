@@ -1,6 +1,7 @@
 package com.mapzen.erasermap;
 
 import com.mapzen.erasermap.controller.MainActivity;
+import com.mapzen.erasermap.receiver.MockLocationReceiver;
 import com.mapzen.erasermap.view.DistanceView;
 import com.mapzen.erasermap.view.InitActivity;
 import com.mapzen.erasermap.view.RouteModeView;
@@ -25,6 +26,7 @@ public class EraserMapApplication extends Application {
         void inject(SettingsActivity settingsFragment);
         void inject(DistanceView distanceView);
         void inject(VoiceNavigationController controller);
+        void inject(MockLocationReceiver receiver);
     }
 
     private ApplicationComponent component;
