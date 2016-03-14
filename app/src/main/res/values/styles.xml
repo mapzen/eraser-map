@@ -33,7 +33,7 @@
 
     <style name="searchAddr">
         <item name="android:textSize">@dimen/font_small</item>
-        <item name="android:textColor">@color/dark_gray</item>
+        <item name="android:textColor">@color/gray</item>
         <item name="android:paddingBottom">12dp</item>
     </style>
 
