@@ -10,9 +10,9 @@
 #   jruby 1.7.12
 
 wget http://central.maven.org/maven2/org/robolectric/android-all/4.4_r1-robolectric-0/android-all-4.4_r1-robolectric-0.jar
-javac -cp android-all-4.4_r1-robolectric-0.jar app/src/main/java/com/mapzen/erasermap/SimpleCrypt.java
+javac -cp android-all-4.4_r1-robolectric-0.jar app/src/main/java/com/mapzen/erasermap/model/SimpleCrypt.java
 
 jruby scripts/encrypter.rb $1 $2
 
 rm android-all-4.4_r1-robolectric-0.jar
-rm app/src/main/java/com/mapzen/erasermap/SimpleCrypt.class
+rm app/src/main/java/com/mapzen/erasermap/model/SimpleCrypt.class
