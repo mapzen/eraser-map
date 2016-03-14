@@ -330,6 +330,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         notificationCreator?.killNotification()
         distanceToDestination.distanceInMeters = 0
         findViewById(R.id.footer_separator).visibility = View.GONE
+        voiceNavigationController?.speakerbox?.play(context.getText(R.string.you_have_arrived))
 
         val location = route?.getGeometry()?.get(route?.getGeometry()?.size?.minus(1) ?: 0)
         if (location is Location) {
