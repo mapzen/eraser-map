@@ -24,8 +24,8 @@
     </style>
 
     <style name="searchName">
-        <item name="android:paddingTop">12dp</item>
-        <item name="android:textSize">@dimen/font_big</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:textSize">@dimen/font_medium_2</item>
         <item name="android:paddingBottom">8dp</item>
 
     </style>
