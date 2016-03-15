@@ -17,3 +17,5 @@ allprojects {
 }
 
 defaultTasks = ['clean', 'assembleDevDebug', 'testDevDebug']
+
+apply from: 'versioning.gradle'
