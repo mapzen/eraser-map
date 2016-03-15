@@ -35,10 +35,14 @@ public class InitActivity : AppCompatActivity() {
             (findViewById(R.id.build_number) as TextView).text = BuildConfig.BUILD_NUMBER
         }
 
-        Handler().postDelayed({ startMainActivity() }, START_DELAY_IN_MS)
+        if (keys.tilesKey.length > 0) {
+            startMainActivityAndFinish()
+        } else {
+            Handler().postDelayed({ configureKeys() }, START_DELAY_IN_MS)
+        }
     }
 
-    private fun startMainActivity() {
+    private fun configureKeys() {
         if (BuildConfig.VECTOR_TILE_API_KEY == null ||
                 BuildConfig.PELIAS_API_KEY == null ||
                 BuildConfig.VALHALLA_API_KEY == null) {
@@ -54,10 +58,13 @@ public class InitActivity : AppCompatActivity() {
                 keys.searchKey = crypt.decode(BuildConfig.PELIAS_API_KEY)
                 keys.routingKey = crypt.decode(BuildConfig.VALHALLA_API_KEY)
             }
-
-            startActivity(Intent(applicationContext, MainActivity::class.java))
-            finish()
+            startMainActivityAndFinish()
         }
+    }
+
+    private fun startMainActivityAndFinish() {
+        startActivity(Intent(applicationContext, MainActivity::class.java))
+        finish()
     }
 
     private fun initCrashReportService() {

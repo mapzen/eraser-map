@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
+    android:background="@color/color_primary"
     tools:context=".MainActivity">
 
     <com.mapzen.tangram.MapView
