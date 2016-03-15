@@ -4,6 +4,7 @@ import android.location.Location
 import com.mapzen.helpers.RouteEngine
 
 public class TestRouteController : RouteViewController {
+
     public var location: Location? = null
     public var mapLocation: Location? = null
     public var isDirectionListVisible: Boolean = false
@@ -13,7 +14,7 @@ public class TestRouteController : RouteViewController {
     public var alert: Int = -1
     public var pre: Int = -1
     public var post: Int = -1
-    public var mapZoom: Float? = 0f
+    public var mapZoom: Float = 0f
 
     override fun onLocationChanged(location: Location) {
         this.location = location
@@ -25,6 +26,10 @@ public class TestRouteController : RouteViewController {
 
     override fun hideResumeButton() {
         isResumeButtonVisible = false
+    }
+
+    override fun isResumeButtonHidden(): Boolean {
+        return isResumeButtonVisible == false
     }
 
     override fun showRouteIcon(location: Location) {
