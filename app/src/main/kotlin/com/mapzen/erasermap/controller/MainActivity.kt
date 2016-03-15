@@ -1009,7 +1009,9 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     }
 
     private fun setRoutingCamera() {
-        mapController?.setMapCameraType(MapController.CameraType.PERSPECTIVE)
+        if (routeModeView.isResumeButtonHidden()) {
+            mapController?.setMapCameraType(MapController.CameraType.PERSPECTIVE)
+        }
     }
 
     private fun setDefaultCamera() {

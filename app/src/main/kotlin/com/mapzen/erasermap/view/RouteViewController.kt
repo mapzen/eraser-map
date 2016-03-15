@@ -7,6 +7,7 @@ public interface RouteViewController {
     public fun onLocationChanged(location: Location)
     public fun showResumeButton()
     public fun hideResumeButton()
+    public fun isResumeButtonHidden(): Boolean
     public fun showRouteIcon(location: Location)
     public fun centerMapOnCurrentLocation()
     public fun centerMapOnLocation(location: Location)

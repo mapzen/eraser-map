@@ -206,6 +206,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         resumeButton.visibility = View.GONE
     }
 
+    override fun isResumeButtonHidden(): Boolean {
+        return resumeButton.visibility == View.GONE
+    }
+
     override fun showRouteIcon(location: Location) {
         if (routeIcon == null) {
             routeIcon = MapData(MAP_DATA_NAME_ROUTE_ICON)
@@ -229,6 +233,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun centerMapOnLocation(location: Location) {
         currentSnapLocation = location
+        if (!isResumeButtonHidden()) {
+            return
+        }
         mapController?.queueEvent {
 
             // Record the initial view configuration
