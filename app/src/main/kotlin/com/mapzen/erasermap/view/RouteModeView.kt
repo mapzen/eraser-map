@@ -281,11 +281,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun setCurrentInstruction(index: Int) {
-        val finalInstructionIndex = route?.getRouteInstructions()?.size?.minus(1)
-        if (index != finalInstructionIndex) setCurrentInstructionInternal(index)
+        routePresenter.onSetCurrentInstruction(index)
     }
 
-    private fun setCurrentInstructionInternal(index: Int) {
+    override fun displayInstruction(index: Int) {
         routePresenter.currentInstructionIndex = index
         instructionPager.currentItem = index
         directionListView.setCurrent(index)
@@ -339,9 +338,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         distanceToDestination.distanceInMeters = meters
     }
 
-    override fun showRouteComplete() {
+    override fun setRouteComplete() {
         resumeButton.visibility = View.GONE
-        setCurrentInstructionInternal(instructionPager.adapter?.count?.minus(1) ?: 0)
+        displayInstruction(instructionPager.adapter?.count?.minus(1) ?: 0)
         notificationCreator?.killNotification()
         distanceToDestination.distanceInMeters = 0
         findViewById(R.id.footer_separator).visibility = View.GONE

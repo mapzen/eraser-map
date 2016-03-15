@@ -7,7 +7,6 @@ import com.mapzen.erasermap.model.event.RouteCancelEvent
 import com.mapzen.erasermap.view.MapListToggleButton
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.helpers.RouteEngine
-import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
@@ -16,7 +15,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.lang.Boolean
 
 @RunWith(RobolectricTestRunner::class)
 public class RoutePresenterTest {
@@ -178,5 +176,20 @@ public class RoutePresenterTest {
         routingZoom = routePresenter.mapZoomLevelForCenterMapOnLocation(location as Location)
         assertThat(routingZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
     }
-}
 
+    @Test fun onSetCurrentInstruction_shouldDisplayInstruction() {
+        val route = Route(getFixture("valhalla_route"))
+        routePresenter.onRouteStart(route)
+        routePresenter.onSetCurrentInstruction(1)
+        assertThat(routeController.displayIndex).isEqualTo(1)
+    }
+
+    @Test fun onSetCurrentInstruction_shouldNotDisplayFinalInstruction() {
+        val route = Route(getFixture("valhalla_route"))
+        val finalInstructionIndex = route.getRouteInstructions()?.size?.minus(1) as Int
+        routePresenter.onRouteStart(route)
+        routePresenter.onSetCurrentInstruction(1)
+        routePresenter.onSetCurrentInstruction(finalInstructionIndex)
+        assertThat(routeController.displayIndex).isEqualTo(1)
+    }
+}

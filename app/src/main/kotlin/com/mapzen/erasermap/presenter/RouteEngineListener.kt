@@ -52,7 +52,7 @@ class RouteEngineListener : RouteListener {
 
     override fun onRouteComplete() {
         log("[onRouteComplete]")
-        controller?.showRouteComplete()
+        controller?.setRouteComplete()
     }
 
     override fun onRecalculate(location: Location) {

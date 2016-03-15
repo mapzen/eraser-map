@@ -19,11 +19,12 @@ public interface RouteViewController {
     public fun playPostInstructionAlert(index: Int)
     public fun updateDistanceToNextInstruction(meters: Int)
     public fun updateDistanceToDestination(meters: Int)
-    public fun showRouteComplete()
+    public fun setRouteComplete()
     public fun showReroute(location: Location)
     public fun hideRouteIcon()
     public fun hideRouteLine()
     public fun showRouteDirectionList()
     public fun hideRouteDirectionList()
     public fun updateMapZoom(zoom: Float)
+    public fun displayInstruction(index: Int)
 }
