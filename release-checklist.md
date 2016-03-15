@@ -11,9 +11,9 @@ Eraser Map Release Checklist
 
 ## Building a release APK on Circle CI
 
-1. Update version name and increment version code number in `app/build.gradle`.
+1. Remove `-SNAPSHOT` tag from version name in `gradle.properties` and commit changes. Push changes to GitHub (master).
 2. Tag release `eraser-map-x.y.z` and push tag to GitHub.
 3. Add release name and notes to `https://github.com/mapzen/eraser-map/releases`.
-4. Trigger release build on Circle CI using `scripts/perform-release.sh`.
+4. Trigger release build on Circle CI using `scripts/perform-release.sh eraser-map-x.y.z`.
 5. Update listing (what's new, known issues, screenshots, etc.) in Google Play Store and upload APK.
-6. Increment SNAPSHOT version name `eraser-map-x.y.z-SNAPSHOT` for next development cycle.
+6. Update version name and add `-SNAPSHOT` tag for next development cycle. Push changes to GitHub (master).
