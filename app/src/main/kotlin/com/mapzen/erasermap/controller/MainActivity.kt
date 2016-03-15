@@ -211,6 +211,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         findMe?.clear()
         reverseGeocodeData?.clear()
         searchResultsData?.clear()
+        startPin?.clear()
+        endPin?.clear()
         killNotifications()
     }
 
