@@ -13,21 +13,25 @@
 
         <com.mapzen.erasermap.view.MapListToggleButton
             android:id="@+id/map_list_toggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:paddingLeft="16dp"
-            android:src="@drawable/ic_list" />
+            android:layout_marginLeft="8dp"
+            android:scaleType="center"
+            android:src="@drawable/ic_list"
+            android:background="?android:selectableItemBackground"/>
 
         <ImageView
             android:id="@+id/route_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:paddingRight="16dp"
-            android:src="@drawable/ic_cancel" />
+            android:layout_marginRight="8dp"
+            android:scaleType="center"
+            android:src="@drawable/ic_cancel"
+            android:background="?android:selectableItemBackground" />
 
         <LinearLayout
             android:id="@+id/footer"
