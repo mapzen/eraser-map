@@ -281,6 +281,11 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun setCurrentInstruction(index: Int) {
+        val finalInstructionIndex = route?.getRouteInstructions()?.size?.minus(1)
+        if (index != finalInstructionIndex) setCurrentInstructionInternal(index)
+    }
+
+    private fun setCurrentInstructionInternal(index: Int) {
         routePresenter.currentInstructionIndex = index
         instructionPager.currentItem = index
         directionListView.setCurrent(index)
@@ -304,7 +309,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun playPreInstructionAlert(index: Int) {
         val instruction = route?.getRouteInstructions()?.get(index)
-        if (instruction is Instruction) voiceNavigationController?.playPre(instruction)
+        val finalInstructionIndex = route?.getRouteInstructions()?.size?.minus(1)
+        if (instruction is Instruction && index != finalInstructionIndex) {
+            voiceNavigationController?.playPre(instruction)
+        }
     }
 
     override fun playPostInstructionAlert(index: Int) {
@@ -333,17 +341,23 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun showRouteComplete() {
         resumeButton.visibility = View.GONE
-        setCurrentInstruction(instructionPager.adapter?.count?.minus(1) ?: 0)
+        setCurrentInstructionInternal(instructionPager.adapter?.count?.minus(1) ?: 0)
         notificationCreator?.killNotification()
         distanceToDestination.distanceInMeters = 0
         findViewById(R.id.footer_separator).visibility = View.GONE
-        voiceNavigationController?.speakerbox?.play(context.getText(R.string.you_have_arrived))
+        playFinalVerbalInstruction()
 
         val location = route?.getGeometry()?.get(route?.getGeometry()?.size?.minus(1) ?: 0)
         if (location is Location) {
             centerMapOnLocation(location)
             showRouteIcon(location)
         }
+    }
+
+    private fun playFinalVerbalInstruction() {
+        val finalInstructionIndex = route?.getRouteInstructions()?.size?.minus(1) ?: 0
+        val finalInstruction = route?.getRouteInstructions()?.get(finalInstructionIndex)
+        if (finalInstruction is Instruction) voiceNavigationController?.playPre(finalInstruction)
     }
 
     override fun showReroute(location: Location) {
