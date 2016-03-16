@@ -7,6 +7,7 @@ import com.mapzen.erasermap.view.InitActivity;
 import com.mapzen.erasermap.view.RouteModeView;
 import com.mapzen.erasermap.view.SearchResultsAdapter;
 import com.mapzen.erasermap.view.SettingsActivity;
+import com.mapzen.erasermap.view.ViewAboutPreference;
 import com.mapzen.erasermap.view.VoiceNavigationController;
 
 import android.app.Application;
@@ -27,6 +28,7 @@ public class EraserMapApplication extends Application {
         void inject(DistanceView distanceView);
         void inject(VoiceNavigationController controller);
         void inject(MockLocationReceiver receiver);
+        void inject(ViewAboutPreference viewAboutPreference);
     }
 
     private ApplicationComponent component;

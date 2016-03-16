@@ -13,6 +13,7 @@ import com.mapzen.erasermap.model.ValhallaRouterFactory;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.erasermap.presenter.ViewStateManager;
+import com.mapzen.erasermap.util.IntentFactory;
 import com.mapzen.pelias.Pelias;
 import com.mapzen.speakerbox.Speakerbox;
 
@@ -85,5 +86,9 @@ public class AndroidModule {
 
     @Provides @Singleton Speakerbox provideSpeakerbox() {
         return new Speakerbox(application);
+    }
+
+    @Provides @Singleton IntentFactory provideIntentFactory() {
+        return new IntentFactory();
     }
 }
