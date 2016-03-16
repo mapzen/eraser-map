@@ -27,4 +27,5 @@ public interface RoutePresenter {
     public fun onRouteCancelButtonClick()
     public fun mapZoomLevelForCenterMapOnLocation(location: Location): Float
     public fun isTrackingCurrentLocation(): Boolean
+    public fun onSetCurrentInstruction(index: Int)
 }

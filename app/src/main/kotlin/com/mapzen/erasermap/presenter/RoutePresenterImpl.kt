@@ -132,4 +132,9 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
             return MainPresenter.ROUTING_ZOOM
         }
     }
+
+    override fun onSetCurrentInstruction(index: Int) {
+        val finalInstructionIndex = route?.getRouteInstructions()?.size?.minus(1)
+        if (index != finalInstructionIndex) routeController?.displayInstruction(index)
+    }
 }

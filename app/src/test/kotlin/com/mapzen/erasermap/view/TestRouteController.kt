@@ -15,6 +15,7 @@ public class TestRouteController : RouteViewController {
     public var pre: Int = -1
     public var post: Int = -1
     public var mapZoom: Float = 0f
+    public var displayIndex: Int = 0
 
     override fun onLocationChanged(location: Location) {
         this.location = location
@@ -64,7 +65,7 @@ public class TestRouteController : RouteViewController {
     override fun updateDistanceToDestination(meters: Int) {
     }
 
-    override fun showRouteComplete() {
+    override fun setRouteComplete() {
     }
 
     override fun showReroute(location: Location) {
@@ -94,5 +95,9 @@ public class TestRouteController : RouteViewController {
 
     override fun updateMapZoom(zoom: Float) {
         mapZoom = zoom
+    }
+
+    override fun displayInstruction(index: Int) {
+        displayIndex = index
     }
 }

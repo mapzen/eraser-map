@@ -205,7 +205,7 @@ public class RouteModeViewTest {
 
     @Test
     public void showRouteComplete_shouldHideResumeButton() throws Exception {
-        routeModeView.showRouteComplete();
+        routeModeView.setRouteComplete();
         assertThat(routeModeView.findViewById(R.id.resume).getVisibility())
                 .isEqualTo(View.GONE);
     }
@@ -213,7 +213,7 @@ public class RouteModeViewTest {
     @Test
     public void showRouteComplete_shouldSetCurrentInstructionToLast() throws Exception {
         routeModeView.setCurrentInstruction(0);
-        routeModeView.showRouteComplete();
+        routeModeView.setRouteComplete();
 
         final int current = routeModeView.getInstructionPager().getCurrentItem();
         final int size = routeModeView.getInstructionPager().getAdapter().getCount();
@@ -226,7 +226,7 @@ public class RouteModeViewTest {
                 ShadowExtractor.extract(routeModeView.getMapController());
 
         shadowMapController.getEventQueue().clear();
-        routeModeView.showRouteComplete();
+        routeModeView.setRouteComplete();
         assertThat(shadowMapController.getEventQueue()).isNotEmpty();
     }
 
@@ -237,7 +237,7 @@ public class RouteModeViewTest {
         final List<Location> geometry = routeModeView.getRoute().getGeometry();
 
         shadowMapData.getPoints().clear();
-        routeModeView.showRouteComplete();
+        routeModeView.setRouteComplete();
         assertThat(shadowMapData.getPoints().get(0).latitude)
                 .isEqualTo(geometry.get(geometry.size() - 1).getLatitude());
         assertThat(shadowMapData.getPoints().get(0).longitude)
