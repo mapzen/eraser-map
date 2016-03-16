@@ -298,12 +298,18 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         val units = settings.distanceUnits
         if (instruction is Instruction && units is Router.DistanceUnits) {
             voiceNavigationController?.playMilestone(instruction, milestone, units)
+            val adapter = instructionPager.adapter
+            if (adapter is InstructionAdapter) {
+                adapter.setBeginText(findViewByIndex(index), instruction)
+            }
         }
     }
 
     override fun playStartInstructionAlert() {
         val instruction = route?.getRouteInstructions()?.get(0)
-        if (instruction is Instruction) voiceNavigationController?.playStart(instruction)
+        if (instruction is Instruction) {
+            voiceNavigationController?.playStart(instruction)
+        }
     }
 
     override fun playPreInstructionAlert(index: Int) {
@@ -323,6 +329,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         val instruction = route?.getRouteInstructions()?.get(index)
         if (instruction is Instruction) {
             voiceNavigationController?.playPost(instruction)
+            val adapter = instructionPager.adapter
+            if (adapter is InstructionAdapter) {
+                adapter.setPostText(findViewByIndex(index), instruction)
+            }
         }
     }
 
