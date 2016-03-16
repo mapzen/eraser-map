@@ -1080,7 +1080,6 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
     private fun exitNavigation() {
         initFindMeButton()
         routeModeView.voiceNavigationController?.stop()
-        presenter.routingEnabled = false
         routeModeView.clearRoute()
         routeModeView.route = null
         routeModeView.hideRouteIcon()
