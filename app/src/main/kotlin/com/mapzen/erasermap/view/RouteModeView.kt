@@ -233,7 +233,10 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
 
     override fun centerMapOnLocation(location: Location) {
         currentSnapLocation = location
-        if (!isResumeButtonHidden()) {
+        // If the user isnt making the resume button show by scrolling through
+        // instruction pager, then they are viewing map at custom view/position
+        // and we shouldnt do any centering
+        if (!isResumeButtonHidden() && userScrollChange == false) {
             return
         }
         mapController?.queueEvent {
