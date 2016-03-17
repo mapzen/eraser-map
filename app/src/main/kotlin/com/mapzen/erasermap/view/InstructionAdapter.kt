@@ -2,6 +2,7 @@ package com.mapzen.erasermap.view
 
 import android.content.Context
 import android.support.v4.view.PagerAdapter
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -13,6 +14,10 @@ import java.util.ArrayList
 
 public class InstructionAdapter(private val context: Context,
         private val instructions: ArrayList<Instruction>) : PagerAdapter() {
+
+    companion object {
+        @JvmStatic val TAG = InstructionAdapter::class.java.simpleName
+    }
 
     override fun instantiateItem(container: ViewGroup?, position: Int): Any? {
         val instruction = instructions.get(position)
@@ -65,5 +70,17 @@ public class InstructionAdapter(private val context: Context,
 
     override fun destroyItem(container: ViewGroup?, position: Int, `object`: Any?) {
         container?.removeView(`object` as View)
+    }
+
+    public fun setBeginText(view: View?, instruction: Instruction) {
+        val title = view?.findViewById(R.id.instruction_text) as TextView
+        if (instruction.getBeginStreetNames().length > 0) {
+            title.text = instruction.getBeginStreetNames()
+        }
+    }
+
+    public fun setPostText(view: View?, instruction: Instruction) {
+        val title = view?.findViewById(R.id.instruction_text) as TextView
+        title.text = instruction.getName()
     }
 }
