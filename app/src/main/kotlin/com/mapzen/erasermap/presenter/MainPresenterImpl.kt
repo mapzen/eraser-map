@@ -409,7 +409,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     }
 
     override fun onExitNavigation() {
-        vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
+        vsm.viewState = ViewStateManager.ViewState.DEFAULT
         routingEnabled = false;
         routeManager.reverse = false
         onFindMeButtonClick()
