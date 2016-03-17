@@ -149,6 +149,12 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         instructionPager.setOnTouchListener({ view, motionEvent -> onPagerTouch() })
     }
 
+    public fun setAdapterRerouting(adapter: PagerAdapter) {
+        instructionPager.adapter = adapter
+        instructionPager.addOnPageChangeListener(null)
+        instructionPager.setOnTouchListener(null)
+    }
+
     private fun onPagerTouch(): Boolean {
         routePresenter.onInstructionPagerTouch()
         return false
@@ -161,6 +167,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     private fun setCurrentPagerItemStyling(position : Int) {
+        if (instructionPager.adapter is ReroutingAdapter) {
+            return
+        }
         var lastItemIndex = (instructionPager.adapter as InstructionAdapter).count - 1
         var itemsUntilLastInstruction = (lastItemIndex - position)
         if (itemsUntilLastInstruction == 1) {
@@ -373,6 +382,7 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
     }
 
     override fun showReroute(location: Location) {
+        setAdapterRerouting(ReroutingAdapter(context))
         mainPresenter?.onReroute(location)
     }
 

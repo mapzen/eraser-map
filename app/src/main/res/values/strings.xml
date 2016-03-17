@@ -39,5 +39,6 @@
 
     <string name="history_erased">History Erased</string>
     <string name="cache_search_results_status">Cache Search Results %s</string>
+    <string name="rerouting">Rerouting</string>
 
 </resources>

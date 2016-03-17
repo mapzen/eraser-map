@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.view
 
 import android.content.Context
+import android.graphics.Typeface
 import android.preference.PreferenceManager
 import android.text.Spannable
 import android.text.style.StyleSpan
@@ -15,7 +16,7 @@ import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.PeliasSearchView
 
 class SearchListViewAdapter(context: Context, resource: Int, private val searchView:
-    PeliasSearchView, private val savedSearch: SavedSearch) : AutoCompleteAdapter(context, resource) {
+PeliasSearchView, private val savedSearch: SavedSearch) : AutoCompleteAdapter(context, resource) {
 
     private var iconId: Int = 0
 
@@ -47,7 +48,7 @@ class SearchListViewAdapter(context: Context, resource: Int, private val searchV
             val query = searchView.query.toString()
             val subStringIndex = textView.text.toString().toLowerCase().indexOf(query.toLowerCase())
             if (subStringIndex >= 0 && (query.length > 2)) {
-                spannableText.setSpan(StyleSpan(android.graphics.Typeface.BOLD), subStringIndex,
+                spannableText.setSpan(StyleSpan(Typeface.BOLD), subStringIndex,
                         subStringIndex + query.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
             textView.text = spannableText
