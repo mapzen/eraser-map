@@ -30,6 +30,10 @@
         <com.mapzen.erasermap.view.SendFeedbackPreference
             android:title="@string/edittext_send_feedback_title" />
 
+        <com.mapzen.erasermap.view.ViewAboutPreference
+            android:key="edittext_about"
+            android:title="@string/edittext_about_title" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>
