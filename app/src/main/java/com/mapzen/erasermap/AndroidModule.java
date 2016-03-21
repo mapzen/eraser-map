@@ -79,9 +79,11 @@ public class AndroidModule {
     }
 
     @Provides @Singleton Pelias providePelias() {
+        final String endpoint = BuildConfig.SEARCH_BASE_URL != null ?
+                BuildConfig.SEARCH_BASE_URL : Pelias.DEFAULT_SERVICE_ENDPOINT;
         final RestAdapter.LogLevel logLevel = BuildConfig.DEBUG ?
                 RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE;
-        return Pelias.getPelias(logLevel);
+        return Pelias.getPeliasWithEndpoint(endpoint, logLevel);
     }
 
     @Provides @Singleton Speakerbox provideSpeakerbox() {
