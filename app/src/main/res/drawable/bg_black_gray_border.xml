@@ -12,5 +12,5 @@
                 android:color="@color/gray" />
         </shape>
     </item>
-    <item android:drawable="?android:selectableItemBackground"/>
+    <item android:drawable="@drawable/bg_ripple"/>
 </layer-list>
