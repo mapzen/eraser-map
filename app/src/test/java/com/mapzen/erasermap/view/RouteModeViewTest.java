@@ -40,6 +40,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
 import static com.mapzen.erasermap.dummy.TestHelper.getFixture;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestFeature;
 import static com.mapzen.erasermap.dummy.TestHelper.getTestLocation;
@@ -275,8 +276,6 @@ public class RouteModeViewTest {
         ShadowNotification sNotification = Shadows.shadowOf(sManager.getAllNotifications().get(0));
         assertThat(sNotification.getContentTitle()).isEqualTo("Name");
         assertThat(sNotification.getContentText()).isEqualTo("Go north on Adalbertstraße.");
-        NotificationManager manager = (NotificationManager) startActivity.getSystemService(
-                Context.NOTIFICATION_SERVICE);
         assertThat(sManager.getAllNotifications().get(0).actions[0].title)
                 .isEqualTo("Exit Navigation");
     }
@@ -297,10 +296,9 @@ public class RouteModeViewTest {
     }
 
     private ShadowNotificationManager getRoutingNotificationManager() {
-        NotificationManager manager = (NotificationManager) startActivity.getSystemService(
-                Context.NOTIFICATION_SERVICE);
-        ShadowNotificationManager sManager = Shadows.shadowOf(manager);
-        return sManager;
+        NotificationManager manager = (NotificationManager)
+                startActivity.getSystemService(NOTIFICATION_SERVICE);
+        return Shadows.shadowOf(manager);
     }
 
     class TestViewGroup extends ViewGroup {

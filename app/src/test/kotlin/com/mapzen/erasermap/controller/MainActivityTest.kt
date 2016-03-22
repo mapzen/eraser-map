@@ -120,7 +120,7 @@ public class MainActivityTest {
     public fun onDestroy_shouldSetCurrentSearchTerm() {
         val menu = RoboMenu()
         activity.onCreateOptionsMenu(menu)
-        val searchView = activity.supportActionBar.customView as SearchView
+        val searchView = activity.supportActionBar!!.customView as SearchView
         searchView.setQuery("query", false)
         searchView.requestFocus()
         activity.onDestroy()
@@ -133,7 +133,7 @@ public class MainActivityTest {
         activity.onCreateOptionsMenu(menu)
         activity.presenter!!.currentSearchTerm = "query"
         activity.onCreateOptionsMenu(menu)
-        val searchView = activity.supportActionBar.customView as SearchView
+        val searchView = activity.supportActionBar!!.customView as SearchView
         assertThat(searchView.query).isEqualTo("query")
     }
 

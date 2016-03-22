@@ -13,7 +13,7 @@ import android.location.Location
  * * Modified by baldur@mapzen.com
  * * Converted to kotlin by peter.jasko@mapzen.com
  */
-public object DouglasPeuckerReducer {
+object DouglasPeuckerReducer {
 
     /**
      * Reduce the number of points in a shape using the Douglas-Peucker
@@ -28,8 +28,8 @@ public object DouglasPeuckerReducer {
      * *
      * @return the reduced shape
      */
-    public fun reduceWithTolerance(shape: List<Location>, tolerance: Double): List<Location> {
-        val n = shape.size()
+    fun reduceWithTolerance(shape: List<Location>, tolerance: Double): List<Location> {
+        val n = shape.size
         // if a shape has 2 or less points it cannot be reduced
         if (tolerance <= 0 || n < 3) {
             return shape
@@ -138,7 +138,7 @@ public object DouglasPeuckerReducer {
      * *
      * @return The distance in points coordinate system
      */
-    public fun orthogonalDistance(point: Location, lineStart: Location, lineEnd: Location): Double {
+    fun orthogonalDistance(point: Location, lineStart: Location, lineEnd: Location): Double {
         val area = Math.abs((1.0 * lineStart.getLatitude() * 1e6 * lineEnd.getLongitude() * 1e6+1.0 * lineEnd.getLatitude() * 1e6 * point.getLongitude() * 1e6+1.0 * point.getLatitude() * 1e6 * lineStart.getLongitude() * 1e6-1.0 * lineEnd.getLatitude() * 1e6 * lineStart.getLongitude() * 1e6-1.0 * point.getLatitude() * 1e6* lineEnd.getLongitude() * 1e6-1.0 * lineStart.getLatitude() * 1e6 * point.getLongitude() * 1e6)/2.0)
 
         val bottom = Math.hypot(lineStart.getLatitude() * 1e6 - lineEnd.getLatitude() * 1e6, lineStart.getLongitude() * 1e6-lineEnd.getLongitude() * 1e6)
