@@ -34,7 +34,7 @@ import com.mapzen.valhalla.Router
 import java.util.ArrayList
 import javax.inject.Inject
 
-public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener {
+class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener {
     companion object {
         const val VIEW_TAG: String = "Instruction_"
         const val MAP_DATA_NAME_ROUTE_ICON = "route_icon"
@@ -44,21 +44,37 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
         const val MAP_DATA_PROP_LINE = "line"
     }
 
-    val mapListToggle: MapListToggleButton by lazy { findViewById(R.id.map_list_toggle) as MapListToggleButton }
-    val routeCancelButton: ImageView by lazy { findViewById(R.id.route_cancel) as ImageView }
-    val directionListView: DirectionListView by lazy { findViewById(R.id.direction_list_vew) as DirectionListView }
-    val distanceToDestination: DistanceView by lazy { findViewById(R.id.destination_distance) as DistanceView }
-    val instructionPager: ViewPager by lazy { findViewById(R.id.instruction_pager) as ViewPager }
-    val resumeButton: Button by lazy { findViewById(R.id.resume) as Button }
-    val destinationNameTextView: TextView by lazy { findViewById(R.id.destination_name) as TextView }
+    val mapListToggle: MapListToggleButton by lazy {
+        findViewById(R.id.map_list_toggle)as MapListToggleButton
+    }
+    val routeCancelButton: ImageView by lazy {
+        findViewById(R.id.route_cancel) as ImageView
+    }
+    val directionListView: DirectionListView by lazy {
+        findViewById(R.id.direction_list_vew) as DirectionListView
+    }
+    val distanceToDestination: DistanceView by lazy {
+        findViewById(R.id.destination_distance) as DistanceView
+    }
+    val instructionPager: ViewPager by lazy {
+        findViewById(R.id.instruction_pager) as ViewPager
+    }
+    val resumeButton: Button by lazy {
+        findViewById(R.id.resume) as Button
+    }
+    val destinationNameTextView: TextView by lazy {
+        findViewById(R.id.destination_name) as TextView
+    }
 
     var mapController: MapController? = null
         set(value) {
             value?.setPanResponder(object: TouchInput.PanResponder {
-                override fun onPan(startX: Float, startY: Float, endX: Float, endY: Float): Boolean {
+                override fun onPan(startX: Float, startY: Float, endX: Float, endY: Float):
+                        Boolean {
                     return onMapPan(endX - startX, endY - startY)
                 }
-                override fun onFling(posX: Float, posY: Float, velocityX: Float, velocityY: Float): Boolean {
+                override fun onFling(posX: Float, posY: Float, velocityX: Float, velocityY: Float):
+                        Boolean {
                     return false
                 }
             })
@@ -104,7 +120,9 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             instructionPager.currentItem = routePresenter.currentInstructionIndex ?: 0
         }
 
-        mapListToggle.setOnClickListener { routePresenter.onMapListToggleClick(mapListToggle.state) }
+        mapListToggle.setOnClickListener {
+            routePresenter.onMapListToggleClick(mapListToggle.state)
+        }
         routeCancelButton.setOnClickListener { routePresenter.onRouteCancelButtonClick() }
     }
 
@@ -268,16 +286,19 @@ public class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPage
             val screenWidth = point.x.toDouble()
             val screenHeight = point.y.toDouble()
 
-            // Find the view that will place the current location marker in the lower quarter of the window
-            val nextPosition = mapController?.coordinatesAtScreenPosition(screenWidth/2, screenHeight/3.5) ?: LngLat()
+            // Find the view that will place the current location marker in the lower quarter
+            // of the window.
+            val nextPosition = mapController?.coordinatesAtScreenPosition(screenWidth/2,
+                    screenHeight/3.5) ?: LngLat()
             val nextRotation = getBearingInRadians(location)
 
             // Return to our initial view to prepare for easing to the next view
             mapController?.mapPosition = lastPosition
-            mapController?.mapRotation = lastRotation
+            mapController?.mapRotation = lastRotation ?: 0f
 
             // Begin easing to the next view
-            mapController?.setMapPosition(nextPosition.longitude, nextPosition.latitude, 1f, MapController.EaseType.LINEAR)
+            mapController?.setMapPosition(nextPosition.longitude, nextPosition.latitude, 1f,
+                    MapController.EaseType.LINEAR)
             mapController?.setMapRotation(nextRotation, 1f, MapController.EaseType.LINEAR)
         }
     }

@@ -15,7 +15,7 @@ import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.SimpleCrypt
 import javax.inject.Inject
 
-public class InitActivity : AppCompatActivity() {
+class InitActivity : AppCompatActivity() {
     companion object {
         @JvmStatic public val START_DELAY_IN_MS: Long = 1200
     }
@@ -29,7 +29,7 @@ public class InitActivity : AppCompatActivity() {
         app.component()?.inject(this)
         initCrashReportService()
         setContentView(R.layout.splash_screen)
-        supportActionBar.hide()
+        supportActionBar?.hide()
 
         if (BuildConfig.DEBUG) {
             (findViewById(R.id.build_number) as TextView).text = BuildConfig.BUILD_NUMBER

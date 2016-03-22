@@ -71,7 +71,7 @@ import retrofit.client.Response
 import java.util.ArrayList
 import javax.inject.Inject
 
-public class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
+class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         SearchResultsView.OnSearchResultSelectedListener {
 
     companion object {
@@ -83,8 +83,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         @JvmStatic val MAP_DATA_PROP_NAME = "name"
     }
 
-    public val requestCodeSearchResults: Int = 0x01
-
+    val requestCodeSearchResults: Int = 0x01
 
     @Inject lateinit var savedSearch: SavedSearch
     @Inject lateinit var presenter: MainPresenter
@@ -358,10 +357,10 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         menuInflater.inflate(R.menu.menu_main, menu)
         optionsMenu = menu
         searchView = PeliasSearchView(this)
-        supportActionBar.setCustomView(searchView,ActionBar.LayoutParams(
+        supportActionBar?.setCustomView(searchView,ActionBar.LayoutParams(
                 ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT))
-        supportActionBar.displayOptions = supportActionBar.displayOptions or
-                ActionBar.DISPLAY_SHOW_CUSTOM
+        val displayOptions = supportActionBar?.displayOptions ?:0
+        supportActionBar?.displayOptions = displayOptions or ActionBar.DISPLAY_SHOW_CUSTOM
         val emptyView = findViewById(android.R.id.empty)
         autocompleteListView.hideHeader()
 
@@ -402,7 +401,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val cacheSearches = prefs?.getBoolean(AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY, true)
+        val cacheSearches = prefs.getBoolean(AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY, true)
         searchView?.setCacheSearchResults(cacheSearches)
         return true
     }
@@ -457,7 +456,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         presenter.resultListVisible = false
         optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
         searchView?.onActionViewCollapsed()
-        searchView?.setIconified(false)
+        searchView?.isIconified = false
         searchView?.clearFocus()
         searchView?.disableAutoComplete()
         searchView?.setQuery(presenter.currentSearchTerm, false)
@@ -477,7 +476,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         val term = presenter.currentSearchTerm
         if (term != null) {
             searchView.setQuery(term, false)
-            if (searchResultsView.visibility == View.VISIBLE && presenter?.reverseGeo == false) {
+            if (searchResultsView.visibility == View.VISIBLE && presenter.reverseGeo == false) {
                 searchView.clearFocus()
                 showActionViewAll()
             } else {

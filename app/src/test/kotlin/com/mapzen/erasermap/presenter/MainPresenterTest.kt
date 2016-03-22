@@ -1,5 +1,6 @@
 package com.mapzen.erasermap.presenter
 
+import android.location.Location
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
@@ -28,7 +29,7 @@ import org.junit.Before
 import org.junit.Test
 import java.util.ArrayList
 
-public class MainPresenterTest {
+class MainPresenterTest {
     private val mainController: TestMainController = TestMainController()
     private val routeController: TestRouteController = TestRouteController()
     private val mapzenLocation: TestMapzenLocation = TestMapzenLocation()
@@ -356,14 +357,14 @@ public class MainPresenterTest {
         presenter.onCreate()
         mainController.location = null
         presenter.onCreate()
-        assertThat(mainController.location).isNull()
+        assertThat(mainController.location as Location?).isNull()
     }
 
     @Test fun onCreate_shouldShowCurrentLocationSecondTimeInvoked() {
         presenter.onCreate()
         mainController.puckPosition = null
         presenter.onCreate()
-        assertThat(mainController.puckPosition).isNotNull()
+        assertThat(mainController.puckPosition as Location).isNotNull()
     }
 
     @Test fun onReroute_shouldShowProgress() {
@@ -421,7 +422,7 @@ public class MainPresenterTest {
         mainController.routeLine = null
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
         presenter.success(route)
-        assertThat(mainController.routeLine).isEqualTo(route)
+        assertThat(mainController.routeLine as Route).isEqualTo(route)
     }
 
     @Test fun onRerouteSuccess_shouldNotResetMute() {
@@ -496,7 +497,7 @@ public class MainPresenterTest {
     }
 
     class RouteEventSubscriber {
-        public var event: RouteEvent? = null
+        var event: RouteEvent? = null
 
         @Subscribe fun onRouteEvent(event: RouteEvent) {
             this.event = event

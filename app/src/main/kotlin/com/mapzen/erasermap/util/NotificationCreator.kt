@@ -16,7 +16,7 @@ import com.mapzen.erasermap.R
 import com.mapzen.erasermap.service.NotificationService
 import com.mapzen.erasermap.controller.MainActivity
 
-public class NotificationCreator(private val mainActivity: Activity) {
+class NotificationCreator(private val mainActivity: Activity) {
     private var builder: NotificationCompat.Builder? = null
     private var bigTextStyle: NotificationCompat.BigTextStyle? = null
     private var stackBuilder: TaskStackBuilder? = null
@@ -30,8 +30,8 @@ public class NotificationCreator(private val mainActivity: Activity) {
     private val serviceIntent: Intent
 
     companion object {
-        val EXIT_NAVIGATION = "exit_navigation"
-        val NOTIFICATION_TAG_ROUTE = "route"
+        const val EXIT_NAVIGATION = "exit_navigation"
+        const val NOTIFICATION_TAG_ROUTE = "route"
     }
 
     init {
@@ -103,7 +103,7 @@ public class NotificationCreator(private val mainActivity: Activity) {
         builder?.setOngoing(true)
     }
 
-    public fun killNotification() {
+    fun killNotification() {
         notificationManager.cancelAll()
         serviceConnection.service?.stopService(serviceIntent)
     }
@@ -113,8 +113,8 @@ public class NotificationCreator(private val mainActivity: Activity) {
      */
     private class NotificationServiceConnection: ServiceConnection {
 
-        public val activity: Activity
-        public var service: NotificationService? = null
+        val activity: Activity
+        var service: NotificationService? = null
 
         constructor(activity: Activity) {
             this.activity = activity
@@ -127,7 +127,7 @@ public class NotificationCreator(private val mainActivity: Activity) {
             val binder = inBinder as NotificationService.NotificationBinder
             val intent: Intent = Intent(activity, NotificationService::class.java)
             this.service = binder.service
-            binder.service?.startService(intent)
+            binder.service.startService(intent)
         }
 
         override fun onServiceDisconnected(component: ComponentName?) {

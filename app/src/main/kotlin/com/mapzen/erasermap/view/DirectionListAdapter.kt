@@ -10,13 +10,13 @@ import com.mapzen.erasermap.R
 import com.mapzen.erasermap.util.DisplayHelper
 import java.util.ArrayList
 
-public class DirectionListAdapter(val context: Context, val strings: ArrayList<String>?,
+class DirectionListAdapter(val context: Context, val strings: ArrayList<String>?,
         val types: ArrayList<Int>?, val distances: ArrayList<Int>?,
         val reverse : Boolean?, val showCurrentLocation : Boolean = true) : BaseAdapter() {
 
     private final var CURRENT_LOCATION_OFFSET =  1
 
-    public var currentInstructionIndex: Int = 0
+    var currentInstructionIndex: Int = 0
 
     override fun getCount(): Int {
         val size = strings?.size ?: 0
@@ -49,7 +49,7 @@ public class DirectionListAdapter(val context: Context, val strings: ArrayList<S
     }
 
     private fun setReversedDirectionListItem(position : Int, view : View)  {
-        if(position == strings?.size()) {
+        if(position == strings?.size) {
             setListItemToCurrentLocation(view)
         } else {
             val distance = distances?.get(position) ?: 0
