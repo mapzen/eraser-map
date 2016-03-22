@@ -125,7 +125,7 @@ dependencies {
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   compile 'com.mapzen.tangram:tangram:0.1-SNAPSHOT'
   compile 'com.mapzen.android:lost:1.1.0'
-  compile('com.mapzen.android:pelias-android-sdk:0.7') {
+  compile('com.mapzen.android:pelias-android-sdk:0.7.1-SNAPSHOT') {
     exclude group: 'javax.annotation:javax', module: 'javax.annotation-api'
   }
   compile 'com.google.dagger:dagger:2.0'
