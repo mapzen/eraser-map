@@ -437,9 +437,8 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
             for (feature in features) {
                 simpleFeatures.add(AutoCompleteItem(SimpleFeature.fromFeature(feature)))
             }
-            searchView?.onActionViewCollapsed()
+            searchView?.disableAutoKeyboardShow()
             searchView?.onActionViewExpanded()
-            searchView?.disableAutoComplete()
             searchView?.setQuery(presenter.currentSearchTerm, false)
             autoCompleteAdapter?.clear();
             autoCompleteAdapter?.addAll(simpleFeatures);
@@ -456,6 +455,7 @@ public class MainActivity : AppCompatActivity(), MainViewController, RouteCallba
         autocompleteListView.onItemClickListener = searchView?.OnItemClickHandler()?.invoke()
         presenter.resultListVisible = false
         optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
+        searchView?.enableAutoKeyboardShow()
         searchView?.onActionViewCollapsed()
         searchView?.setIconified(false)
         searchView?.clearFocus()
