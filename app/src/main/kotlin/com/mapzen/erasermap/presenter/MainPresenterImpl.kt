@@ -351,6 +351,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     }
 
     override fun onReroute(location: Location) {
+        if (waitingForRoute) {
+            return
+        }
+        waitingForRoute = true
         mainViewController?.showProgress()
         fetchNewRoute(location)
     }
@@ -364,10 +368,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         } else {
             routeManager.bearing = null
         }
-        if (!waitingForRoute) {
-            waitingForRoute = true
-            routeManager.fetchRoute(this)
-        }
+        routeManager.fetchRoute(this)
     }
 
     override fun failure(statusCode: Int) {
