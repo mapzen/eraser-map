@@ -10,7 +10,7 @@ import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
 import com.squareup.otto.Bus
 
-public class RoutePresenterImpl(private val routeEngine: RouteEngine,
+class RoutePresenterImpl(private val routeEngine: RouteEngine,
         private val routeEngineListener: RouteEngineListener,
         private val bus: Bus,
         private val vsm: ViewStateManager) : RoutePresenter {
@@ -22,6 +22,7 @@ public class RoutePresenterImpl(private val routeEngine: RouteEngine,
         }
 
     override var currentInstructionIndex: Int = 0
+    override var currentSnapLocation: Location? = null
 
     private var route: Route? = null
     private var isTrackingCurrentLocation: Boolean = true

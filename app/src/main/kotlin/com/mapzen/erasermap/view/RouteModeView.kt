@@ -3,9 +3,11 @@ package com.mapzen.erasermap.view
 import android.content.Context
 import android.graphics.Point
 import android.location.Location
+import android.os.Handler
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
@@ -36,6 +38,7 @@ import javax.inject.Inject
 
 class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener {
     companion object {
+        val TAG = RouteModeView::class.java.simpleName
         const val VIEW_TAG: String = "Instruction_"
         const val MAP_DATA_NAME_ROUTE_ICON = "route_icon"
         const val MAP_DATA_NAME_ROUTE_LINE = "route"
@@ -90,21 +93,20 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     @Inject lateinit var routePresenter: RoutePresenter
     @Inject lateinit var settings: AppSettings
 
-    private var currentSnapLocation: Location? = null
     private var routeIcon: MapData? = null
     private var routeLine: MapData? = null
     private var previousScrollState: Int = ViewPager.SCROLL_STATE_IDLE
     private var userScrollChange: Boolean = false
 
-    public constructor(context: Context) : super(context) {
+    constructor(context: Context) : super(context) {
         init(context)
     }
 
-    public constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init(context)
     }
 
-    public constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
             : super(context, attrs, defStyleAttr) {
         init(context)
     }
@@ -117,7 +119,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         resumeButton.setOnClickListener {
             routePresenter.onResumeButtonClick()
             mainPresenter?.updateLocation()
-            instructionPager.currentItem = routePresenter.currentInstructionIndex ?: 0
+            instructionPager.currentItem = routePresenter.currentInstructionIndex
         }
 
         mapListToggle.setOnClickListener {
@@ -128,7 +130,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
         if (instructionPager.currentItem == routePresenter.currentInstructionIndex) {
-            setCurrentPagerItemStyling(routePresenter.currentInstructionIndex ?: 0);
+            setCurrentPagerItemStyling(routePresenter.currentInstructionIndex);
             if (!autoPage) {
                 resumeAutoPaging()
             }
@@ -139,7 +141,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     }
 
     override fun onPageSelected(position: Int) {
-        setCurrentPagerItemStyling(routePresenter.currentInstructionIndex ?: 0);
+        setCurrentPagerItemStyling(routePresenter.currentInstructionIndex);
         val instruction = route?.getRouteInstructions()?.get(position)
         if (instruction is Instruction) {
             if (userScrollChange) {
@@ -160,14 +162,14 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         previousScrollState = state
     }
 
-    public fun setAdapter(adapter: PagerAdapter) {
+    fun setAdapter(adapter: PagerAdapter) {
         instructionPager.adapter = adapter
         instructionPager.addOnPageChangeListener(this)
         distanceToDestination.distanceInMeters = route?.getRemainingDistanceToDestination() as Int
         instructionPager.setOnTouchListener({ view, motionEvent -> onPagerTouch() })
     }
 
-    public fun setAdapterRerouting(adapter: PagerAdapter) {
+    fun setAdapterRerouting(adapter: PagerAdapter) {
         instructionPager.adapter = adapter
         instructionPager.addOnPageChangeListener(null)
         instructionPager.setOnTouchListener(null)
@@ -179,8 +181,8 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     }
 
     private fun resumeAutoPaging() {
-        instructionPager.currentItem = routePresenter.currentInstructionIndex ?: 0
-        setCurrentPagerItemStyling(routePresenter.currentInstructionIndex ?:0)
+        instructionPager.currentItem = routePresenter.currentInstructionIndex
+        setCurrentPagerItemStyling(routePresenter.currentInstructionIndex)
         autoPage = true
     }
 
@@ -209,7 +211,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         }
     }
 
-    public fun findViewByIndex(index: Int): View? {
+    fun findViewByIndex(index: Int): View? {
         return instructionPager.findViewWithTag(VIEW_TAG + index)
     }
 
@@ -252,14 +254,14 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     }
 
     override fun centerMapOnCurrentLocation() {
-        val location = currentSnapLocation
+        val location = routePresenter.currentSnapLocation
         if (location is Location) {
             centerMapOnLocation(location)
         }
     }
 
     override fun centerMapOnLocation(location: Location) {
-        currentSnapLocation = location
+        routePresenter.currentSnapLocation = location
         // If the user isnt making the resume button show by scrolling through
         // instruction pager, then they are viewing map at custom view/position
         // and we shouldnt do any centering
@@ -356,7 +358,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     override fun playPostInstructionAlert(index: Int) {
         val icon = findViewByIndex(index)?.findViewById(R.id.icon)
         if (icon is ImageView) {
-            icon.setImageResource(DisplayHelper.getRouteDrawable(getContext(), 8))
+            icon.setImageResource(DisplayHelper.getRouteDrawable(context, 8))
         }
 
         val instruction = route?.getRouteInstructions()?.get(index)
@@ -370,7 +372,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     }
 
     override fun updateDistanceToNextInstruction(meters: Int) {
-        val currentInstructionView = findViewByIndex(routePresenter.currentInstructionIndex ?: 0)
+        val currentInstructionView = findViewByIndex(routePresenter.currentInstructionIndex)
         val distanceToNextView = currentInstructionView?.findViewById(R.id.distance)
         if (distanceToNextView is DistanceView) {
             distanceToNextView.distanceInMeters = meters
@@ -415,7 +417,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         routeIcon?.clear()
     }
 
-    public fun startRoute(destination: Feature, route: Route?) {
+    fun startRoute(destination: Feature, route: Route?) {
         this.route = route
         initStartLocation()
         initDestination(destination)
@@ -425,12 +427,19 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         findViewById(R.id.footer_separator).visibility = View.VISIBLE
     }
 
-    public fun resumeRoute(destination: Feature, route: Route?) {
+    fun resumeRoute(destination: Feature, route: Route?) {
         this.route = route
         initDestination(destination)
         initInstructionAdapter()
         this.visibility = View.VISIBLE
         routePresenter.onRouteResume(route)
+        Handler().postDelayed( {
+            val currentSnapLocation = routePresenter.currentSnapLocation
+            if (currentSnapLocation != null) {
+                showRouteIcon(currentSnapLocation)
+            }
+            centerMapOnCurrentLocation()
+        }, 100)
     }
 
     private fun initStartLocation() {
@@ -454,7 +463,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         }
     }
 
-    public fun drawRoute(route: Route) {
+    fun drawRoute(route: Route) {
         val properties = com.mapzen.tangram.Properties()
         properties.set(MAP_DATA_PROP_TYPE, MAP_DATA_PROP_LINE);
         val geometry: ArrayList<Location>? = route.getGeometry()
@@ -479,7 +488,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         routeLine?.clear()
     }
 
-    public fun clearRoute() {
+    fun clearRoute() {
         routePresenter.onRouteClear()
     }
 
@@ -487,7 +496,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         val instructions = route?.getRouteInstructions()
         if (instructions != null && instructions.size > 0) {
             directionListView.setInstructions(instructions)
-            directionListView.setCurrent(instructionPager.currentItem ?: 0)
+            directionListView.setCurrent(instructionPager.currentItem)
             directionListView.visibility = View.VISIBLE
         }
 
