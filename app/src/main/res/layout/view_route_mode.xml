@@ -42,6 +42,7 @@
             android:layout_toLeftOf="@id/route_cancel"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
+            android:clickable="true"
             android:padding="@dimen/footer_padding">
 
             <com.mapzen.erasermap.view.DistanceView
