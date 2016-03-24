@@ -6,8 +6,11 @@ import android.widget.ListView
 import com.mapzen.valhalla.Instruction
 import java.util.ArrayList
 
-public class DirectionListView(context: Context?, attrs: AttributeSet?) : ListView(context, attrs) {
-    public fun setInstructions(instructions: List<Instruction>) {
+class DirectionListView(context: Context?, attrs: AttributeSet?) : ListView(context, attrs) {
+
+    var directionItemClickListener: DirectionItemClickListener? = null
+
+    fun setInstructions(instructions: List<Instruction>) {
         val strings = ArrayList<String>()
         val types = ArrayList<Int>()
         val distances = ArrayList<Int>()
@@ -19,14 +22,17 @@ public class DirectionListView(context: Context?, attrs: AttributeSet?) : ListVi
             distances.add(instruction.distance)
         }
 
-        adapter = DirectionListAdapter(context, strings, types, distances, false, false)
+        val directionAdapter = DirectionListAdapter(context, strings, types, distances, false, false)
+        directionAdapter.directionItemClickListener = directionItemClickListener
+        adapter = directionAdapter
     }
 
-    public fun setCurrent(index: Int) {
+    fun setCurrent(index: Int) {
         if (adapter != null) {
             val directionListAdapter = adapter as DirectionListAdapter
             directionListAdapter.currentInstructionIndex = index
             directionListAdapter.notifyDataSetChanged()
         }
     }
+
 }
