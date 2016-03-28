@@ -21,6 +21,7 @@ import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
+import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.squareup.otto.Bus
@@ -42,6 +43,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     override var currentSearchTerm: String? = null
     override var resultListVisible = false
     override var reverseGeo = false
+    override var reverseGeoLngLat: LngLat? = null
 
     private var searchResults: Result? = null
     private var destination: Feature? = null
@@ -202,7 +204,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     @Subscribe public fun onRoutePreviewEvent(event: RoutePreviewEvent) {
         vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
-        reverseGeo = false
         destination = event.destination
         mainViewController?.collapseSearchView()
         mainViewController?.hideSearchResults()

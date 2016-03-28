@@ -89,7 +89,7 @@ public class SearchResultsViewTest {
         features.add(feature);
         features.add(feature);
 
-        final SearchResultsAdapter adapter = new SearchResultsAdapter(application, features);
+        final SearchResultsAdapter adapter = new SearchResultsAdapter(application, features, false);
         final TestSelectedListener listener = new TestSelectedListener();
         searchResultsView.setAdapter(adapter);
         searchResultsView.setOnSearchResultsSelectedListener(listener);

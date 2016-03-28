@@ -6,6 +6,7 @@ import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
+import com.mapzen.tangram.LngLat
 
 public interface MainPresenter {
     companion object {
@@ -22,7 +23,7 @@ public interface MainPresenter {
     public var routingEnabled: Boolean
     public var resultListVisible: Boolean
     public var reverseGeo: Boolean
-
+    public var reverseGeoLngLat: LngLat?
 
     public fun onSearchResultsAvailable(result: Result?)
     public fun onReverseGeocodeResultsAvailable(searchResults: Result?)

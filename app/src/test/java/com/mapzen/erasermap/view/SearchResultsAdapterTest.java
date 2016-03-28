@@ -37,7 +37,7 @@ public class SearchResultsAdapterTest {
         feature = getTestFeature();
         ArrayList<Feature> features = new ArrayList<>();
         features.add(feature);
-        adapter = new SearchResultsAdapter(application, features);
+        adapter = new SearchResultsAdapter(application, features, false);
     }
 
     @Test

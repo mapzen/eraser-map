@@ -8,13 +8,14 @@ import android.widget.ImageButton
 import android.widget.TextView
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
+import com.mapzen.erasermap.controller.MainActivity.Companion.CONFIDENCE_THRESHOLD
 import com.mapzen.erasermap.model.event.RoutePreviewEvent
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.squareup.otto.Bus
 import javax.inject.Inject
 
-public class SearchResultsAdapter(val context: Context, val features: List<Feature>)
+class SearchResultsAdapter(val context: Context, val features: List<Feature>, val reverseGeo: Boolean)
         : PagerAdapter() {
 
     @Inject lateinit var bus: Bus
@@ -30,7 +31,12 @@ public class SearchResultsAdapter(val context: Context, val features: List<Featu
         val title = view.findViewById(R.id.title) as TextView
         val address = view.findViewById(R.id.address) as TextView
         val start = view.findViewById(R.id.preview) as ImageButton
-        title.text = simpleFeature.name()
+        val confidence = simpleFeature.confidence()
+        if (reverseGeo && confidence < CONFIDENCE_THRESHOLD) {
+            title.text = String.format(context.getString(R.string.near_feature), simpleFeature.name())
+        } else {
+            title.text = simpleFeature.name()
+        }
         address.text = simpleFeature.address()
         start.setOnClickListener { bus.post(RoutePreviewEvent(features.get(position))) }
         container?.addView(view)
