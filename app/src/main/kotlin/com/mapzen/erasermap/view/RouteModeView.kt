@@ -507,11 +507,17 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
             directionListView.setCurrent(instructionPager.currentItem)
             directionListView.visibility = View.VISIBLE
         }
+        if (resumeButton.visibility == View.VISIBLE) {
+            resumeButton.visibility = View.INVISIBLE
+        }
 
         mapListToggle.state = MapListToggleButton.MapListState.MAP
     }
 
     override fun hideRouteDirectionList() {
+        if (resumeButton.visibility == View.INVISIBLE) {
+            resumeButton.visibility = View.VISIBLE
+        }
         directionListView.visibility = View.GONE
         mapListToggle.state = MapListToggleButton.MapListState.LIST
     }
