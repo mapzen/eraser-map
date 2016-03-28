@@ -36,7 +36,7 @@ import com.mapzen.valhalla.Router
 import java.util.ArrayList
 import javax.inject.Inject
 
-class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener {
+class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener, DirectionItemClickListener {
     companion object {
         val TAG = RouteModeView::class.java.simpleName
         const val VIEW_TAG: String = "Instruction_"
@@ -117,15 +117,20 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
                 .inflate(R.layout.view_route_mode, this, true)
         routePresenter.routeController = this
         resumeButton.setOnClickListener {
-            routePresenter.onResumeButtonClick()
-            mainPresenter?.updateLocation()
-            instructionPager.currentItem = routePresenter.currentInstructionIndex
+            onResumeButtonClicked()
         }
 
         mapListToggle.setOnClickListener {
             routePresenter.onMapListToggleClick(mapListToggle.state)
         }
         routeCancelButton.setOnClickListener { routePresenter.onRouteCancelButtonClick() }
+        directionListView.directionItemClickListener = this
+    }
+
+    private fun onResumeButtonClicked() {
+        routePresenter.onResumeButtonClick()
+        mainPresenter?.updateLocation()
+        instructionPager.currentItem = routePresenter.currentInstructionIndex
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
@@ -146,6 +151,9 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         if (instruction is Instruction) {
             if (userScrollChange) {
                 routePresenter.onInstructionSelected(instruction)
+                if (position == 0) {
+                    onResumeButtonClicked()
+                }
             }
         }
     }
@@ -506,5 +514,13 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     override fun hideRouteDirectionList() {
         directionListView.visibility = View.GONE
         mapListToggle.state = MapListToggleButton.MapListState.LIST
+    }
+
+    override fun onDirectionItemClicked(position: Int) {
+        hideRouteDirectionList()
+        routePresenter.onInstructionPagerTouch()
+        userScrollChange = true
+        instructionPager.setCurrentItem(position, true)
+        directionListView.setCurrent(position)
     }
 }

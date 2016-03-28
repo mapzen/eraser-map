@@ -1,5 +1,6 @@
 package com.mapzen.erasermap.view;
 
+import android.widget.Adapter;
 import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
@@ -67,26 +68,25 @@ public class InstructionListActivityTest {
 
     @Test
     public void onDirectionListOpen_shouldHaveSecondInstructionSecond() throws Exception {
-          View view = ((ListView) activity.findViewById(R.id.instruction_list_view)).getAdapter()
-                  .getView(1, activity.findViewById(R.id.instruction_list_view),
-                          getGenericViewGroup());
+        ListView listView = (ListView) activity.findViewById(R.id.instruction_list_view);
+        Adapter adapter = listView.getAdapter();
+        View view = adapter.getView(1, null, getGenericViewGroup());
 
-          ImageView icon = (ImageView) view.findViewById(R.id.icon);
-          TextView instruction = (TextView) view.findViewById(R.id.simple_instruction);
-          TextView distance = (TextView) view.findViewById(R.id.distance);
+        ImageView icon = (ImageView) view.findViewById(R.id.icon);
+        TextView instruction = (TextView) view.findViewById(R.id.simple_instruction);
+        TextView distance = (TextView) view.findViewById(R.id.distance);
 
-          assertThat(icon.getDrawable()).isEqualTo(activity.getDrawable(R.drawable.ic_route_15));
-          assertThat(instruction.getText()).contains("Turn left onto Engeldamm.");
-          assertThat(distance.getText()).isEqualTo("0.1 mi");
+        assertThat(icon.getDrawable()).isEqualTo(activity.getDrawable(R.drawable.ic_route_15));
+        assertThat(instruction.getText()).contains("Turn left onto Engeldamm.");
+        assertThat(distance.getText()).isEqualTo("0.1 mi");
     }
 
     @Test
     public void onDirectionListOpenReverse_shouldHaveCurrentLocationLast() throws Exception {
-        int pos = ((ListView) activity.findViewById(R.id.instruction_list_view)).getAdapter()
-                .getCount() - 1;
-        View view = ((ListView) activity.findViewById(R.id.instruction_list_view)).getAdapter()
-                .getView(pos, activity.findViewById(R.id.instruction_list_view),
-                        getGenericViewGroup());
+        ListView listView = (ListView)activity.findViewById(R.id.instruction_list_view);
+        Adapter adapter = listView.getAdapter();
+        int pos = adapter.getCount() - 1;
+        View view = adapter.getView(pos, null, getGenericViewGroup());
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         TextView instruction = (TextView) view.findViewById(R.id.simple_instruction);

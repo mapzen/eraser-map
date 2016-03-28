@@ -8,7 +8,7 @@ import android.widget.ListView
 import android.widget.TextView
 import com.mapzen.erasermap.R
 
-public class InstructionListActivity : AppCompatActivity() {
+class InstructionListActivity : AppCompatActivity() {
     companion object {
         @JvmStatic val EXTRA_STRINGS = "instruction_strings"
         @JvmStatic val EXTRA_TYPES = "instruction_types"
