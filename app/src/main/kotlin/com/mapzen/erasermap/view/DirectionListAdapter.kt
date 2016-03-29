@@ -10,19 +10,21 @@ import com.mapzen.erasermap.R
 import com.mapzen.erasermap.util.DisplayHelper
 import java.util.ArrayList
 
-class DirectionListAdapter(val context: Context, val strings: ArrayList<String>?,
-        val types: ArrayList<Int>?, val distances: ArrayList<Int>?,
-        val reverse : Boolean?, val showCurrentLocation : Boolean = true) : BaseAdapter() {
+/**
+ * Adapter to show list of directions with first element current location
+ */
+class DirectionListAdapter(val context: Context, val strings: ArrayList<String>,
+        val types: ArrayList<Int>, val distances: ArrayList<Int>,
+        val reverse : Boolean?) : BaseAdapter() {
 
-    private final var CURRENT_LOCATION_OFFSET =  1
+    private final val CURRENT_LOCATION_OFFSET =  1
 
-    var currentInstructionIndex: Int = 0
+    var currentInstructionIndex: Int = -1
 
     var directionItemClickListener: DirectionItemClickListener? = null
 
     override fun getCount(): Int {
-        val size = strings?.size ?: 0
-        return if (showCurrentLocation) size + CURRENT_LOCATION_OFFSET else size
+        return strings.size + CURRENT_LOCATION_OFFSET
     }
 
     override fun getItemId(position: Int): Long {
@@ -46,9 +48,7 @@ class DirectionListAdapter(val context: Context, val strings: ArrayList<String>?
         }
         view?.setOnClickListener { onDirectionClicked(position) }
 
-        if (!showCurrentLocation) {
-            setSimpleDirectionListItem(position, holder)
-        } else if(reverse == true) {
+        if (reverse == true) {
             setReversedDirectionListItem(position, holder)
         } else {
             setDirectionListItem(position, holder)
@@ -64,13 +64,13 @@ class DirectionListAdapter(val context: Context, val strings: ArrayList<String>?
     }
 
     private fun setReversedDirectionListItem(position : Int, holder: ViewHolder)  {
-        if(position == strings?.size) {
+        if (position == strings.size) {
             setListItemToCurrentLocation(holder)
         } else {
-            val distance = distances?.get(position) ?: 0
-            val iconId: Int = DisplayHelper.getRouteDrawable(context, types?.get(position))
+            val distance = distances[position]
+            val iconId: Int = DisplayHelper.getRouteDrawable(context, types[position])
 
-            holder.simpleInstruction.text = strings?.get(position).toString()
+            holder.simpleInstruction.text = strings[position].toString()
             holder.distanceView.distanceInMeters = distance
             holder.iconImageView.setImageResource(iconId)
         }
@@ -80,22 +80,14 @@ class DirectionListAdapter(val context: Context, val strings: ArrayList<String>?
         if (position == 0) {
             setListItemToCurrentLocation(holder)
         } else {
-            var distance = distances?.get(position - CURRENT_LOCATION_OFFSET) ?: 0
+            var distance = distances[position - CURRENT_LOCATION_OFFSET]
             var iconId = DisplayHelper.getRouteDrawable(context,
-                    types?.get(position - CURRENT_LOCATION_OFFSET))
+                    types[position - CURRENT_LOCATION_OFFSET])
 
-            holder.simpleInstruction.text = strings?.get(position - CURRENT_LOCATION_OFFSET).toString()
+            holder.simpleInstruction.text = strings[position - CURRENT_LOCATION_OFFSET].toString()
             holder.distanceView.distanceInMeters = distance
             holder.iconImageView.setImageResource(iconId)
         }
-    }
-
-    private fun setSimpleDirectionListItem(position: Int, holder: ViewHolder) {
-        var distance = distances?.get(position) ?: 0
-        var iconId = DisplayHelper.getRouteDrawable(context, types?.get(position))
-        holder.simpleInstruction.text = strings?.get(position).toString()
-        holder.distanceView.distanceInMeters = distance
-        holder.iconImageView.setImageResource(iconId)
     }
 
     private fun setListItemToCurrentLocation(holder: ViewHolder) {
@@ -108,7 +100,6 @@ class DirectionListAdapter(val context: Context, val strings: ArrayList<String>?
     }
 
     class ViewHolder(view: View) {
-
         val simpleInstruction: TextView
         val distanceView: DistanceView
         val iconImageView: ImageView

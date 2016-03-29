@@ -50,9 +50,6 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     val mapListToggle: MapListToggleButton by lazy {
         findViewById(R.id.map_list_toggle)as MapListToggleButton
     }
-    val routeCancelButton: ImageView by lazy {
-        findViewById(R.id.route_cancel) as ImageView
-    }
     val directionListView: DirectionListView by lazy {
         findViewById(R.id.direction_list_vew) as DirectionListView
     }
@@ -123,7 +120,6 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         mapListToggle.setOnClickListener {
             routePresenter.onMapListToggleClick(mapListToggle.state)
         }
-        routeCancelButton.setOnClickListener { routePresenter.onRouteCancelButtonClick() }
         directionListView.directionItemClickListener = this
     }
 

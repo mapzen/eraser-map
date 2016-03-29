@@ -166,8 +166,10 @@ public class RouteModeViewTest {
 
     @Test
     public void footer_shouldHaveCorrectDistanceAndDestination() throws Exception {
-        TextView distance = (TextView) startActivity.findViewById(R.id.destination_distance);
-        TextView destinationText = (TextView) startActivity.findViewById(R.id.destination_name);
+        TextView distance = (TextView) startActivity.getRouteModeView().findViewById(
+                R.id.destination_distance);
+        TextView destinationText = (TextView) startActivity.getRouteModeView().findViewById(
+                R.id.destination_name);
         assertThat(distance.getText().toString()).isEqualTo("1.2 mi");
         assertThat(destinationText.getText()).isEqualTo(TestHelper.TEST_NAME);
     }

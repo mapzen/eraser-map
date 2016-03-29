@@ -3,26 +3,21 @@ package com.mapzen.erasermap.presenter
 import android.location.Location
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getFixture
-import com.mapzen.erasermap.model.event.RouteCancelEvent
 import com.mapzen.erasermap.view.MapListToggleButton
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Route
-import com.squareup.otto.Bus
-import com.squareup.otto.Subscribe
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
-public class RoutePresenterTest {
+@RunWith(RobolectricTestRunner::class) class RoutePresenterTest {
     val routeEngine = RouteEngine()
     val routeListener = RouteEngineListener()
-    val bus = Bus()
     val vsm = ViewStateManager()
-    val routePresenter = RoutePresenterImpl(routeEngine, routeListener, bus, vsm)
+    val routePresenter = RoutePresenterImpl(routeEngine, routeListener, vsm)
     val routeController = TestRouteController()
 
     @Before fun setUp() {
@@ -133,20 +128,6 @@ public class RoutePresenterTest {
 
         routePresenter.onMapListToggleClick(MapListToggleButton.MapListState.MAP)
         assertThat(routeController.isDirectionListVisible).isFalse()
-    }
-
-    @Test fun onRouteCancelButtonClick_shouldPostRouteCancelEvent() {
-        val subscriber = RouteCancelSubscriber()
-        bus.register(subscriber)
-        routePresenter.onRouteCancelButtonClick()
-        assertThat(subscriber.event).isNotNull()
-    }
-
-    class RouteCancelSubscriber {
-        var event: RouteCancelEvent? = null
-        @Subscribe fun onRouteCancelEvent(event: RouteCancelEvent) {
-            this.event = event
-        }
     }
 
     @Test fun onCenterMapOnLocation_shouldDynamicallySetZoom() {

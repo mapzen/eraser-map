@@ -1,6 +1,5 @@
 package com.mapzen.erasermap.controller
 
-import android.content.ComponentName
 import android.content.Context.LOCATION_SERVICE
 import android.location.Location
 import android.location.LocationManager
@@ -38,9 +37,7 @@ import org.robolectric.Robolectric
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.fakes.RoboMenu
-import org.robolectric.fakes.RoboMenuItem
 import org.robolectric.internal.ShadowExtractor
-import org.robolectric.shadows.ShadowApplication
 import java.util.ArrayList
 
 @RunWith(PrivateMapsTestRunner::class)
@@ -353,17 +350,6 @@ public class MainActivityTest {
         assertThat(activity.routeManager?.reverse).isFalse()
         activity.findViewById(R.id.route_preview).findViewById(R.id.route_reverse).performClick()
         assertThat(activity.routeManager?.reverse).isTrue()
-    }
-
-    @Test
-    public fun onViewListButtonClick_shouldOpenDirectionListActivity() {
-        activity.showRoutePreview(getTestLocation(), getTestFeature())
-        activity.success(TestRoute())
-        activity.findViewById(R.id.view_list).performClick()
-        val shadowActivity = shadowOf(activity)
-        val startedIntent = shadowActivity.nextStartedActivity
-        val shadowIntent = shadowOf(startedIntent)
-        assertThat(shadowIntent.component.className).contains("InstructionListActivity")
     }
 
     @Test

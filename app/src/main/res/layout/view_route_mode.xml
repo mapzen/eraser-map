@@ -5,84 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:id="@+id/footer_wrapper"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white">
-
-        <com.mapzen.erasermap.view.MapListToggleButton
-            android:id="@+id/map_list_toggle"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="8dp"
-            android:scaleType="center"
-            android:src="@drawable/ic_list"
-            android:background="?android:selectableItemBackground"/>
-
-        <ImageView
-            android:id="@+id/route_cancel"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="8dp"
-            android:scaleType="center"
-            android:src="@drawable/ic_cancel"
-            android:background="?android:selectableItemBackground" />
-
-        <LinearLayout
-            android:id="@+id/footer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@id/map_list_toggle"
-            android:layout_toLeftOf="@id/route_cancel"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:clickable="true"
-            android:padding="@dimen/footer_padding">
-
-            <com.mapzen.erasermap.view.DistanceView
-                android:id="@+id/destination_distance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:textColor="@color/gray"
-                android:textSize="@dimen/font_medium_2"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/footer_separator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/gray"
-                android:textSize="@dimen/font_tiny"
-                android:textStyle="bold"
-                android:text="@string/diamond_separator" />
-
-            <TextView
-                android:id="@+id/destination_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif-condensed"
-                android:maxLines="1"
-                android:singleLine="true"
-                android:textColor="@color/gray"
-                android:textSize="@dimen/font_medium_2"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-    </RelativeLayout>
+    <include layout="@layout/view_distance_title"/>
 
     <View
         android:id="@+id/divider_1"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:layout_below="@id/footer_wrapper"
+        android:layout_below="@+id/footer_wrapper"
         android:background="@drawable/thin_gray_divider" />
 
     <android.support.v4.view.ViewPager
