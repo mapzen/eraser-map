@@ -218,7 +218,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     private fun initMapController() {
         val mapView = findViewById(R.id.map) as MapView
         mapView.setZOrderMediaOverlay(true) //so that white bg shows, not window when launching
-        mapController = MapController(this, mapView, "style/eraser-map.yaml")
+        mapController = MapController(this, mapView, "style/bubble-wrap.yaml")
         mapController?.setLongPressResponder({
             x, y -> presenter.onReverseGeoRequested(x, y)
         })
