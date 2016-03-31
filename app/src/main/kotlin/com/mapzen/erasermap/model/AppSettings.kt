@@ -1,19 +1,22 @@
 package com.mapzen.erasermap.model
 
+import android.content.Context
 import android.location.Location
+import com.mapzen.pelias.SavedSearch
 import com.mapzen.valhalla.Router
 import java.io.File
 
-public interface AppSettings {
-    public var distanceUnits: Router.DistanceUnits
-    public var isMockLocationEnabled: Boolean
-    public var mockLocation: Location
-    public var isMockRouteEnabled: Boolean
-    public var mockRoute: File
-    public var isTileDebugEnabled: Boolean
-    public var isLabelDebugEnabled: Boolean
-    public var isTangramInfosDebugEnabled: Boolean
-    public var isCacheSearchResultsEnabled: Boolean
+interface AppSettings {
+    var distanceUnits: Router.DistanceUnits
+    var isMockLocationEnabled: Boolean
+    var mockLocation: Location
+    var isMockRouteEnabled: Boolean
+    var mockRoute: File
+    var isTileDebugEnabled: Boolean
+    var isLabelDebugEnabled: Boolean
+    var isTangramInfosDebugEnabled: Boolean
+    var isCacheSearchResultsEnabled: Boolean
 
-    public fun initTangramDebugFlags()
+    fun initTangramDebugFlags()
+    fun initSearchResultVersion(context: Context, savedSearch: SavedSearch)
 }

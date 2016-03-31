@@ -170,6 +170,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         presenter.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
         settings.initTangramDebugFlags()
+        settings.initSearchResultVersion(this, savedSearch)
+        initVoiceNavigationController()
         initNotificationCreator()
     }
 

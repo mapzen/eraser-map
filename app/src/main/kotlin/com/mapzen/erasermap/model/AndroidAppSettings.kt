@@ -1,30 +1,37 @@
 package com.mapzen.erasermap.model
 
+import android.content.Context
 import android.location.Location
 import android.preference.PreferenceManager
+import android.util.Log
+import android.widget.Toast
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
+import com.mapzen.pelias.SavedSearch
 import com.mapzen.tangram.DebugFlags
 import com.mapzen.tangram.Tangram
 import com.mapzen.valhalla.Router
 import java.io.File
 import java.util.Locale
 
-public class AndroidAppSettings(val application: EraserMapApplication) : AppSettings {
+class AndroidAppSettings(val application: EraserMapApplication) : AppSettings {
     companion object {
-        public val KEY_DISTANCE_UNITS: String = "list_distance_units"
-        public val KEY_MOCK_LOCATION_ENABLED: String = "checkbox_mock_location"
-        public val KEY_MOCK_LOCATION_VALUE: String = "edittext_mock_location"
-        public val KEY_MOCK_ROUTE_ENABLED: String = "checkbox_mock_route"
-        public val KEY_MOCK_ROUTE_VALUE: String = "edittext_mock_route"
-        public val KEY_TILE_DEBUG_ENABLED: String = "checkbox_tile_debug"
-        public val KEY_LABEL_DEBUG_ENABLED: String = "checkbox_label_debug"
-        public val KEY_TANGRAM_INFOS_DEBUG_ENABLED: String = "checkbox_tangram_infos_debug"
-        public val KEY_BUILD_NUMBER: String = "edittext_build_number"
-        public val KEY_ERASE_HISTORY: String = "edittext_erase_history"
-        public val KEY_CACHE_SEARCH_HISTORY: String = "checkbox_cache_search_results"
-        public val SHOW_DEBUG_SETTINGS_QUERY = "!!!!!!!!"
-        public val KEY_SHOW_DEBUG_SETTINGS = "show_debug_settings"
+        val KEY_DISTANCE_UNITS: String = "list_distance_units"
+        val KEY_MOCK_LOCATION_ENABLED: String = "checkbox_mock_location"
+        val KEY_MOCK_LOCATION_VALUE: String = "edittext_mock_location"
+        val KEY_MOCK_ROUTE_ENABLED: String = "checkbox_mock_route"
+        val KEY_MOCK_ROUTE_VALUE: String = "edittext_mock_route"
+        val KEY_TILE_DEBUG_ENABLED: String = "checkbox_tile_debug"
+        val KEY_LABEL_DEBUG_ENABLED: String = "checkbox_label_debug"
+        val KEY_TANGRAM_INFOS_DEBUG_ENABLED: String = "checkbox_tangram_infos_debug"
+        val KEY_BUILD_NUMBER: String = "edittext_build_number"
+        val KEY_ERASE_HISTORY: String = "edittext_erase_history"
+        val KEY_CACHE_SEARCH_HISTORY: String = "checkbox_cache_search_results"
+        val SHOW_DEBUG_SETTINGS_QUERY = "!!!!!!!!"
+        val KEY_SHOW_DEBUG_SETTINGS = "show_debug_settings"
+        val KEY_SEARCH_RESULTS_VERSION = "search_results_version"
+        val SEARCH_RESULTS_VERSION_UNKNOWN = -1
+        val SEARCH_RESULTS_VERSION = 1
     }
 
     private val prefs = PreferenceManager.getDefaultSharedPreferences(application)
@@ -66,12 +73,12 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
             val values = prefs.getString(KEY_MOCK_LOCATION_VALUE, default)
             val split = values?.split(",")
             val location = Location("mock")
-            location.setLatitude(split?.get(0)?.toDouble() as Double)
-            location.setLongitude(split?.get(1)?.toDouble() as Double)
+            location.latitude = split?.get(0)?.toDouble() as Double
+            location.longitude = split?.get(1)?.toDouble() as Double
             return location
         }
         set(value) {
-            val string = value.getLatitude().toString() + ", " + value.getLongitude().toString()
+            val string = value.latitude.toString() + ", " + value.longitude.toString()
             prefs.edit().putString(KEY_MOCK_LOCATION_VALUE, string).commit()
         }
 
@@ -96,7 +103,7 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
             return File(application.getExternalFilesDir(null), value)
         }
         set(value) {
-            prefs.edit().putString(KEY_MOCK_ROUTE_VALUE, value.getName()).commit()
+            prefs.edit().putString(KEY_MOCK_ROUTE_VALUE, value.name).commit()
         }
 
     /**
@@ -157,5 +164,34 @@ public class AndroidAppSettings(val application: EraserMapApplication) : AppSett
         Tangram.setDebugFlag(DebugFlags.TILE_INFOS, isTileDebugEnabled)
         Tangram.setDebugFlag(DebugFlags.LABELS, isLabelDebugEnabled)
         Tangram.setDebugFlag(DebugFlags.TANGRAM_INFOS, isTangramInfosDebugEnabled)
+    }
+
+    override fun initSearchResultVersion(context: Context, savedSearch: SavedSearch) {
+        if (newSearchResultVersion(context)) {
+            setSearchResultVersion(context, SEARCH_RESULTS_VERSION)
+            clearHistory(context, savedSearch)
+        }
+    }
+
+    private fun newSearchResultVersion(context: Context): Boolean {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if (!prefs.contains(KEY_SEARCH_RESULTS_VERSION)) {
+            return true
+        }
+        val version = prefs.getInt(KEY_SEARCH_RESULTS_VERSION, SEARCH_RESULTS_VERSION_UNKNOWN);
+        return version < SEARCH_RESULTS_VERSION;
+    }
+
+    private fun setSearchResultVersion(context: Context, version: Int) {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putInt(KEY_SEARCH_RESULTS_VERSION, version).commit()
+    }
+
+    private fun clearHistory(context: Context, savedSearch: SavedSearch) {
+        savedSearch.clear()
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putString(SavedSearch.TAG, savedSearch.serialize())
+                .commit()
     }
 }
