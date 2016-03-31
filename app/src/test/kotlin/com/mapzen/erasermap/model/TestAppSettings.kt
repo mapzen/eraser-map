@@ -1,7 +1,9 @@
 package com.mapzen.erasermap.model
 
+import android.content.Context
 import android.location.Location
 import com.mapzen.erasermap.dummy.TestHelper
+import com.mapzen.pelias.SavedSearch
 import com.mapzen.valhalla.Router
 import java.io.File
 
@@ -18,4 +20,8 @@ public class TestAppSettings : AppSettings {
 
     override fun initTangramDebugFlags() {
     }
+
+    override fun initSearchResultVersion(context: Context, savedSearch: SavedSearch) {
+    }
 }
+

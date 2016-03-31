@@ -223,10 +223,10 @@ class MainPresenterTest {
         assertThat(mainController.isRoutePreviewVisible).isTrue()
     }
 
-    @Test fun onRoutePreviewEvent_shouldDisableReverseGeocode() {
+    @Test fun onRoutePreviewEvent_shouldNotDisableReverseGeocode() {
         presenter.onReverseGeoRequested(0f, 0f)
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
-        assertThat(presenter.onReverseGeoRequested(0f, 0f)).isFalse()
+        assertThat(presenter.onReverseGeoRequested(0f, 0f)).isTrue()
     }
 
     @Test fun onBackPressed_shouldHideRoutePreview() {
