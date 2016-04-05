@@ -8,14 +8,15 @@ import android.widget.ImageButton
 import android.widget.TextView
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.controller.MainActivity.Companion.CONFIDENCE_THRESHOLD
+import com.mapzen.erasermap.model.ConfidenceHandler
 import com.mapzen.erasermap.model.event.RoutePreviewEvent
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.squareup.otto.Bus
 import javax.inject.Inject
 
-class SearchResultsAdapter(val context: Context, val features: List<Feature>, val reverseGeo: Boolean)
+class SearchResultsAdapter(val context: Context, val features: List<Feature>,
+                            val confidenceHandler: ConfidenceHandler)
         : PagerAdapter() {
 
     @Inject lateinit var bus: Bus
@@ -31,8 +32,7 @@ class SearchResultsAdapter(val context: Context, val features: List<Feature>, va
         val title = view.findViewById(R.id.title) as TextView
         val address = view.findViewById(R.id.address) as TextView
         val start = view.findViewById(R.id.preview) as ImageButton
-        val confidence = simpleFeature.confidence()
-        if (reverseGeo && confidence < CONFIDENCE_THRESHOLD) {
+        if (confidenceHandler.useRawLatLng(simpleFeature.confidence())) {
             title.text = String.format(context.getString(R.string.near_feature), simpleFeature.name())
         } else {
             title.text = simpleFeature.name()
@@ -54,4 +54,5 @@ class SearchResultsAdapter(val context: Context, val features: List<Feature>, va
     override fun destroyItem(container: ViewGroup?, position: Int, `object`: Any?) {
         container?.removeView(`object` as View)
     }
+
 }

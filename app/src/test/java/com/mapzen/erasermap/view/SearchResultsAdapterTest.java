@@ -3,7 +3,9 @@ package com.mapzen.erasermap.view;
 import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
+import com.mapzen.erasermap.model.ConfidenceHandler;
 import com.mapzen.erasermap.model.event.RoutePreviewEvent;
+import com.mapzen.erasermap.presenter.TestMainPresenterImpl;
 import com.mapzen.pelias.SimpleFeature;
 import com.mapzen.pelias.gson.Feature;
 
@@ -37,7 +39,8 @@ public class SearchResultsAdapterTest {
         feature = getTestFeature();
         ArrayList<Feature> features = new ArrayList<>();
         features.add(feature);
-        adapter = new SearchResultsAdapter(application, features, false);
+        adapter = new SearchResultsAdapter(application, features,
+                new ConfidenceHandler(new TestMainPresenterImpl()));
     }
 
     @Test

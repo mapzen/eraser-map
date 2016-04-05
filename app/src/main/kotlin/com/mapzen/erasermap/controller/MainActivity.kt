@@ -31,6 +31,7 @@ import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.AppSettings
+import com.mapzen.erasermap.model.ConfidenceHandler
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
@@ -120,6 +121,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     var searchView: PeliasSearchView? = null
     var voiceNavigationController: VoiceNavigationController? = null
     var notificationCreator: NotificationCreator? = null
+    lateinit var confidenceHandler: ConfidenceHandler
 
     // activity_main
     val findMeButton: ImageButton by lazy { findViewById(R.id.find_me) as ImageButton }
@@ -173,6 +175,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         settings.initSearchResultVersion(this, savedSearch)
         initVoiceNavigationController()
         initNotificationCreator()
+        initConfidenceHandler()
     }
 
     override protected fun onNewIntent(intent: Intent?) {
@@ -344,6 +347,10 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         notificationCreator = NotificationCreator(this)
     }
 
+    private fun initConfidenceHandler() {
+        confidenceHandler = ConfidenceHandler(presenter)
+    }
+
     override fun centerMapOnLocation(location: Location, zoom: Float) {
         mapController?.setMapPosition(location.longitude, location.latitude)
         mapController?.mapZoom = zoom
@@ -414,7 +421,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         searchView?.setOnPeliasFocusChangeListener { view, b ->
             if (b) {
                 expandSearchView()
-            } else if(presenter.resultListVisible) {
+            } else if (presenter.resultListVisible) {
                     onCloseAllSearchResults()
                 } else {
                 searchView?.setQuery(presenter.currentSearchTerm, false)
@@ -453,7 +460,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun showAllSearchResults(features: List<Feature>) {
-        if(presenter.resultListVisible as Boolean) {
+        if (presenter.resultListVisible) {
             onCloseAllSearchResults()
         } else {
             saveCurrentSearchTerm()
@@ -565,7 +572,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun showSearchResultsView(features: List<Feature>) {
-        searchResultsView.setAdapter(SearchResultsAdapter(this, features, presenter.reverseGeo))
+        searchResultsView.setAdapter(SearchResultsAdapter(this, features, confidenceHandler))
         searchResultsView.visibility = View.VISIBLE
         searchResultsView.onSearchResultsSelectedListener = this
     }
@@ -651,7 +658,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun showPlaceSearchFeature(features: List<Feature>) {
-        searchResultsView.setAdapter(SearchResultsAdapter(this, features.subList(0, 1), presenter.reverseGeo))
+        searchResultsView.setAdapter(SearchResultsAdapter(this, features.subList(0, 1),
+                confidenceHandler))
         searchResultsView.visibility = View.VISIBLE
         searchResultsView.onSearchResultsSelectedListener = this
     }
@@ -789,7 +797,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             routeManager.bearing = null
         }
 
-        if (!useRawLatLng(feature)) {
+        if (!confidenceHandler.useRawLatLng(feature.properties.confidence)) {
             routePreviewView.destination = SimpleFeature.fromFeature(feature)
             routeManager.destination = feature
         } else {
@@ -815,11 +823,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         properties.name = "$lng, $lat"
         rawFeature.properties = properties
         return rawFeature
-    }
-
-    private fun useRawLatLng(feature: Feature): Boolean {
-        return feature.properties.confidence < CONFIDENCE_THRESHOLD
-                && presenter?.reverseGeoLngLat != null
     }
 
     override fun drawRoute(route: Route) {
@@ -1087,7 +1090,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun startRoutingMode(feature: Feature) {
-        if (useRawLatLng(feature)) {
+        if (confidenceHandler.useRawLatLng(feature.properties.confidence)) {
             val rawFeature = generateRawFeature()
             showRoutingMode(rawFeature)
             routeModeView.startRoute(rawFeature, routeManager.route)
@@ -1226,3 +1229,4 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         endPin = null
     }
 }
+
