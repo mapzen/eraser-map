@@ -54,7 +54,7 @@ class DirectionListAdapter(val context: Context, val strings: ArrayList<String>,
             setDirectionListItem(position, holder)
         }
 
-        if (position == currentInstructionIndex) {
+        if (position == currentInstructionIndex + CURRENT_LOCATION_OFFSET) {
             view?.setBackgroundColor(context.resources.getColor(R.color.light_gray))
         } else {
             view?.setBackgroundColor(context.resources.getColor(android.R.color.white))
@@ -96,7 +96,7 @@ class DirectionListAdapter(val context: Context, val strings: ArrayList<String>,
     }
 
     private fun onDirectionClicked(position: Int) {
-        directionItemClickListener?.onDirectionItemClicked(position)
+        directionItemClickListener?.onDirectionItemClicked(position-CURRENT_LOCATION_OFFSET)
     }
 
     class ViewHolder(view: View) {
