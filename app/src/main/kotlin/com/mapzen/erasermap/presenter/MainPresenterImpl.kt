@@ -21,6 +21,7 @@ import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
+import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.squareup.otto.Bus
@@ -42,10 +43,13 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     override var currentSearchTerm: String? = null
     override var resultListVisible = false
     override var reverseGeo = false
+    override var reverseGeoLngLat: LngLat? = null
 
     private var searchResults: Result? = null
     private var destination: Feature? = null
     private var initialized = false
+    private var restoreReverseGeoOnBack = false
+
 
     /**
      * We will migrate to Retrofit2 where we will have ability to cancel requests. Before then,
@@ -104,7 +108,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             val current = searchResults?.features?.get(0)
             if (current is Feature) {
                 features.add(current)
-                mainViewController?.overridePlaceFeature(features.get(0))
+                mainViewController?.overridePlaceFeature(features[0])
             }
             searchResults?.features = features
             mainViewController?.showPlaceSearchFeature(features)
@@ -202,6 +206,9 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     @Subscribe public fun onRoutePreviewEvent(event: RoutePreviewEvent) {
         vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
+        if (reverseGeo) {
+            restoreReverseGeoOnBack = true
+        }
         reverseGeo = false
         destination = event.destination
         mainViewController?.collapseSearchView()
@@ -256,6 +263,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     private fun onBackPressedStateRoutePreview() {
         vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
+        if (restoreReverseGeoOnBack) {
+            restoreReverseGeoOnBack = false
+            reverseGeo = true
+        }
         mainViewController?.hideRoutePreview()
         mainViewController?.clearRoute()
         if (searchResults != null) {

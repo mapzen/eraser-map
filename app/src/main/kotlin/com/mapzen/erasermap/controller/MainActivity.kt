@@ -31,6 +31,7 @@ import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.AppSettings
+import com.mapzen.erasermap.model.ConfidenceHandler
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
@@ -75,6 +76,8 @@ import com.mapzen.valhalla.Router
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -118,6 +121,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     var searchView: PeliasSearchView? = null
     var voiceNavigationController: VoiceNavigationController? = null
     var notificationCreator: NotificationCreator? = null
+    lateinit var confidenceHandler: ConfidenceHandler
 
     // activity_main
     val findMeButton: ImageButton by lazy { findViewById(R.id.find_me) as ImageButton }
@@ -164,10 +168,13 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         initCompass()
         initReverseButton()
         initMapRotateListener()
+        initConfidenceHandler()
         presenter.onCreate()
         presenter.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
         settings.initTangramDebugFlags()
+        settings.initSearchResultVersion(this, savedSearch)
+        initVoiceNavigationController()
         initNotificationCreator()
     }
 
@@ -242,17 +249,23 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         mapView.setZOrderMediaOverlay(true) //so that white bg shows, not window when launching
         mapController = MapController(this, mapView, "style/bubble-wrap.yaml")
         mapController?.setLongPressResponder({
-            x, y -> presenter.onReverseGeoRequested(x, y)
+            x, y ->
+                confidenceHandler.longPressed = true
+                presenter.onReverseGeoRequested(x, y)
         })
         mapController?.setTapResponder(object: TouchInput.TapResponder {
             override fun onSingleTapUp(x: Float, y: Float): Boolean = false
             override fun onSingleTapConfirmed(x: Float, y: Float): Boolean {
+                confidenceHandler.longPressed = false
+                var coords = mapController?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
+                presenter?.reverseGeoLngLat = coords
                 poiTapPoint = floatArrayOf(x, y)
                 mapController?.pickFeature(x, y)
                 return true
             }
         })
         mapController?.setDoubleTapResponder({ x, y ->
+            confidenceHandler.longPressed = false
             val tappedPos = mapController?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
             val currentPos = mapController?.mapPosition
             if (tappedPos != null && currentPos != null) {
@@ -266,6 +279,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         })
         mapController?.setFeatureTouchListener({
             properties, positionX, positionY ->
+                confidenceHandler.longPressed = false
                 // Reassign tapPoint to center of the feature tapped
                 // Also used in placing the pin
                 poiTapPoint = floatArrayOf(positionX, positionY)
@@ -338,6 +352,10 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         notificationCreator = NotificationCreator(this)
     }
 
+    private fun initConfidenceHandler() {
+        confidenceHandler = ConfidenceHandler(presenter)
+    }
+
     override fun centerMapOnLocation(location: Location, zoom: Float) {
         mapController?.setMapPosition(location.longitude, location.latitude)
         mapController?.mapZoom = zoom
@@ -408,7 +426,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         searchView?.setOnPeliasFocusChangeListener { view, b ->
             if (b) {
                 expandSearchView()
-            } else if(presenter.resultListVisible) {
+            } else if (presenter.resultListVisible) {
                     onCloseAllSearchResults()
                 } else {
                 searchView?.setQuery(presenter.currentSearchTerm, false)
@@ -447,7 +465,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun showAllSearchResults(features: List<Feature>) {
-        if(presenter.resultListVisible as Boolean) {
+        if (presenter.resultListVisible) {
             onCloseAllSearchResults()
         } else {
             saveCurrentSearchTerm()
@@ -559,7 +577,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun showSearchResultsView(features: List<Feature>) {
-        searchResultsView.setAdapter(SearchResultsAdapter(this, features))
+        searchResultsView.setAdapter(SearchResultsAdapter(this, features, confidenceHandler))
         searchResultsView.visibility = View.VISIBLE
         searchResultsView.onSearchResultsSelectedListener = this
     }
@@ -606,9 +624,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
         if (poiTapFallback) return
 
-        val simpleFeature = SimpleFeature.fromFeature(features.get(0))
-        val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
-
         val properties = com.mapzen.tangram.Properties()
         properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
         if (reverseGeocodeData == null) {
@@ -616,7 +631,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             Tangram.addDataSource(reverseGeocodeData)
         }
         reverseGeocodeData?.clear()
-        reverseGeocodeData?.addPoint(properties, lngLat)
+        reverseGeocodeData?.addPoint(properties, presenter?.reverseGeoLngLat)
 
         mapController?.requestRender()
     }
@@ -648,7 +663,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun showPlaceSearchFeature(features: List<Feature>) {
-        searchResultsView.setAdapter(SearchResultsAdapter(this, features.subList(0, 1)))
+        searchResultsView.setAdapter(SearchResultsAdapter(this, features.subList(0, 1),
+                confidenceHandler))
         searchResultsView.visibility = View.VISIBLE
         searchResultsView.onSearchResultsSelectedListener = this
     }
@@ -708,6 +724,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     override fun reverseGeolocate(screenX: Float, screenY: Float) {
         pelias.setLocationProvider(presenter.getPeliasLocationProvider())
         var coords = mapController?.coordinatesAtScreenPosition(screenX.toDouble(), screenY.toDouble())
+        presenter?.reverseGeoLngLat = coords
         presenter.currentFeature = getGenericLocationFeature(coords?.latitude as Double,
                 coords?.longitude as Double)
         pelias.reverse(coords?.latitude as Double, coords?.longitude as Double,
@@ -777,9 +794,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     override fun showRoutePreview(location: Location, feature: Feature) {
         showCurrentLocation(location)
-
         routeManager.origin = location
-        routeManager.destination = feature
 
         if (location.hasBearing()) {
             routeManager.bearing = location.bearing
@@ -787,8 +802,32 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             routeManager.bearing = null
         }
 
-        routePreviewView.destination = SimpleFeature.fromFeature(feature)
+        if (!confidenceHandler.useRawLatLng(feature.properties.confidence)) {
+            routePreviewView.destination = SimpleFeature.fromFeature(feature)
+            routeManager.destination = feature
+        } else {
+            val rawFeature = generateRawFeature()
+            routePreviewView.destination = SimpleFeature.fromFeature(rawFeature)
+            routeManager.destination = rawFeature
+        }
         route()
+    }
+
+    private fun generateRawFeature(): Feature {
+        var rawFeature: Feature = Feature()
+        rawFeature.geometry = Geometry()
+        val coords = ArrayList<Double>()
+        coords.add(presenter?.reverseGeoLngLat?.longitude as Double)
+        coords.add(presenter?.reverseGeoLngLat?.latitude as Double)
+        rawFeature.geometry.coordinates = coords
+        val properties = Properties()
+        val formatter = DecimalFormat(".####")
+        formatter.roundingMode = RoundingMode.HALF_UP
+        val lng = formatter.format(presenter?.reverseGeoLngLat?.longitude as Double)
+        val lat = formatter.format(presenter?.reverseGeoLngLat?.latitude  as Double)
+        properties.name = "$lng, $lat"
+        rawFeature.properties = properties
+        return rawFeature
     }
 
     override fun drawRoute(route: Route) {
@@ -1056,8 +1095,14 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun startRoutingMode(feature: Feature) {
-        showRoutingMode(feature)
-        routeModeView.startRoute(feature, routeManager.route)
+        if (confidenceHandler.useRawLatLng(feature.properties.confidence)) {
+            val rawFeature = generateRawFeature()
+            showRoutingMode(rawFeature)
+            routeModeView.startRoute(rawFeature, routeManager.route)
+        } else {
+            showRoutingMode(feature)
+            routeModeView.startRoute(feature, routeManager.route)
+        }
         setRoutingCamera()
         hideRoutePins()
     }
@@ -1189,3 +1234,4 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         endPin = null
     }
 }
+

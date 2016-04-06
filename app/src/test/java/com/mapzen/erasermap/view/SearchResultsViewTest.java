@@ -4,6 +4,9 @@ import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
 import com.mapzen.erasermap.dummy.TestAttributeSet;
+import com.mapzen.erasermap.model.ConfidenceHandler;
+import com.mapzen.erasermap.presenter.MainPresenterImpl;
+import com.mapzen.erasermap.presenter.TestMainPresenterImpl;
 import com.mapzen.pelias.gson.Feature;
 
 import org.junit.Before;
@@ -89,7 +92,8 @@ public class SearchResultsViewTest {
         features.add(feature);
         features.add(feature);
 
-        final SearchResultsAdapter adapter = new SearchResultsAdapter(application, features);
+        final SearchResultsAdapter adapter = new SearchResultsAdapter(application, features,
+                new ConfidenceHandler(new TestMainPresenterImpl()));
         final TestSelectedListener listener = new TestSelectedListener();
         searchResultsView.setAdapter(adapter);
         searchResultsView.setOnSearchResultsSelectedListener(listener);

@@ -8,7 +8,7 @@ import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.pelias.SavedSearch
 import javax.inject.Inject
 
-public class SettingsActivity : HomeAsUpActivity() {
+class SettingsActivity : HomeAsUpActivity() {
     @Inject lateinit var savedSearch: SavedSearch
     @Inject lateinit var settings: AppSettings
 
@@ -19,9 +19,10 @@ public class SettingsActivity : HomeAsUpActivity() {
         fragmentManager.beginTransaction()
                 .replace(android.R.id.content, fragment)
                 .commit()
+
     }
 
-    public fun clearHistory(title: String) {
+    fun clearHistory(title: String) {
         savedSearch.clear()
         PreferenceManager.getDefaultSharedPreferences(this)
                 .edit()

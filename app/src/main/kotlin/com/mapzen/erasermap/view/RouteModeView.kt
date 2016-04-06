@@ -66,6 +66,9 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     val destinationNameTextView: TextView by lazy {
         findViewById(R.id.destination_name) as TextView
     }
+    val footerSeparator: View by lazy {
+        findViewById(R.id.footer_separator)
+    }
 
     var mapController: MapController? = null
         set(value) {
@@ -395,7 +398,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         displayInstruction(instructionPager.adapter?.count?.minus(1) ?: 0)
         notificationCreator?.killNotification()
         distanceToDestination.distanceInMeters = 0
-        findViewById(R.id.footer_separator).visibility = View.GONE
+        footerSeparator.visibility = View.GONE
         playFinalVerbalInstruction()
 
         val location = route?.getGeometry()?.get(route?.getGeometry()?.size?.minus(1) ?: 0)
@@ -431,7 +434,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         initInstructionAdapter()
         this.visibility = View.VISIBLE
         routePresenter.onRouteStart(route)
-        findViewById(R.id.footer_separator).visibility = View.VISIBLE
+        footerSeparator.visibility = View.VISIBLE
     }
 
     fun resumeRoute(destination: Feature, route: Route?) {
