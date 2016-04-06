@@ -48,6 +48,8 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     private var searchResults: Result? = null
     private var destination: Feature? = null
     private var initialized = false
+    private var restoreReverseGeoOnBack = false
+
 
     /**
      * We will migrate to Retrofit2 where we will have ability to cancel requests. Before then,
@@ -204,6 +206,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     @Subscribe public fun onRoutePreviewEvent(event: RoutePreviewEvent) {
         vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
+        if (reverseGeo) {
+            restoreReverseGeoOnBack = true
+        }
+        reverseGeo = false
         destination = event.destination
         mainViewController?.collapseSearchView()
         mainViewController?.hideSearchResults()
@@ -257,6 +263,10 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     private fun onBackPressedStateRoutePreview() {
         vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
+        if (restoreReverseGeoOnBack) {
+            restoreReverseGeoOnBack = false
+            reverseGeo = true
+        }
         mainViewController?.hideRoutePreview()
         mainViewController?.clearRoute()
         if (searchResults != null) {
