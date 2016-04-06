@@ -30,8 +30,8 @@ public class CommonModule {
     }
 
     @Provides @Singleton RoutePresenter provideRoutePresenter(RouteEngine routeEngine,
-            RouteEngineListener routeEngineListener, ViewStateManager vsm) {
-        return new RoutePresenterImpl(routeEngine, routeEngineListener, vsm);
+            RouteEngineListener routeEngineListener, Bus bus, ViewStateManager vsm) {
+        return new RoutePresenterImpl(routeEngine, routeEngineListener, bus, vsm);
     }
 
     @Provides @Singleton ViewStateManager provideViewStateManager() {

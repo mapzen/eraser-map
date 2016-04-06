@@ -60,7 +60,7 @@
         android:text="@string/resume"
         android:visibility="gone"
         android:textColor="@color/dark_gray"
-        android:background="@drawable/bg_white_gray_border"/>
+        android:background="@drawable/bg_white_gray_border" />
 
     <TextView
         android:id="@+id/osm_attribution"

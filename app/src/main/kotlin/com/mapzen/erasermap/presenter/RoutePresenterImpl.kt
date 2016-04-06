@@ -1,15 +1,18 @@
 package com.mapzen.erasermap.presenter
 
 import android.location.Location
+import com.mapzen.erasermap.model.event.RouteCancelEvent
 import com.mapzen.erasermap.view.MapListToggleButton
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
+import com.squareup.otto.Bus
 
 class RoutePresenterImpl(private val routeEngine: RouteEngine,
         private val routeEngineListener: RouteEngineListener,
+        private val bus: Bus,
         private val vsm: ViewStateManager) : RoutePresenter {
 
     override var routeController: RouteViewController? = null
@@ -92,6 +95,10 @@ class RoutePresenterImpl(private val routeEngine: RouteEngine,
             routeController?.hideRouteDirectionList()
             vsm.viewState = ViewStateManager.ViewState.ROUTING
         }
+    }
+
+    override fun onRouteCancelButtonClick() {
+        bus.post(RouteCancelEvent())
     }
 
     override fun isTrackingCurrentLocation(): Boolean {
