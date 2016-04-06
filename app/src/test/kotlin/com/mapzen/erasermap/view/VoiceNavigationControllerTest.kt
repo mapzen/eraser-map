@@ -39,6 +39,13 @@ class VoiceNavigationControllerTest {
     fun play_shouldReturnAudioLevelToNormalOnDone() {
         val instruction = TestHelper.getTestInstruction()
         speaker.finishOnSpeak = true
+        voiceNavigationController.playStart(instruction)
+        assertThat(voiceNavigationController.audioFocused).isFalse()
+    }
+
+    @Test
+    fun play_shouldReturnAudioLevelToNormalOnError() {
+        val instruction = TestHelper.getTestInstruction()
         speaker.errorOnSpeak = true
         voiceNavigationController.playStart(instruction)
         assertThat(voiceNavigationController.audioFocused).isFalse()
