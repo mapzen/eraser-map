@@ -50,6 +50,7 @@ import com.mapzen.erasermap.view.SearchListViewAdapter
 import com.mapzen.erasermap.view.SearchResultsAdapter
 import com.mapzen.erasermap.view.SearchResultsView
 import com.mapzen.erasermap.view.SettingsActivity
+import com.mapzen.erasermap.view.Speaker
 import com.mapzen.erasermap.view.VoiceNavigationController
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
@@ -101,6 +102,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     @Inject lateinit var mapzenLocation: MapzenLocation
     @Inject lateinit var keys: ApiKeys
     @Inject lateinit var pelias: Pelias
+    @Inject lateinit var speaker: Speaker
 
     lateinit var app: EraserMapApplication
     var mapController : MapController? = null
@@ -166,7 +168,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         presenter.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
         settings.initTangramDebugFlags()
-        initVoiceNavigationController()
         initNotificationCreator()
     }
 
@@ -233,6 +234,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         startPin?.clear()
         endPin?.clear()
         killNotifications()
+        voiceNavigationController?.shutdown()
     }
 
     private fun initMapController() {
@@ -329,7 +331,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun initVoiceNavigationController() {
-        voiceNavigationController = VoiceNavigationController(this)
+        voiceNavigationController = VoiceNavigationController(this, speaker)
     }
 
     private fun initNotificationCreator() {

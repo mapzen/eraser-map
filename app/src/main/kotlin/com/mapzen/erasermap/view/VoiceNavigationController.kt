@@ -2,29 +2,25 @@ package com.mapzen.erasermap.view
 
 import android.app.Activity
 import android.speech.tts.TextToSpeech
-import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.helpers.RouteEngine
-import com.mapzen.speakerbox.Speakerbox
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Router
-import javax.inject.Inject
 
-public class VoiceNavigationController(val activity: Activity) {
+open class VoiceNavigationController(val activity: Activity, val speakerbox: Speaker) {
 
-    @Inject
-    lateinit var speakerbox: Speakerbox
+    val requestFocusRunnable = Runnable { requestAudioFocus() }
+    val abandonFocusRunnable = Runnable { abandonAudioFocus() }
 
     init {
-        val app = activity.application as EraserMapApplication
-        app.component().inject(this)
+        speakerbox.enableVolumeControl(activity)
         speakerbox.setQueueMode(TextToSpeech.QUEUE_ADD)
     }
 
-    public fun playStart(instruction: Instruction): Unit =
+    fun playStart(instruction: Instruction): Unit =
         play(instruction.getVerbalPreTransitionInstruction())
 
-    public fun playMilestone(instruction: Instruction,
+    fun playMilestone(instruction: Instruction,
             milestone: RouteEngine.Milestone,
             units: Router.DistanceUnits) {
 
@@ -64,29 +60,43 @@ public class VoiceNavigationController(val activity: Activity) {
         play(instruction.getVerbalTransitionAlertInstruction())
     }
 
-    public fun stop() {
+    fun stop() {
         speakerbox.stop()
     }
 
-    public fun playPre(instruction: Instruction): Unit =
+    fun playPre(instruction: Instruction): Unit =
             play(instruction.getVerbalPreTransitionInstruction())
 
-    public fun playPost(instruction: Instruction): Unit =
+    fun playPost(instruction: Instruction): Unit =
             play(instruction.getVerbalPostTransitionInstruction())
 
     private fun play(text: String) {
-        speakerbox.play(text)
+        speakerbox.play(text, requestFocusRunnable, abandonFocusRunnable, abandonFocusRunnable)
     }
 
-    public fun mute() {
+    fun mute() {
         speakerbox.mute()
     }
 
-    public fun unmute() {
+    fun unmute() {
         speakerbox.unmute()
     }
 
-    public fun isMuted(): Boolean {
-        return speakerbox.isMuted
+    fun isMuted(): Boolean {
+        return speakerbox.isMuted()
     }
+
+    fun shutdown() {
+        speakerbox.disableVolumeControl(activity)
+        abandonAudioFocus()
+    }
+
+    open protected fun requestAudioFocus() {
+        speakerbox.requestAudioFocus()
+    }
+
+    open protected fun abandonAudioFocus() {
+        speakerbox.abandonAudioFocus()
+    }
+
 }
