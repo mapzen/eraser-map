@@ -168,6 +168,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         initCompass()
         initReverseButton()
         initMapRotateListener()
+        initConfidenceHandler()
         presenter.onCreate()
         presenter.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -175,7 +176,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         settings.initSearchResultVersion(this, savedSearch)
         initVoiceNavigationController()
         initNotificationCreator()
-        initConfidenceHandler()
     }
 
     override protected fun onNewIntent(intent: Intent?) {
@@ -249,11 +249,14 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         mapView.setZOrderMediaOverlay(true) //so that white bg shows, not window when launching
         mapController = MapController(this, mapView, "style/bubble-wrap.yaml")
         mapController?.setLongPressResponder({
-            x, y -> presenter.onReverseGeoRequested(x, y)
+            x, y ->
+                confidenceHandler.longPressed = true
+                presenter.onReverseGeoRequested(x, y)
         })
         mapController?.setTapResponder(object: TouchInput.TapResponder {
             override fun onSingleTapUp(x: Float, y: Float): Boolean = false
             override fun onSingleTapConfirmed(x: Float, y: Float): Boolean {
+                confidenceHandler.longPressed = false
                 var coords = mapController?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
                 presenter?.reverseGeoLngLat = coords
                 poiTapPoint = floatArrayOf(x, y)
@@ -262,6 +265,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             }
         })
         mapController?.setDoubleTapResponder({ x, y ->
+            confidenceHandler.longPressed = false
             val tappedPos = mapController?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
             val currentPos = mapController?.mapPosition
             if (tappedPos != null && currentPos != null) {
@@ -275,6 +279,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         })
         mapController?.setFeatureTouchListener({
             properties, positionX, positionY ->
+                confidenceHandler.longPressed = false
                 // Reassign tapPoint to center of the feature tapped
                 // Also used in placing the pin
                 poiTapPoint = floatArrayOf(positionX, positionY)
