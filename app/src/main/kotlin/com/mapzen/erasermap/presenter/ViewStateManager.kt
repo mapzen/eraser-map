@@ -1,14 +1,15 @@
 package com.mapzen.erasermap.presenter
 
-public open class ViewStateManager {
+open class ViewStateManager {
     enum class ViewState {
         DEFAULT,
         SEARCH,
         SEARCH_RESULTS,
         ROUTE_PREVIEW,
+        ROUTE_PREVIEW_LIST,
         ROUTING,
         ROUTE_DIRECTION_LIST
     }
 
-    public var viewState: ViewState = ViewState.DEFAULT
+    var viewState: ViewState = ViewState.DEFAULT
 }

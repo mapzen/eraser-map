@@ -22,7 +22,7 @@ class DirectionListView(context: Context?, attrs: AttributeSet?) : ListView(cont
             distances.add(instruction.distance)
         }
 
-        val directionAdapter = DirectionListAdapter(context, strings, types, distances, false, false)
+        val directionAdapter = DirectionListAdapter(context, strings, types, distances, false)
         directionAdapter.directionItemClickListener = directionItemClickListener
         adapter = directionAdapter
     }

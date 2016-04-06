@@ -12,7 +12,7 @@ import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.valhalla.Instruction
 import java.util.ArrayList
 
-public class InstructionAdapter(private val context: Context,
+class InstructionAdapter(private val context: Context,
         private val instructions: ArrayList<Instruction>) : PagerAdapter() {
 
     companion object {
@@ -52,15 +52,15 @@ public class InstructionAdapter(private val context: Context,
         view.tag = RouteModeView.VIEW_TAG + position
     }
 
-    public fun setBackgroundColorActive(view: View?) {
+    fun setBackgroundColorActive(view: View?) {
         view?.setBackgroundColor(context.resources.getColor(android.R.color.white))
     }
 
-    public fun setBackgroundColorInactive(view: View?) {
+    fun setBackgroundColorInactive(view: View?) {
         view?.setBackgroundColor(context.resources.getColor(R.color.light_gray))
     }
 
-    public fun setBackgroundColorArrived(view: View?) {
+    fun setBackgroundColorArrived(view: View?) {
         view?.setBackgroundColor(context.resources.getColor(R.color.light_gray))
     }
 
@@ -72,14 +72,14 @@ public class InstructionAdapter(private val context: Context,
         container?.removeView(`object` as View)
     }
 
-    public fun setBeginText(view: View?, instruction: Instruction) {
+    fun setBeginText(view: View?, instruction: Instruction) {
         val title = view?.findViewById(R.id.instruction_text) as TextView
         if (instruction.getBeginStreetNames().length > 0) {
             title.text = instruction.getBeginStreetNames()
         }
     }
 
-    public fun setPostText(view: View?, instruction: Instruction) {
+    fun setPostText(view: View?, instruction: Instruction) {
         val title = view?.findViewById(R.id.instruction_text) as TextView
         title.text = instruction.getName()
     }

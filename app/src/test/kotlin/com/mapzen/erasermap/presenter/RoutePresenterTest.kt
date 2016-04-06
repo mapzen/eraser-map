@@ -17,7 +17,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-public class RoutePresenterTest {
+class RoutePresenterTest {
     val routeEngine = RouteEngine()
     val routeListener = RouteEngineListener()
     val bus = Bus()

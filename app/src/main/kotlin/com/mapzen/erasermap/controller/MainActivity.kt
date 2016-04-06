@@ -1,5 +1,8 @@
 package com.mapzen.erasermap.controller
 
+import android.animation.Animator
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Point
@@ -13,6 +16,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.ImageButton
@@ -36,7 +40,9 @@ import com.mapzen.erasermap.util.AxisAlignedBoundingBox.PointD
 import com.mapzen.erasermap.util.NotificationBroadcastReceiver
 import com.mapzen.erasermap.util.NotificationCreator
 import com.mapzen.erasermap.view.CompassView
-import com.mapzen.erasermap.view.InstructionListActivity
+import com.mapzen.erasermap.view.DirectionListAdapter
+import com.mapzen.erasermap.view.DirectionListView
+import com.mapzen.erasermap.view.DistanceView
 import com.mapzen.erasermap.view.MuteView
 import com.mapzen.erasermap.view.RouteModeView
 import com.mapzen.erasermap.view.RoutePreviewView
@@ -81,6 +87,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         @JvmStatic val MAP_DATA_PROP_STATE_INACTIVE = "inactive"
         @JvmStatic val MAP_DATA_PROP_ID = "id"
         @JvmStatic val MAP_DATA_PROP_NAME = "name"
+        @JvmStatic val DIRECTION_LIST_ANIMATION_DURATION = 300L
     }
 
     val requestCodeSearchResults: Int = 0x01
@@ -110,23 +117,36 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     var voiceNavigationController: VoiceNavigationController? = null
     var notificationCreator: NotificationCreator? = null
 
+    // activity_main
     val findMeButton: ImageButton by lazy { findViewById(R.id.find_me) as ImageButton }
+    val compass: CompassView by lazy { findViewById(R.id.compass_view) as CompassView }
+    val autocompleteListView: AutoCompleteListView by lazy { findViewById(R.id.auto_complete) as AutoCompleteListView }
+    val searchResultsView: SearchResultsView by lazy { findViewById(R.id.search_results) as SearchResultsView }
+    val osmAttributionText: TextView by lazy { findViewById(R.id.osm_attribution) as TextView }
+
+    // view_route_preview
     val routePreviewView: RoutePreviewView by lazy { findViewById(R.id.route_preview) as RoutePreviewView }
-    val routeModeView: RouteModeView by lazy { findViewById(R.id.route_mode) as RouteModeView }
     val reverseButton: ImageButton by lazy { findViewById(R.id.route_reverse) as ImageButton }
+    val routePreviewDistanceTimeLayout: LinearLayout by lazy { findViewById(R.id.route_preview_distance_time_view)
+            as LinearLayout }
     val viewListButton: Button by lazy { findViewById(R.id.view_list) as Button }
     val startNavigationButton: Button by lazy { findViewById(R.id.start_navigation) as Button }
     val byCar: RadioButton by lazy { findViewById(R.id.by_car) as RadioButton }
     val byBike: RadioButton by lazy { findViewById(R.id.by_bike) as RadioButton }
     val byFoot: RadioButton by lazy { findViewById(R.id.by_foot) as RadioButton }
-    val compass: CompassView by lazy { findViewById(R.id.compass_view) as CompassView }
     val routePreviewCompass: CompassView by lazy { findViewById(R.id.route_preview_compass_view) as CompassView }
+    val routeTopContainer: RelativeLayout by lazy { routePreviewView.findViewById(R.id.main_content) as RelativeLayout }
+    val routeBtmContainer: LinearLayout by lazy { routePreviewView.findViewById(R.id.bottom_content) as LinearLayout }
+    val distanceView: DistanceView by lazy { routePreviewView.findViewById(R.id.destination_distance) as DistanceView }
+    val destinationNameTextView: TextView by lazy { findViewById(R.id.destination_name) as TextView }
+    val previewDirectionListView: DirectionListView by lazy { routePreviewView.findViewById(R.id.list_view) as DirectionListView }
+    val previewToggleBtn: View by lazy { routePreviewView.findViewById(R.id.map_list_toggle) }
+    val balancerView: View by lazy { routePreviewView.findViewById(R.id.balancer) }
+
+    // view_route_mode
+    val routeModeView: RouteModeView by lazy { findViewById(R.id.route_mode) as RouteModeView }
     val routeModeCompass: CompassView by lazy { findViewById(R.id.route_mode_compass_view) as CompassView }
     val muteView: MuteView by lazy { findViewById(R.id.route_mode_mute_view) as MuteView }
-    val searchResultsView: SearchResultsView by lazy { findViewById(R.id.search_results) as SearchResultsView }
-    val osmAttributionText: TextView by lazy { findViewById(R.id.osm_attribution) as TextView }
-    val routePreviewDistanceTimeLayout: LinearLayout by lazy { findViewById(R.id.route_preview_distance_time_view) as LinearLayout }
-    val autocompleteListView: AutoCompleteListView by lazy { findViewById(R.id.auto_complete) as AutoCompleteListView }
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -960,10 +980,10 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         finish()
     }
 
-    override fun showDirectionList() {
+    override fun showDirectionsList() {
         val instructionStrings = ArrayList<String>()
-        val instructionType = ArrayList<Int>()
-        val instructionDistance = ArrayList<Int>()
+        val instructionTypes = ArrayList<Int>()
+        val instructionDistances = ArrayList<Int>()
         val instructions = routeManager.route?.getRouteInstructions()
         if (instructions != null) {
             for(instruction in instructions) {
@@ -971,19 +991,66 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
                 if (humanInstruction is String) {
                     instructionStrings.add(humanInstruction)
                 }
-                instructionType.add(instruction.turnInstruction)
-                instructionDistance.add(instruction.distance)
+                instructionTypes.add(instruction.turnInstruction)
+                instructionDistances.add(instruction.distance)
             }
         }
 
         val simpleFeature = SimpleFeature.fromFeature(routeManager.destination)
-        val intent = Intent(this, InstructionListActivity::class.java)
-        intent.putExtra(InstructionListActivity.EXTRA_STRINGS, instructionStrings)
-        intent.putExtra(InstructionListActivity.EXTRA_TYPES, instructionType)
-        intent.putExtra(InstructionListActivity.EXTRA_DISTANCES, instructionDistance)
-        intent.putExtra(InstructionListActivity.EXTRA_DESTINATION, simpleFeature.name())
-        intent.putExtra(InstructionListActivity.EXTRA_REVERSE, routeManager.reverse)
-        startActivityForResult(intent, requestCodeSearchResults)
+        val display = windowManager.defaultDisplay
+        val size = Point()
+        display.getSize(size);
+        val height = size.y.toFloat();
+
+        previewToggleBtn.visibility = View.GONE
+        balancerView.visibility = View.GONE
+        routeBtmContainer.translationY = height
+        routeBtmContainer.visibility = View.VISIBLE
+        distanceView.distanceInMeters = instructionDistances[0]
+        destinationNameTextView.text = simpleFeature.name()
+        previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings, instructionTypes,
+                instructionDistances, routeManager.reverse)
+        val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, View.TRANSLATION_Y, -height)
+        val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, View.TRANSLATION_Y, 0f)
+        val animations = AnimatorSet()
+        animations.playTogether(topContainerAnimator, btmContainerAnimator)
+        animations.duration = DIRECTION_LIST_ANIMATION_DURATION
+        animations.interpolator = AccelerateDecelerateInterpolator()
+        animations.addListener(object: Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
+                compass.visibility = View.GONE
+            }
+            override fun onAnimationEnd(animation: Animator) {}
+            override fun onAnimationRepeat(animation: Animator) {}
+            override fun onAnimationCancel(animation: Animator) {}
+        })
+        animations.start()
+    }
+
+    override fun hideDirectionsList() {
+        val display = windowManager.defaultDisplay
+        val size = Point()
+        display.getSize(size);
+        val height = size.y.toFloat();
+
+        val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, View.TRANSLATION_Y, 0f)
+        val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, View.TRANSLATION_Y, height)
+        val animations = AnimatorSet()
+        animations.playTogether(topContainerAnimator, btmContainerAnimator)
+        animations.duration = DIRECTION_LIST_ANIMATION_DURATION
+        animations.interpolator = AccelerateDecelerateInterpolator()
+        animations.addListener(object: Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
+                compass.visibility = View.VISIBLE
+
+            }
+            override fun onAnimationEnd(animation: Animator) {
+                routeBtmContainer.visibility = View.GONE
+            }
+            override fun onAnimationRepeat(animation: Animator) {}
+            override fun onAnimationCancel(animation: Animator) {}
+        })
+        animations.start()
     }
 
     override fun startRoutingMode(feature: Feature) {

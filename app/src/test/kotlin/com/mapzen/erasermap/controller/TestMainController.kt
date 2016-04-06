@@ -97,8 +97,12 @@ public class TestMainController : MainViewController {
     override fun shutDown() {
     }
 
-    override fun showDirectionList() {
+    override fun showDirectionsList() {
         isDirectionListVisible = true
+    }
+
+    override fun hideDirectionsList() {
+        isDirectionListVisible = false
     }
 
     override fun hideRoutingMode() {

@@ -22,9 +22,6 @@
             android:launchMode="singleTask"
             android:label="@string/app_name" />
         <activity
-            android:name=".view.InstructionListActivity"
-            android:label="@string/instruction_list" />
-        <activity
             android:name=".view.SettingsActivity"
             android:label="@string/settings" />
         <activity

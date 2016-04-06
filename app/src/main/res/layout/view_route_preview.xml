@@ -1,144 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_gravity="fill_horizontal"
-    android:background="@android:color/transparent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <include
-        android:id="@+id/header"
-        layout="@layout/route_header" />
-
-    <com.mapzen.erasermap.view.CompassView
-        android:id="@+id/route_preview_compass_view"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:layout_below="@id/header"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="16dp"
-        android:layout_marginRight="16dp"
-        android:src="@drawable/ic_compass"
-        tools:ignore="RtlHardcoded" />
-
-    <TextView
-        android:id="@+id/osm_attribution"
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_above="@+id/options"
-        android:layout_marginBottom="@dimen/padding_vertical_big"
-        android:layout_marginRight="@dimen/padding_horizontal_default"
-        android:text="@string/osm_attribution"
-        android:textColor="@color/dark_gray"
-        android:textSize="@dimen/font_tiny" />
+        android:layout_height="match_parent"
+        android:id="@+id/main_content"
+        android:layout_gravity="fill_horizontal"
+        android:background="@android:color/transparent">
 
-    <LinearLayout
-        android:id="@+id/options"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:background="@android:color/white">
+        <include
+            android:id="@+id/header"
+            layout="@layout/route_header" />
 
-        <LinearLayout
-            android:id="@+id/route_preview_distance_time_view"
+        <com.mapzen.erasermap.view.CompassView
+            android:id="@+id/route_preview_compass_view"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_below="@id/header"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/ic_compass"
+            tools:ignore="RtlHardcoded" />
+
+        <TextView
+            android:id="@+id/osm_attribution"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="8dp">
-
-            <com.mapzen.erasermap.view.DistanceView
-                android:id="@+id/distance_preview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/dark_gray"
-                android:textSize="@dimen/font_small" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/dark_gray"
-                android:textSize="@dimen/font_tiny"
-                android:text="@string/diamond_separator" />
-
-            <com.mapzen.erasermap.view.TimeView
-                android:id="@+id/time_preview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/dark_gray"
-                android:textSize="@dimen/font_small" />
-        </LinearLayout>
-
-        <RadioGroup
-            android:id="@+id/routing_mode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:background="@android:color/transparent"
-            android:orientation="horizontal">
-            <RadioButton
-                android:id="@+id/by_car"
-                android:checked="true"
-                android:background="@drawable/radio_button_car"
-                android:button="@android:color/transparent"
-                android:gravity="center_horizontal"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-            <RadioButton
-                android:id="@+id/by_bike"
-                android:background="@drawable/radio_button_bike"
-                android:button="@android:color/transparent"
-                android:gravity="center_horizontal"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-            <RadioButton
-                android:id="@+id/by_foot"
-                android:background="@drawable/radio_button_walk"
-                android:button="@android:color/transparent"
-                android:gravity="center_horizontal"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-        </RadioGroup>
+            android:layout_alignParentRight="true"
+            android:layout_above="@+id/options"
+            android:layout_marginBottom="@dimen/padding_vertical_big"
+            android:layout_marginRight="@dimen/padding_horizontal_default"
+            android:text="@string/osm_attribution"
+            android:textColor="@color/dark_gray"
+            android:textSize="@dimen/font_tiny" />
 
         <LinearLayout
+            android:id="@+id/options"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_margin="16dp"
-            style="?android:attr/buttonBarStyle">
+            android:layout_alignParentBottom="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:background="@android:color/white">
 
-            <Button
-                android:id="@+id/view_list"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/route_preview_distance_time_view"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.35"
-                android:text="@string/view_list"
-                android:layout_marginRight="4dp"
-                android:background="@drawable/bg_black_gray_border"
-                android:textColor="@color/color_accent"
-                style="?android:attr/buttonBarButtonStyle" />
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="8dp">
 
-            <Button
-                android:id="@+id/start_navigation"
-                android:layout_width="0dp"
+                <com.mapzen.erasermap.view.DistanceView
+                    android:id="@+id/distance_preview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/font_small" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/font_tiny"
+                    android:text="@string/diamond_separator" />
+
+                <com.mapzen.erasermap.view.TimeView
+                    android:id="@+id/time_preview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/font_small" />
+            </LinearLayout>
+
+            <RadioGroup
+                android:id="@+id/routing_mode"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.65"
-                android:text="@string/start_navigation"
-                android:layout_marginLeft="4dp"
-                android:background="@drawable/bg_blue_gray_border"
-                android:textColor="@color/color_primary"
-                style="?android:attr/buttonBarButtonStyle" />
+                android:gravity="center_horizontal"
+                android:background="@android:color/transparent"
+                android:orientation="horizontal">
 
+                <RadioButton
+                    android:id="@+id/by_car"
+                    android:checked="true"
+                    android:background="@drawable/radio_button_car"
+                    android:button="@android:color/transparent"
+                    android:gravity="center_horizontal"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <RadioButton
+                    android:id="@+id/by_bike"
+                    android:background="@drawable/radio_button_bike"
+                    android:button="@android:color/transparent"
+                    android:gravity="center_horizontal"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <RadioButton
+                    android:id="@+id/by_foot"
+                    android:background="@drawable/radio_button_walk"
+                    android:button="@android:color/transparent"
+                    android:gravity="center_horizontal"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </RadioGroup>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="16dp"
+                style="?android:attr/buttonBarStyle">
+
+                <Button
+                    android:id="@+id/view_list"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.35"
+                    android:text="@string/view_list"
+                    android:layout_marginRight="4dp"
+                    android:background="@drawable/bg_black_gray_border"
+                    android:textColor="@color/color_accent"
+                    style="?android:attr/buttonBarButtonStyle" />
+
+                <Button
+                    android:id="@+id/start_navigation"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.65"
+                    android:text="@string/start_navigation"
+                    android:layout_marginLeft="4dp"
+                    android:background="@drawable/bg_blue_gray_border"
+                    android:textColor="@color/color_primary"
+                    style="?android:attr/buttonBarButtonStyle" />
+
+            </LinearLayout>
         </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/bottom_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:background="@color/transparent_white">
+
+        <com.mapzen.erasermap.view.DistanceTitleView
+            android:id="@+id/footer_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@drawable/thin_gray_divider" />
+
+        <com.mapzen.erasermap.view.DirectionListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/list_view" />
+
     </LinearLayout>
-</RelativeLayout>
+</FrameLayout>

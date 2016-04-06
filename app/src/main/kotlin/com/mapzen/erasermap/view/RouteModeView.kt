@@ -7,7 +7,6 @@ import android.os.Handler
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
@@ -38,7 +37,6 @@ import javax.inject.Inject
 
 class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener, DirectionItemClickListener {
     companion object {
-        val TAG = RouteModeView::class.java.simpleName
         const val VIEW_TAG: String = "Instruction_"
         const val MAP_DATA_NAME_ROUTE_ICON = "route_icon"
         const val MAP_DATA_NAME_ROUTE_LINE = "route"
@@ -123,6 +121,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         mapListToggle.setOnClickListener {
             routePresenter.onMapListToggleClick(mapListToggle.state)
         }
+        routeCancelButton.visibility = View.VISIBLE
         routeCancelButton.setOnClickListener { routePresenter.onRouteCancelButtonClick() }
         directionListView.directionItemClickListener = this
     }
@@ -512,6 +511,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         }
 
         mapListToggle.state = MapListToggleButton.MapListState.MAP
+        routeCancelButton.visibility = View.GONE
     }
 
     override fun hideRouteDirectionList() {
@@ -520,6 +520,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         }
         directionListView.visibility = View.GONE
         mapListToggle.state = MapListToggleButton.MapListState.LIST
+        routeCancelButton.visibility = View.VISIBLE
     }
 
     override fun onDirectionItemClicked(position: Int) {

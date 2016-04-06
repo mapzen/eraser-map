@@ -1,6 +1,8 @@
 package com.mapzen.erasermap.presenter
 
 import android.location.Location
+import com.mapzen.erasermap.R
+import com.mapzen.erasermap.controller.MainActivityTest
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
@@ -110,6 +112,15 @@ class MainPresenterTest {
         presenter.mainViewController = newController
         presenter.onRestoreViewState()
         assertThat(newController.isRoutePreviewVisible).isTrue()
+    }
+
+    @Test fun onRestoreViewState_shouldRestoreRoutePreviewList() {
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        val newController = TestMainController()
+        presenter.onClickViewList()
+        presenter.mainViewController = newController
+        presenter.onRestoreViewState()
+        assertThat(newController.isDirectionListVisible).isTrue()
     }
 
     @Test fun onRestoreViewState_shouldShowRoutingMode() {
@@ -234,6 +245,12 @@ class MainPresenterTest {
     @Test fun onClickViewList_shouldMakeDirectionsVisible() {
         presenter.onClickViewList()
         assertThat(mainController.isDirectionListVisible).isTrue()
+    }
+
+    @Test fun onClickViewList_shouldSetViewStateRoutePreviewList() {
+        presenter.onClickViewList()
+        assertThat(presenter.vsm.viewState).isEqualTo(
+                ViewStateManager.ViewState.ROUTE_PREVIEW_LIST)
     }
 
     @Test fun onClickStartNavigation_shouldMakeRoutingModeVisible() {

@@ -12,6 +12,7 @@ import com.mapzen.erasermap.model.event.RoutePreviewEvent
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.DEFAULT
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_PREVIEW
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_PREVIEW_LIST
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTING
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
@@ -116,6 +117,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             SEARCH -> onRestoreViewStateSearch()
             SEARCH_RESULTS -> onRestoreViewStateSearchResults()
             ROUTE_PREVIEW -> onRestoreViewStateRoutePreview()
+            ROUTE_PREVIEW_LIST -> onRestoreViewStateRoutePreviewList()
             ROUTING -> onRestoreViewStateRouting()
             ROUTE_DIRECTION_LIST -> onRestoreViewStateRouteDirectionList()
         }
@@ -142,6 +144,11 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     private fun onRestoreViewStateRoutePreview() {
         generateRoutePreview()
+    }
+
+    private fun onRestoreViewStateRoutePreviewList() {
+        generateRoutePreview()
+        onClickViewList()
     }
 
     private fun onRestoreViewStateRouting() {
@@ -223,6 +230,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             SEARCH -> onBackPressedStateSearch()
             SEARCH_RESULTS -> onBackPressedStateSearchResults()
             ROUTE_PREVIEW -> onBackPressedStateRoutePreview()
+            ROUTE_PREVIEW_LIST -> onBackPressedStateRoutePreviewList()
             ROUTING -> onBackPressedStateRouting()
             ROUTE_DIRECTION_LIST -> onBackPressedStateRouteDirectionList()
         }
@@ -264,6 +272,11 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         }
     }
 
+    private fun onBackPressedStateRoutePreviewList() {
+        vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
+        mainViewController?.hideDirectionsList()
+    }
+
     private fun onBackPressedStateRouting() {
         vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
         mainViewController?.hideRoutingMode()
@@ -276,7 +289,8 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     }
 
     override fun onClickViewList() {
-        mainViewController?.showDirectionList()
+        vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW_LIST
+        mainViewController?.showDirectionsList()
     }
 
     override fun onClickStartNavigation() {
