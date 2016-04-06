@@ -33,7 +33,7 @@ class SearchResultsAdapter(val context: Context, val features: List<Feature>,
         val address = view.findViewById(R.id.address) as TextView
         val start = view.findViewById(R.id.preview) as ImageButton
         if (confidenceHandler.useRawLatLng(simpleFeature.confidence())) {
-            title.text = String.format(context.getString(R.string.near_feature), simpleFeature.name())
+            title.text = context.getString(R.string.dropped_pin)
         } else {
             title.text = simpleFeature.name()
         }
