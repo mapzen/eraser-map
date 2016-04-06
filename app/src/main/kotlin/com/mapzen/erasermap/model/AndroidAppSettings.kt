@@ -3,8 +3,6 @@ package com.mapzen.erasermap.model
 import android.content.Context
 import android.location.Location
 import android.preference.PreferenceManager
-import android.util.Log
-import android.widget.Toast
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.pelias.SavedSearch
