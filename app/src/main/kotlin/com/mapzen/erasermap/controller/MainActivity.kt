@@ -35,16 +35,7 @@ import com.mapzen.erasermap.util.AxisAlignedBoundingBox
 import com.mapzen.erasermap.util.AxisAlignedBoundingBox.PointD
 import com.mapzen.erasermap.util.NotificationBroadcastReceiver
 import com.mapzen.erasermap.util.NotificationCreator
-import com.mapzen.erasermap.view.CompassView
-import com.mapzen.erasermap.view.InstructionListActivity
-import com.mapzen.erasermap.view.MuteView
-import com.mapzen.erasermap.view.RouteModeView
-import com.mapzen.erasermap.view.RoutePreviewView
-import com.mapzen.erasermap.view.SearchListViewAdapter
-import com.mapzen.erasermap.view.SearchResultsAdapter
-import com.mapzen.erasermap.view.SearchResultsView
-import com.mapzen.erasermap.view.SettingsActivity
-import com.mapzen.erasermap.view.VoiceNavigationController
+import com.mapzen.erasermap.view.*
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.SimpleFeature
@@ -94,6 +85,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     @Inject lateinit var mapzenLocation: MapzenLocation
     @Inject lateinit var keys: ApiKeys
     @Inject lateinit var pelias: Pelias
+    @Inject lateinit var speaker: Speaker
 
     lateinit var app: EraserMapApplication
     var mapController : MapController? = null
@@ -146,7 +138,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         presenter.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
         settings.initTangramDebugFlags()
-        initVoiceNavigationController()
         initNotificationCreator()
     }
 
@@ -213,6 +204,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         startPin?.clear()
         endPin?.clear()
         killNotifications()
+        voiceNavigationController?.shutdown()
     }
 
     private fun initMapController() {
@@ -309,7 +301,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun initVoiceNavigationController() {
-        voiceNavigationController = VoiceNavigationController(this)
+        voiceNavigationController = VoiceNavigationController(this, speaker)
     }
 
     private fun initNotificationCreator() {

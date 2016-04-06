@@ -14,8 +14,9 @@ import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.erasermap.presenter.ViewStateManager;
 import com.mapzen.erasermap.util.IntentFactory;
+import com.mapzen.erasermap.view.Speaker;
+import com.mapzen.erasermap.view.SpeakerboxSpeaker;
 import com.mapzen.pelias.Pelias;
-import com.mapzen.speakerbox.Speakerbox;
 
 import com.squareup.otto.Bus;
 
@@ -86,8 +87,8 @@ public class AndroidModule {
         return Pelias.getPeliasWithEndpoint(endpoint, logLevel);
     }
 
-    @Provides @Singleton Speakerbox provideSpeakerbox() {
-        return new Speakerbox(application);
+    @Provides @Singleton Speaker provideSpeaker() {
+        return new SpeakerboxSpeaker(application);
     }
 
     @Provides @Singleton IntentFactory provideIntentFactory() {

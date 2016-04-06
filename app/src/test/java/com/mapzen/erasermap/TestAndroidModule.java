@@ -13,8 +13,9 @@ import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.erasermap.presenter.ViewStateManager;
 import com.mapzen.erasermap.util.IntentFactory;
 import com.mapzen.erasermap.util.MockIntentFactory;
+import com.mapzen.erasermap.view.Speaker;
+import com.mapzen.erasermap.view.TestSpeakerbox;
 import com.mapzen.pelias.Pelias;
-import com.mapzen.speakerbox.Speakerbox;
 
 import com.squareup.otto.Bus;
 
@@ -79,8 +80,8 @@ public class TestAndroidModule {
         return Mockito.mock(Pelias.class);
     }
 
-    @Provides @Singleton Speakerbox provideSpeakerbox() {
-        return Mockito.mock(Speakerbox.class);
+    @Provides @Singleton Speaker provideSpeakerbox() {
+        return new TestSpeakerbox();
     }
 
     @Provides @Singleton IntentFactory provideIntentFactory() {
