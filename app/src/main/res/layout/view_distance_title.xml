@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/footer_wrapper"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@android:color/white">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
     <com.mapzen.erasermap.view.MapListToggleButton
         android:id="@+id/map_list_toggle"
@@ -25,7 +21,8 @@
         android:layout_marginRight="8dp"
         android:scaleType="center"
         android:src="@drawable/ic_cancel"
-        android:background="?android:selectableItemBackground" />
+        android:background="?android:selectableItemBackground"
+        android:visibility="gone" />
 
     <View
         android:layout_width="40dp"
@@ -77,4 +74,4 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-</RelativeLayout>
+</merge>

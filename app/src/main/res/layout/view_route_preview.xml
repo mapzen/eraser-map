@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <RelativeLayout android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:id="@+id/main_content"
-                    android:layout_gravity="fill_horizontal"
-                    android:background="@android:color/transparent">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/main_content"
+        android:layout_gravity="fill_horizontal"
+        android:background="@android:color/transparent">
 
         <include
             android:id="@+id/header"
@@ -85,6 +85,7 @@
                 android:gravity="center_horizontal"
                 android:background="@android:color/transparent"
                 android:orientation="horizontal">
+
                 <RadioButton
                     android:id="@+id/by_car"
                     android:checked="true"
@@ -95,6 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
+
                 <RadioButton
                     android:id="@+id/by_bike"
                     android:background="@drawable/radio_button_bike"
@@ -104,6 +106,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
+
                 <RadioButton
                     android:id="@+id/by_foot"
                     android:background="@drawable/radio_button_walk"
@@ -148,24 +151,29 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <LinearLayout android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:id="@+id/bottom_content"
-                    android:orientation="vertical"
-                    android:visibility="gone"
-                    android:background="@color/transparent_white">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/bottom_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:background="@color/transparent_white">
 
-        <include layout="@layout/view_distance_title"/>
+        <com.mapzen.erasermap.view.DistanceTitleView
+            android:id="@+id/footer_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white" />
 
         <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@drawable/thin_gray_divider" />
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@drawable/thin_gray_divider" />
 
         <com.mapzen.erasermap.view.DirectionListView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/list_view"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/list_view" />
 
     </LinearLayout>
 </FrameLayout>

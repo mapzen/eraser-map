@@ -5,14 +5,12 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.RelativeLayout
-import android.widget.RelativeLayout.GONE
-import android.widget.RelativeLayout.VISIBLE
 import android.widget.TextView
 import com.mapzen.erasermap.R
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.valhalla.Route
 
-public class RoutePreviewView : RelativeLayout {
+class RoutePreviewView : RelativeLayout {
     var startView: TextView? = null
     var destinationView: TextView? = null
     var distancePreview: DistanceView? = null
@@ -20,7 +18,7 @@ public class RoutePreviewView : RelativeLayout {
     var viewListButton: Button? = null
     var startNavigationButton: Button? = null
 
-    public var reverse : Boolean = false
+    var reverse : Boolean = false
         set (value) {
             field = value
             if (value) {
@@ -35,14 +33,14 @@ public class RoutePreviewView : RelativeLayout {
             }
         }
 
-    public var destination: SimpleFeature? = null
+    var destination: SimpleFeature? = null
         set (value) {
             field = value
             startView?.setText(R.string.current_location)
             destinationView?.text = value?.name()
         }
 
-    public var route: Route? = null
+    var route: Route? = null
         set (value) {
             field = value
             val distance = value?.getTotalDistance() ?: 0
@@ -52,15 +50,15 @@ public class RoutePreviewView : RelativeLayout {
             timePreview?.timeInMinutes = time / 60
         }
 
-    public constructor(context: Context) : super(context) {
+    constructor(context: Context) : super(context) {
         init()
     }
 
-    public constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init()
     }
 
-    public constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
     : super(context, attrs, defStyleAttr) {
         init()
     }
@@ -77,12 +75,12 @@ public class RoutePreviewView : RelativeLayout {
         startNavigationButton = findViewById(R.id.start_navigation) as Button?
     }
 
-    public fun disableStartNavigation() {
+    fun disableStartNavigation() {
         startNavigationButton?.isEnabled = false
         viewListButton?.isEnabled = false
     }
 
-    public fun enableStartNavigation() {
+    fun enableStartNavigation() {
         startNavigationButton?.isEnabled = true
         viewListButton?.isEnabled = true
     }
