@@ -311,7 +311,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun initFindMeButton() {
-        findMe = MapData("find_me")
+        findMe = MapData("mz_current_location")
         Tangram.addDataSource(findMe)
         findMeButton.visibility = View.VISIBLE
         findMeButton.setOnClickListener({ presenter.onFindMeButtonClick() })
@@ -627,7 +627,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         val properties = com.mapzen.tangram.Properties()
         properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
         if (reverseGeocodeData == null) {
-            reverseGeocodeData = MapData("reverse_geocode")
+            reverseGeocodeData = MapData("mz_dropped_pin")
             Tangram.addDataSource(reverseGeocodeData)
         }
         reverseGeocodeData?.clear()
@@ -653,7 +653,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
         // hijack reverseGeocodeData for tappedPoiPin
         if (reverseGeocodeData == null) {
-            reverseGeocodeData = MapData("reverse_geocode")
+            reverseGeocodeData = MapData("mz_dropped_pin")
             Tangram.addDataSource(reverseGeocodeData)
         }
         reverseGeocodeData?.clear()
@@ -673,7 +673,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         centerOnCurrentFeature(features)
 
         if (searchResultsData == null) {
-            searchResultsData = MapData("search")
+            searchResultsData = MapData("mz_search_result")
             Tangram.addDataSource(searchResultsData)
         }
 
@@ -911,8 +911,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun showRoutePins(start: LngLat, end: LngLat) {
-        startPin = MapData("route_start")
-        endPin = MapData("route_stop")
+        startPin = MapData("mz_route_start")
+        endPin = MapData("mz_route_stop")
         Tangram.addDataSource(startPin)
         Tangram.addDataSource(endPin)
 

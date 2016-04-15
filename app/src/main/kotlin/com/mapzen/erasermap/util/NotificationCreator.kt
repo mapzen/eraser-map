@@ -31,7 +31,7 @@ class NotificationCreator(private val mainActivity: Activity) {
 
     companion object {
         const val EXIT_NAVIGATION = "exit_navigation"
-        const val NOTIFICATION_TAG_ROUTE = "route"
+        const val NOTIFICATION_TAG_ROUTE = "mz_route_line"
     }
 
     init {
