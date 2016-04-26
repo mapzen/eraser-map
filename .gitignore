@@ -5,4 +5,4 @@ local.properties
 *.iml
 build
 .DS_Store
-.swp
+*.swp
