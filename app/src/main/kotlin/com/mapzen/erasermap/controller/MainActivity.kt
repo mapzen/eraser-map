@@ -477,6 +477,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
                 simpleFeatures.add(AutoCompleteItem(SimpleFeature.fromFeature(feature)))
             }
             searchView?.disableAutoKeyboardShow()
+            searchView?.disableAutoComplete()
             searchView?.onActionViewExpanded()
             searchView?.setQuery(presenter.currentSearchTerm, false)
             autoCompleteAdapter?.clear();
