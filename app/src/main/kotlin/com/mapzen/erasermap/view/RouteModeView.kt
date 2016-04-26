@@ -38,8 +38,8 @@ import javax.inject.Inject
 class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener, DirectionItemClickListener {
     companion object {
         const val VIEW_TAG: String = "Instruction_"
-        const val MAP_DATA_NAME_ROUTE_ICON = "route_icon"
-        const val MAP_DATA_NAME_ROUTE_LINE = "route"
+        const val MAP_DATA_NAME_ROUTE_ICON = "mz_route_location"
+        const val MAP_DATA_NAME_ROUTE_LINE = "mz_route_line"
         const val MAP_DATA_PROP_TYPE = "type"
         const val MAP_DATA_PROP_POINT = "point"
         const val MAP_DATA_PROP_LINE = "line"
