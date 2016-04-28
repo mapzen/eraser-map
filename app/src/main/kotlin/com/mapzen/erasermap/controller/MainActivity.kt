@@ -415,6 +415,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         searchView?.setPelias(pelias)
         searchView?.setCallback(PeliasCallback())
         searchView?.setOnSubmitListener({
+            presenter?.reverseGeoLngLat = null
             saveCurrentSearchTerm()
             presenter.onQuerySubmit()
         })
