@@ -72,7 +72,6 @@ import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapData
 import com.mapzen.tangram.MapView
-import com.mapzen.tangram.Tangram
 import com.mapzen.tangram.TouchInput
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
@@ -82,7 +81,7 @@ import retrofit.RetrofitError
 import retrofit.client.Response
 import java.math.RoundingMode
 import java.text.DecimalFormat
-import java.util.ArrayList
+import java.util.*
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
@@ -97,6 +96,9 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         @JvmStatic val MAP_DATA_PROP_NAME = "name"
         @JvmStatic val DIRECTION_LIST_ANIMATION_DURATION = 300L
         @JvmStatic val PERMISSIONS_REQUEST: Int = 1
+        @JvmStatic val SCENE_CAMERA = "cameras"
+        @JvmStatic val SCENE_CAMERA_ISOMETRIC = "{isometric: {type: isometric}}"
+        @JvmStatic val SCENE_CAMERA_PERSPECTIVE = "{perspective: {type: perspective}}"
     }
 
     val requestCodeSearchResults: Int = 0x01
@@ -168,7 +170,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         setContentView(R.layout.activity_main)
         presenter.mainViewController = this
         initMapController()
-        initFindMeButton()
         initVoiceNavigationController() // must initialize this before calling initMute
         initMute()
         initCompass()
@@ -207,7 +208,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun rotateCompass() {
-        val radians: Float = mapController?.mapRotation ?: 0f
+        val radians: Float = mapController?.rotation ?: 0f
         val degrees = Math.toDegrees(radians.toDouble()).toFloat()
         compass.rotation = degrees
         routePreviewCompass.rotation = degrees
@@ -261,12 +262,21 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     private fun initMapController() {
         val mapView = findViewById(R.id.map) as MapView
-        mapView.setZOrderMediaOverlay(true) //so that white bg shows, not window when launching
-        mapController = MapController(this, mapView, "style/bubble-wrap.yaml")
+        //TODO:
+        //mapView.setZOrderMediaOverlay(true) //so that white bg shows, not window when launching
+        mapView.getMapAsync({ mapController ->
+            this.mapController = mapController
+            configureMapController()
+            initFindMeButton()
+            presenter.configureMapController()
+        }, "style/bubble-wrap.yaml");
+    }
+
+    private fun configureMapController() {
         mapController?.setLongPressResponder({
             x, y ->
-                confidenceHandler.longPressed = true
-                presenter.onReverseGeoRequested(x, y)
+            confidenceHandler.longPressed = true
+            presenter.onReverseGeoRequested(x, y)
         })
         mapController?.setTapResponder(object: TouchInput.TapResponder {
             override fun onSingleTapUp(x: Float, y: Float): Boolean = false
@@ -282,42 +292,41 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         mapController?.setDoubleTapResponder({ x, y ->
             confidenceHandler.longPressed = false
             val tappedPos = mapController?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
-            val currentPos = mapController?.mapPosition
+            val currentPos = mapController?.position
             if (tappedPos != null && currentPos != null) {
-                mapController?.setMapZoom((mapController?.mapZoom as Float) + 1.0f, 0.5f)
-                mapController?.setMapPosition(
-                        0.5f * (tappedPos.longitude + currentPos.longitude),
-                        0.5f * (tappedPos.latitude + currentPos.latitude),
-                        0.5f);
+                mapController?.setZoomEased((mapController?.zoom as Float) + 1.0f, 500)
+                val lngLat = LngLat(0.5f * (tappedPos.longitude + currentPos.longitude),
+                        0.5f * (tappedPos.latitude + currentPos.latitude));
+                mapController?.setPositionEased(lngLat, 500);
             }
             true;
         })
-        mapController?.setFeatureTouchListener({
+        mapController?.setFeaturePickListener({
             properties, positionX, positionY ->
-                confidenceHandler.longPressed = false
-                // Reassign tapPoint to center of the feature tapped
-                // Also used in placing the pin
-                poiTapPoint = floatArrayOf(positionX, positionY)
-                if (properties.contains(MAP_DATA_PROP_NAME)) {
-                    poiTapName = properties.getString(MAP_DATA_PROP_NAME).toString()
+            confidenceHandler.longPressed = false
+            // Reassign tapPoint to center of the feature tapped
+            // Also used in placing the pin
+            poiTapPoint = floatArrayOf(positionX, positionY)
+            if (properties.contains(MAP_DATA_PROP_NAME)) {
+                poiTapName = properties[MAP_DATA_PROP_NAME];
+            }
+            if (properties.contains(MAP_DATA_PROP_SEARCHINDEX)) {
+                val searchIndex = properties[MAP_DATA_PROP_SEARCHINDEX]!!.toInt()
+                presenter.onSearchResultTapped(searchIndex)
+            } else {
+                if (properties.contains(MAP_DATA_PROP_ID)) {
+                    val featureID = properties[MAP_DATA_PROP_ID]!!.toLong()
+                    presenter.onPlaceSearchRequested("openstreetmap:venue:$featureID")
+                } else if (poiTapPoint != null) {
+                    presenter.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(),
+                            poiTapPoint?.get(0)?.toFloat())
                 }
-                if (properties.contains(MAP_DATA_PROP_SEARCHINDEX)) {
-                    val searchIndex = properties.getNumber(MAP_DATA_PROP_SEARCHINDEX).toInt()
-                    presenter.onSearchResultTapped(searchIndex)
-                } else {
-                    if (properties.contains(MAP_DATA_PROP_ID)) {
-                        val featureID = properties.getNumber(MAP_DATA_PROP_ID).toLong()
-                        presenter.onPlaceSearchRequested("openstreetmap:venue:$featureID")
-                    } else {
-                        if (poiTapPoint != null) {
-                            presenter.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(),
-                                    poiTapPoint?.get(0)?.toFloat())
-                        }
-                    }
-                }
+            }
         })
         mapController?.setHttpHandler(tileHttpHandler)
         mapzenLocation.mapController = mapController
+        routeModeView.mapController = mapController
+        settings.mapController = mapController
     }
 
     private fun initAutoCompleteAdapter() {
@@ -326,8 +335,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun initFindMeButton() {
-        findMe = MapData("mz_current_location")
-        Tangram.addDataSource(findMe)
+        findMe = mapController?.addDataLayer("mz_current_location")
         findMeButton.visibility = View.VISIBLE
         findMeButton.setOnClickListener({
             if (permissionManager.permissionsGranted()) {
@@ -378,22 +386,21 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun centerMapOnLocation(location: Location, zoom: Float) {
-        mapController?.setMapPosition(location.longitude, location.latitude)
-        mapController?.mapZoom = zoom
+        val lngLat = LngLat(location.longitude, location.latitude)
+        mapController?.position = lngLat
+        mapController?.zoom = zoom
         showCurrentLocation(location)
     }
 
     override fun showCurrentLocation(location: Location) {
         val currentLocation = LngLat(location.longitude, location.latitude)
-        val properties = com.mapzen.tangram.Properties()
-
         findMe?.clear()
-        findMe?.addPoint(properties, currentLocation)
+        findMe?.addPoint(currentLocation, null)
         mapController?.requestRender()
     }
 
     override fun setMapTilt(radians: Float) {
-        mapController?.mapTilt = radians
+        mapController?.tilt = radians
     }
 
     override fun toggleMute() {
@@ -408,7 +415,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun setMapRotation(radians: Float) {
-        mapController?.setMapRotation(radians, 1f)
+        mapController?.setRotationEased(radians, 1000)
         compass.reset()
         routePreviewCompass.reset()
         routeModeCompass.reset()
@@ -665,14 +672,13 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
         if (poiTapFallback) return
 
-        val properties = com.mapzen.tangram.Properties()
-        properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
+        val properties = HashMap<String, String>()
+        properties.put(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
         if (reverseGeocodeData == null) {
-            reverseGeocodeData = MapData("mz_dropped_pin")
-            Tangram.addDataSource(reverseGeocodeData)
+            reverseGeocodeData = mapController?.addDataLayer("mz_dropped_pin")
         }
         reverseGeocodeData?.clear()
-        reverseGeocodeData?.addPoint(properties, presenter?.reverseGeoLngLat)
+        reverseGeocodeData?.addPoint(presenter?.reverseGeoLngLat, properties)
 
         mapController?.requestRender()
     }
@@ -689,16 +695,15 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             lngLat = mapController?.coordinatesAtScreenPosition(pointX, pointY)
         }
 
-        val properties = com.mapzen.tangram.Properties()
-        properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
+        val properties = HashMap<String, String>()
+        properties.put(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
 
         // hijack reverseGeocodeData for tappedPoiPin
         if (reverseGeocodeData == null) {
-            reverseGeocodeData = MapData("mz_dropped_pin")
-            Tangram.addDataSource(reverseGeocodeData)
+            reverseGeocodeData = mapController?.addDataLayer("mz_dropped_pin")
         }
         reverseGeocodeData?.clear()
-        reverseGeocodeData?.addPoint(properties, lngLat)
+        reverseGeocodeData?.addPoint(lngLat, properties)
 
         mapController?.requestRender()
     }
@@ -718,8 +723,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         centerOnCurrentFeature(features)
 
         if (searchResultsData == null) {
-            searchResultsData = MapData("mz_search_result")
-            Tangram.addDataSource(searchResultsData)
+            searchResultsData = mapController?.addDataLayer("mz_search_result")
         }
 
         var featureCount: Int = 0
@@ -727,14 +731,14 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         for (feature in features) {
             val simpleFeature = SimpleFeature.fromFeature(feature)
             val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
-            val properties = com.mapzen.tangram.Properties()
-            properties.set(MAP_DATA_PROP_SEARCHINDEX, featureCount.toDouble());
+            val properties = HashMap<String, String>()
+            properties.put(MAP_DATA_PROP_SEARCHINDEX, featureCount.toString());
             if (featureCount == activeIndex) {
-                properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
+                properties.put(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
             } else {
-                properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_INACTIVE);
+                properties.put(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_INACTIVE);
             }
-            searchResultsData?.addPoint(properties, lngLat)
+            searchResultsData?.addPoint(lngLat, properties)
             featureCount++
         }
         mapController?.requestRender()
@@ -757,8 +761,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             if(features.size > 0) {
                 searchResultsView.setCurrentItem(position)
                 val feature = SimpleFeature.fromFeature(features[position])
-                mapController?.setMapPosition(feature.lng(), feature.lat(), 1f)
-                mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
+                mapController?.setPositionEased(LngLat(feature.lng(), feature.lat()), 1000)
+                mapController?.zoom = MainPresenter.DEFAULT_ZOOM
             }
         }, 100)
     }
@@ -915,8 +919,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             return
         }
 
-        mapController?.mapRotation = 0f
-        mapController?.mapTilt = 0f
+        mapController?.rotation = 0f
+        mapController?.tilt = 0f
 
         // Determine the smallest axis-aligned box that contains the route longitude and latitude
         val start = route.first()
@@ -948,13 +952,13 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         // Update map position and zoom
         var map = mapController
         if (map != null) {
-            val z = map.mapZoom + zoomDelta.toFloat()
-            map.mapZoom = z
-            if (map.mapZoom == z) {
+            val z = map.zoom + zoomDelta.toFloat()
+            map.zoom = z
+            if (map.zoom == z) {
                 // If the new zoom would go beyond the bounds of the earth, the value
                 // won't be set - so we want to make sure that it changed before moving
                 // the position.
-                map.mapPosition = LngLat(routeBounds.center.x, routeBounds.center.y)
+                map.position = LngLat(routeBounds.center.x, routeBounds.center.y)
             }
         }
 
@@ -964,14 +968,12 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun showRoutePins(start: LngLat, end: LngLat) {
-        startPin = MapData("mz_route_start")
-        endPin = MapData("mz_route_stop")
-        Tangram.addDataSource(startPin)
-        Tangram.addDataSource(endPin)
+        startPin = mapController?.addDataLayer("mz_route_start")
+        endPin = mapController?.addDataLayer("mz_route_stop")
 
-        val properties = com.mapzen.tangram.Properties()
-        startPin?.addPoint(properties, start)
-        endPin?.addPoint(properties, end)
+        val properties = HashMap<String, String>()
+        startPin?.addPoint(start, properties)
+        endPin?.addPoint(end, properties)
         mapController?.requestRender()
     }
 
@@ -1160,6 +1162,9 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun startRoutingMode(feature: Feature) {
+        // Set camera before RouteModeView#startRoute so that MapController#sceneUpdate called
+        // before MapController#queueEvent
+        setRoutingCamera()
         if (confidenceHandler.useRawLatLng(feature.properties.confidence)) {
             val rawFeature = generateRawFeature()
             showRoutingMode(rawFeature)
@@ -1168,7 +1173,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             showRoutingMode(feature)
             routeModeView.startRoute(feature, routeManager.route)
         }
-        setRoutingCamera()
         hideRoutePins()
     }
 
@@ -1188,12 +1192,14 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     private fun setRoutingCamera() {
         if (routeModeView.isResumeButtonHidden()) {
-            mapController?.setMapCameraType(MapController.CameraType.PERSPECTIVE)
+            mapController?.queueSceneUpdate(SCENE_CAMERA, SCENE_CAMERA_PERSPECTIVE)
+            mapController?.applySceneUpdates()
         }
     }
 
     private fun setDefaultCamera() {
-        mapController?.setMapCameraType(MapController.CameraType.ISOMETRIC)
+        mapController?.queueSceneUpdate(SCENE_CAMERA, SCENE_CAMERA_ISOMETRIC)
+        mapController?.applySceneUpdates()
     }
 
     private fun showRoutingMode(feature: Feature) {

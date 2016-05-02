@@ -128,7 +128,7 @@ gradle.startParameter.getTaskNames().each { task ->
 dependencies {
   compile 'com.android.support:appcompat-v7:23.4.0'
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  compile 'com.mapzen.tangram:tangram:0.1'
+  compile 'com.mapzen.tangram:tangram:0.2.2'
   compile 'com.mapzen.android:lost:1.1.0'
   compile('com.mapzen.android:pelias-android-sdk:0.7.1-SNAPSHOT') {
     exclude group: 'javax.annotation:javax', module: 'javax.annotation-api'

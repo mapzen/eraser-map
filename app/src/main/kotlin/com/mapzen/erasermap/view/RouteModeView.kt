@@ -27,12 +27,11 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
 import com.mapzen.tangram.MapData
-import com.mapzen.tangram.Tangram
 import com.mapzen.tangram.TouchInput
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
-import java.util.ArrayList
+import java.util.*
 import javax.inject.Inject
 
 class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener, DirectionItemClickListener {
@@ -95,7 +94,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     @Inject lateinit var settings: AppSettings
 
     private var routeIcon: MapData? = null
-    private var routeLine: MapData? = null
+    var routeLine: MapData? = null
     private var previousScrollState: Int = ViewPager.SCROLL_STATE_IDLE
     private var userScrollChange: Boolean = false
 
@@ -251,15 +250,14 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
 
     override fun showRouteIcon(location: Location) {
         if (routeIcon == null) {
-            routeIcon = MapData(MAP_DATA_NAME_ROUTE_ICON)
-            Tangram.addDataSource(routeIcon);
+            routeIcon = mapController?.addDataLayer(MAP_DATA_NAME_ROUTE_ICON)
         }
 
-        val properties = com.mapzen.tangram.Properties()
-        properties.set(MAP_DATA_PROP_TYPE, MAP_DATA_PROP_POINT);
+        val properties = HashMap<String, String>()
+        properties.put(MAP_DATA_PROP_TYPE, MAP_DATA_PROP_POINT);
 
-        routeIcon?.clearData()
-        routeIcon?.addPoint(properties, LngLat(location.longitude, location.latitude))
+        routeIcon?.clear()
+        routeIcon?.addPoint(LngLat(location.longitude, location.latitude), properties)
         mapController?.requestRender()
     }
 
@@ -281,14 +279,14 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         mapController?.queueEvent {
 
             // Record the initial view configuration
-            val lastPosition = mapController?.mapPosition
-            val lastRotation = mapController?.mapRotation
+            val lastPosition = mapController?.position
+            val lastRotation = mapController?.rotation
 
             // Update position, rotation, tilt for new location
-            mapController?.mapPosition = LngLat(location.longitude, location.latitude)
-            mapController?.mapRotation = getBearingInRadians(location)
-            mapController?.mapTilt = MainPresenter.ROUTING_TILT
-            mapController?.mapZoom = routePresenter.mapZoomLevelForCurrentInstruction()
+            mapController?.position = LngLat(location.longitude, location.latitude)
+            mapController?.rotation = getBearingInRadians(location)
+            mapController?.tilt = MainPresenter.ROUTING_TILT
+            mapController?.zoom = routePresenter.mapZoomLevelForCurrentInstruction()
 
             // Get the width and height of the window
             val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -305,19 +303,19 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
             val nextRotation = getBearingInRadians(location)
 
             // Return to our initial view to prepare for easing to the next view
-            mapController?.mapPosition = lastPosition
-            mapController?.mapRotation = lastRotation ?: 0f
+            mapController?.position = lastPosition
+            mapController?.rotation = lastRotation ?: 0f
 
             // Begin easing to the next view
-            mapController?.setMapPosition(nextPosition.longitude, nextPosition.latitude, 1f,
-                    MapController.EaseType.LINEAR)
-            mapController?.setMapRotation(nextRotation, 1f, MapController.EaseType.LINEAR)
+            mapController?.setPositionEased(LngLat(nextPosition.longitude, nextPosition.latitude),
+                    1000, MapController.EaseType.LINEAR)
+            mapController?.setRotationEased(nextRotation, 1000, MapController.EaseType.LINEAR)
         }
     }
 
     override fun updateMapZoom(zoom: Float) {
         mapController?.queueEvent {
-            mapController?.setMapZoom(zoom, 1f)
+            mapController?.setZoomEased(zoom, 1000)
         }
     }
 
@@ -474,8 +472,8 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     }
 
     fun drawRoute(route: Route) {
-        val properties = com.mapzen.tangram.Properties()
-        properties.set(MAP_DATA_PROP_TYPE, MAP_DATA_PROP_LINE);
+        val properties = HashMap<String, String>()
+        properties.put(MAP_DATA_PROP_TYPE, MAP_DATA_PROP_LINE);
         val geometry: ArrayList<Location>? = route.getGeometry()
         val mapGeometry: ArrayList<LngLat> = ArrayList()
         if (geometry is ArrayList<Location>) {
@@ -485,12 +483,11 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         }
 
         if (routeLine == null) {
-            routeLine = MapData(MAP_DATA_NAME_ROUTE_LINE)
-            Tangram.addDataSource(routeLine);
+            routeLine = mapController?.addDataLayer(MAP_DATA_NAME_ROUTE_LINE)
         }
 
         routeLine?.clear()
-        routeLine?.addLine(properties, mapGeometry)
+        routeLine?.addPolyline(mapGeometry, properties)
         mapController?.requestRender()
     }
 
@@ -532,5 +529,9 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         userScrollChange = true
         instructionPager.setCurrentItem(position, true)
         directionListView.setCurrent(position)
+    }
+
+    fun getRouteIcon(): MapData? {
+        return routeIcon
     }
 }

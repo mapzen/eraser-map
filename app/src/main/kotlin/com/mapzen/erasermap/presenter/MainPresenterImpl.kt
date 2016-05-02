@@ -321,17 +321,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     }
 
     override fun onCreate() {
-        val currentLocation = mapzenLocation.getLastLocation()
-        if (currentLocation is Location) {
-            if (!initialized) {
-                // Show location puck and center map
-                mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
-                initialized = true
-            } else {
-                // Just show location puck. Do not recenter map.
-                mainViewController?.showCurrentLocation(currentLocation)
-            }
-        }
+
     }
 
     override fun onResume() {
@@ -465,5 +455,19 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             return true
         }
         return false
+    }
+
+    override fun configureMapController() {
+        val currentLocation = mapzenLocation.getLastLocation()
+        if (currentLocation is Location) {
+            if (!initialized) {
+                // Show location puck and center map
+                mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
+                initialized = true
+            } else {
+                // Just show location puck. Do not recenter map.
+                mainViewController?.showCurrentLocation(currentLocation)
+            }
+        }
     }
 }
