@@ -292,7 +292,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
                 } else {
                     if (properties.contains(MAP_DATA_PROP_ID)) {
                         val featureID = properties.getNumber(MAP_DATA_PROP_ID).toLong()
-                        presenter.onPlaceSearchRequested("osm:venue:$featureID")
+                        presenter.onPlaceSearchRequested("openstreetmap:venue:$featureID")
                     } else {
                         if (poiTapPoint != null) {
                             presenter.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(),
