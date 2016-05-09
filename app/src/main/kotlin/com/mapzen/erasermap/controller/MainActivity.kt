@@ -428,6 +428,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
                 expandSearchView()
             } else if (presenter.resultListVisible) {
                     onCloseAllSearchResults()
+                    enableSearch()
                 } else {
                 searchView?.setQuery(presenter.currentSearchTerm, false)
             }
@@ -462,11 +463,13 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     private fun onActionViewAll() {
         presenter.onViewAllSearchResults()
+
     }
 
     override fun showAllSearchResults(features: List<Feature>) {
         if (presenter.resultListVisible) {
             onCloseAllSearchResults()
+            enableSearch()
         } else {
             saveCurrentSearchTerm()
             presenter.resultListVisible = true
@@ -488,6 +491,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
                         onCloseAllSearchResults()
 
             }
+            disableSearch()
         }
     }
 
@@ -1093,6 +1097,14 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             override fun onAnimationCancel(animation: Animator) {}
         })
         animations.start()
+    }
+
+    fun enableSearch() {
+        searchView?.inputType = 1
+    }
+
+    fun disableSearch() {
+        searchView?.inputType = 0
     }
 
     override fun startRoutingMode(feature: Feature) {
