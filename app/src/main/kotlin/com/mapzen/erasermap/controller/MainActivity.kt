@@ -12,6 +12,7 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
+import android.text.InputType
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -438,13 +439,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         val cacheSearches = PreferenceManager.getDefaultSharedPreferences(this)
                 .getBoolean(AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY, true)
         searchView?.setCacheSearchResults(cacheSearches)
-        val closeButton = searchView?.findViewById(R.id.search_close_btn) as ImageView
-        closeButton.setOnClickListener {
-            if (searchView?.inputType != 0) {
-                searchView?.setQuery("", false);
-                searchView?.requestFocus()
-            }
-        }
         return true
     }
 
@@ -1108,11 +1102,15 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     fun enableSearch() {
-        searchView?.inputType = 1
+        searchView?.inputType = InputType.TYPE_CLASS_TEXT
+        val closeButton = searchView?.findViewById(R.id.search_close_btn) as ImageView
+        closeButton.visibility = View.VISIBLE
     }
 
     fun disableSearch() {
-        searchView?.inputType = 0
+        searchView?.inputType = InputType.TYPE_NULL
+        val closeButton = searchView?.findViewById(R.id.search_close_btn) as ImageView
+        closeButton.visibility = View.GONE
     }
 
     override fun startRoutingMode(feature: Feature) {
