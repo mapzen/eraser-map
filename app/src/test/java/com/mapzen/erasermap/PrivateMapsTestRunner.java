@@ -9,6 +9,9 @@ import com.mapzen.erasermap.shadows.ShadowTangram;
 
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
+import org.robolectric.internal.SdkConfig;
+import org.robolectric.internal.bytecode.ClassHandler;
 import org.robolectric.internal.bytecode.InstrumentationConfiguration;
 import org.robolectric.internal.bytecode.ShadowMap;
 
@@ -32,9 +35,10 @@ public class PrivateMapsTestRunner extends RobolectricGradleTestRunner {
     }
 
     @Override
-    public InstrumentationConfiguration createClassLoaderConfig() {
+    public InstrumentationConfiguration createClassLoaderConfig(Config config) {
         return InstrumentationConfiguration.newBuilder()
                 .addInstrumentedPackage("com.mapzen.tangram")
                 .build();
     }
+
 }

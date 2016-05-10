@@ -30,6 +30,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 
 public class MockContext : Context() {
+
     public var startedActivity: Intent? = null
 
     override fun getPackageCodePath(): String? {
@@ -389,6 +390,14 @@ public class MockContext : Context() {
     }
 
     override fun sendStickyBroadcastAsUser(intent: Intent?, user: UserHandle?) {
+        throw UnsupportedOperationException()
+    }
+
+    override fun checkSelfPermission(permission: String?): Int {
+        throw UnsupportedOperationException()
+    }
+
+    override fun getSystemServiceName(serviceClass: Class<*>?): String? {
         throw UnsupportedOperationException()
     }
 }

@@ -42,4 +42,6 @@
     <string name="cache_search_results_status">Cache Search Results %s</string>
     <string name="rerouting">Rerouting</string>
 
+    <string name="need_permissions">Turn on location permissions in your system settings
+        menu</string>
 </resources>

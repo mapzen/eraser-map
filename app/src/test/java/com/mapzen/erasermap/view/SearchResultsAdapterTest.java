@@ -4,6 +4,7 @@ import com.mapzen.erasermap.BuildConfig;
 import com.mapzen.erasermap.PrivateMapsTestRunner;
 import com.mapzen.erasermap.R;
 import com.mapzen.erasermap.model.ConfidenceHandler;
+import com.mapzen.erasermap.model.PermissionManager;
 import com.mapzen.erasermap.model.event.RoutePreviewEvent;
 import com.mapzen.erasermap.presenter.TestMainPresenterImpl;
 import com.mapzen.pelias.SimpleFeature;
@@ -39,8 +40,10 @@ public class SearchResultsAdapterTest {
         feature = getTestFeature();
         ArrayList<Feature> features = new ArrayList<>();
         features.add(feature);
+        PermissionManager permissionManager = new PermissionManager();
+        permissionManager.grantPermissions();
         adapter = new SearchResultsAdapter(application, features,
-                new ConfidenceHandler(new TestMainPresenterImpl()));
+                new ConfidenceHandler(new TestMainPresenterImpl()), permissionManager);
     }
 
     @Test

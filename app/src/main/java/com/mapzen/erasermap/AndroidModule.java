@@ -6,6 +6,7 @@ import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.model.AppSettings;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
+import com.mapzen.erasermap.model.PermissionManager;
 import com.mapzen.erasermap.model.RouteManager;
 import com.mapzen.erasermap.model.TileHttpHandler;
 import com.mapzen.erasermap.model.ValhallaRouteManager;
@@ -49,8 +50,8 @@ public class AndroidModule {
     }
 
     @Provides @Singleton MapzenLocation provideMapzenLocation(LostApiClient locationClient,
-            AppSettings settings, Bus bus) {
-        return new MapzenLocationImpl(locationClient, settings, bus, application);
+            AppSettings settings, Bus bus, PermissionManager permissionManager) {
+        return new MapzenLocationImpl(locationClient, settings, bus, application, permissionManager);
     }
 
     @Provides @Singleton AppSettings provideAppSettings() {
@@ -93,5 +94,9 @@ public class AndroidModule {
 
     @Provides @Singleton IntentFactory provideIntentFactory() {
         return new IntentFactory();
+    }
+
+    @Provides @Singleton PermissionManager providePermissionManager() {
+        return new PermissionManager();
     }
 }

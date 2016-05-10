@@ -10,6 +10,7 @@ import com.mapzen.erasermap.model.event.LocationChangeEvent
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RuntimeEnvironment.application
@@ -21,8 +22,13 @@ public class MapzenLocationTest {
     val locationClient = LostApiClient.Builder(application).build()
     val settings = TestAppSettings()
     val bus = Bus()
+    val permissionManager = PermissionManager()
     val mapzenLocation = MapzenLocationImpl(locationClient, settings, bus,
-            application as EraserMapApplication)
+            application as EraserMapApplication, permissionManager)
+
+    @Before fun setup() {
+        permissionManager.grantPermissions()
+    }
 
     @Test fun shouldNotBeNull() {
         assertThat(mapzenLocation).isNotNull()

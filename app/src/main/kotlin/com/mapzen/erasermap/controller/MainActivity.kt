@@ -5,6 +5,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.Point
 import android.location.Location
 import android.os.Bundle
@@ -33,6 +34,7 @@ import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
 import com.mapzen.erasermap.model.MapzenLocation
+import com.mapzen.erasermap.model.PermissionManager
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
@@ -92,6 +94,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         @JvmStatic val MAP_DATA_PROP_ID = "id"
         @JvmStatic val MAP_DATA_PROP_NAME = "name"
         @JvmStatic val DIRECTION_LIST_ANIMATION_DURATION = 300L
+        @JvmStatic val PERMISSIONS_REQUEST: Int = 1
     }
 
     val requestCodeSearchResults: Int = 0x01
@@ -106,6 +109,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     @Inject lateinit var keys: ApiKeys
     @Inject lateinit var pelias: Pelias
     @Inject lateinit var speaker: Speaker
+    @Inject lateinit var permissionManager: PermissionManager
 
     lateinit var app: EraserMapApplication
     var mapController : MapController? = null
@@ -169,6 +173,12 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         initReverseButton()
         initMapRotateListener()
         initConfidenceHandler()
+        permissionManager.activity = this
+        if (permissionManager.permissionsRequired()) {
+            permissionManager.requestPermissions()
+        } else {
+            permissionManager.grantPermissions()
+        }
         presenter.onCreate()
         presenter.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -210,6 +220,9 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     override public fun onResume() {
         super.onResume()
+        if (!permissionManager.permissionsRequired()) {
+            permissionManager.grantPermissions()
+        }
         presenter.onResume()
         app?.onActivityResume()
         autoCompleteAdapter?.clear()
@@ -314,7 +327,13 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         findMe = MapData("mz_current_location")
         Tangram.addDataSource(findMe)
         findMeButton.visibility = View.VISIBLE
-        findMeButton.setOnClickListener({ presenter.onFindMeButtonClick() })
+        findMeButton.setOnClickListener({
+            if (permissionManager.permissionsGranted()) {
+                presenter.onFindMeButtonClick()
+            } else {
+                permissionManager.showPermissionRequired()
+            }
+        })
     }
 
     private fun updateMute() {
@@ -578,7 +597,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun showSearchResultsView(features: List<Feature>) {
-        searchResultsView.setAdapter(SearchResultsAdapter(this, features, confidenceHandler))
+        searchResultsView.setAdapter(SearchResultsAdapter(this, features, confidenceHandler,
+                permissionManager))
         searchResultsView.visibility = View.VISIBLE
         searchResultsView.onSearchResultsSelectedListener = this
     }
@@ -665,7 +685,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     override fun showPlaceSearchFeature(features: List<Feature>) {
         searchResultsView.setAdapter(SearchResultsAdapter(this, features.subList(0, 1),
-                confidenceHandler))
+                confidenceHandler, permissionManager))
         searchResultsView.visibility = View.VISIBLE
         searchResultsView.onSearchResultsSelectedListener = this
     }
@@ -1234,5 +1254,19 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         startPin = null
         endPin = null
     }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
+                                            grantResults: IntArray) {
+        when (requestCode) {
+            PERMISSIONS_REQUEST -> {
+                if (grantResults.size > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    permissionManager.grantPermissions()
+                }
+            }
+        }
+    }
+
+
 }
 

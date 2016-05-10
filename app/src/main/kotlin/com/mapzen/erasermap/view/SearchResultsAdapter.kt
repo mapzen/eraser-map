@@ -9,6 +9,7 @@ import android.widget.TextView
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.ConfidenceHandler
+import com.mapzen.erasermap.model.PermissionManager
 import com.mapzen.erasermap.model.event.RoutePreviewEvent
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
@@ -16,7 +17,8 @@ import com.squareup.otto.Bus
 import javax.inject.Inject
 
 class SearchResultsAdapter(val context: Context, val features: List<Feature>,
-                            val confidenceHandler: ConfidenceHandler)
+                            val confidenceHandler: ConfidenceHandler,
+                           val permissionManager: PermissionManager)
         : PagerAdapter() {
 
     @Inject lateinit var bus: Bus
@@ -38,7 +40,13 @@ class SearchResultsAdapter(val context: Context, val features: List<Feature>,
             title.text = simpleFeature.name()
         }
         address.text = simpleFeature.address()
-        start.setOnClickListener { bus.post(RoutePreviewEvent(features.get(position))) }
+        start.setOnClickListener {
+            if (permissionManager.permissionsGranted()) {
+                bus.post(RoutePreviewEvent(features.get(position)))
+            } else {
+                permissionManager.showPermissionRequired()
+            }
+        }
         container?.addView(view)
         return view
     }

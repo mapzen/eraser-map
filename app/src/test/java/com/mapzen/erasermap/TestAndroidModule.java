@@ -4,6 +4,7 @@ import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.AppSettings;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
+import com.mapzen.erasermap.model.PermissionManager;
 import com.mapzen.erasermap.model.RouteManager;
 import com.mapzen.erasermap.model.TestAppSettings;
 import com.mapzen.erasermap.model.TestRouteManager;
@@ -22,6 +23,8 @@ import com.squareup.otto.Bus;
 import org.mockito.Mockito;
 
 import android.content.Context;
+
+import java.security.Permission;
 
 import javax.inject.Singleton;
 
@@ -49,8 +52,9 @@ public class TestAndroidModule {
     }
 
     @Provides @Singleton MapzenLocation provideMapzenLocation(LostApiClient locationClient,
-            AppSettings settings, Bus bus) {
-        return new MapzenLocationImpl(locationClient, settings, bus, application);
+            AppSettings settings, Bus bus, PermissionManager permissionsManager) {
+        return new MapzenLocationImpl(locationClient, settings, bus, application,
+                permissionsManager);
     }
 
     @Provides @Singleton AppSettings provideAppSettings() {
@@ -86,5 +90,9 @@ public class TestAndroidModule {
 
     @Provides @Singleton IntentFactory provideIntentFactory() {
         return new MockIntentFactory();
+    }
+
+    @Provides @Singleton PermissionManager providePermissionManager() {
+        return new PermissionManager();
     }
 }

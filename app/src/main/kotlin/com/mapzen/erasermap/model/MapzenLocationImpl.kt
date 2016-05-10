@@ -19,7 +19,8 @@ import com.squareup.otto.Subscribe
 public class MapzenLocationImpl(val locationClient: LostApiClient,
         val settings: AppSettings,
         val bus: Bus,
-        val application: EraserMapApplication) : MapzenLocation {
+        val application: EraserMapApplication,
+        val permissionManager: PermissionManager) : MapzenLocation {
 
     companion object {
         private val LOCATION_UPDATE_INTERVAL_IN_MS: Long = 1000L
@@ -50,11 +51,17 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
     }
 
     override fun getLastLocation(): Location? {
+        if (!permissionManager.permissionsGranted()) {
+            return null
+        }
         connect()
         return LocationServices.FusedLocationApi?.lastLocation
     }
 
     override fun startLocationUpdates() {
+        if (!permissionManager.permissionsGranted()) {
+            return
+        }
         connect()
         val locationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -98,11 +105,17 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
     }
 
     override fun getLat(): Double {
+        if (!permissionManager.permissionsGranted()) {
+            return 0.0
+        }
         connect()
         return LocationServices.FusedLocationApi?.lastLocation?.latitude ?: 0.0
     }
 
     override fun getLon(): Double {
+        if (!permissionManager.permissionsGranted()) {
+            return 0.0
+        }
         connect()
         return LocationServices.FusedLocationApi?.lastLocation?.longitude ?: 0.0
     }
