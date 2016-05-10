@@ -20,6 +20,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RelativeLayout
@@ -437,6 +438,13 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         val cacheSearches = PreferenceManager.getDefaultSharedPreferences(this)
                 .getBoolean(AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY, true)
         searchView?.setCacheSearchResults(cacheSearches)
+        val closeButton = searchView?.findViewById(R.id.search_close_btn) as ImageView
+        closeButton.setOnClickListener {
+            if (searchView?.inputType != 0) {
+                searchView?.setQuery("", false);
+                searchView?.requestFocus()
+            }
+        }
         return true
     }
 
