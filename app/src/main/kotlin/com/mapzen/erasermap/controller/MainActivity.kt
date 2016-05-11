@@ -432,7 +432,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             } else if (presenter.resultListVisible) {
                     onCloseAllSearchResults()
                     enableSearch()
-                } else {
+            } else {
                 searchView?.setQuery(presenter.currentSearchTerm, false)
             }
         }
@@ -538,6 +538,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         private val TAG: String = "PeliasCallback"
 
         override fun success(result: Result?, response: Response?) {
+            presenter?.reverseGeoLngLat = null
             presenter.onSearchResultsAvailable(result)
             optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
         }
