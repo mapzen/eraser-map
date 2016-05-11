@@ -12,6 +12,7 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
+import android.text.InputType
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -20,6 +21,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RelativeLayout
@@ -429,6 +431,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
                 expandSearchView()
             } else if (presenter.resultListVisible) {
                     onCloseAllSearchResults()
+                    enableSearch()
                 } else {
                 searchView?.setQuery(presenter.currentSearchTerm, false)
             }
@@ -463,11 +466,13 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     private fun onActionViewAll() {
         presenter.onViewAllSearchResults()
+
     }
 
     override fun showAllSearchResults(features: List<Feature>) {
         if (presenter.resultListVisible) {
             onCloseAllSearchResults()
+            enableSearch()
         } else {
             saveCurrentSearchTerm()
             presenter.resultListVisible = true
@@ -489,6 +494,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
                         onCloseAllSearchResults()
 
             }
+            disableSearch()
         }
     }
 
@@ -1094,6 +1100,18 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             override fun onAnimationCancel(animation: Animator) {}
         })
         animations.start()
+    }
+
+    fun enableSearch() {
+        searchView?.inputType = InputType.TYPE_CLASS_TEXT
+        val closeButton = searchView?.findViewById(R.id.search_close_btn) as ImageView
+        closeButton.visibility = View.VISIBLE
+    }
+
+    fun disableSearch() {
+        searchView?.inputType = InputType.TYPE_NULL
+        val closeButton = searchView?.findViewById(R.id.search_close_btn) as ImageView
+        closeButton.visibility = View.GONE
     }
 
     override fun startRoutingMode(feature: Feature) {
