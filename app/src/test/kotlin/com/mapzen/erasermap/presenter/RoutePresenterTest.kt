@@ -13,6 +13,7 @@ import com.squareup.otto.Subscribe
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.internal.util.reflection.Whitebox
 
 
 class RoutePresenterTest {
@@ -156,7 +157,8 @@ class RoutePresenterTest {
         var routingZoom = routePresenter.mapZoomLevelForCenterMapOnLocation(location as Location)
         assertThat(routingZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
         location = route.getRouteInstructions()?.get(1)?.location
-        routeEngine.onLocationChanged(location)
+        Whitebox.setInternalState(route.getCurrentInstruction(), "liveDistanceToNext", 10000);
+        Whitebox.setInternalState(route.getCurrentInstruction(), "distance", 10000);
         var longManeuverZoom = routePresenter.mapZoomLevelForCenterMapOnLocation(location as Location)
         assertThat(longManeuverZoom).isEqualTo(MainPresenter.LONG_MANEUVER_ZOOM)
     }
