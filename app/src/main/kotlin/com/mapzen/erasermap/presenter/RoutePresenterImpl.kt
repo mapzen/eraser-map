@@ -111,7 +111,7 @@ class RoutePresenterImpl(private val routeEngine: RouteEngine,
      * completing it. If the maneuver is relatively short we won't adjust the zoom level which will
      * prevent changing the zoom too frequently
      */
-    override fun mapZoomLevelForCenterMapOnLocation(location: Location): Float  {
+    override fun mapZoomLevelForCurrentInstruction(): Float  {
         var liveDistanceThreshold: Int = 0
         var distanceThreshold: Int = 0
                 when (route?.units) {

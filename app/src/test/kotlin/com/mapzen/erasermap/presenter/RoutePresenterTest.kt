@@ -15,7 +15,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.internal.util.reflection.Whitebox
 
-
 class RoutePresenterTest {
     val routeEngine = RouteEngine()
     val routeListener = RouteEngineListener()
@@ -150,30 +149,27 @@ class RoutePresenterTest {
 
     @Test fun onCenterMapOnLocation_shouldDynamicallySetZoom() {
         val route = Route(getFixture("long_route"))
-        var location = route.getRouteInstructions()?.get(0)?.location
         routeEngine.setListener(routeListener)
         routeEngine.route = route
         routePresenter.onRouteStart(route)
-        var routingZoom = routePresenter.mapZoomLevelForCenterMapOnLocation(location as Location)
+        var routingZoom = routePresenter.mapZoomLevelForCurrentInstruction()
         assertThat(routingZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
-        location = route.getRouteInstructions()?.get(1)?.location
         Whitebox.setInternalState(route.getCurrentInstruction(), "liveDistanceToNext", 10000);
         Whitebox.setInternalState(route.getCurrentInstruction(), "distance", 10000);
-        var longManeuverZoom = routePresenter.mapZoomLevelForCenterMapOnLocation(location as Location)
+        var longManeuverZoom = routePresenter.mapZoomLevelForCurrentInstruction()
         assertThat(longManeuverZoom).isEqualTo(MainPresenter.LONG_MANEUVER_ZOOM)
     }
 
     @Test fun onCenterMapOnLocation_shouldNotChangeZoomLevelForRelativelyShortManeuvers() {
         val route = Route(getFixture("long_route"))
-        var location = route.getRouteInstructions()?.get(0)?.location
         routeEngine.setListener(routeListener)
         routeEngine.route = route
         routePresenter.onRouteStart(route)
-        var routingZoom = routePresenter.mapZoomLevelForCenterMapOnLocation(location as Location)
+        var routingZoom = routePresenter.mapZoomLevelForCurrentInstruction()
         assertThat(routingZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
-        location = route.getRouteInstructions()?.get(2)?.location
-        routeEngine.onLocationChanged(location)
-        routingZoom = routePresenter.mapZoomLevelForCenterMapOnLocation(location as Location)
+        Whitebox.setInternalState(route.getCurrentInstruction(), "liveDistanceToNext", 1);
+        Whitebox.setInternalState(route.getCurrentInstruction(), "distance", 1);
+        routingZoom = routePresenter.mapZoomLevelForCurrentInstruction()
         assertThat(routingZoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
     }
 
