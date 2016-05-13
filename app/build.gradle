@@ -148,12 +148,8 @@ dependencies {
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.9.5'
   testCompile 'org.assertj:assertj-core:1.7.0'
-  testCompile('org.robolectric:robolectric:3.1-SNAPSHOT') {
-    exclude group: 'commons-logging', module: 'commons-logging'
-    exclude group: 'org.apache.httpcomponents', module: 'httpclient'
-    exclude group: 'com.google.guava', module: 'guava'
-  }
   testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+  testCompile 'org.json:json:20160212'
 
   if (flavorType == 'Prod') {
     println("Including production only dependencies...")
