@@ -32,19 +32,19 @@ public class TestMainController : MainViewController {
     public var isSettingsVisible: Boolean = false
     public var popBackStack: Boolean = false
 
-    override fun showSearchResults(features: List<Feature>) {
+    override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
     }
 
-    override fun addSearchResultsToMap(features: List<Feature>, activeIndex: Int) {
+    override fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int) {
         searchResults = features;
     }
 
-    override fun centerOnCurrentFeature(features: List<Feature>) {
+    override fun centerOnCurrentFeature(features: List<Feature>?) {
         isCenteredOnCurrentFeature = true
     }
 
-    override fun centerOnFeature(features: List<Feature>, position: Int) {
+    override fun centerOnFeature(features: List<Feature>?, position: Int) {
         isCenteredOnTappedFeature = true
     }
 
@@ -72,7 +72,7 @@ public class TestMainController : MainViewController {
         isViewAllVisible = false
     }
 
-    override fun showAllSearchResults(features: List<Feature>) {
+    override fun showAllSearchResults(features: List<Feature>?) {
     }
 
     override fun collapseSearchView() {
@@ -142,7 +142,7 @@ public class TestMainController : MainViewController {
         rotation = radians
     }
 
-    override fun showReverseGeocodeFeature(features: List<Feature>) {
+    override fun showReverseGeocodeFeature(features: List<Feature>?) {
         isReverseGeocodeVisible = true
         reverseGeoCodeResults = features;
     }

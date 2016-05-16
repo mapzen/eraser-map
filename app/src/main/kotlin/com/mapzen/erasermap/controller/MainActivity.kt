@@ -488,7 +488,11 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     }
 
-    override fun showAllSearchResults(features: List<Feature>) {
+    override fun showAllSearchResults(features: List<Feature>?) {
+        if (features == null) {
+            return
+        }
+
         if (presenter.resultListVisible) {
             onCloseAllSearchResults()
             enableSearch()
@@ -596,7 +600,11 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         }
     }
 
-    override fun showSearchResults(features: List<Feature>) {
+    override fun showSearchResults(features: List<Feature>?) {
+        if (features == null) {
+            return
+        }
+
         hideReverseGeolocateResult()
         showSearchResultsView(features)
         addSearchResultsToMap(features, 0)
@@ -638,7 +646,11 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         Toast.makeText(this, debugToastTitle, Toast.LENGTH_SHORT).show();
     }
 
-    override fun showReverseGeocodeFeature(features: List<Feature>) {
+    override fun showReverseGeocodeFeature(features: List<Feature>?) {
+        if (features == null) {
+            return
+        }
+
         hideSearchResults()
         layoutAttributionAboveSearchResults(features)
 
@@ -698,7 +710,11 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         searchResultsView.onSearchResultsSelectedListener = this
     }
 
-    override fun addSearchResultsToMap(features: List<Feature>, activeIndex: Int) {
+    override fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int) {
+        if (features == null) {
+            return
+        }
+
         centerOnCurrentFeature(features)
 
         if (searchResultsData == null) {
@@ -724,11 +740,19 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         mapController?.requestRender()
     }
 
-    override fun centerOnCurrentFeature(features: List<Feature>) {
+    override fun centerOnCurrentFeature(features: List<Feature>?) {
+        if (features == null) {
+            return
+        }
+
         centerOnFeature(features, searchResultsView.getCurrentItem())
     }
 
-    override fun centerOnFeature(features: List<Feature>, position: Int) {
+    override fun centerOnFeature(features: List<Feature>?, position: Int) {
+        if (features == null) {
+            return
+        }
+
         Handler().postDelayed({
             if(features.size > 0) {
                 searchResultsView.setCurrentItem(position)
