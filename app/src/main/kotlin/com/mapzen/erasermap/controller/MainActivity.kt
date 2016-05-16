@@ -20,43 +20,17 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RadioButton
-import android.widget.RelativeLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.model.AndroidAppSettings
-import com.mapzen.erasermap.model.ApiKeys
-import com.mapzen.erasermap.model.AppSettings
-import com.mapzen.erasermap.model.ConfidenceHandler
-import com.mapzen.erasermap.model.MapzenLocation
-import com.mapzen.erasermap.model.PermissionManager
-import com.mapzen.erasermap.model.RouteManager
-import com.mapzen.erasermap.model.TileHttpHandler
+import com.mapzen.erasermap.model.*
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.util.AxisAlignedBoundingBox
 import com.mapzen.erasermap.util.AxisAlignedBoundingBox.PointD
 import com.mapzen.erasermap.util.NotificationBroadcastReceiver
 import com.mapzen.erasermap.util.NotificationCreator
-import com.mapzen.erasermap.view.CompassView
-import com.mapzen.erasermap.view.DirectionListAdapter
-import com.mapzen.erasermap.view.DirectionListView
-import com.mapzen.erasermap.view.DistanceView
-import com.mapzen.erasermap.view.MuteView
-import com.mapzen.erasermap.view.RouteModeView
-import com.mapzen.erasermap.view.RoutePreviewView
-import com.mapzen.erasermap.view.SearchListViewAdapter
-import com.mapzen.erasermap.view.SearchResultsAdapter
-import com.mapzen.erasermap.view.SearchResultsView
-import com.mapzen.erasermap.view.SettingsActivity
-import com.mapzen.erasermap.view.Speaker
-import com.mapzen.erasermap.view.VoiceNavigationController
+import com.mapzen.erasermap.view.*
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.SimpleFeature
@@ -68,12 +42,7 @@ import com.mapzen.pelias.widget.AutoCompleteAdapter
 import com.mapzen.pelias.widget.AutoCompleteItem
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
-import com.mapzen.tangram.LngLat
-import com.mapzen.tangram.MapController
-import com.mapzen.tangram.MapData
-import com.mapzen.tangram.MapView
-import com.mapzen.tangram.Tangram
-import com.mapzen.tangram.TouchInput
+import com.mapzen.tangram.*
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
@@ -82,7 +51,7 @@ import retrofit.RetrofitError
 import retrofit.client.Response
 import java.math.RoundingMode
 import java.text.DecimalFormat
-import java.util.ArrayList
+import java.util.*
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
@@ -782,11 +751,11 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun showProgress() {
-        findViewById(R.id.progress).visibility = View.VISIBLE
+        findViewById(R.id.progress)?.visibility = View.VISIBLE
     }
 
     override fun hideProgress() {
-        findViewById(R.id.progress).visibility = View.GONE
+        findViewById(R.id.progress)?.visibility = View.GONE
     }
 
     override fun onSearchResultSelected(position: Int) {
@@ -990,7 +959,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         if((findViewById(R.id.route_mode) as RouteModeView).visibility != View.VISIBLE) {
             supportActionBar?.show()
             routeManager.reverse = false
-            findViewById(R.id.route_preview).visibility = View.GONE
+            findViewById(R.id.route_preview)?.visibility = View.GONE
             hideRoutePins()
         }
     }
@@ -1040,7 +1009,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun onBackPressed() {
-        if(findViewById(R.id.route_mode).visibility == View.VISIBLE) {
+        if(findViewById(R.id.route_mode)?.visibility == View.VISIBLE) {
             killNotifications()
         }
         presenter.onBackPressed()
@@ -1239,7 +1208,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         routeModeView.hideRouteIcon()
         routeModeView.visibility = View.GONE
         supportActionBar?.show()
-        findViewById(R.id.route_preview).visibility = View.GONE
+        findViewById(R.id.route_preview)?.visibility = View.GONE
         presenter.onExitNavigation()
         mapController?.setPanResponder(null)
     }
@@ -1265,7 +1234,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     private fun hideFindMe() {
         findMe?.clear()
         findMe = null
-        findViewById(R.id.find_me).visibility = View.GONE
+        findViewById(R.id.find_me)?.visibility = View.GONE
     }
 
     private fun hideRoutePins() {
@@ -1287,6 +1256,4 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         }
     }
 
-
 }
-
