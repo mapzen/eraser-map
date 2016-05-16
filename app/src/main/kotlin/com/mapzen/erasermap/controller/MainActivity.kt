@@ -782,11 +782,11 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun showProgress() {
-        findViewById(R.id.progress).visibility = View.VISIBLE
+        findViewById(R.id.progress)?.visibility = View.VISIBLE
     }
 
     override fun hideProgress() {
-        findViewById(R.id.progress).visibility = View.GONE
+        findViewById(R.id.progress)?.visibility = View.GONE
     }
 
     override fun onSearchResultSelected(position: Int) {
@@ -990,7 +990,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         if((findViewById(R.id.route_mode) as RouteModeView).visibility != View.VISIBLE) {
             supportActionBar?.show()
             routeManager.reverse = false
-            findViewById(R.id.route_preview).visibility = View.GONE
+            findViewById(R.id.route_preview)?.visibility = View.GONE
             hideRoutePins()
         }
     }
@@ -1040,7 +1040,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun onBackPressed() {
-        if(findViewById(R.id.route_mode).visibility == View.VISIBLE) {
+        if(findViewById(R.id.route_mode)?.visibility == View.VISIBLE) {
             killNotifications()
         }
         presenter.onBackPressed()
@@ -1239,7 +1239,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         routeModeView.hideRouteIcon()
         routeModeView.visibility = View.GONE
         supportActionBar?.show()
-        findViewById(R.id.route_preview).visibility = View.GONE
+        findViewById(R.id.route_preview)?.visibility = View.GONE
         presenter.onExitNavigation()
         mapController?.setPanResponder(null)
     }
@@ -1265,7 +1265,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     private fun hideFindMe() {
         findMe?.clear()
         findMe = null
-        findViewById(R.id.find_me).visibility = View.GONE
+        findViewById(R.id.find_me)?.visibility = View.GONE
     }
 
     private fun hideRoutePins() {
@@ -1287,6 +1287,4 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         }
     }
 
-
 }
-
