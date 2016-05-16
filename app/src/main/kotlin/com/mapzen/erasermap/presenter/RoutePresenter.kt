@@ -26,7 +26,7 @@ interface RoutePresenter {
     fun onRouteClear()
     fun onMapListToggleClick(state: MapListToggleButton.MapListState)
     fun onRouteCancelButtonClick()
-    fun mapZoomLevelForCenterMapOnLocation(location: Location): Float
+    fun mapZoomLevelForCurrentInstruction(): Float
     fun isTrackingCurrentLocation(): Boolean
     fun onSetCurrentInstruction(index: Int)
 }

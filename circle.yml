@@ -16,7 +16,7 @@ dependencies:
 
 test:
   override:
-    - case $CIRCLE_NODE_INDEX in 0) ./gradlew testDevDebug --tests='*.model.*' $TEST_OPTS ;; 1) ./gradlew testDevDebug --tests='*.view.*' $TEST_OPTS ;; 2) ./gradlew testDevDebug --tests='*.presenter.*' $TEST_OPTS ;; 3) ./gradlew testDevDebug --tests='*.controller.*' $TEST_OPTS ;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) ./gradlew testDevDebug --tests='*.model.*' $TEST_OPTS ;; 1) ./gradlew testDevDebug --tests='*.view.*' $TEST_OPTS ;; 2) ./gradlew testDevDebug --tests='*.presenter.*' $TEST_OPTS ;; esac:
         parallel: true
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit

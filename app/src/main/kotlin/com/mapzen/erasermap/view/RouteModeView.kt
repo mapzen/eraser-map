@@ -288,7 +288,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
             mapController?.mapPosition = LngLat(location.longitude, location.latitude)
             mapController?.mapRotation = getBearingInRadians(location)
             mapController?.mapTilt = MainPresenter.ROUTING_TILT
-            mapController?.mapZoom = routePresenter.mapZoomLevelForCenterMapOnLocation(location)
+            mapController?.mapZoom = routePresenter.mapZoomLevelForCurrentInstruction()
 
             // Get the width and height of the window
             val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager

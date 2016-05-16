@@ -60,8 +60,10 @@ public class TestHelper {
     }
 
     public static String getFixture(String name) throws IOException {
-        String fileName = getProperty("user.dir");
-        File file = new File(fileName + "/src/test/java/fixtures/" + name + ".route");
+        String base = getProperty("user.dir");
+        String filename = base + "/src/test/java/com/mapzen/erasermap/fixtures/" + name + ".route";
+        filename = filename.replace(".idea/modules/", "");
+        File file = new File(filename);
         String content;
         content = Files.toString(file, Charset.defaultCharset());
         return content;
@@ -95,4 +97,5 @@ public class TestHelper {
         Mockito.when(location.hasBearing()).thenReturn(hasBearing);
         return location;
     }
+
 }

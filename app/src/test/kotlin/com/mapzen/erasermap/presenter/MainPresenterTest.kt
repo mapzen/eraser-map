@@ -2,7 +2,6 @@ package com.mapzen.erasermap.presenter
 
 import android.location.Location
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.controller.MainActivityTest
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
