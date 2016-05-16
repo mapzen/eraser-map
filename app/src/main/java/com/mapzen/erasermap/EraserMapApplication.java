@@ -1,6 +1,7 @@
 package com.mapzen.erasermap;
 
 import com.mapzen.erasermap.controller.MainActivity;
+import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.receiver.MockLocationReceiver;
 import com.mapzen.erasermap.view.DistanceView;
 import com.mapzen.erasermap.view.InitActivity;
@@ -9,6 +10,9 @@ import com.mapzen.erasermap.view.SearchResultsAdapter;
 import com.mapzen.erasermap.view.SettingsActivity;
 import com.mapzen.erasermap.view.ViewAboutPreference;
 import com.mapzen.erasermap.view.VoiceNavigationController;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import android.app.Application;
 
@@ -33,6 +37,7 @@ public class EraserMapApplication extends Application {
 
     private ApplicationComponent component;
     private boolean isVisible = true;
+    private ApiKeys apiKeys;
 
     @Override
     public void onCreate() {
@@ -56,5 +61,13 @@ public class EraserMapApplication extends Application {
 
     public ApplicationComponent component() {
         return component;
+    }
+
+    public @Nullable ApiKeys getApiKeys() {
+        return apiKeys;
+    }
+
+    public void setApiKeys(@NotNull ApiKeys apiKeys) {
+        this.apiKeys = apiKeys;
     }
 }

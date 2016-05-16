@@ -32,7 +32,6 @@ import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AndroidAppSettings
-import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
 import com.mapzen.erasermap.model.MapzenLocation
@@ -108,7 +107,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     @Inject lateinit var settings: AppSettings
     @Inject lateinit var tileHttpHandler: TileHttpHandler
     @Inject lateinit var mapzenLocation: MapzenLocation
-    @Inject lateinit var keys: ApiKeys
     @Inject lateinit var pelias: Pelias
     @Inject lateinit var speaker: Speaker
     @Inject lateinit var permissionManager: PermissionManager
@@ -430,7 +428,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         initAutoCompleteAdapter()
         autocompleteListView.adapter = autoCompleteAdapter
         pelias.setLocationProvider(presenter.getPeliasLocationProvider())
-        pelias.setApiKey(keys.searchKey)
+        pelias.setApiKey(app.apiKeys?.searchKey)
         searchView?.setAutoCompleteListView(autocompleteListView)
         searchView?.setSavedSearch(savedSearch)
         searchView?.setPelias(pelias)
