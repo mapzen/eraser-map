@@ -97,8 +97,8 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
     }
 
     private fun updateTileDebugPref(value: Boolean) {
-        settings?.mapController?.setDebugFlag(MapController.DebugFlag.TILE_BOUNDS, value)
-        settings?.mapController?.setDebugFlag(MapController.DebugFlag.TILE_INFOS, value)
+        settings?.mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.TILE_BOUNDS, value)
+        settings?.mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.TILE_INFOS, value)
     }
 
     private fun initTangramInfosDebugPref() {
@@ -108,7 +108,7 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
     }
 
     private fun updateTangramInfosDebugPref(value: Boolean) {
-        settings?.mapController?.setDebugFlag(MapController.DebugFlag.TANGRAM_INFOS, value)
+        settings?.mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.TANGRAM_INFOS, value)
     }
 
     private fun updateCacheSearchResults(value: Boolean) {
@@ -124,7 +124,7 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
     }
 
     private fun updateLabelDebugPref(value: Boolean) {
-        settings?.mapController?.setDebugFlag(MapController.DebugFlag.LABELS, value)
+        settings?.mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.LABELS, value)
     }
 
     private fun initBuildNumberPref() {

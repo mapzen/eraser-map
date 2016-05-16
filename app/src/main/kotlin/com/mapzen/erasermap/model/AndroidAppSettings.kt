@@ -3,6 +3,7 @@ package com.mapzen.erasermap.model
 import android.content.Context
 import android.location.Location
 import android.preference.PreferenceManager
+import com.mapzen.android.MapzenMap
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.pelias.SavedSearch
@@ -137,7 +138,7 @@ class AndroidAppSettings(val application: EraserMapApplication) : AppSettings {
             prefs.edit().putBoolean(KEY_LABEL_DEBUG_ENABLED, value).commit()
         }
 
-    override var mapController: MapController? = null
+    override var mapzenMap: MapzenMap? = null
         get() {
             return field
         }
@@ -166,10 +167,10 @@ class AndroidAppSettings(val application: EraserMapApplication) : AppSettings {
         }
 
     override fun initTangramDebugFlags() {
-        mapController?.setDebugFlag(MapController.DebugFlag.TILE_BOUNDS, isTileDebugEnabled)
-        mapController?.setDebugFlag(MapController.DebugFlag.TILE_INFOS, isTileDebugEnabled)
-        mapController?.setDebugFlag(MapController.DebugFlag.LABELS, isLabelDebugEnabled)
-        mapController?.setDebugFlag(MapController.DebugFlag.TANGRAM_INFOS,
+        mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.TILE_BOUNDS, isTileDebugEnabled)
+        mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.TILE_INFOS, isTileDebugEnabled)
+        mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.LABELS, isLabelDebugEnabled)
+        mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.TANGRAM_INFOS,
                 isTangramInfosDebugEnabled)
     }
 

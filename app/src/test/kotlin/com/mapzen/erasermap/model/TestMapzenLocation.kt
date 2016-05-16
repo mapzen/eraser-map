@@ -8,7 +8,7 @@ import org.mockito.Mockito
 public class TestMapzenLocation : MapzenLocation {
     public var connected = false
 
-    override var mapController: MapController? = null
+    override var mapzenMap: MapController? = null
 
     override fun startLocationUpdates() {
         connected = true

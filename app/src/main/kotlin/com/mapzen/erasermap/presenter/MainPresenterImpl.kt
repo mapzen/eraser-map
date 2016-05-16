@@ -315,9 +315,11 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     @Subscribe public fun onLocationChangeEvent(event: LocationChangeEvent) {
         if (routingEnabled) {
             routeViewController?.onLocationChanged(event.location)
-        } else {
-            mainViewController?.showCurrentLocation(event.location)
         }
+        //TODO
+//        else {
+//            mainViewController?.showCurrentLocation(event.location)
+//        }
     }
 
     override fun onCreate() {
@@ -464,10 +466,12 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
                 // Show location puck and center map
                 mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
                 initialized = true
-            } else {
-                // Just show location puck. Do not recenter map.
-                mainViewController?.showCurrentLocation(currentLocation)
             }
+            //TODO
+//            else {
+//                // Just show location puck. Do not recenter map.
+//                mainViewController?.showCurrentLocation(currentLocation)
+//            }
         }
     }
 }

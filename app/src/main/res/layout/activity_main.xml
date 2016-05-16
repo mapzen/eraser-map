@@ -6,10 +6,11 @@
     android:background="@color/color_primary"
     tools:context=".MainActivity">
 
-    <com.mapzen.tangram.MapView
-        android:id="@+id/map"
+    <com.mapzen.android.MapView
+        android:id="@+id/map_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        />
 
     <com.mapzen.erasermap.view.CompassView
         android:id="@+id/compass_view"

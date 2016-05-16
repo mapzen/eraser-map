@@ -30,7 +30,6 @@ interface MainViewController {
     fun resumeRoutingMode(feature: Feature)
     fun shutDown()
     fun centerMapOnLocation(location: Location, zoom: Float)
-    fun showCurrentLocation(location: Location)
     fun setMapTilt(radians: Float)
     fun resetMute()
     fun toggleMute()

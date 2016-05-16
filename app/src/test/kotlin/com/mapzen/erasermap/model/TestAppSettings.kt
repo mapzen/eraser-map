@@ -18,7 +18,7 @@ public class TestAppSettings : AppSettings {
     override var isLabelDebugEnabled: Boolean = false
     override var isTangramInfosDebugEnabled: Boolean = false
     override var isCacheSearchResultsEnabled: Boolean = true
-    override var mapController: MapController? = null
+    override var mapzenMap: MapController? = null
 
     override fun initTangramDebugFlags() {
     }
