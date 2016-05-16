@@ -26,18 +26,6 @@
             android:src="@drawable/ic_compass"
             tools:ignore="RtlHardcoded" />
 
-        <TextView
-            android:id="@+id/osm_attribution"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_above="@+id/options"
-            android:layout_marginBottom="@dimen/padding_vertical_big"
-            android:layout_marginRight="@dimen/padding_horizontal_default"
-            android:text="@string/osm_attribution"
-            android:textColor="@color/dark_gray"
-            android:textSize="@dimen/font_tiny" />
-
         <LinearLayout
             android:id="@+id/options"
             android:layout_width="match_parent"

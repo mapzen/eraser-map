@@ -68,6 +68,17 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
 
     var mapzenMap: MapzenMap? = null
         set(value) {
+            value?.panResponder = object: TouchInput.PanResponder {
+                override fun onPan(startX: Float, startY: Float, endX: Float, endY: Float):
+                        Boolean {
+                    return onMapPan(endX - startX, endY - startY)
+                }
+
+                override fun onFling(posX: Float, posY: Float, velocityX: Float, velocityY: Float):
+                        Boolean {
+                    return false
+                }
+            }
             field = value
         }
 
@@ -233,6 +244,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     }
 
     override fun showRouteIcon(location: Location) {
+        mapzenMap?.clearRouteLocationMarker()
         mapzenMap?.drawRouteLocationMarker(LngLat(location.longitude, location.latitude))
     }
 
