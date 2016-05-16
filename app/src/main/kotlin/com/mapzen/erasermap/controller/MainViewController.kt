@@ -5,16 +5,16 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.valhalla.Route
 
 interface MainViewController {
-    fun showSearchResults(features: List<Feature>)
-    fun addSearchResultsToMap(features: List<Feature>, activeIndex: Int)
+    fun showSearchResults(features: List<Feature>?)
+    fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int)
     fun showDirectionsList()
     fun hideDirectionsList()
-    fun centerOnCurrentFeature(features: List<Feature>)
-    fun centerOnFeature(features: List<Feature>, position: Int)
-    fun showAllSearchResults(features: List<Feature>)
+    fun centerOnCurrentFeature(features: List<Feature>?)
+    fun centerOnFeature(features: List<Feature>?, position: Int)
+    fun showAllSearchResults(features: List<Feature>?)
     fun hideSearchResults()
     fun hideReverseGeolocateResult()
-    fun showReverseGeocodeFeature(features: List<Feature>)
+    fun showReverseGeocodeFeature(features: List<Feature>?)
     fun showPlaceSearchFeature(features: List<Feature>)
     fun showProgress()
     fun hideProgress()
