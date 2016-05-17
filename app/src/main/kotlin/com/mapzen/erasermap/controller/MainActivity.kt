@@ -253,7 +253,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun initMapzenMap() {
-        mapView.getMapAsync({
+        mapView.getMapAsync(keys.tilesKey, {
             this.mapzenMap = it
             configureMapzenMap()
             presenter.configureMapController()
