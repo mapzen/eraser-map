@@ -80,7 +80,7 @@ import retrofit.RetrofitError
 import retrofit.client.Response
 import java.math.RoundingMode
 import java.text.DecimalFormat
-import java.util.*
+import java.util.ArrayList
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
@@ -1270,7 +1270,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun exitNavigation() {
-//        initFindMeButton()
         mapzenMap?.isMyLocationEnabled = true
         routeModeView.voiceNavigationController?.stop()
         routeModeView.clearRoute()

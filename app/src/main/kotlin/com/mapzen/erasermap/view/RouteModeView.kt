@@ -27,13 +27,11 @@ import com.mapzen.helpers.RouteEngine
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
-import com.mapzen.tangram.MapController
-import com.mapzen.tangram.MapData
 import com.mapzen.tangram.TouchInput
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
-import java.util.*
+import java.util.ArrayList
 import javax.inject.Inject
 
 class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener, DirectionItemClickListener {
