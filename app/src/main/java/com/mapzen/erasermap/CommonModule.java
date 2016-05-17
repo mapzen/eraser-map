@@ -1,6 +1,5 @@
 package com.mapzen.erasermap;
 
-import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.presenter.RouteEngineListener;
 import com.mapzen.erasermap.presenter.RoutePresenter;
 import com.mapzen.erasermap.presenter.RoutePresenterImpl;
@@ -36,9 +35,5 @@ public class CommonModule {
 
     @Provides @Singleton ViewStateManager provideViewStateManager() {
         return new ViewStateManager();
-    }
-
-    @Provides @Singleton ApiKeys provideApiKeys() {
-        return new ApiKeys("", "", "");
     }
 }

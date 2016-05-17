@@ -21,11 +21,12 @@ class InitActivity : AppCompatActivity() {
     }
 
     @Inject lateinit var crashReportService: CrashReportService
-    @Inject lateinit var keys: ApiKeys
+
+    lateinit var app: EraserMapApplication
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val app = application as EraserMapApplication
+        app = application as EraserMapApplication
         app.component()?.inject(this)
         initCrashReportService()
         setContentView(R.layout.splash_screen)
@@ -35,7 +36,7 @@ class InitActivity : AppCompatActivity() {
             (findViewById(R.id.build_number) as TextView).text = BuildConfig.BUILD_NUMBER
         }
 
-        if (keys.tilesKey.length > 0) {
+        if (app.apiKeys != null) {
             startMainActivityAndFinish()
         } else {
             Handler().postDelayed({ configureKeys() }, START_DELAY_IN_MS)
@@ -49,14 +50,16 @@ class InitActivity : AppCompatActivity() {
             showApiKeyDialog()
         } else {
             if (BuildConfig.DEBUG) {
-                keys.tilesKey = BuildConfig.VECTOR_TILE_API_KEY
-                keys.searchKey = BuildConfig.PELIAS_API_KEY
-                keys.routingKey = BuildConfig.VALHALLA_API_KEY
+                val tilesKey = BuildConfig.VECTOR_TILE_API_KEY
+                val searchKey = BuildConfig.PELIAS_API_KEY
+                val routingKey = BuildConfig.VALHALLA_API_KEY
+                app.setApiKeys(ApiKeys(tilesKey, searchKey, routingKey))
             } else {
                 val crypt = SimpleCrypt(application)
-                keys.tilesKey = crypt.decode(BuildConfig.VECTOR_TILE_API_KEY)
-                keys.searchKey = crypt.decode(BuildConfig.PELIAS_API_KEY)
-                keys.routingKey = crypt.decode(BuildConfig.VALHALLA_API_KEY)
+                val tilesKey = crypt.decode(BuildConfig.VECTOR_TILE_API_KEY)
+                val searchKey = crypt.decode(BuildConfig.PELIAS_API_KEY)
+                val routingKey = crypt.decode(BuildConfig.VALHALLA_API_KEY)
+                app.setApiKeys(ApiKeys(tilesKey, searchKey, routingKey))
             }
             startMainActivityAndFinish()
         }
