@@ -15,7 +15,6 @@ public class TestMainController : MainViewController {
     public var rotation: Float = 0f
     public var routeLine: Route? = null
     public var queryText: String = ""
-    public var puckPosition: Location? = null
     public var reverseGeolocatePoint: PointF? = null
     public var placeSearchPoint: PointF? = null
 
@@ -120,10 +119,6 @@ public class TestMainController : MainViewController {
     override fun centerMapOnLocation(location: Location, zoom: Float) {
         this.location = location
         this.zoom = zoom
-    }
-
-    override fun showCurrentLocation(location: Location) {
-        puckPosition = location
     }
 
     override fun setMapTilt(radians: Float) {

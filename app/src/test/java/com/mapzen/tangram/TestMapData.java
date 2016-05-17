@@ -2,8 +2,6 @@ package com.mapzen.tangram;
 
 import com.mapzen.tangram.geometry.Geometry;
 
-import org.robolectric.annotation.Implementation;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
