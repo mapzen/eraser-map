@@ -308,7 +308,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
                 }
             }
         })
-        mapzenMap?.isMyLocationEnabled = true
+        checkPermissionAndEnableLocation()
         mapzenMap?.setFindMeOnClickListener {
             if (permissionManager.permissionsGranted()) {
                 presenter.onFindMeButtonClick()
@@ -1252,7 +1252,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     override fun hideRoutingMode() {
         setDefaultCamera()
-        mapzenMap?.isMyLocationEnabled = true
+        checkPermissionAndEnableLocation()
         presenter.routingEnabled = false
         routeModeView.visibility = View.GONE
         val location = routeManager.origin
@@ -1296,7 +1296,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun exitNavigation() {
-        mapzenMap?.isMyLocationEnabled = true
+        checkPermissionAndEnableLocation()
         routeModeView.voiceNavigationController?.stop()
         routeModeView.clearRoute()
         routeModeView.route = null
@@ -1341,9 +1341,15 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
                 if (grantResults.size > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     permissionManager.grantPermissions()
+                    checkPermissionAndEnableLocation()
                 }
             }
         }
     }
 
+    private fun checkPermissionAndEnableLocation() {
+        if (permissionManager.granted) {
+            mapzenMap?.isMyLocationEnabled = true
+        }
+    }
 }
