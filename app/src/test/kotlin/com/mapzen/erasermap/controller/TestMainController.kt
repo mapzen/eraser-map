@@ -6,6 +6,7 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.valhalla.Route
 
 public class TestMainController : MainViewController {
+
     public var searchResults: List<Feature>? = null
     public var reverseGeoCodeResults: List<Feature>? = null
     public var location: Location? = null
@@ -190,6 +191,10 @@ public class TestMainController : MainViewController {
     }
 
     override fun stopSpeaker() {
+
+    }
+
+    override fun checkPermissionAndEnableLocation() {
 
     }
 }

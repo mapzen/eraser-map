@@ -46,4 +46,5 @@ interface MainViewController {
     fun showSettingsBtn()
     fun onBackPressed()
     fun stopSpeaker()
+    fun checkPermissionAndEnableLocation()
 }
