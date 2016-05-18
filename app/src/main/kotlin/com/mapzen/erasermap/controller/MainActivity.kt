@@ -88,9 +88,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     companion object {
         @JvmStatic val MAP_DATA_PROP_SEARCHINDEX = "searchIndex"
-        @JvmStatic val MAP_DATA_PROP_STATE = "state"
-        @JvmStatic val MAP_DATA_PROP_STATE_ACTIVE = "active"
-        @JvmStatic val MAP_DATA_PROP_STATE_INACTIVE = "inactive"
         @JvmStatic val MAP_DATA_PROP_ID = "id"
         @JvmStatic val MAP_DATA_PROP_NAME = "name"
         @JvmStatic val DIRECTION_LIST_ANIMATION_DURATION = 300L
@@ -605,41 +602,92 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         searchResultsView.onSearchResultsSelectedListener = this
     }
 
+    private fun baseAttributionParams(): RelativeLayout.LayoutParams {
+        val layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT)
+        val margin = resources.getDimensionPixelSize(R.dimen.padding_vertical)
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+        layoutParams.leftMargin = margin
+        return layoutParams
+    }
+
+    private fun layoutAttributionAlignBottom() {
+        val layoutParams = baseAttributionParams()
+        val margin = resources.getDimensionPixelSize(R.dimen.padding_vertical)
+        layoutParams.bottomMargin = margin
+        mapView.attribution.layoutParams = layoutParams
+    }
+
+    private fun baseFindMeParams(): RelativeLayout.LayoutParams {
+        val scale = resources.displayMetrics.density;
+        val size = (44 * scale).toInt()
+        val layoutParams = RelativeLayout.LayoutParams(size, size)
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+        val margin = resources.getDimensionPixelSize(R.dimen.padding_vertical)
+        layoutParams.rightMargin = margin
+        return layoutParams
+    }
+
+    private fun layoutFindMeAlignBottom() {
+        val layoutParams = baseFindMeParams()
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+        val margin = resources.getDimensionPixelSize(R.dimen.padding_vertical)
+        layoutParams.bottomMargin = margin
+        mapView.findMe.layoutParams = layoutParams
+    }
+
     private fun layoutAttributionAboveSearchResults(features: List<Feature>) {
         if (features.count() == 0) return
-        val layoutParams = mapView.attribution.layoutParams as RelativeLayout.LayoutParams
+        val layoutParams = baseAttributionParams()
         val bottomMargin = resources.getDimensionPixelSize(R.dimen.padding_vertical_big)
         val searchHeight = resources.getDimensionPixelSize(R.dimen.search_results_pager_height)
         val padding = resources.getDimensionPixelSize(R.dimen.padding_vertical_default)
-        layoutParams.bottomMargin = searchHeight + bottomMargin - padding
+        val indicator = findViewById(R.id.indicator)
+        if (features.count() > 1) {
+            indicator?.addOnLayoutChangeListener({ view, left, top, right, bottom, oldLeft, oldTop,
+                                                   oldRight, oldBottom ->
+                val indicatorHeight = bottom - top
+                layoutParams.bottomMargin = searchHeight + indicatorHeight + bottomMargin - padding
+                mapView.attribution.layoutParams = layoutParams
+            })
+        } else {
+            layoutParams.bottomMargin = searchHeight + bottomMargin - padding
+            mapView.attribution.layoutParams = layoutParams
+        }
     }
 
     private fun layoutAttributionAboveOptions() {
-        val layoutParams = mapView.attribution.layoutParams as RelativeLayout.LayoutParams
+        val layoutParams = baseAttributionParams()
         val optionsView = findViewById(R.id.options)
-        optionsView?.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+        optionsView?.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop,
+                                                 oldRight, oldBottom ->
             val optionsHeight = bottom - top
             val padding = resources.getDimensionPixelSize(R.dimen.padding_vertical_default)
             layoutParams.bottomMargin = optionsHeight + padding
+            mapView.attribution.layoutParams = layoutParams
         }
     }
 
     private fun layoutFindMeAboveSearchResults(features: List<Feature>) {
         if (features.count() == 0) return
-        val layoutParams = mapView.findMe.layoutParams as RelativeLayout.LayoutParams
+        val layoutParams = baseFindMeParams()
         val bottomMargin = resources.getDimensionPixelSize(R.dimen.padding_vertical_big)
         val searchHeight = resources.getDimensionPixelSize(R.dimen.search_results_pager_height)
         val padding = resources.getDimensionPixelSize(R.dimen.padding_vertical_default)
         layoutParams.bottomMargin = searchHeight + bottomMargin - padding
+        mapView.findMe.layoutParams = layoutParams
     }
 
     private fun layoutFindMeAboveOptions() {
-        val layoutParams = mapView.findMe.layoutParams as RelativeLayout.LayoutParams
+        val layoutParams = baseFindMeParams()
         val optionsView = findViewById(R.id.options)
-        optionsView?.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+        optionsView?.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop,
+                                                 oldRight, oldBottom ->
             val optionsHeight = bottom - top
             val padding = resources.getDimensionPixelSize(R.dimen.padding_vertical_default)
             layoutParams.bottomMargin = optionsHeight + padding
+            mapView.findMe.layoutParams = layoutParams
         }
     }
 
@@ -784,28 +832,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     private fun hideSearchResultsView() {
         searchResultsView.visibility = View.GONE
-    }
-
-    private fun layoutAttributionAlignBottom() {
-        val layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT)
-        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-        val margin = resources.getDimensionPixelSize(R.dimen.padding_vertical)
-        layoutParams.bottomMargin = margin
-        layoutParams.leftMargin = margin
-        mapView.attribution.layoutParams = layoutParams
-    }
-
-    private fun layoutFindMeAlignBottom() {
-        val scale = resources.displayMetrics.density;
-        val size = (44 * scale).toInt()
-        val layoutParams = RelativeLayout.LayoutParams(size, size)
-        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-        val margin = resources.getDimensionPixelSize(R.dimen.padding_vertical)
-        layoutParams.bottomMargin = margin
-        layoutParams.rightMargin = margin
-        mapView.findMe.layoutParams = layoutParams
     }
 
     override fun showProgress() {
