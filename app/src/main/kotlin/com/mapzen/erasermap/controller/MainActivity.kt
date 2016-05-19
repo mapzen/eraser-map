@@ -172,7 +172,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         } else {
             permissionManager.grantPermissions()
         }
-        presenter.onCreate()
         presenter.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
         settings.initTangramDebugFlags()

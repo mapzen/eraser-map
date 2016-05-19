@@ -322,10 +322,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 //        }
     }
 
-    override fun onCreate() {
-
-    }
-
     override fun onResume() {
         if (!isRouting() && !isRoutingDirectionList()) {
             mapzenLocation.startLocationUpdates()

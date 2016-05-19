@@ -5,7 +5,6 @@ import android.location.Location
 import com.mapzen.android.MapzenMap
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.pelias.SavedSearch
-import com.mapzen.tangram.MapController
 import com.mapzen.valhalla.Router
 import java.io.File
 

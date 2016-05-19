@@ -3,7 +3,6 @@ package com.mapzen.erasermap.model
 import android.location.Location
 import com.mapzen.android.MapzenMap
 import com.mapzen.pelias.BoundingBox
-import com.mapzen.tangram.MapController
 import org.mockito.Mockito
 
 public class TestMapzenLocation : MapzenLocation {

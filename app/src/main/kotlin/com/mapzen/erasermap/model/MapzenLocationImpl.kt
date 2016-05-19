@@ -13,7 +13,6 @@ import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.model.event.LocationChangeEvent
 import com.mapzen.erasermap.model.event.RouteEvent
 import com.mapzen.pelias.BoundingBox
-import com.mapzen.tangram.MapController
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 
