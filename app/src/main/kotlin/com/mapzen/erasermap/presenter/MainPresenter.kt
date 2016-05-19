@@ -50,5 +50,5 @@ public interface MainPresenter {
     public fun onReverseGeoRequested(screenX: Float?, screenY: Float?): Boolean
     public fun onPlaceSearchRequested(gid: String): Boolean
     public fun onExitNavigation()
-    public fun configureMapController()
+    public fun configureMapzenMap()
 }

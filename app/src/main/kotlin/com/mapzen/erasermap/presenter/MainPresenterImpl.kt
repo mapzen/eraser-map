@@ -456,7 +456,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         return false
     }
 
-    override fun configureMapController() {
+    override fun configureMapzenMap() {
         val currentLocation = mapzenLocation.getLastLocation()
         if (currentLocation is Location) {
             if (!initialized) {
@@ -464,11 +464,6 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
                 mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
                 initialized = true
             }
-            //TODO
-//            else {
-//                // Just show location puck. Do not recenter map.
-//                mainViewController?.showCurrentLocation(currentLocation)
-//            }
         }
     }
 }
