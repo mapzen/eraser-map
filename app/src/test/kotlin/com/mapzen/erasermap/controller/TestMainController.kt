@@ -6,6 +6,7 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.valhalla.Route
 
 public class TestMainController : MainViewController {
+
     public var searchResults: List<Feature>? = null
     public var reverseGeoCodeResults: List<Feature>? = null
     public var location: Location? = null
@@ -15,7 +16,6 @@ public class TestMainController : MainViewController {
     public var rotation: Float = 0f
     public var routeLine: Route? = null
     public var queryText: String = ""
-    public var puckPosition: Location? = null
     public var reverseGeolocatePoint: PointF? = null
     public var placeSearchPoint: PointF? = null
 
@@ -122,10 +122,6 @@ public class TestMainController : MainViewController {
         this.zoom = zoom
     }
 
-    override fun showCurrentLocation(location: Location) {
-        puckPosition = location
-    }
-
     override fun setMapTilt(radians: Float) {
         tilt = radians
     }
@@ -195,6 +191,10 @@ public class TestMainController : MainViewController {
     }
 
     override fun stopSpeaker() {
+
+    }
+
+    override fun checkPermissionAndEnableLocation() {
 
     }
 }

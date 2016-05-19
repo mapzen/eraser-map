@@ -39,7 +39,6 @@ public interface MainPresenter {
     public fun updateLocation()
     public fun onBackPressed()
     public fun onRestoreViewState()
-    public fun onCreate()
     public fun onResume()
     public fun onPause()
     public fun onFindMeButtonClick()
@@ -51,4 +50,5 @@ public interface MainPresenter {
     public fun onReverseGeoRequested(screenX: Float?, screenY: Float?): Boolean
     public fun onPlaceSearchRequested(gid: String): Boolean
     public fun onExitNavigation()
+    public fun configureMapController()
 }

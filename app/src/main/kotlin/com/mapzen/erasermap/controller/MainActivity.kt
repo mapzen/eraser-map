@@ -28,6 +28,8 @@ import android.widget.RadioButton
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
+import com.mapzen.android.MapView
+import com.mapzen.android.MapzenMap
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
@@ -68,10 +70,6 @@ import com.mapzen.pelias.widget.AutoCompleteItem
 import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.mapzen.tangram.LngLat
-import com.mapzen.tangram.MapController
-import com.mapzen.tangram.MapData
-import com.mapzen.tangram.MapView
-import com.mapzen.tangram.Tangram
 import com.mapzen.tangram.TouchInput
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
@@ -89,13 +87,13 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     companion object {
         @JvmStatic val MAP_DATA_PROP_SEARCHINDEX = "searchIndex"
-        @JvmStatic val MAP_DATA_PROP_STATE = "state"
-        @JvmStatic val MAP_DATA_PROP_STATE_ACTIVE = "active"
-        @JvmStatic val MAP_DATA_PROP_STATE_INACTIVE = "inactive"
         @JvmStatic val MAP_DATA_PROP_ID = "id"
         @JvmStatic val MAP_DATA_PROP_NAME = "name"
         @JvmStatic val DIRECTION_LIST_ANIMATION_DURATION = 300L
         @JvmStatic val PERMISSIONS_REQUEST: Int = 1
+        @JvmStatic val SCENE_CAMERA = "cameras"
+        @JvmStatic val SCENE_CAMERA_ISOMETRIC = "{isometric: {type: isometric}}"
+        @JvmStatic val SCENE_CAMERA_PERSPECTIVE = "{perspective: {type: perspective}}"
     }
 
     val requestCodeSearchResults: Int = 0x01
@@ -112,14 +110,9 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     @Inject lateinit var permissionManager: PermissionManager
 
     lateinit var app: EraserMapApplication
-    var mapController : MapController? = null
+    var mapzenMap : MapzenMap? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
     var optionsMenu: Menu? = null
-    var findMe: MapData? = null
-    var reverseGeocodeData: MapData? = null
-    var searchResultsData: MapData? = null
-    var startPin: MapData? = null
-    var endPin: MapData? = null
     var poiTapPoint: FloatArray? = null
     var poiTapName: String? = null
     var searchView: PeliasSearchView? = null
@@ -128,11 +121,10 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     lateinit var confidenceHandler: ConfidenceHandler
 
     // activity_main
-    val findMeButton: ImageButton by lazy { findViewById(R.id.find_me) as ImageButton }
+    val mapView: MapView by lazy { findViewById(R.id.map) as MapView }
     val compass: CompassView by lazy { findViewById(R.id.compass_view) as CompassView }
     val autocompleteListView: AutoCompleteListView by lazy { findViewById(R.id.auto_complete) as AutoCompleteListView }
     val searchResultsView: SearchResultsView by lazy { findViewById(R.id.search_results) as SearchResultsView }
-    val osmAttributionText: TextView by lazy { findViewById(R.id.osm_attribution) as TextView }
 
     // view_route_preview
     val routePreviewView: RoutePreviewView by lazy { findViewById(R.id.route_preview) as RoutePreviewView }
@@ -165,8 +157,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         initCrashReportService()
         setContentView(R.layout.activity_main)
         presenter.mainViewController = this
-        initMapController()
-        initFindMeButton()
+        initMapzenMap()
         initVoiceNavigationController() // must initialize this before calling initMute
         initMute()
         initCompass()
@@ -179,7 +170,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         } else {
             permissionManager.grantPermissions()
         }
-        presenter.onCreate()
         presenter.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
         settings.initTangramDebugFlags()
@@ -199,13 +189,13 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun initMapRotateListener() {
-        mapController?.setRotateResponder(TouchInput.RotateResponder {
+        mapzenMap?.setRotateResponder(TouchInput.RotateResponder {
             x, y, rotation -> presenter.onMapMotionEvent() ?: false
         })
     }
 
     override fun rotateCompass() {
-        val radians: Float = mapController?.mapRotation ?: 0f
+        val radians: Float = mapzenMap?.rotation as Float
         val degrees = Math.toDegrees(radians.toDouble()).toFloat()
         compass.rotation = degrees
         routePreviewCompass.rotation = degrees
@@ -248,92 +238,91 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         super.onDestroy()
         saveCurrentSearchTerm()
         routeModeView.clearRoute()
-        findMe?.clear()
-        reverseGeocodeData?.clear()
-        searchResultsData?.clear()
-        startPin?.clear()
-        endPin?.clear()
+        mapzenMap?.isMyLocationEnabled = false
+        mapzenMap?.clearDroppedPins()
+        mapzenMap?.clearSearchResults()
+        mapzenMap?.clearRoutePins()
         killNotifications()
         voiceNavigationController?.shutdown()
     }
 
-    private fun initMapController() {
-        val mapView = findViewById(R.id.map) as MapView
-        mapView.setZOrderMediaOverlay(true) //so that white bg shows, not window when launching
-        mapController = MapController(this, mapView, "style/bubble-wrap.yaml")
-        mapController?.setLongPressResponder({
-            x, y ->
-                confidenceHandler.longPressed = true
-                presenter.onReverseGeoRequested(x, y)
+    private fun initMapzenMap() {
+        mapView.getMapAsync(keys.tilesKey, {
+            this.mapzenMap = it
+            configureMapzenMap()
+            presenter.configureMapController()
         })
-        mapController?.setTapResponder(object: TouchInput.TapResponder {
+    }
+
+    private fun configureMapzenMap() {
+        mapzenMap?.setLongPressResponder({
+            x, y ->
+            confidenceHandler.longPressed = true
+            presenter.onReverseGeoRequested(x, y)
+        })
+        mapzenMap?.tapResponder = object: TouchInput.TapResponder {
             override fun onSingleTapUp(x: Float, y: Float): Boolean = false
             override fun onSingleTapConfirmed(x: Float, y: Float): Boolean {
                 confidenceHandler.longPressed = false
-                var coords = mapController?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
+                var coords = mapzenMap?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
                 presenter?.reverseGeoLngLat = coords
                 poiTapPoint = floatArrayOf(x, y)
-                mapController?.pickFeature(x, y)
+                mapzenMap?.mapController?.pickFeature(x, y)
                 return true
             }
-        })
-        mapController?.setDoubleTapResponder({ x, y ->
+        }
+        mapzenMap?.setDoubleTapResponder({ x, y ->
             confidenceHandler.longPressed = false
-            val tappedPos = mapController?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
-            val currentPos = mapController?.mapPosition
+            val tappedPos = mapzenMap?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
+            val currentPos = mapzenMap?.position
             if (tappedPos != null && currentPos != null) {
-                mapController?.setMapZoom((mapController?.mapZoom as Float) + 1.0f, 0.5f)
-                mapController?.setMapPosition(
-                        0.5f * (tappedPos.longitude + currentPos.longitude),
-                        0.5f * (tappedPos.latitude + currentPos.latitude),
-                        0.5f);
+                mapzenMap?.setZoom((mapzenMap?.zoom as Float) + 1.0f, 500)
+                val lngLat = LngLat(0.5f * (tappedPos.longitude + currentPos.longitude),
+                        0.5f * (tappedPos.latitude + currentPos.latitude));
+                mapzenMap?.setPosition(lngLat, 500);
             }
             true;
         })
-        mapController?.setFeatureTouchListener({
+        mapzenMap?.mapController?.setFeaturePickListener({
             properties, positionX, positionY ->
-                confidenceHandler.longPressed = false
-                // Reassign tapPoint to center of the feature tapped
-                // Also used in placing the pin
-                poiTapPoint = floatArrayOf(positionX, positionY)
-                if (properties.contains(MAP_DATA_PROP_NAME)) {
-                    poiTapName = properties.getString(MAP_DATA_PROP_NAME).toString()
+            confidenceHandler.longPressed = false
+            // Reassign tapPoint to center of the feature tapped
+            // Also used in placing the pin
+            poiTapPoint = floatArrayOf(positionX, positionY)
+            if (properties.contains(MAP_DATA_PROP_NAME)) {
+                poiTapName = properties[MAP_DATA_PROP_NAME];
+            }
+            if (properties.contains(MAP_DATA_PROP_SEARCHINDEX)) {
+                val searchIndex = properties[MAP_DATA_PROP_SEARCHINDEX]!!.toInt()
+                presenter.onSearchResultTapped(searchIndex)
+            } else {
+                if (properties.contains(MAP_DATA_PROP_ID)) {
+                    val featureID = properties[MAP_DATA_PROP_ID]!!.toLong()
+                    presenter.onPlaceSearchRequested("openstreetmap:venue:$featureID")
+                } else if (poiTapPoint != null) {
+                    presenter.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(),
+                            poiTapPoint?.get(0)?.toFloat())
                 }
-                if (properties.contains(MAP_DATA_PROP_SEARCHINDEX)) {
-                    val searchIndex = properties.getNumber(MAP_DATA_PROP_SEARCHINDEX).toInt()
-                    presenter.onSearchResultTapped(searchIndex)
-                } else {
-                    if (properties.contains(MAP_DATA_PROP_ID)) {
-                        val featureID = properties.getNumber(MAP_DATA_PROP_ID).toLong()
-                        presenter.onPlaceSearchRequested("openstreetmap:venue:$featureID")
-                    } else {
-                        if (poiTapPoint != null) {
-                            presenter.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(),
-                                    poiTapPoint?.get(0)?.toFloat())
-                        }
-                    }
-                }
+            }
         })
-        mapController?.setHttpHandler(tileHttpHandler)
-        mapzenLocation.mapController = mapController
-    }
-
-    private fun initAutoCompleteAdapter() {
-        autoCompleteAdapter = SearchListViewAdapter(this, R.layout.list_item_auto_complete,
-                searchView as PeliasSearchView, savedSearch)
-    }
-
-    private fun initFindMeButton() {
-        findMe = MapData("mz_current_location")
-        Tangram.addDataSource(findMe)
-        findMeButton.visibility = View.VISIBLE
-        findMeButton.setOnClickListener({
+        checkPermissionAndEnableLocation()
+        mapzenMap?.setFindMeOnClickListener {
             if (permissionManager.permissionsGranted()) {
                 presenter.onFindMeButtonClick()
             } else {
                 permissionManager.showPermissionRequired()
             }
-        })
+        }
+        //TODO:
+        mapzenMap?.mapController?.setHttpHandler(tileHttpHandler)
+        mapzenLocation.mapzenMap = mapzenMap
+        routeModeView.mapzenMap = mapzenMap
+        settings.mapzenMap = mapzenMap
+    }
+
+    private fun initAutoCompleteAdapter() {
+        autoCompleteAdapter = SearchListViewAdapter(this, R.layout.list_item_auto_complete,
+                searchView as PeliasSearchView, savedSearch)
     }
 
     private fun updateMute() {
@@ -376,22 +365,14 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun centerMapOnLocation(location: Location, zoom: Float) {
-        mapController?.setMapPosition(location.longitude, location.latitude)
-        mapController?.mapZoom = zoom
-        showCurrentLocation(location)
-    }
-
-    override fun showCurrentLocation(location: Location) {
-        val currentLocation = LngLat(location.longitude, location.latitude)
-        val properties = com.mapzen.tangram.Properties()
-
-        findMe?.clear()
-        findMe?.addPoint(properties, currentLocation)
-        mapController?.requestRender()
+        val lngLat = LngLat(location.longitude, location.latitude)
+        mapzenMap?.position = lngLat
+        mapzenMap?.zoom = zoom
+        centerMap(location)
     }
 
     override fun setMapTilt(radians: Float) {
-        mapController?.mapTilt = radians
+        mapzenMap?.tilt = radians
     }
 
     override fun toggleMute() {
@@ -406,7 +387,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun setMapRotation(radians: Float) {
-        mapController?.setMapRotation(radians, 1f)
+        mapzenMap?.setRotation(radians, 1000)
         compass.reset()
         routePreviewCompass.reset()
         routeModeCompass.reset()
@@ -607,6 +588,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         showSearchResultsView(features)
         addSearchResultsToMap(features, 0)
         layoutAttributionAboveSearchResults(features)
+        layoutFindMeAboveSearchResults(features)
         toggleShowDebugSettings()
     }
 
@@ -617,12 +599,93 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         searchResultsView.onSearchResultsSelectedListener = this
     }
 
+    private fun baseAttributionParams(): RelativeLayout.LayoutParams {
+        val layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT)
+        val margin = resources.getDimensionPixelSize(R.dimen.padding_vertical)
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+        layoutParams.leftMargin = margin
+        return layoutParams
+    }
+
+    private fun layoutAttributionAlignBottom() {
+        val layoutParams = baseAttributionParams()
+        val margin = resources.getDimensionPixelSize(R.dimen.padding_vertical)
+        layoutParams.bottomMargin = margin
+        mapView.attribution.layoutParams = layoutParams
+    }
+
+    private fun baseFindMeParams(): RelativeLayout.LayoutParams {
+        val scale = resources.displayMetrics.density;
+        val size = (44 * scale).toInt()
+        val layoutParams = RelativeLayout.LayoutParams(size, size)
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+        val margin = resources.getDimensionPixelSize(R.dimen.padding_vertical)
+        layoutParams.rightMargin = margin
+        return layoutParams
+    }
+
+    private fun layoutFindMeAlignBottom() {
+        val layoutParams = baseFindMeParams()
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+        val margin = resources.getDimensionPixelSize(R.dimen.padding_vertical)
+        layoutParams.bottomMargin = margin
+        mapView.findMe.layoutParams = layoutParams
+    }
+
     private fun layoutAttributionAboveSearchResults(features: List<Feature>) {
         if (features.count() == 0) return
-        val attributionLayoutParams = osmAttributionText.layoutParams as RelativeLayout.LayoutParams
+        val layoutParams = baseAttributionParams()
         val bottomMargin = resources.getDimensionPixelSize(R.dimen.padding_vertical_big)
         val searchHeight = resources.getDimensionPixelSize(R.dimen.search_results_pager_height)
-        attributionLayoutParams.bottomMargin = searchHeight + bottomMargin
+        val padding = resources.getDimensionPixelSize(R.dimen.padding_vertical_default)
+        val indicator = findViewById(R.id.indicator)
+        if (features.count() > 1) {
+            indicator?.addOnLayoutChangeListener({ view, left, top, right, bottom, oldLeft, oldTop,
+                                                   oldRight, oldBottom ->
+                val indicatorHeight = bottom - top
+                layoutParams.bottomMargin = searchHeight + indicatorHeight + bottomMargin - padding
+                mapView.attribution.layoutParams = layoutParams
+            })
+        } else {
+            layoutParams.bottomMargin = searchHeight + bottomMargin - padding
+            mapView.attribution.layoutParams = layoutParams
+        }
+    }
+
+    private fun layoutAttributionAboveOptions() {
+        val layoutParams = baseAttributionParams()
+        val optionsView = findViewById(R.id.options)
+        optionsView?.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop,
+                                                 oldRight, oldBottom ->
+            val optionsHeight = bottom - top
+            val padding = resources.getDimensionPixelSize(R.dimen.padding_vertical_default)
+            layoutParams.bottomMargin = optionsHeight + padding
+            mapView.attribution.layoutParams = layoutParams
+        }
+    }
+
+    private fun layoutFindMeAboveSearchResults(features: List<Feature>) {
+        if (features.count() == 0) return
+        val layoutParams = baseFindMeParams()
+        val bottomMargin = resources.getDimensionPixelSize(R.dimen.padding_vertical_big)
+        val searchHeight = resources.getDimensionPixelSize(R.dimen.search_results_pager_height)
+        val padding = resources.getDimensionPixelSize(R.dimen.padding_vertical_default)
+        layoutParams.bottomMargin = searchHeight + bottomMargin - padding
+        mapView.findMe.layoutParams = layoutParams
+    }
+
+    private fun layoutFindMeAboveOptions() {
+        val layoutParams = baseFindMeParams()
+        val optionsView = findViewById(R.id.options)
+        optionsView?.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop,
+                                                 oldRight, oldBottom ->
+            val optionsHeight = bottom - top
+            val padding = resources.getDimensionPixelSize(R.dimen.padding_vertical_default)
+            layoutParams.bottomMargin = optionsHeight + padding
+            mapView.findMe.layoutParams = layoutParams
+        }
     }
 
     /**
@@ -651,6 +714,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
         hideSearchResults()
         layoutAttributionAboveSearchResults(features)
+        layoutFindMeAboveSearchResults(features)
 
         var poiTapFallback = false
         if (poiTapPoint != null) {
@@ -663,42 +727,25 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
         if (poiTapFallback) return
 
-        val properties = com.mapzen.tangram.Properties()
-        properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
-        if (reverseGeocodeData == null) {
-            reverseGeocodeData = MapData("mz_dropped_pin")
-            Tangram.addDataSource(reverseGeocodeData)
-        }
-        reverseGeocodeData?.clear()
-        reverseGeocodeData?.addPoint(properties, presenter?.reverseGeoLngLat)
-
-        mapController?.requestRender()
+        mapzenMap?.clearDroppedPins()
+        mapzenMap?.drawDroppedPin(presenter?.reverseGeoLngLat)
     }
 
     override fun drawTappedPoiPin() {
         hideSearchResultsView()
         layoutAttributionAlignBottom()
+        layoutFindMeAlignBottom()
 
         var lngLat: LngLat? = null
 
         val pointX = poiTapPoint?.get(0)?.toDouble()
         val pointY = poiTapPoint?.get(1)?.toDouble()
         if (pointX != null && pointY != null) {
-            lngLat = mapController?.coordinatesAtScreenPosition(pointX, pointY)
+            lngLat = mapzenMap?.coordinatesAtScreenPosition(pointX, pointY)
         }
 
-        val properties = com.mapzen.tangram.Properties()
-        properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
-
-        // hijack reverseGeocodeData for tappedPoiPin
-        if (reverseGeocodeData == null) {
-            reverseGeocodeData = MapData("mz_dropped_pin")
-            Tangram.addDataSource(reverseGeocodeData)
-        }
-        reverseGeocodeData?.clear()
-        reverseGeocodeData?.addPoint(properties, lngLat)
-
-        mapController?.requestRender()
+        mapzenMap?.clearDroppedPins()
+        mapzenMap?.drawDroppedPin(lngLat)
     }
 
     override fun showPlaceSearchFeature(features: List<Feature>) {
@@ -715,27 +762,14 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
         centerOnCurrentFeature(features)
 
-        if (searchResultsData == null) {
-            searchResultsData = MapData("mz_search_result")
-            Tangram.addDataSource(searchResultsData)
-        }
-
-        var featureCount: Int = 0
-        searchResultsData?.clear()
+        mapzenMap?.clearSearchResults()
+        val points: ArrayList<LngLat> = ArrayList()
         for (feature in features) {
             val simpleFeature = SimpleFeature.fromFeature(feature)
             val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
-            val properties = com.mapzen.tangram.Properties()
-            properties.set(MAP_DATA_PROP_SEARCHINDEX, featureCount.toDouble());
-            if (featureCount == activeIndex) {
-                properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_ACTIVE)
-            } else {
-                properties.set(MAP_DATA_PROP_STATE, MAP_DATA_PROP_STATE_INACTIVE);
-            }
-            searchResultsData?.addPoint(properties, lngLat)
-            featureCount++
+            points.add(lngLat)
         }
-        mapController?.requestRender()
+        mapzenMap?.drawSearchResults(points, activeIndex)
     }
 
     override fun centerOnCurrentFeature(features: List<Feature>?) {
@@ -755,8 +789,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             if(features.size > 0) {
                 searchResultsView.setCurrentItem(position)
                 val feature = SimpleFeature.fromFeature(features[position])
-                mapController?.setMapPosition(feature.lng(), feature.lat(), 1f)
-                mapController?.mapZoom = MainPresenter.DEFAULT_ZOOM
+                mapzenMap?.setPosition(LngLat(feature.lng(), feature.lat()), 1000)
+                mapzenMap?.zoom = MainPresenter.DEFAULT_ZOOM
             }
         }, 100)
     }
@@ -774,7 +808,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     override fun reverseGeolocate(screenX: Float, screenY: Float) {
         pelias.setLocationProvider(presenter.getPeliasLocationProvider())
-        var coords = mapController?.coordinatesAtScreenPosition(screenX.toDouble(), screenY.toDouble())
+        var coords = mapzenMap?.coordinatesAtScreenPosition(screenX.toDouble(), screenY.toDouble())
         presenter?.reverseGeoLngLat = coords
         presenter.currentFeature = getGenericLocationFeature(coords?.latitude as Double,
                 coords?.longitude as Double)
@@ -783,24 +817,18 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun hideReverseGeolocateResult() {
-        reverseGeocodeData?.clear()
+        mapzenMap?.clearDroppedPins()
     }
 
     override fun hideSearchResults() {
         hideSearchResultsView()
         layoutAttributionAlignBottom()
-        searchResultsData?.clear()
+        layoutFindMeAlignBottom()
+        mapzenMap?.clearSearchResults()
     }
 
     private fun hideSearchResultsView() {
         searchResultsView.visibility = View.GONE
-    }
-
-    private fun layoutAttributionAlignBottom() {
-        val attributionLayoutParams = osmAttributionText.layoutParams as RelativeLayout.LayoutParams
-
-        val bottomMargin = resources.getDimensionPixelSize(R.dimen.padding_vertical_big)
-        attributionLayoutParams.bottomMargin = bottomMargin
     }
 
     override fun showProgress() {
@@ -843,8 +871,17 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         optionsMenu?.findItem(R.id.action_settings)?.setVisible(true)
     }
 
+    private fun centerMap(location: Location) {
+        val lngLat = LngLat(location.longitude, location.latitude)
+        mapzenMap?.position = lngLat
+        mapzenMap?.mapController?.requestRender()
+    }
+
     override fun showRoutePreview(location: Location, feature: Feature) {
-        showCurrentLocation(location)
+        centerMap(location);
+        layoutAttributionAboveOptions()
+        layoutFindMeAboveOptions()
+
         routeManager.origin = location
 
         if (location.hasBearing()) {
@@ -913,8 +950,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             return
         }
 
-        mapController?.mapRotation = 0f
-        mapController?.mapTilt = 0f
+        mapzenMap?.rotation = 0f
+        mapzenMap?.tilt = 0f
 
         // Determine the smallest axis-aligned box that contains the route longitude and latitude
         val start = route.first()
@@ -935,8 +972,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         val screen = Point()
         windowManager.defaultDisplay.getSize(screen)
         // Take half of the y dimension to allow space for other UI elements
-        val viewMin = mapController?.coordinatesAtScreenPosition(0.0, screen.y.toDouble() * 0.25) ?: LngLat()
-        val viewMax = mapController?.coordinatesAtScreenPosition(screen.x.toDouble(), screen.y.toDouble() * 0.75) ?: LngLat()
+        val viewMin = mapzenMap?.coordinatesAtScreenPosition(0.0, screen.y.toDouble() * 0.25) ?: LngLat()
+        val viewMax = mapzenMap?.coordinatesAtScreenPosition(screen.x.toDouble(), screen.y.toDouble() * 0.75) ?: LngLat()
 
         // Determine the amount of re-scaling needed to view the route
         val scaleX = routeBounds.width / Math.abs(viewMax.longitude - viewMin.longitude)
@@ -944,15 +981,15 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         val zoomDelta = -Math.log(Math.max(scaleX, scaleY)) / Math.log(2.0)
 
         // Update map position and zoom
-        var map = mapController
+        var map = mapzenMap
         if (map != null) {
-            val z = map.mapZoom + zoomDelta.toFloat()
-            map.mapZoom = z
-            if (map.mapZoom == z) {
+            val z = map.zoom + zoomDelta.toFloat()
+            map.zoom = z
+            if (map.zoom == z) {
                 // If the new zoom would go beyond the bounds of the earth, the value
                 // won't be set - so we want to make sure that it changed before moving
                 // the position.
-                map.mapPosition = LngLat(routeBounds.center.x, routeBounds.center.y)
+                map.position = LngLat(routeBounds.center.x, routeBounds.center.y)
             }
         }
 
@@ -962,15 +999,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun showRoutePins(start: LngLat, end: LngLat) {
-        startPin = MapData("mz_route_start")
-        endPin = MapData("mz_route_stop")
-        Tangram.addDataSource(startPin)
-        Tangram.addDataSource(endPin)
-
-        val properties = com.mapzen.tangram.Properties()
-        startPin?.addPoint(properties, start)
-        endPin?.addPoint(properties, end)
-        mapController?.requestRender()
+        mapzenMap?.drawRoutePins(start, end)
     }
 
     private fun handleRouteFailure() {
@@ -1014,6 +1043,9 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             routeManager.reverse = false
             findViewById(R.id.route_preview)?.visibility = View.GONE
             hideRoutePins()
+            val features = arrayListOf(presenter.currentFeature) as List<Feature>
+            layoutAttributionAboveSearchResults(features)
+            layoutFindMeAboveSearchResults(features)
         }
     }
 
@@ -1054,7 +1086,10 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     private fun initReverseButton() {
         reverseButton.setOnClickListener({ reverse() })
         viewListButton.setOnClickListener({ presenter.onClickViewList() })
-        startNavigationButton.setOnClickListener({ presenter.onClickStartNavigation() })
+        startNavigationButton.setOnClickListener({
+            layoutAttributionAlignBottom()
+            presenter.onClickStartNavigation()
+        })
     }
 
     private fun killNotifications() {
@@ -1158,6 +1193,9 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun startRoutingMode(feature: Feature) {
+        // Set camera before RouteModeView#startRoute so that MapController#sceneUpdate called
+        // before MapController#queueEvent
+        setRoutingCamera()
         if (confidenceHandler.useRawLatLng(feature.properties.confidence)) {
             val rawFeature = generateRawFeature()
             showRoutingMode(rawFeature)
@@ -1166,7 +1204,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             showRoutingMode(feature)
             routeModeView.startRoute(feature, routeManager.route)
         }
-        setRoutingCamera()
         hideRoutePins()
     }
 
@@ -1186,12 +1223,14 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     private fun setRoutingCamera() {
         if (routeModeView.isResumeButtonHidden()) {
-            mapController?.setMapCameraType(MapController.CameraType.PERSPECTIVE)
+            mapzenMap?.mapController?.queueSceneUpdate(SCENE_CAMERA, SCENE_CAMERA_PERSPECTIVE)
+            mapzenMap?.mapController?.applySceneUpdates()
         }
     }
 
     private fun setDefaultCamera() {
-        mapController?.setMapCameraType(MapController.CameraType.ISOMETRIC)
+        mapzenMap?.mapController?.queueSceneUpdate(SCENE_CAMERA, SCENE_CAMERA_ISOMETRIC)
+        mapzenMap?.mapController?.applySceneUpdates()
     }
 
     private fun showRoutingMode(feature: Feature) {
@@ -1202,7 +1241,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         routeManager.reverse = false
         routePreviewView.visibility = View.GONE
         routeModeView.mainPresenter = presenter
-        routeModeView.mapController = mapController
+        routeModeView.mapzenMap = mapzenMap
         presenter.routeViewController = routeModeView
         routeModeView.voiceNavigationController = voiceNavigationController
         routeModeView.notificationCreator = notificationCreator
@@ -1210,7 +1249,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     override fun hideRoutingMode() {
         setDefaultCamera()
-        initFindMeButton()
+        checkPermissionAndEnableLocation()
         presenter.routingEnabled = false
         routeModeView.visibility = View.GONE
         val location = routeManager.origin
@@ -1231,7 +1270,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             val pointX = poiTapPoint?.get(0)?.toDouble()
             val pointY = poiTapPoint?.get(1)?.toDouble()
             if (pointX != null && pointY != null) {
-                var coords = mapController?.coordinatesAtScreenPosition(pointX, pointY)
+                var coords = mapzenMap?.coordinatesAtScreenPosition(pointX, pointY)
                 var lng = coords?.longitude
                 var lat = coords?.latitude
                 if (lng != null && lat!= null) {
@@ -1254,7 +1293,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun exitNavigation() {
-        initFindMeButton()
+        checkPermissionAndEnableLocation()
         routeModeView.voiceNavigationController?.stop()
         routeModeView.clearRoute()
         routeModeView.route = null
@@ -1263,7 +1302,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         supportActionBar?.show()
         findViewById(R.id.route_preview)?.visibility = View.GONE
         presenter.onExitNavigation()
-        mapController?.setPanResponder(null)
+        mapzenMap?.setPanResponder(null)
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {
@@ -1285,16 +1324,11 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun hideFindMe() {
-        findMe?.clear()
-        findMe = null
-        findViewById(R.id.find_me)?.visibility = View.GONE
+        mapzenMap?.isMyLocationEnabled = false
     }
 
     private fun hideRoutePins() {
-        startPin?.clear()
-        endPin?.clear()
-        startPin = null
-        endPin = null
+        mapzenMap?.clearRoutePins()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
@@ -1304,9 +1338,15 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
                 if (grantResults.size > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     permissionManager.grantPermissions()
+                    checkPermissionAndEnableLocation()
                 }
             }
         }
     }
 
+    override fun checkPermissionAndEnableLocation() {
+        if (permissionManager.granted) {
+            mapzenMap?.isMyLocationEnabled = true
+        }
+    }
 }

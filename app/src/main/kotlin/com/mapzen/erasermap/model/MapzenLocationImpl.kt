@@ -4,6 +4,7 @@ import android.content.Context
 import android.location.Location
 import android.util.Log
 import android.view.WindowManager
+import com.mapzen.android.MapzenMap
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient
@@ -12,7 +13,6 @@ import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.model.event.LocationChangeEvent
 import com.mapzen.erasermap.model.event.RouteEvent
 import com.mapzen.pelias.BoundingBox
-import com.mapzen.tangram.MapController
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 
@@ -31,7 +31,7 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
         bus.register(this)
     }
 
-    override var mapController: MapController? = null
+    override var mapzenMap: MapzenMap? = null
 
     private var previousLocation: Location? = null
 
@@ -123,8 +123,8 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
     override fun getBoundingBox(): BoundingBox? {
         val windowManager = application.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val display = windowManager.defaultDisplay
-        val minLatLon = mapController?.coordinatesAtScreenPosition(0.0, display.height.toDouble())
-        val maxLatLon = mapController?.coordinatesAtScreenPosition(display.width.toDouble(), 0.0)
+        val minLatLon = mapzenMap?.coordinatesAtScreenPosition(0.0, display.height.toDouble())
+        val maxLatLon = mapzenMap?.coordinatesAtScreenPosition(display.width.toDouble(), 0.0)
         val boundingBox: BoundingBox = BoundingBox(
                 minLatLon?.latitude as Double,
                 minLatLon?.longitude as Double,

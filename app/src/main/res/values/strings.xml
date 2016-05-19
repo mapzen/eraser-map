@@ -22,7 +22,6 @@
     <string name="start_navigation">Start Navigation</string>
     <string name="exit_navigation">Exit Navigation</string>
     <string name="destination">Destination</string>
-    <string name="osm_attribution">Map data © OpenStreetMap</string>
 
     <string name="milestone_two_mile">In two miles</string>
     <string name="milestone_one_mile">In one mile</string>

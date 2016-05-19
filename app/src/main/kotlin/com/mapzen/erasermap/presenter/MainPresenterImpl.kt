@@ -315,28 +315,17 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     @Subscribe public fun onLocationChangeEvent(event: LocationChangeEvent) {
         if (routingEnabled) {
             routeViewController?.onLocationChanged(event.location)
-        } else {
-            mainViewController?.showCurrentLocation(event.location)
         }
-    }
-
-    override fun onCreate() {
-        val currentLocation = mapzenLocation.getLastLocation()
-        if (currentLocation is Location) {
-            if (!initialized) {
-                // Show location puck and center map
-                mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
-                initialized = true
-            } else {
-                // Just show location puck. Do not recenter map.
-                mainViewController?.showCurrentLocation(currentLocation)
-            }
-        }
+        //TODO
+//        else {
+//            mainViewController?.showCurrentLocation(event.location)
+//        }
     }
 
     override fun onResume() {
         if (!isRouting() && !isRoutingDirectionList()) {
             mapzenLocation.startLocationUpdates()
+            mainViewController?.checkPermissionAndEnableLocation()
         }
     }
 
@@ -465,5 +454,21 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
             return true
         }
         return false
+    }
+
+    override fun configureMapController() {
+        val currentLocation = mapzenLocation.getLastLocation()
+        if (currentLocation is Location) {
+            if (!initialized) {
+                // Show location puck and center map
+                mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
+                initialized = true
+            }
+            //TODO
+//            else {
+//                // Just show location puck. Do not recenter map.
+//                mainViewController?.showCurrentLocation(currentLocation)
+//            }
+        }
     }
 }

@@ -3,16 +3,17 @@ package com.mapzen.erasermap.model
 import android.content.Context
 import android.location.Location
 import android.preference.PreferenceManager
+import com.mapzen.android.MapzenMap
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.pelias.SavedSearch
-import com.mapzen.tangram.DebugFlags
-import com.mapzen.tangram.Tangram
+import com.mapzen.tangram.MapController
 import com.mapzen.valhalla.Router
 import java.io.File
 import java.util.Locale
 
 class AndroidAppSettings(val application: EraserMapApplication) : AppSettings {
+
     companion object {
         val KEY_DISTANCE_UNITS: String = "list_distance_units"
         val KEY_MOCK_LOCATION_ENABLED: String = "checkbox_mock_location"
@@ -137,6 +138,14 @@ class AndroidAppSettings(val application: EraserMapApplication) : AppSettings {
             prefs.edit().putBoolean(KEY_LABEL_DEBUG_ENABLED, value).commit()
         }
 
+    override var mapzenMap: MapzenMap? = null
+        get() {
+            return field
+        }
+        set(value) {
+            field = value
+        }
+
     init {
         val distanceUnitsPref = prefs.getString(KEY_DISTANCE_UNITS, null)
         if (distanceUnitsPref == null) {
@@ -158,10 +167,11 @@ class AndroidAppSettings(val application: EraserMapApplication) : AppSettings {
         }
 
     override fun initTangramDebugFlags() {
-        Tangram.setDebugFlag(DebugFlags.TILE_BOUNDS, isTileDebugEnabled)
-        Tangram.setDebugFlag(DebugFlags.TILE_INFOS, isTileDebugEnabled)
-        Tangram.setDebugFlag(DebugFlags.LABELS, isLabelDebugEnabled)
-        Tangram.setDebugFlag(DebugFlags.TANGRAM_INFOS, isTangramInfosDebugEnabled)
+        mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.TILE_BOUNDS, isTileDebugEnabled)
+        mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.TILE_INFOS, isTileDebugEnabled)
+        mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.LABELS, isLabelDebugEnabled)
+        mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.TANGRAM_INFOS,
+                isTangramInfosDebugEnabled)
     }
 
     override fun initSearchResultVersion(context: Context, savedSearch: SavedSearch) {

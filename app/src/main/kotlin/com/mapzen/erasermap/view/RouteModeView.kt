@@ -14,6 +14,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.mapzen.android.MapzenMap
+import com.mapzen.android.model.EaseType
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AppSettings
@@ -25,9 +27,6 @@ import com.mapzen.helpers.RouteEngine
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
-import com.mapzen.tangram.MapController
-import com.mapzen.tangram.MapData
-import com.mapzen.tangram.Tangram
 import com.mapzen.tangram.TouchInput
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
@@ -38,11 +37,6 @@ import javax.inject.Inject
 class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeListener, DirectionItemClickListener {
     companion object {
         const val VIEW_TAG: String = "Instruction_"
-        const val MAP_DATA_NAME_ROUTE_ICON = "mz_route_location"
-        const val MAP_DATA_NAME_ROUTE_LINE = "mz_route_line"
-        const val MAP_DATA_PROP_TYPE = "type"
-        const val MAP_DATA_PROP_POINT = "point"
-        const val MAP_DATA_PROP_LINE = "line"
     }
 
     val mapListToggle: MapListToggleButton by lazy {
@@ -70,19 +64,19 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         findViewById(R.id.footer_separator)
     }
 
-    var mapController: MapController? = null
+    var mapzenMap: MapzenMap? = null
         set(value) {
-            value?.setPanResponder(object: TouchInput.PanResponder {
+            value?.panResponder = object: TouchInput.PanResponder {
                 override fun onPan(startX: Float, startY: Float, endX: Float, endY: Float):
                         Boolean {
                     return onMapPan(endX - startX, endY - startY)
                 }
+
                 override fun onFling(posX: Float, posY: Float, velocityX: Float, velocityY: Float):
                         Boolean {
                     return false
                 }
-            })
-
+            }
             field = value
         }
 
@@ -94,8 +88,6 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     @Inject lateinit var routePresenter: RoutePresenter
     @Inject lateinit var settings: AppSettings
 
-    private var routeIcon: MapData? = null
-    private var routeLine: MapData? = null
     private var previousScrollState: Int = ViewPager.SCROLL_STATE_IDLE
     private var userScrollChange: Boolean = false
 
@@ -250,17 +242,8 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     }
 
     override fun showRouteIcon(location: Location) {
-        if (routeIcon == null) {
-            routeIcon = MapData(MAP_DATA_NAME_ROUTE_ICON)
-            Tangram.addDataSource(routeIcon);
-        }
-
-        val properties = com.mapzen.tangram.Properties()
-        properties.set(MAP_DATA_PROP_TYPE, MAP_DATA_PROP_POINT);
-
-        routeIcon?.clearData()
-        routeIcon?.addPoint(properties, LngLat(location.longitude, location.latitude))
-        mapController?.requestRender()
+        mapzenMap?.clearRouteLocationMarker()
+        mapzenMap?.drawRouteLocationMarker(LngLat(location.longitude, location.latitude))
     }
 
     override fun centerMapOnCurrentLocation() {
@@ -278,17 +261,17 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         if (!isResumeButtonHidden() && userScrollChange == false) {
             return
         }
-        mapController?.queueEvent {
+        mapzenMap?.mapController?.queueEvent {
 
             // Record the initial view configuration
-            val lastPosition = mapController?.mapPosition
-            val lastRotation = mapController?.mapRotation
+            val lastPosition = mapzenMap?.position
+            val lastRotation = mapzenMap?.rotation
 
             // Update position, rotation, tilt for new location
-            mapController?.mapPosition = LngLat(location.longitude, location.latitude)
-            mapController?.mapRotation = getBearingInRadians(location)
-            mapController?.mapTilt = MainPresenter.ROUTING_TILT
-            mapController?.mapZoom = routePresenter.mapZoomLevelForCurrentInstruction()
+            mapzenMap?.position = LngLat(location.longitude, location.latitude)
+            mapzenMap?.rotation = getBearingInRadians(location)
+            mapzenMap?.tilt = MainPresenter.ROUTING_TILT
+            mapzenMap?.zoom = routePresenter.mapZoomLevelForCurrentInstruction()
 
             // Get the width and height of the window
             val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -300,24 +283,24 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
 
             // Find the view that will place the current location marker in the lower quarter
             // of the window.
-            val nextPosition = mapController?.coordinatesAtScreenPosition(screenWidth/2,
+            val nextPosition = mapzenMap?.coordinatesAtScreenPosition(screenWidth/2,
                     screenHeight/3.5) ?: LngLat()
             val nextRotation = getBearingInRadians(location)
 
             // Return to our initial view to prepare for easing to the next view
-            mapController?.mapPosition = lastPosition
-            mapController?.mapRotation = lastRotation ?: 0f
+            mapzenMap?.position = lastPosition
+            mapzenMap?.rotation = lastRotation ?: 0f
 
             // Begin easing to the next view
-            mapController?.setMapPosition(nextPosition.longitude, nextPosition.latitude, 1f,
-                    MapController.EaseType.LINEAR)
-            mapController?.setMapRotation(nextRotation, 1f, MapController.EaseType.LINEAR)
+            mapzenMap?.setPosition(LngLat(nextPosition.longitude, nextPosition.latitude),
+                    1000, EaseType.LINEAR)
+            mapzenMap?.setRotation(nextRotation, 1000, EaseType.LINEAR)
         }
     }
 
     override fun updateMapZoom(zoom: Float) {
-        mapController?.queueEvent {
-            mapController?.setMapZoom(zoom, 1f)
+        mapzenMap?.mapController?.queueEvent {
+            mapzenMap?.setZoom(zoom, 1000)
         }
     }
 
@@ -424,7 +407,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     }
 
     override fun hideRouteIcon() {
-        routeIcon?.clear()
+        mapzenMap?.clearRouteLocationMarker()
     }
 
     fun startRoute(destination: Feature, route: Route?) {
@@ -474,8 +457,6 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     }
 
     fun drawRoute(route: Route) {
-        val properties = com.mapzen.tangram.Properties()
-        properties.set(MAP_DATA_PROP_TYPE, MAP_DATA_PROP_LINE);
         val geometry: ArrayList<Location>? = route.getGeometry()
         val mapGeometry: ArrayList<LngLat> = ArrayList()
         if (geometry is ArrayList<Location>) {
@@ -483,19 +464,12 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
                 mapGeometry.add(LngLat(location.longitude, location.latitude))
             }
         }
-
-        if (routeLine == null) {
-            routeLine = MapData(MAP_DATA_NAME_ROUTE_LINE)
-            Tangram.addDataSource(routeLine);
-        }
-
-        routeLine?.clear()
-        routeLine?.addLine(properties, mapGeometry)
-        mapController?.requestRender()
+        mapzenMap?.clearRouteLine()
+        mapzenMap?.drawRouteLine(mapGeometry)
     }
 
     override fun hideRouteLine() {
-        routeLine?.clear()
+        mapzenMap?.clearRouteLine()
     }
 
     fun clearRoute() {

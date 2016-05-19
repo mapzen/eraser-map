@@ -1,14 +1,14 @@
 package com.mapzen.erasermap.model
 
 import android.location.Location
+import com.mapzen.android.MapzenMap
 import com.mapzen.pelias.BoundingBox
-import com.mapzen.tangram.MapController
 import org.mockito.Mockito
 
 public class TestMapzenLocation : MapzenLocation {
     public var connected = false
 
-    override var mapController: MapController? = null
+    override var mapzenMap: MapzenMap? = null
 
     override fun startLocationUpdates() {
         connected = true

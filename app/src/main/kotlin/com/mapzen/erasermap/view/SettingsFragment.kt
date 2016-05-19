@@ -8,8 +8,7 @@ import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.AppSettings
-import com.mapzen.tangram.DebugFlags
-import com.mapzen.tangram.Tangram
+import com.mapzen.tangram.MapController
 
 public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceChangeListener,
         Preference.OnPreferenceClickListener {
@@ -98,8 +97,8 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
     }
 
     private fun updateTileDebugPref(value: Boolean) {
-        Tangram.setDebugFlag(DebugFlags.TILE_BOUNDS, value)
-        Tangram.setDebugFlag(DebugFlags.TILE_INFOS, value)
+        settings?.mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.TILE_BOUNDS, value)
+        settings?.mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.TILE_INFOS, value)
     }
 
     private fun initTangramInfosDebugPref() {
@@ -109,7 +108,7 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
     }
 
     private fun updateTangramInfosDebugPref(value: Boolean) {
-        Tangram.setDebugFlag(DebugFlags.TANGRAM_INFOS, value)
+        settings?.mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.TANGRAM_INFOS, value)
     }
 
     private fun updateCacheSearchResults(value: Boolean) {
@@ -125,7 +124,7 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
     }
 
     private fun updateLabelDebugPref(value: Boolean) {
-        Tangram.setDebugFlag(DebugFlags.LABELS, value)
+        settings?.mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.LABELS, value)
     }
 
     private fun initBuildNumberPref() {
