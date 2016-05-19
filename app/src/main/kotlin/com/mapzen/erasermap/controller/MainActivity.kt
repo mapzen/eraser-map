@@ -40,6 +40,7 @@ import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.PermissionManager
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
+import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.util.AxisAlignedBoundingBox
 import com.mapzen.erasermap.util.AxisAlignedBoundingBox.PointD
@@ -247,6 +248,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun initMapzenMap() {
+        val application = application as EraserMapApplication
+        val keys = application.apiKeys as ApiKeys
         mapView.getMapAsync(keys.tilesKey, {
             this.mapzenMap = it
             configureMapzenMap()
