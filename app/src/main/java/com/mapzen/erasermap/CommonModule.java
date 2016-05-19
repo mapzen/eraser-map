@@ -1,5 +1,6 @@
 package com.mapzen.erasermap;
 
+import com.mapzen.erasermap.model.IntentQueryParser;
 import com.mapzen.erasermap.presenter.RouteEngineListener;
 import com.mapzen.erasermap.presenter.RoutePresenter;
 import com.mapzen.erasermap.presenter.RoutePresenterImpl;
@@ -35,5 +36,9 @@ public class CommonModule {
 
     @Provides @Singleton ViewStateManager provideViewStateManager() {
         return new ViewStateManager();
+    }
+
+    @Provides @Singleton IntentQueryParser provideIntentQueryParser() {
+        return new IntentQueryParser();
     }
 }

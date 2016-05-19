@@ -1,10 +1,12 @@
 package com.mapzen.erasermap.view
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.widget.TextView
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
@@ -41,6 +43,11 @@ class InitActivity : AppCompatActivity() {
         } else {
             Handler().postDelayed({ configureKeys() }, START_DELAY_IN_MS)
         }
+
+        val data = intent.data
+        if (data != null) {
+            Log.i("Eraser Map", "Incoming implicit intent: " + Uri.decode(data.toString()))
+        }
     }
 
     private fun configureKeys() {
@@ -66,7 +73,9 @@ class InitActivity : AppCompatActivity() {
     }
 
     private fun startMainActivityAndFinish() {
-        startActivity(Intent(applicationContext, MainActivity::class.java))
+        val intent = Intent(applicationContext, MainActivity::class.java)
+        intent.data = this.intent.data
+        startActivity(intent)
         finish()
     }
 

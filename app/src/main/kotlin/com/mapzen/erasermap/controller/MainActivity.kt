@@ -34,13 +34,13 @@ import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AndroidAppSettings
+import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.PermissionManager
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
-import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.util.AxisAlignedBoundingBox
 import com.mapzen.erasermap.util.AxisAlignedBoundingBox.PointD
@@ -96,8 +96,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         @JvmStatic val SCENE_CAMERA_ISOMETRIC = "{isometric: {type: isometric}}"
         @JvmStatic val SCENE_CAMERA_PERSPECTIVE = "{perspective: {type: perspective}}"
     }
-
-    val requestCodeSearchResults: Int = 0x01
 
     @Inject lateinit var savedSearch: SavedSearch
     @Inject lateinit var presenter: MainPresenter
@@ -179,20 +177,20 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         initNotificationCreator()
     }
 
-    override protected fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent?) {
         if (intent?.getBooleanExtra(NotificationCreator.EXIT_NAVIGATION, false) as Boolean) {
             exitNavigation()
             if((intent?.getBooleanExtra(NotificationBroadcastReceiver.VISIBILITY, false)
                     as Boolean).not()) {
                 moveTaskToBack(true)
             }
+        } else {
+            presenter.onIntentQueryReceived(intent?.data?.query)
         }
     }
 
     private fun initMapRotateListener() {
-        mapzenMap?.setRotateResponder(TouchInput.RotateResponder {
-            x, y, rotation -> presenter.onMapMotionEvent() ?: false
-        })
+        mapzenMap?.setRotateResponder({ x, y, rotation -> presenter.onMapMotionEvent() })
     }
 
     override fun rotateCompass() {
@@ -254,6 +252,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             this.mapzenMap = it
             configureMapzenMap()
             presenter.configureMapzenMap()
+            presenter.onIntentQueryReceived(intent?.data?.query)
         })
     }
 
@@ -365,11 +364,10 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         confidenceHandler = ConfidenceHandler(presenter)
     }
 
-    override fun centerMapOnLocation(location: Location, zoom: Float) {
-        val lngLat = LngLat(location.longitude, location.latitude)
+    override fun centerMapOnLocation(lngLat: LngLat, zoom: Float) {
         mapzenMap?.position = lngLat
         mapzenMap?.zoom = zoom
-        centerMap(location)
+        centerMap(lngLat)
     }
 
     override fun setMapTilt(radians: Float) {
@@ -439,6 +437,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         val cacheSearches = PreferenceManager.getDefaultSharedPreferences(this)
                 .getBoolean(AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY, true)
         searchView?.setCacheSearchResults(cacheSearches)
+
         return true
     }
 
@@ -872,13 +871,12 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         optionsMenu?.findItem(R.id.action_settings)?.setVisible(true)
     }
 
-    private fun centerMap(location: Location) {
-        val lngLat = LngLat(location.longitude, location.latitude)
+    private fun centerMap(lngLat: LngLat) {
         mapzenMap?.position = lngLat
     }
 
     override fun showRoutePreview(location: Location, feature: Feature) {
-        centerMap(location);
+        centerMap(LngLat(location.longitude, location.latitude));
         layoutAttributionAboveOptions()
         layoutFindMeAboveOptions()
 
@@ -1349,4 +1347,9 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             mapzenMap?.isMyLocationEnabled = true
         }
     }
+
+    override fun executeSearch(query: String) {
+        searchView?.setQuery(query, true)
+    }
+
 }

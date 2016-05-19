@@ -1,10 +1,11 @@
 package com.mapzen.erasermap.presenter
 
-import android.location.Location
-import com.mapzen.erasermap.R
+import com.mapzen.erasermap.controller.TestMainController
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
+import com.mapzen.erasermap.model.IntentQuery
+import com.mapzen.erasermap.model.IntentQueryParser
 import com.mapzen.erasermap.model.TestAppSettings
 import com.mapzen.erasermap.model.TestMapzenLocation
 import com.mapzen.erasermap.model.TestRouteManager
@@ -17,10 +18,10 @@ import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_DIRECTION
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_PREVIEW
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTING
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
-import com.mapzen.erasermap.controller.TestMainController
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
+import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
@@ -28,6 +29,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.never
+import org.mockito.Mockito.verify
 import java.util.ArrayList
 
 class MainPresenterTest {
@@ -38,7 +43,8 @@ class MainPresenterTest {
     private val settings: TestAppSettings = TestAppSettings()
     private val bus: Bus = Bus()
     private val vsm: ViewStateManager = ViewStateManager()
-    private val presenter = MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm)
+    private val iqp: IntentQueryParser = Mockito.mock(IntentQueryParser::class.java)
+    private val presenter = MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm, iqp)
 
     @Before fun setUp() {
         presenter.mainViewController = mainController
@@ -351,14 +357,14 @@ class MainPresenterTest {
 
     @Test fun configureMapzenMap_shouldSetMapLocationFirstTimeInvoked() {
         presenter.configureMapzenMap()
-        assertThat(mainController.location).isNotNull()
+        assertThat(mainController.lngLat).isNotNull()
     }
 
     @Test fun configureMapzenMap_shouldNotSetMapLocationSecondTimeInvoked() {
         presenter.configureMapzenMap()
-        mainController.location = null
+        mainController.lngLat = null
         presenter.configureMapzenMap()
-        val location = mainController.location
+        val location = mainController.lngLat
         assertThat(location).isNull()
     }
 
@@ -489,6 +495,42 @@ class MainPresenterTest {
         vsm.viewState = ROUTING
         presenter.onBackPressed()
         assertThat(vsm.viewState).isEqualTo(ROUTE_PREVIEW)
+    }
+
+    @Test fun onIntentQueryReceived_shouldIgnoreEmptyQuery() {
+        val query = ""
+        presenter.onIntentQueryReceived(query)
+        verify(iqp, never()).parse(query)
+    }
+
+    @Test fun onIntentQueryReceived_shouldInvokeIntentQueryParser() {
+        val queryString = "q=test_query"
+        presenter.onIntentQueryReceived(queryString)
+        verify(iqp).parse(queryString)
+    }
+
+    @Test fun onIntentQueryReceived_shouldSetCurrentSearchTerm() {
+        val input = "q=test_query"
+        val expected = "test_query"
+        `when`(iqp.parse(input)).thenReturn(IntentQuery(expected, LngLat()))
+        presenter.onIntentQueryReceived(input)
+        assertThat(presenter.currentSearchTerm).isEqualTo(expected)
+    }
+
+    @Test fun onIntentQueryReceived_shouldExecuteSearch() {
+        val input = "q=test_query"
+        val expected = "test_query"
+        `when`(iqp.parse(input)).thenReturn(IntentQuery(expected, LngLat()))
+        presenter.onIntentQueryReceived(input)
+        assertThat(mainController.queryText).isEqualTo(expected)
+    }
+
+    @Test fun onIntentQueryReceived_shouldSetMapPosition() {
+        val input = "q=test_query&sll=1.0,2.0"
+        val expected = LngLat(2.0, 1.0)
+        `when`(iqp.parse(input)).thenReturn(IntentQuery("test_query", expected))
+        presenter.onIntentQueryReceived(input)
+        assertThat(mainController.lngLat).isEqualTo(expected)
     }
 
     class RouteEventSubscriber {
