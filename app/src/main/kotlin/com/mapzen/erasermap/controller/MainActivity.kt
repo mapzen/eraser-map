@@ -1340,7 +1340,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun checkPermissionAndEnableLocation() {
-        if (permissionManager.granted) {
+        if (permissionManager.granted && !presenter.routingEnabled) {
             mapzenMap?.isMyLocationEnabled = true
         }
     }
