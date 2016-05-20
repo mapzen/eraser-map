@@ -238,7 +238,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     override public fun onDestroy() {
         super.onDestroy()
         saveCurrentSearchTerm()
-        routeModeView.clearRoute()
         mapzenMap?.isMyLocationEnabled = false
         mapzenMap?.clearDroppedPins()
         mapzenMap?.clearSearchResults()
@@ -1217,10 +1216,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     override fun resumeRoutingMode(feature: Feature) {
         showRoutingMode(feature)
-        val route = routeManager.route
-        if (route is Route) {
-            drawRoute(route)
-        }
         routeModeView.resumeRoute(feature, routeManager.route)
     }
 
