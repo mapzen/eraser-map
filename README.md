@@ -31,8 +31,6 @@ valhallaApiKey=valhalla-???
 ## Clone and build project
 ```bash
 $ git clone https://github.com/mapzen/eraser-map.git
-$ cd eraser-map
-$ git submodule init && git submodule update
 $ ./gradlew
 ```
 
