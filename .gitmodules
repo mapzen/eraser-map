@@ -1,4 +1,0 @@
-[submodule "app/src/main/assets/style"]
-	path = app/src/main/assets/style
-	url = https://github.com/tangrams/eraser-map.git
-	branch = android
