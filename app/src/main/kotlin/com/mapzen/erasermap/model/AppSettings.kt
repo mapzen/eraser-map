@@ -4,7 +4,6 @@ import android.content.Context
 import android.location.Location
 import com.mapzen.android.MapzenMap
 import com.mapzen.pelias.SavedSearch
-import com.mapzen.tangram.MapController
 import com.mapzen.valhalla.Router
 import java.io.File
 

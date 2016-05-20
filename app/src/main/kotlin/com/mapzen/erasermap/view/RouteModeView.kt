@@ -261,7 +261,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         if (!isResumeButtonHidden() && userScrollChange == false) {
             return
         }
-        mapzenMap?.mapController?.queueEvent {
+        mapzenMap?.queueEvent {
 
             // Record the initial view configuration
             val lastPosition = mapzenMap?.position
@@ -299,7 +299,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     }
 
     override fun updateMapZoom(zoom: Float) {
-        mapzenMap?.mapController?.queueEvent {
+        mapzenMap?.queueEvent {
             mapzenMap?.setZoom(zoom, 1000)
         }
     }

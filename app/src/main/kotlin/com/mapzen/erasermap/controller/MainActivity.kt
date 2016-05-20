@@ -253,7 +253,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         mapView.getMapAsync(keys.tilesKey, {
             this.mapzenMap = it
             configureMapzenMap()
-            presenter.configureMapController()
+            presenter.configureMapzenMap()
         })
     }
 
@@ -270,7 +270,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
                 var coords = mapzenMap?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
                 presenter?.reverseGeoLngLat = coords
                 poiTapPoint = floatArrayOf(x, y)
-                mapzenMap?.mapController?.pickFeature(x, y)
                 return true
             }
         }
@@ -286,7 +285,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             }
             true;
         })
-        mapzenMap?.mapController?.setFeaturePickListener({
+        mapzenMap?.setFeaturePickListener({
             properties, positionX, positionY ->
             confidenceHandler.longPressed = false
             // Reassign tapPoint to center of the feature tapped
@@ -300,7 +299,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
                 presenter.onSearchResultTapped(searchIndex)
             } else {
                 if (properties.contains(MAP_DATA_PROP_ID)) {
-                    val featureID = properties[MAP_DATA_PROP_ID]!!.toLong()
+                    val featureID = properties[MAP_DATA_PROP_ID]!!
                     presenter.onPlaceSearchRequested("openstreetmap:venue:$featureID")
                 } else if (poiTapPoint != null) {
                     presenter.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(),
@@ -316,7 +315,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
                 permissionManager.showPermissionRequired()
             }
         }
-        //TODO:
         mapzenMap?.mapController?.setHttpHandler(tileHttpHandler)
         mapzenLocation.mapzenMap = mapzenMap
         routeModeView.mapzenMap = mapzenMap
@@ -877,7 +875,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     private fun centerMap(location: Location) {
         val lngLat = LngLat(location.longitude, location.latitude)
         mapzenMap?.position = lngLat
-        mapzenMap?.mapController?.requestRender()
     }
 
     override fun showRoutePreview(location: Location, feature: Feature) {
@@ -1196,8 +1193,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun startRoutingMode(feature: Feature) {
-        // Set camera before RouteModeView#startRoute so that MapController#sceneUpdate called
-        // before MapController#queueEvent
+        // Set camera before RouteModeView#startRoute so that MapzenMap#sceneUpdate called
+        // before MapzenMap#queueEvent
         setRoutingCamera()
         if (confidenceHandler.useRawLatLng(feature.properties.confidence)) {
             val rawFeature = generateRawFeature()
@@ -1226,14 +1223,14 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     private fun setRoutingCamera() {
         if (routeModeView.isResumeButtonHidden()) {
-            mapzenMap?.mapController?.queueSceneUpdate(SCENE_CAMERA, SCENE_CAMERA_PERSPECTIVE)
-            mapzenMap?.mapController?.applySceneUpdates()
+            mapzenMap?.queueSceneUpdate(SCENE_CAMERA, SCENE_CAMERA_PERSPECTIVE)
+            mapzenMap?.applySceneUpdates()
         }
     }
 
     private fun setDefaultCamera() {
-        mapzenMap?.mapController?.queueSceneUpdate(SCENE_CAMERA, SCENE_CAMERA_ISOMETRIC)
-        mapzenMap?.mapController?.applySceneUpdates()
+        mapzenMap?.queueSceneUpdate(SCENE_CAMERA, SCENE_CAMERA_ISOMETRIC)
+        mapzenMap?.applySceneUpdates()
     }
 
     private fun showRoutingMode(feature: Feature) {

@@ -349,15 +349,15 @@ class MainPresenterTest {
         assertThat(vsm.viewState).isEqualTo(DEFAULT)
     }
 
-    @Test fun configureMapController_shouldSetMapLocationFirstTimeInvoked() {
-        presenter.configureMapController()
+    @Test fun configureMapzenMap_shouldSetMapLocationFirstTimeInvoked() {
+        presenter.configureMapzenMap()
         assertThat(mainController.location).isNotNull()
     }
 
-    @Test fun configureMapController_shouldNotSetMapLocationSecondTimeInvoked() {
-        presenter.configureMapController()
+    @Test fun configureMapzenMap_shouldNotSetMapLocationSecondTimeInvoked() {
+        presenter.configureMapzenMap()
         mainController.location = null
-        presenter.configureMapController()
+        presenter.configureMapzenMap()
         val location = mainController.location
         assertThat(location).isNull()
     }
