@@ -297,13 +297,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
                 val searchIndex = properties[MAP_DATA_PROP_SEARCHINDEX]!!.toInt()
                 presenter.onSearchResultTapped(searchIndex)
             } else {
-                if (properties.contains(MAP_DATA_PROP_ID)) {
-                    val featureID = properties[MAP_DATA_PROP_ID]!!
-                    presenter.onPlaceSearchRequested("openstreetmap:venue:$featureID")
-                } else if (poiTapPoint != null) {
-                    presenter.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(),
+                presenter.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(),
                             poiTapPoint?.get(0)?.toFloat())
-                }
             }
         })
         checkPermissionAndEnableLocation()
@@ -716,19 +711,22 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         layoutAttributionAboveSearchResults(features)
         layoutFindMeAboveSearchResults(features)
 
-        var poiTapFallback = false
+        var lngLat: LngLat?
         if (poiTapPoint != null) {
+            val x = poiTapPoint!![0].toDouble()
+            val y = poiTapPoint!![1].toDouble()
+            lngLat = mapzenMap?.coordinatesAtScreenPosition(x, y)
+
             // Fallback for a failed Pelias Place Callback
             overridePlaceFeature(features.get(0))
-            poiTapFallback = true
+        } else {
+            lngLat = presenter?.reverseGeoLngLat
         }
 
         showPlaceSearchFeature(features)
 
-        if (poiTapFallback) return
-
         mapzenMap?.clearDroppedPins()
-        mapzenMap?.drawDroppedPin(presenter?.reverseGeoLngLat)
+        mapzenMap?.drawDroppedPin(lngLat)
     }
 
     override fun drawTappedPoiPin() {
