@@ -239,9 +239,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         super.onDestroy()
         saveCurrentSearchTerm()
         mapzenMap?.isMyLocationEnabled = false
-        mapzenMap?.clearDroppedPins()
-        mapzenMap?.clearSearchResults()
-        mapzenMap?.clearRoutePins()
         killNotifications()
         voiceNavigationController?.shutdown()
     }
