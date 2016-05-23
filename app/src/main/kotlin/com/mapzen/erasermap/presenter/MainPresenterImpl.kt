@@ -290,6 +290,7 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
 
     private fun onBackPressedStateRouting() {
         vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
+        routingEnabled = false
         mainViewController?.hideRoutingMode()
         mainViewController?.stopSpeaker()
     }
