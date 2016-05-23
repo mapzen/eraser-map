@@ -149,6 +149,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     val routeModeCompass: CompassView by lazy { findViewById(R.id.route_mode_compass_view) as CompassView }
     val muteView: MuteView by lazy { findViewById(R.id.route_mode_mute_view) as MuteView }
 
+    var submitQueryOnMenuCreate: String? = null
+
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         app = application as EraserMapApplication
@@ -437,6 +439,11 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         val cacheSearches = PreferenceManager.getDefaultSharedPreferences(this)
                 .getBoolean(AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY, true)
         searchView?.setCacheSearchResults(cacheSearches)
+
+        if (submitQueryOnMenuCreate != null) {
+            searchView?.setQuery(submitQueryOnMenuCreate, true)
+            submitQueryOnMenuCreate = null
+        }
 
         return true
     }
@@ -1349,7 +1356,11 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun executeSearch(query: String) {
-        searchView?.setQuery(query, true)
+        if (searchView != null) {
+            searchView?.setQuery(query, true)
+        } else {
+            submitQueryOnMenuCreate = query
+        }
     }
 
 }
