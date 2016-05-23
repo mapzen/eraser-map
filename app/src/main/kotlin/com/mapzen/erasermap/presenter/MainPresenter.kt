@@ -51,4 +51,5 @@ public interface MainPresenter {
     public fun onPlaceSearchRequested(gid: String): Boolean
     public fun onExitNavigation()
     public fun configureMapzenMap()
+    public fun onIntentQueryReceived(query: String?)
 }

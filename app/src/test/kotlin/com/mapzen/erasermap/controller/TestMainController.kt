@@ -3,13 +3,14 @@ package com.mapzen.erasermap.controller
 import android.graphics.PointF
 import android.location.Location
 import com.mapzen.pelias.gson.Feature
+import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 
 public class TestMainController : MainViewController {
 
     public var searchResults: List<Feature>? = null
     public var reverseGeoCodeResults: List<Feature>? = null
-    public var location: Location? = null
+    public var lngLat: LngLat? = null
     public var zoom: Float = 0f
     public var tilt: Float = 0f
     public var muted: Boolean = false
@@ -117,8 +118,8 @@ public class TestMainController : MainViewController {
         isRoutingModeVisible = true
     }
 
-    override fun centerMapOnLocation(location: Location, zoom: Float) {
-        this.location = location
+    override fun centerMapOnLocation(lngLat: LngLat, zoom: Float) {
+        this.lngLat = lngLat
         this.zoom = zoom
     }
 
@@ -197,4 +198,9 @@ public class TestMainController : MainViewController {
     override fun checkPermissionAndEnableLocation() {
 
     }
+
+    override fun executeSearch(query: String) {
+        queryText = query
+    }
+
 }

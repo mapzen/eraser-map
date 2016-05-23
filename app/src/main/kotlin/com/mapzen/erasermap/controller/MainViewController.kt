@@ -2,6 +2,7 @@ package com.mapzen.erasermap.controller
 
 import android.location.Location
 import com.mapzen.pelias.gson.Feature
+import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 
 interface MainViewController {
@@ -29,7 +30,7 @@ interface MainViewController {
     fun startRoutingMode(feature: Feature)
     fun resumeRoutingMode(feature: Feature)
     fun shutDown()
-    fun centerMapOnLocation(location: Location, zoom: Float)
+    fun centerMapOnLocation(lngLat: LngLat, zoom: Float)
     fun setMapTilt(radians: Float)
     fun resetMute()
     fun toggleMute()
@@ -47,4 +48,5 @@ interface MainViewController {
     fun onBackPressed()
     fun stopSpeaker()
     fun checkPermissionAndEnableLocation()
+    fun executeSearch(query: String)
 }

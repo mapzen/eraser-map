@@ -2,7 +2,10 @@ package com.mapzen.erasermap.presenter
 
 import android.location.Location
 import android.util.Log
+import com.mapzen.erasermap.controller.MainViewController
 import com.mapzen.erasermap.model.AppSettings
+import com.mapzen.erasermap.model.IntentQuery
+import com.mapzen.erasermap.model.IntentQueryParser
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.event.LocationChangeEvent
@@ -16,7 +19,6 @@ import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_PREVIEW_L
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTING
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
-import com.mapzen.erasermap.controller.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
@@ -28,8 +30,9 @@ import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 import java.util.ArrayList
 
-public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
-        val routeManager: RouteManager, val settings: AppSettings, val vsm: ViewStateManager)
+open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
+        val routeManager: RouteManager, val settings: AppSettings, val vsm: ViewStateManager,
+        val intentQueryParser: IntentQueryParser)
         : MainPresenter, RouteCallback {
 
     companion object {
@@ -347,7 +350,8 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
     override fun onFindMeButtonClick() {
         val currentLocation = mapzenLocation.getLastLocation()
         if (currentLocation is Location) {
-            mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
+            mainViewController?.centerMapOnLocation(LngLat(currentLocation.longitude,
+                    currentLocation.latitude), MainPresenter.DEFAULT_ZOOM)
             mainViewController?.setMapTilt(0f)
             mainViewController?.setMapRotation(0f)
         }
@@ -462,9 +466,35 @@ public open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus:
         if (currentLocation is Location) {
             if (!initialized) {
                 // Show location puck and center map
-                mainViewController?.centerMapOnLocation(currentLocation, MainPresenter.DEFAULT_ZOOM)
+                mainViewController?.centerMapOnLocation(LngLat(currentLocation.longitude,
+                        currentLocation.latitude), MainPresenter.DEFAULT_ZOOM)
                 initialized = true
             }
         }
+    }
+
+    override fun onIntentQueryReceived(query: String?) {
+        if (query != null && !query.isEmpty()) {
+            val result = intentQueryParser.parse(query)
+            if (result != null) {
+                updateQueryMapPosition(result)
+                updateQuerySearchTerm(result)
+            }
+        }
+    }
+
+    private fun updateQueryMapPosition(result: IntentQuery) {
+        val focusPoint = result.focusPoint
+        if (focusPoint.latitude != 0.0 && focusPoint.longitude != 0.0) {
+            mainViewController?.centerMapOnLocation(focusPoint, MainPresenter.DEFAULT_ZOOM)
+        }
+    }
+
+    private fun updateQuerySearchTerm(result: IntentQuery) {
+        val queryString = result.queryString
+        currentSearchTerm = queryString
+        mainViewController?.hideSettingsBtn()
+        mainViewController?.hideSearchResults()
+        mainViewController?.executeSearch(queryString)
     }
 }

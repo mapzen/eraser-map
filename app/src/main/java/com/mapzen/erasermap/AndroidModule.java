@@ -3,6 +3,7 @@ package com.mapzen.erasermap;
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.AndroidAppSettings;
 import com.mapzen.erasermap.model.AppSettings;
+import com.mapzen.erasermap.model.IntentQueryParser;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
 import com.mapzen.erasermap.model.PermissionManager;
@@ -58,8 +59,10 @@ public class AndroidModule {
     }
 
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation, Bus bus,
-            RouteManager routeManager, AppSettings settings, ViewStateManager vsm) {
-        return new MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm);
+            RouteManager routeManager, AppSettings settings, ViewStateManager vsm,
+            IntentQueryParser intentQueryParser) {
+        return new MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm,
+                intentQueryParser);
     }
 
     @Provides @Singleton RouteManager provideRouteManager(AppSettings settings) {
