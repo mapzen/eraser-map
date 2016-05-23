@@ -8,6 +8,7 @@ class IntentQueryParserTest {
         val TEST_QUERY = "q=350 5th Ave, New York, NY 10118"
         val TEST_QUERY_WITH_LATLNG = "q=350 5th Ave, New York, NY 10118&sll=40.7484,-73.9857"
         val TEST_QUERY_WITH_LATLNG_AND_RADIUS = "q=350 5th Ave, New York, NY 10118&sll=40.7484,-73.9857&radius=5"
+        val TEST_QUERY_DOUBLE_ENCODED = "q=Pier+97"
         val MALFORMED_QUERY = "wtf=what a terrible failure"
     }
 
@@ -40,5 +41,10 @@ class IntentQueryParserTest {
         val focusPoint = intentQueryParser.parse(TEST_QUERY_WITH_LATLNG)?.focusPoint
         assertThat(focusPoint?.latitude).isEqualTo(40.7484)
         assertThat(focusPoint?.longitude).isEqualTo(-73.9857)
+    }
+
+    @Test fun parse_shouldHandleDoubleEncodedQueryString() {
+        assertThat(intentQueryParser.parse(TEST_QUERY_DOUBLE_ENCODED)?.queryString)
+                .isEqualTo("Pier 97")
     }
 }

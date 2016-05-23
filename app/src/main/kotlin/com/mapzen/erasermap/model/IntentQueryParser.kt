@@ -29,7 +29,8 @@ open class IntentQueryParser {
 
         val split = query.split("q=")
         if (split.size > 1) {
-            return IntentQuery(split[1].split("&")[0], lngLat)
+            val encoded = split[1].split("&")[0]
+            return IntentQuery(encoded.replace("+", " "), lngLat)
         }
 
         return null
