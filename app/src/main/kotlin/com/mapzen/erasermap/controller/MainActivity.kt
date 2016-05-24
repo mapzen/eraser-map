@@ -865,7 +865,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun hideSettingsBtn() {
-        optionsMenu?.findItem(R.id.action_settings)?.setVisible(false)
+        Handler().postDelayed( { optionsMenu?.findItem(R.id.action_settings)?.isVisible = false },
+                100)
     }
 
     override fun showSettingsBtn() {

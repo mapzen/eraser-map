@@ -139,6 +139,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     }
 
     private fun onRestoreViewStateSearchResults() {
+        mainViewController?.hideSettingsBtn()
         if (searchResults?.features != null) {
             if (!reverseGeo) {
                 mainViewController?.showSearchResults(searchResults?.features)
