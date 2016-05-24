@@ -17,6 +17,7 @@ import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.DEFAULT
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_PREVIEW
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTING
+import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.pelias.gson.Feature
@@ -211,6 +212,18 @@ class MainPresenterTest {
         mainController.isSettingsVisible = false
         presenter.onCollapseSearchView()
         assertThat(mainController.isSettingsVisible).isFalse()
+    }
+
+    @Test fun onExpandSearchView_shouldSetViewState() {
+        vsm.viewState = DEFAULT
+        presenter.onExpandSearchView()
+        assertThat(vsm.viewState).isEqualTo(SEARCH)
+    }
+
+    @Test fun onExpandSearchView_shouldNotSetViewStateIfAlreadyViewingResults() {
+        vsm.viewState = SEARCH_RESULTS
+        presenter.onExpandSearchView()
+        assertThat(vsm.viewState).isEqualTo(SEARCH_RESULTS)
     }
 
     @Test fun onExpandSearchView_shouldHideActionSettings() {

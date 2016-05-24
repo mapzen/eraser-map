@@ -7,6 +7,9 @@ import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 
 public class TestMainController : MainViewController {
+    override fun onCloseAllSearchResults() {
+        throw UnsupportedOperationException()
+    }
 
     public var searchResults: List<Feature>? = null
     public var reverseGeoCodeResults: List<Feature>? = null

@@ -13,16 +13,13 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
-import android.text.InputType
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RelativeLayout
@@ -53,7 +50,6 @@ import com.mapzen.erasermap.view.DistanceView
 import com.mapzen.erasermap.view.MuteView
 import com.mapzen.erasermap.view.RouteModeView
 import com.mapzen.erasermap.view.RoutePreviewView
-import com.mapzen.erasermap.view.SearchListViewAdapter
 import com.mapzen.erasermap.view.SearchResultsAdapter
 import com.mapzen.erasermap.view.SearchResultsView
 import com.mapzen.erasermap.view.SettingsActivity
@@ -84,7 +80,7 @@ import java.util.ArrayList
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
-        SearchResultsView.OnSearchResultSelectedListener {
+        SearchViewController.OnSearchResultSelectedListener {
 
     companion object {
         @JvmStatic val MAP_DATA_PROP_SEARCHINDEX = "searchIndex"
@@ -114,7 +110,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     var optionsMenu: Menu? = null
     var poiTapPoint: FloatArray? = null
     var poiTapName: String? = null
-    var searchView: PeliasSearchView? = null
     var voiceNavigationController: VoiceNavigationController? = null
     var notificationCreator: NotificationCreator? = null
     lateinit var confidenceHandler: ConfidenceHandler
@@ -122,14 +117,12 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     // activity_main
     val mapView: MapView by lazy { findViewById(R.id.map) as MapView }
     val compass: CompassView by lazy { findViewById(R.id.compass_view) as CompassView }
-    val autocompleteListView: AutoCompleteListView by lazy { findViewById(R.id.auto_complete) as AutoCompleteListView }
-    val searchResultsView: SearchResultsView by lazy { findViewById(R.id.search_results) as SearchResultsView }
+    val searchController: SearchViewController by lazy { findViewById(R.id.search_results) as SearchResultsView }
 
     // view_route_preview
     val routePreviewView: RoutePreviewView by lazy { findViewById(R.id.route_preview) as RoutePreviewView }
     val reverseButton: ImageButton by lazy { findViewById(R.id.route_reverse) as ImageButton }
-    val routePreviewDistanceTimeLayout: LinearLayout by lazy { findViewById(R.id.route_preview_distance_time_view)
-            as LinearLayout }
+    val routePreviewDistanceTimeLayout: LinearLayout by lazy { findViewById(R.id.route_preview_distance_time_view) as LinearLayout }
     val viewListButton: Button by lazy { findViewById(R.id.view_list) as Button }
     val startNavigationButton: Button by lazy { findViewById(R.id.start_navigation) as Button }
     val byCar: RadioButton by lazy { findViewById(R.id.by_car) as RadioButton }
@@ -205,7 +198,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     override public fun onStart() {
         super.onStart()
-        savedSearch?.deserialize(PreferenceManager.getDefaultSharedPreferences(this)
+        savedSearch.deserialize(PreferenceManager.getDefaultSharedPreferences(this)
                 .getString(SavedSearch.TAG, null))
     }
 
@@ -313,11 +306,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         settings.mapzenMap = mapzenMap
     }
 
-    private fun initAutoCompleteAdapter() {
-        autoCompleteAdapter = SearchListViewAdapter(this, R.layout.list_item_auto_complete,
-                searchView as PeliasSearchView, savedSearch)
-    }
-
     private fun updateMute() {
         muteView.setMuted(voiceNavigationController?.isMuted() != true)
     }
@@ -388,61 +376,38 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         optionsMenu = menu
-        searchView = PeliasSearchView(this)
-        supportActionBar?.setCustomView(searchView,ActionBar.LayoutParams(
-                ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT))
-        val displayOptions = supportActionBar?.displayOptions ?:0
-        supportActionBar?.displayOptions = displayOptions or ActionBar.DISPLAY_SHOW_CUSTOM
-        val emptyView = findViewById(android.R.id.empty)
-        autocompleteListView.hideHeader()
+        initSearchView()
+        return true
+    }
 
-        searchView?.setRecentSearchIconResourceId(R.drawable.ic_recent)
-        searchView?.setAutoCompleteIconResourceId(R.drawable.ic_pin_c)
-        initAutoCompleteAdapter()
-        autocompleteListView.adapter = autoCompleteAdapter
-        pelias.setLocationProvider(presenter.getPeliasLocationProvider())
-        pelias.setApiKey(app.apiKeys?.searchKey)
-        searchView?.setAutoCompleteListView(autocompleteListView)
-        searchView?.setSavedSearch(savedSearch)
-        searchView?.setPelias(pelias)
-        searchView?.setCallback(PeliasCallback())
-        searchView?.setOnSubmitListener({
-            presenter?.reverseGeoLngLat = null
-            saveCurrentSearchTerm()
-            presenter.onQuerySubmit()
-        })
-        searchView?.setIconifiedByDefault(false)
-        searchView!!.imeOptions += EditorInfo.IME_FLAG_NO_EXTRACT_UI
-        searchView?.queryHint = "Search for place or address"
-        autocompleteListView.emptyView = emptyView
-        restoreCurrentSearchTerm(searchView!!)
-        searchView?.setOnPeliasFocusChangeListener { view, b ->
-            if (b) {
-                expandSearchView()
-            } else if (presenter.resultListVisible) {
-                    onCloseAllSearchResults()
-                    enableSearch()
-            } else {
-                searchView?.setQuery(presenter.currentSearchTerm, false)
-            }
-        }
-        searchView?.setOnBackPressListener { collapseSearchView() }
-        val cacheSearches = PreferenceManager.getDefaultSharedPreferences(this)
-                .getBoolean(AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY, true)
-        searchView?.setCacheSearchResults(cacheSearches)
+    private fun initSearchView() {
+        val searchView = PeliasSearchView(this)
+        val listView = findViewById(R.id.auto_complete) as AutoCompleteListView
+        val emptyView = findViewById(android.R.id.empty) as View
+        val locationProvider = presenter.getPeliasLocationProvider()
+        val apiKeys = app.apiKeys
+        val callback = PeliasCallback()
 
+        addSearchViewToActionBar(searchView)
+        searchController.mainController = this
+        searchController.initSearchView(searchView, listView, emptyView, presenter, locationProvider, apiKeys, callback)
         if (submitQueryOnMenuCreate != null) {
-            searchView?.setQuery(submitQueryOnMenuCreate, true)
+            searchView.setQuery(submitQueryOnMenuCreate, true)
             submitQueryOnMenuCreate = null
         }
+    }
 
-        return true
+    private fun addSearchViewToActionBar(searchView: PeliasSearchView) {
+        supportActionBar?.setCustomView(searchView, ActionBar.LayoutParams(
+                ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT))
+        val displayOptions = supportActionBar?.displayOptions ?: 0
+        supportActionBar?.displayOptions = displayOptions or ActionBar.DISPLAY_SHOW_CUSTOM
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val cacheSearches = prefs.getBoolean(AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY, true)
-        searchView?.setCacheSearchResults(cacheSearches)
+        searchController.searchView?.setCacheSearchResults(cacheSearches)
         return true
     }
 
@@ -462,7 +427,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     private fun onActionViewAll() {
         presenter.onViewAllSearchResults()
-
     }
 
     override fun showAllSearchResults(features: List<Feature>?) {
@@ -472,7 +436,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
         if (presenter.resultListVisible) {
             onCloseAllSearchResults()
-            enableSearch()
+            searchController.enableSearch()
         } else {
             saveCurrentSearchTerm()
             presenter.resultListVisible = true
@@ -482,63 +446,50 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             for (feature in features) {
                 simpleFeatures.add(AutoCompleteItem(SimpleFeature.fromFeature(feature)))
             }
-            searchView?.disableAutoKeyboardShow()
-            searchView?.disableAutoComplete()
-            searchView?.onActionViewExpanded()
-            searchView?.setQuery(presenter.currentSearchTerm, false)
-            autoCompleteAdapter?.clear();
-            autoCompleteAdapter?.addAll(simpleFeatures);
-            autoCompleteAdapter?.notifyDataSetChanged();
-            autocompleteListView.setOnItemClickListener { parent, view, position, id ->
+            searchController.searchView?.disableAutoKeyboardShow()
+            searchController.searchView?.disableAutoComplete()
+            searchController.searchView?.onActionViewExpanded()
+            searchController.searchView?.setQuery(presenter.currentSearchTerm, false)
+            val autoCompleteAdapter = searchController.autoCompleteListView?.adapter as AutoCompleteAdapter
+            autoCompleteAdapter.clear();
+            autoCompleteAdapter.addAll(simpleFeatures);
+            autoCompleteAdapter.notifyDataSetChanged();
+            searchController.autoCompleteListView?.setOnItemClickListener { parent, view, position, id ->
                         (findViewById(R.id.search_results) as SearchResultsView).setCurrentItem(position)
                         onCloseAllSearchResults()
 
             }
-            disableSearch()
+            searchController.disableSearch()
         }
     }
 
-    private fun onCloseAllSearchResults() {
-        autocompleteListView.onItemClickListener = searchView?.OnItemClickHandler()?.invoke()
+    override fun onCloseAllSearchResults() {
+        searchController.autoCompleteListView?.onItemClickListener = searchController.searchView?.OnItemClickHandler()?.invoke()
         presenter.resultListVisible = false
         optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
-        searchView?.enableAutoKeyboardShow()
-        searchView?.onActionViewCollapsed()
-        searchView?.isIconified = false
-        searchView?.clearFocus()
-        searchView?.disableAutoComplete()
-        searchView?.setQuery(presenter.currentSearchTerm, false)
+        searchController.searchView?.enableAutoKeyboardShow()
+        searchController.searchView?.onActionViewCollapsed()
+        searchController.searchView?.isIconified = false
+        searchController.searchView?.clearFocus()
+        searchController.searchView?.disableAutoComplete()
+        searchController.searchView?.setQuery(presenter.currentSearchTerm, false)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode > 0) {
-            searchResultsView.setCurrentItem(resultCode - 1)
+            searchController.setCurrentItem(resultCode - 1)
         }
     }
 
     private fun saveCurrentSearchTerm() {
-        presenter.currentSearchTerm = searchView?.query.toString()
-    }
-
-    private fun restoreCurrentSearchTerm(searchView: PeliasSearchView) {
-        val term = presenter.currentSearchTerm
-        if (term != null) {
-            searchView.setQuery(term, false)
-            if (searchResultsView.visibility == View.VISIBLE && presenter.reverseGeo == false) {
-                searchView.clearFocus()
-                showActionViewAll()
-            } else {
-                hideActionViewAll()
-            }
-            presenter.currentSearchTerm = null
-        }
+        presenter.currentSearchTerm = searchController.searchView?.query.toString()
     }
 
     inner class PeliasCallback : Callback<Result> {
         private val TAG: String = "PeliasCallback"
 
         override fun success(result: Result?, response: Response?) {
-            presenter?.reverseGeoLngLat = null
+            presenter.reverseGeoLngLat = null
             presenter.onSearchResultsAvailable(result)
             optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
         }
@@ -591,10 +542,10 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun showSearchResultsView(features: List<Feature>) {
-        searchResultsView.setAdapter(SearchResultsAdapter(this, features, confidenceHandler,
+        searchController.setSearchResultsAdapter(SearchResultsAdapter(this, features, confidenceHandler,
                 permissionManager))
-        searchResultsView.visibility = View.VISIBLE
-        searchResultsView.onSearchResultsSelectedListener = this
+        searchController.showSearchResults()
+        searchController.onSearchResultsSelectedListener = this
     }
 
     private fun baseAttributionParams(): RelativeLayout.LayoutParams {
@@ -691,17 +642,17 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
      * to show or hide debug settings in settings fragment
      */
     private fun toggleShowDebugSettings() {
-        if (!AndroidAppSettings.SHOW_DEBUG_SETTINGS_QUERY.equals(searchView?.query.toString())) {
+        if (!AndroidAppSettings.SHOW_DEBUG_SETTINGS_QUERY.equals(searchController.searchView?.query.toString())) {
             return;
         }
-        var preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        var editor = preferences.edit()
-        var prev = preferences.getBoolean(AndroidAppSettings.KEY_SHOW_DEBUG_SETTINGS, false)
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val editor = preferences.edit()
+        val prev = preferences.getBoolean(AndroidAppSettings.KEY_SHOW_DEBUG_SETTINGS, false)
         editor.putBoolean(AndroidAppSettings.KEY_SHOW_DEBUG_SETTINGS, !prev)
         editor.commit()
 
-        var status = resources.getString(if (prev) R.string.disabled else R.string.enabled)
-        var debugToastTitle = resources.getString(R.string.debug_settings_toast_title, status)
+        val status = resources.getString(if (prev) R.string.disabled else R.string.enabled)
+        val debugToastTitle = resources.getString(R.string.debug_settings_toast_title, status)
         Toast.makeText(this, debugToastTitle, Toast.LENGTH_SHORT).show();
     }
 
@@ -714,7 +665,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         layoutAttributionAboveSearchResults(features)
         layoutFindMeAboveSearchResults(features)
 
-        var lngLat: LngLat?
+        val lngLat: LngLat?
         if (poiTapPoint != null) {
             val x = poiTapPoint!![0].toDouble()
             val y = poiTapPoint!![1].toDouble()
@@ -723,7 +674,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             // Fallback for a failed Pelias Place Callback
             overridePlaceFeature(features.get(0))
         } else {
-            lngLat = presenter?.reverseGeoLngLat
+            lngLat = presenter.reverseGeoLngLat
         }
 
         showPlaceSearchFeature(features)
@@ -750,10 +701,10 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun showPlaceSearchFeature(features: List<Feature>) {
-        searchResultsView.setAdapter(SearchResultsAdapter(this, features.subList(0, 1),
+        searchController.setSearchResultsAdapter(SearchResultsAdapter(this, features.subList(0, 1),
                 confidenceHandler, permissionManager))
-        searchResultsView.visibility = View.VISIBLE
-        searchResultsView.onSearchResultsSelectedListener = this
+        searchController.showSearchResults()
+        searchController.onSearchResultsSelectedListener = this
     }
 
     override fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int) {
@@ -778,7 +729,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             return
         }
 
-        centerOnFeature(features, searchResultsView.getCurrentItem())
+        centerOnFeature(features, searchController.getCurrentItem())
     }
 
     override fun centerOnFeature(features: List<Feature>?, position: Int) {
@@ -786,14 +737,14 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             return
         }
 
-        Handler().postDelayed({
-            if(features.size > 0) {
-                searchResultsView.setCurrentItem(position)
-                val feature = SimpleFeature.fromFeature(features[position])
+        if(features.size > 0) {
+            searchController.setCurrentItem(position)
+            val feature = SimpleFeature.fromFeature(features[position])
+            Handler().postDelayed({
                 mapzenMap?.setPosition(LngLat(feature.lng(), feature.lat()), 1000)
                 mapzenMap?.zoom = MainPresenter.DEFAULT_ZOOM
-            }
-        }, 100)
+            }, 100)
+        }
     }
 
     override fun placeSearch(gid: String) {
@@ -809,8 +760,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     override fun reverseGeolocate(screenX: Float, screenY: Float) {
         pelias.setLocationProvider(presenter.getPeliasLocationProvider())
-        var coords = mapzenMap?.coordinatesAtScreenPosition(screenX.toDouble(), screenY.toDouble())
-        presenter?.reverseGeoLngLat = coords
+        val coords = mapzenMap?.coordinatesAtScreenPosition(screenX.toDouble(), screenY.toDouble())
+        presenter.reverseGeoLngLat = coords
         presenter.currentFeature = getGenericLocationFeature(coords?.latitude as Double,
                 coords?.longitude as Double)
         pelias.reverse(coords?.latitude as Double, coords?.longitude as Double,
@@ -829,7 +780,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun hideSearchResultsView() {
-        searchResultsView.visibility = View.GONE
+        searchController.hideSearchResults()
     }
 
     override fun showProgress() {
@@ -861,7 +812,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun clearQuery() {
-        searchView?.setQuery("", false)
+        searchController.searchView?.setQuery("", false)
     }
 
     override fun hideSettingsBtn() {
@@ -1180,18 +1131,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         animations.start()
     }
 
-    fun enableSearch() {
-        searchView?.inputType = InputType.TYPE_CLASS_TEXT
-        val closeButton = searchView?.findViewById(R.id.search_close_btn) as ImageView
-        closeButton.visibility = View.VISIBLE
-    }
-
-    fun disableSearch() {
-        searchView?.inputType = InputType.TYPE_NULL
-        val closeButton = searchView?.findViewById(R.id.search_close_btn) as ImageView
-        closeButton.visibility = View.GONE
-    }
-
     override fun startRoutingMode(feature: Feature) {
         // Set camera before RouteModeView#startRoute so that MapzenMap#sceneUpdate called
         // before MapzenMap#queueEvent
@@ -1302,7 +1241,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {
-        var nameLength: Int = 6
+        val nameLength: Int = 6
         val feature = Feature()
         val properties = Properties()
         if (lat.toString().length > nameLength && lon.toString().length > nameLength + 1) {
@@ -1328,7 +1267,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
-                                            grantResults: IntArray) {
+            grantResults: IntArray) {
         when (requestCode) {
             PERMISSIONS_REQUEST -> {
                 if (grantResults.size > 0
@@ -1347,8 +1286,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun executeSearch(query: String) {
-        if (searchView != null) {
-            searchView?.setQuery(query, true)
+        if (searchController.searchView != null) {
+            searchController.searchView?.setQuery(query, true)
         } else {
             submitQueryOnMenuCreate = query
         }
