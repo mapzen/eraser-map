@@ -111,6 +111,15 @@ class MainPresenterTest {
         assertThat(newController.searchResults).isEqualTo(features)
     }
 
+    @Test fun onRestoreViewState_shouldHideSettingsButtonWhileShowingSearchResults() {
+        val result = Result()
+        result.features = ArrayList<Feature>()
+        presenter.onSearchResultsAvailable(result)
+        mainController.isSettingsVisible = true
+        presenter.onRestoreViewState()
+        assertThat(mainController.isSettingsVisible).isFalse()
+    }
+
     @Test fun onRestoreViewState_shouldRestoreRoutePreview() {
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
         val newController = TestMainController()
