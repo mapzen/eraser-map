@@ -324,28 +324,29 @@ class MainPresenterTest {
         assertThat(mainController.isCenteredOnTappedFeature).isTrue()
     }
 
-    @Test fun onPause_shouldDisconnectLocationUpdates() {
-        presenter.onPause()
+    @Test fun onBackPressed_shouldDisconnectLocationUpdates() {
+        presenter.vsm.viewState = ROUTING
+        presenter.onBackPressed()
         assertThat(mapzenLocation.connected).isFalse()
     }
 
-    @Test fun onPause_shouldNotDisconnectLocationUpdatesWhileRouting() {
+    @Test fun onResume_shouldNotDisconnectLocationUpdates() {
         mapzenLocation.connected = true
         presenter.onClickStartNavigation()
-        presenter.onPause()
-        assertThat(mapzenLocation.connected).isTrue()
-    }
-
-    @Test fun onResume_shouldReconnectLocationClientAndInitLocationUpdates() {
-        mapzenLocation.connected = false
-        vsm.viewState = DEFAULT
         presenter.onResume()
         assertThat(mapzenLocation.connected).isTrue()
     }
 
-    @Test fun onResume_shouldNotReconnectClientAndInitUpdatesWhileRouting() {
+    @Test fun onClickStartNavigation_shouldReconnectLocationClientAndInitLocationUpdates() {
         mapzenLocation.connected = false
+        vsm.viewState = DEFAULT
         presenter.onClickStartNavigation()
+        assertThat(mapzenLocation.connected).isTrue()
+    }
+
+    @Test fun onResume_shouldNotReconnectClientAndInitUpdatesWhileRouting() {
+        presenter.onClickStartNavigation()
+        mapzenLocation.connected = false
         presenter.onResume()
         assertThat(mapzenLocation.connected).isFalse()
     }

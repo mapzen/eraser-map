@@ -229,9 +229,9 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     override public fun onPause() {
         super.onPause()
-        presenter.onPause()
         app?.onActivityPause()
-        if (mapzenMap?.isMyLocationEnabled != null && mapzenMap?.isMyLocationEnabled as Boolean) {
+        if (mapzenMap?.isMyLocationEnabled != null && mapzenMap?.isMyLocationEnabled as Boolean
+                && !presenter.routingEnabled) {
             enableLocation = true
             mapzenMap?.isMyLocationEnabled = false
         }
@@ -1254,9 +1254,9 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun hideRoutingMode() {
+        presenter.routingEnabled = false
         setDefaultCamera()
         checkPermissionAndEnableLocation()
-        presenter.routingEnabled = false
         routeModeView.visibility = View.GONE
         val location = routeManager.origin
         val feature = routeManager.destination
