@@ -39,7 +39,6 @@ public class EraserMapApplication extends Application {
 
     private ApplicationComponent component;
     private boolean isVisible = true;
-    private ApiKeys apiKeys;
 
     @Override
     public void onCreate() {
@@ -65,11 +64,4 @@ public class EraserMapApplication extends Application {
         return component;
     }
 
-    public @Nullable ApiKeys getApiKeys() {
-        return apiKeys;
-    }
-
-    public void setApiKeys(@NotNull ApiKeys apiKeys) {
-        this.apiKeys = apiKeys;
-    }
 }
