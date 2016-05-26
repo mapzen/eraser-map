@@ -10,7 +10,7 @@ import org.powermock.api.mockito.PowerMockito
 
 class ApiKeysTest {
     val application = EraserMapApplication()
-    val apiKeys = ApiKeys(application)
+    val apiKeys = ApiKeys.Companion.sharedInstance(application)
 
     @Test fun shouldNotBeNull() {
         assertThat(apiKeys).isNotNull()
@@ -19,18 +19,18 @@ class ApiKeysTest {
     @Test(expected = IllegalArgumentException::class) fun shouldNotAcceptEmptyTilesKey() {
         PowerMockito.mockStatic(BuildConfig::class.java)
         Mockito.doReturn(null).`when`(BuildConfig.VECTOR_TILE_API_KEY)
-        ApiKeys(application)
+        ApiKeys.Companion.sharedInstance(application)
     }
 
     @Test(expected = IllegalArgumentException::class) fun shouldNotAcceptEmptySearchKey() {
         PowerMockito.mockStatic(BuildConfig::class.java)
         Mockito.doReturn(null).`when`(BuildConfig.PELIAS_API_KEY)
-        ApiKeys(application)
+        ApiKeys.Companion.sharedInstance(application)
     }
 
     @Test(expected = IllegalArgumentException::class) fun shouldNotAcceptEmptyRoutingKey() {
         PowerMockito.mockStatic(BuildConfig::class.java)
         Mockito.doReturn(null).`when`(BuildConfig.VALHALLA_API_KEY)
-        ApiKeys(application)
+        ApiKeys.Companion.sharedInstance(application)
     }
 }

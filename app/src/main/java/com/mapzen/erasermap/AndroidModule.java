@@ -104,7 +104,7 @@ public class AndroidModule {
     }
 
     @Provides @Singleton ApiKeys provideApiKeys() {
-        return new ApiKeys(application);
+        return ApiKeys.Companion.sharedInstance(application);
     }
 
 }

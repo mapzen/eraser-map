@@ -6,11 +6,22 @@ import com.mapzen.erasermap.EraserMapApplication
 /**
  * Wrangle API keys for Mapzen services
  */
-data class ApiKeys(val application: EraserMapApplication) {
+class ApiKeys private constructor(val application: EraserMapApplication) {
 
     lateinit var tilesKey: String
     lateinit var searchKey: String
     lateinit var routingKey: String
+
+    companion object {
+        var instance: ApiKeys? = null
+
+        fun sharedInstance(application: EraserMapApplication): ApiKeys {
+            if (instance == null) {
+                instance = ApiKeys(application)
+            }
+            return instance as ApiKeys
+        }
+    }
 
     init {
         configureKeys()

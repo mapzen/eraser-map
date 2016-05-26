@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.TextView
@@ -13,8 +12,6 @@ import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.controller.MainActivity
-import com.mapzen.erasermap.model.ApiKeys
-import com.mapzen.erasermap.model.SimpleCrypt
 import javax.inject.Inject
 
 class InitActivity : AppCompatActivity() {

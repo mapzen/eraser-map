@@ -99,6 +99,6 @@ public class TestAndroidModule {
     }
 
     @Provides @Singleton ApiKeys provideApiKeys() {
-        return new ApiKeys(application);
+        return ApiKeys.Companion.sharedInstance(application);
     }
 }
