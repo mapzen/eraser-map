@@ -53,7 +53,6 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     private var initialized = false
     private var restoreReverseGeoOnBack = false
 
-
     /**
      * We will migrate to Retrofit2 where we will have ability to cancel requests. Before then,
      * we want to ignore all {@link RouteManager#fetchRoute} requests until we receive a
@@ -169,7 +168,9 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     }
 
     override fun onExpandSearchView() {
-        vsm.viewState = ViewStateManager.ViewState.SEARCH
+        if (vsm.viewState != ViewStateManager.ViewState.SEARCH_RESULTS) {
+            vsm.viewState = ViewStateManager.ViewState.SEARCH
+        }
         mainViewController?.hideSettingsBtn()
     }
 

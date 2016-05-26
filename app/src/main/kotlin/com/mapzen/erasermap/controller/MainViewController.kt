@@ -49,4 +49,5 @@ interface MainViewController {
     fun stopSpeaker()
     fun checkPermissionAndEnableLocation()
     fun executeSearch(query: String)
+    fun onCloseAllSearchResults()
 }
