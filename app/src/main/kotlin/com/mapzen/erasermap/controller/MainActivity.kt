@@ -114,6 +114,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     var voiceNavigationController: VoiceNavigationController? = null
     var notificationCreator: NotificationCreator? = null
     lateinit var confidenceHandler: ConfidenceHandler
+    var enableLocation: Boolean = false
 
     // activity_main
     val mapView: MapView by lazy { findViewById(R.id.map) as MapView }
@@ -213,12 +214,21 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         autoCompleteAdapter?.clear()
         autoCompleteAdapter?.notifyDataSetChanged()
         invalidateOptionsMenu()
+
+        if (enableLocation) {
+            enableLocation = false
+            checkPermissionAndEnableLocation()
+        }
     }
 
     override public fun onPause() {
         super.onPause()
-        presenter.onPause()
         app?.onActivityPause()
+        if (mapzenMap?.isMyLocationEnabled != null && mapzenMap?.isMyLocationEnabled as Boolean
+                && !presenter.routingEnabled) {
+            enableLocation = true
+            mapzenMap?.isMyLocationEnabled = false
+        }
     }
 
     override public fun onStop() {
@@ -1182,9 +1192,9 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     override fun hideRoutingMode() {
+        presenter.routingEnabled = false
         setDefaultCamera()
         checkPermissionAndEnableLocation()
-        presenter.routingEnabled = false
         routeModeView.visibility = View.GONE
         val location = routeManager.origin
         val feature = routeManager.destination

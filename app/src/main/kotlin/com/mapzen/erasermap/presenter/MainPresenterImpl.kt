@@ -296,6 +296,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     private fun onBackPressedStateRouting() {
         vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
         routingEnabled = false
+        mapzenLocation.stopLocationUpdates() //must call before calling mainViewController?.hideRoutingMode()
         mainViewController?.hideRoutingMode()
         mainViewController?.stopSpeaker()
     }
@@ -316,28 +317,18 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         generateRoutingMode()
         vsm.viewState = ViewStateManager.ViewState.ROUTING
         routeViewController?.hideResumeButton()
+        mapzenLocation.startLocationUpdates()
     }
 
     @Subscribe public fun onLocationChangeEvent(event: LocationChangeEvent) {
         if (routingEnabled) {
             routeViewController?.onLocationChanged(event.location)
         }
-        //TODO
-//        else {
-//            mainViewController?.showCurrentLocation(event.location)
-//        }
     }
 
     override fun onResume() {
         if (!isRouting() && !isRoutingDirectionList()) {
-            mapzenLocation.startLocationUpdates()
             mainViewController?.checkPermissionAndEnableLocation()
-        }
-    }
-
-    override fun onPause() {
-        if (!isRouting() && !isRoutingDirectionList()) {
-            mapzenLocation.stopLocationUpdates()
         }
     }
 
