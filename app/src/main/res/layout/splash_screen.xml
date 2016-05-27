@@ -21,4 +21,14 @@
         android:paddingBottom="8dp"
         android:textSize="18sp" />
 
+    <Button
+        android:id="@+id/decode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/build_number"
+        android:layout_alignParentRight="true"
+        android:paddingRight="8dp"
+        android:paddingBottom="8dp"
+        android:text="Decode" />
+
 </RelativeLayout>

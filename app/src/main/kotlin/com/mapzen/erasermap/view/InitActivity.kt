@@ -7,6 +7,7 @@ import android.os.Handler
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.widget.Button
 import android.widget.TextView
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.CrashReportService
@@ -38,38 +39,42 @@ class InitActivity : AppCompatActivity() {
             (findViewById(R.id.build_number) as TextView).text = BuildConfig.BUILD_NUMBER
         }
 
-        if (app.apiKeys != null) {
-            startMainActivityAndFinish()
-        } else {
-            Handler().postDelayed({ configureKeys() }, START_DELAY_IN_MS)
-        }
-
         val data = intent.data
         if (data != null) {
             Log.i("Eraser Map", "Incoming implicit intent: " + Uri.decode(data.toString()))
         }
+
+        val decodeButton = findViewById(R.id.decode) as Button
+        decodeButton.setOnClickListener() { configureKeys() }
     }
 
     private fun configureKeys() {
+        var tilesKey: String? = null
+        var searchKey: String? = null
+        var routingKey: String? = null
+
         if (BuildConfig.VECTOR_TILE_API_KEY == null ||
                 BuildConfig.PELIAS_API_KEY == null ||
                 BuildConfig.VALHALLA_API_KEY == null) {
             showApiKeyDialog()
         } else {
             if (BuildConfig.DEBUG) {
-                val tilesKey = BuildConfig.VECTOR_TILE_API_KEY
-                val searchKey = BuildConfig.PELIAS_API_KEY
-                val routingKey = BuildConfig.VALHALLA_API_KEY
-                app.setApiKeys(ApiKeys(tilesKey, searchKey, routingKey))
+                tilesKey = BuildConfig.VECTOR_TILE_API_KEY
+                searchKey = BuildConfig.PELIAS_API_KEY
+                routingKey = BuildConfig.VALHALLA_API_KEY
+//                app.setApiKeys(ApiKeys(tilesKey, searchKey, routingKey))
             } else {
                 val crypt = SimpleCrypt(application)
-                val tilesKey = crypt.decode(BuildConfig.VECTOR_TILE_API_KEY)
-                val searchKey = crypt.decode(BuildConfig.PELIAS_API_KEY)
-                val routingKey = crypt.decode(BuildConfig.VALHALLA_API_KEY)
-                app.setApiKeys(ApiKeys(tilesKey, searchKey, routingKey))
+                tilesKey = crypt.decode(BuildConfig.VECTOR_TILE_API_KEY)
+                searchKey = crypt.decode(BuildConfig.PELIAS_API_KEY)
+                routingKey = crypt.decode(BuildConfig.VALHALLA_API_KEY)
+//                app.setApiKeys(ApiKeys(tilesKey, searchKey, routingKey))
             }
-            startMainActivityAndFinish()
         }
+
+        System.out.println("[LEYNDO] tilesKey = " + tilesKey)
+        System.out.println("[LEYNDO] searchKey = " + searchKey)
+        System.out.println("[LEYNDO] routingKey = " + routingKey)
     }
 
     private fun startMainActivityAndFinish() {
