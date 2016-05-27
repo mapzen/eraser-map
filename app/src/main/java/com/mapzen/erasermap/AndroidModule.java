@@ -2,6 +2,7 @@ package com.mapzen.erasermap;
 
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.AndroidAppSettings;
+import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.model.AppSettings;
 import com.mapzen.erasermap.model.IntentQueryParser;
 import com.mapzen.erasermap.model.MapzenLocation;
@@ -65,16 +66,16 @@ public class AndroidModule {
                 intentQueryParser);
     }
 
-    @Provides @Singleton RouteManager provideRouteManager(AppSettings settings) {
+    @Provides @Singleton RouteManager provideRouteManager(AppSettings settings, ApiKeys apiKeys) {
         final ValhallaRouteManager manager = new ValhallaRouteManager(settings,
                 new ValhallaRouterFactory());
-        manager.setApiKey(application.getApiKeys().getRoutingKey());
+        manager.setApiKey(apiKeys.getRoutingKey());
         return manager;
     }
 
-    @Provides @Singleton TileHttpHandler provideTileHttpHandler() {
+    @Provides @Singleton TileHttpHandler provideTileHttpHandler(ApiKeys apiKeys) {
         final TileHttpHandler handler = new TileHttpHandler(application);
-        handler.setApiKey(application.getApiKeys().getTilesKey());
+        handler.setApiKey(apiKeys.getTilesKey());
         return handler;
     }
 
@@ -101,4 +102,9 @@ public class AndroidModule {
     @Provides @Singleton PermissionManager providePermissionManager() {
         return new PermissionManager();
     }
+
+    @Provides @Singleton ApiKeys provideApiKeys() {
+        return ApiKeys.Companion.sharedInstance(application);
+    }
+
 }

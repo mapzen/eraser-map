@@ -103,6 +103,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     @Inject lateinit var pelias: Pelias
     @Inject lateinit var speaker: Speaker
     @Inject lateinit var permissionManager: PermissionManager
+    @Inject lateinit var apiKeys: ApiKeys
 
     lateinit var app: EraserMapApplication
     var mapzenMap : MapzenMap? = null
@@ -237,9 +238,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun initMapzenMap() {
-        val application = application as EraserMapApplication
-        val keys = application.apiKeys as ApiKeys
-        mapView.getMapAsync(keys.tilesKey, {
+        mapView.getMapAsync(apiKeys.tilesKey, {
             this.mapzenMap = it
             configureMapzenMap()
             presenter.configureMapzenMap()
@@ -385,7 +384,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         val listView = findViewById(R.id.auto_complete) as AutoCompleteListView
         val emptyView = findViewById(android.R.id.empty) as View
         val locationProvider = presenter.getPeliasLocationProvider()
-        val apiKeys = app.apiKeys
+        val apiKeys = apiKeys
         val callback = PeliasCallback()
 
         addSearchViewToActionBar(searchView)

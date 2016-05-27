@@ -1,6 +1,7 @@
 package com.mapzen.erasermap;
 
 import com.mapzen.android.lost.api.LostApiClient;
+import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.model.AppSettings;
 import com.mapzen.erasermap.model.IntentQueryParser;
 import com.mapzen.erasermap.model.MapzenLocation;
@@ -95,5 +96,9 @@ public class TestAndroidModule {
 
     @Provides @Singleton PermissionManager providePermissionManager() {
         return new PermissionManager();
+    }
+
+    @Provides @Singleton ApiKeys provideApiKeys() {
+        return ApiKeys.Companion.sharedInstance(application);
     }
 }
