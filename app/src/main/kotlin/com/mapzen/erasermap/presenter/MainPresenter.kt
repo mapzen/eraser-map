@@ -40,7 +40,6 @@ public interface MainPresenter {
     public fun onBackPressed()
     public fun onRestoreViewState()
     public fun onResume()
-    public fun onFindMeButtonClick()
     public fun onMuteClick()
     public fun onCompassClick()
     public fun getPeliasLocationProvider(): PeliasLocationProvider
