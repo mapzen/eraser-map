@@ -340,16 +340,6 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         return vsm.viewState == ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
     }
 
-    override fun onFindMeButtonClick() {
-        val currentLocation = mapzenLocation.getLastLocation()
-        if (currentLocation is Location) {
-            mainViewController?.centerMapOnLocation(LngLat(currentLocation.longitude,
-                    currentLocation.latitude), MainPresenter.DEFAULT_ZOOM)
-            mainViewController?.setMapTilt(0f)
-            mainViewController?.setMapRotation(0f)
-        }
-    }
-
     override fun onMuteClick() {
         mainViewController?.toggleMute()
     }
@@ -425,7 +415,6 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         vsm.viewState = ViewStateManager.ViewState.DEFAULT
         routingEnabled = false;
         routeManager.reverse = false
-        onFindMeButtonClick()
     }
 
     override fun onMapMotionEvent(): Boolean {

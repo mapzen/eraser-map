@@ -303,9 +303,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         })
         checkPermissionAndEnableLocation()
         mapzenMap?.setFindMeOnClickListener {
-            if (permissionManager.permissionsGranted()) {
-                presenter.onFindMeButtonClick()
-            } else {
+            if (!permissionManager.permissionsGranted()) {
                 permissionManager.showPermissionRequired()
             }
         }
