@@ -158,7 +158,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         initMute()
         initCompass()
         initReverseButton()
-        initMapRotateListener()
         initConfidenceHandler()
         permissionManager.activity = this
         if (permissionManager.permissionsRequired()) {
@@ -253,6 +252,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             configureMapzenMap()
             presenter.configureMapzenMap()
             presenter.onIntentQueryReceived(intent?.data?.query)
+            initMapRotateListener()
         })
     }
 
