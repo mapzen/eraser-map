@@ -55,6 +55,7 @@ import com.mapzen.erasermap.view.SearchResultsView
 import com.mapzen.erasermap.view.SettingsActivity
 import com.mapzen.erasermap.view.Speaker
 import com.mapzen.erasermap.view.VoiceNavigationController
+import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.SimpleFeature
@@ -833,7 +834,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         mapzenMap?.position = lngLat
     }
 
-    override fun showRoutePreview(location: Location, feature: Feature) {
+    override fun showRoutePreview(location: ValhallaLocation, feature: Feature) {
         centerMap(LngLat(location.longitude, location.latitude));
         layoutAttributionAboveOptions()
         layoutFindMeAboveOptions()
@@ -899,7 +900,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         hideProgress()
     }
 
-    private fun zoomToShowRoute(route: Array<Location>) {
+    private fun zoomToShowRoute(route: Array<ValhallaLocation>) {
 
         // Make sure we have some points to work with
         if (route.isEmpty()) {
@@ -964,14 +965,14 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
         val origin = routeManager.origin
         val destination = routeManager.destination
-        if (origin is Location && destination is Feature) {
+        if (origin is ValhallaLocation && destination is Feature) {
             val destinationFeature = SimpleFeature.fromFeature(destination)
             val start = LngLat(origin.longitude, origin.latitude)
             val end = LngLat(destinationFeature.lng(), destinationFeature.lat())
             showRoutePins(start, end)
 
             val startLocation = origin
-            val endLocation = Location(origin)
+            val endLocation = ValhallaLocation(origin)
             endLocation.longitude = end.longitude
             endLocation.latitude = end.latitude
             zoomToShowRoute(arrayOf(startLocation, endLocation))
@@ -1194,7 +1195,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         routeModeView.visibility = View.GONE
         val location = routeManager.origin
         val feature = routeManager.destination
-        if (location is Location && feature is Feature) {
+        if (location is ValhallaLocation && feature is Feature) {
             showRoutePreview(location, feature)
         }
         supportActionBar?.hide()

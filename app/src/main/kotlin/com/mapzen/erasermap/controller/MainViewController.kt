@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.controller
 
 import android.location.Location
+import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
@@ -24,7 +25,7 @@ interface MainViewController {
     fun collapseSearchView()
     fun expandSearchView()
     fun clearQuery()
-    fun showRoutePreview(location: Location, feature: Feature)
+    fun showRoutePreview(location: ValhallaLocation, feature: Feature)
     fun hideRoutePreview()
     fun hideRoutingMode()
     fun startRoutingMode(feature: Feature)

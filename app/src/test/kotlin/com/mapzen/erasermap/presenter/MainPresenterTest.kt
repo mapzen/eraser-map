@@ -2,10 +2,12 @@ package com.mapzen.erasermap.presenter
 
 import com.mapzen.erasermap.controller.TestMainController
 import com.mapzen.erasermap.dummy.TestHelper
+import com.mapzen.erasermap.dummy.TestHelper.getTestAndroidLocation
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
 import com.mapzen.erasermap.model.IntentQuery
 import com.mapzen.erasermap.model.IntentQueryParser
+import com.mapzen.erasermap.model.LocationConverter
 import com.mapzen.erasermap.model.TestAppSettings
 import com.mapzen.erasermap.model.TestMapzenLocation
 import com.mapzen.erasermap.model.TestRouteManager
@@ -45,7 +47,9 @@ class MainPresenterTest {
     private val bus: Bus = Bus()
     private val vsm: ViewStateManager = ViewStateManager()
     private val iqp: IntentQueryParser = Mockito.mock(IntentQueryParser::class.java)
-    private val presenter = MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm, iqp)
+    private val converter: LocationConverter = LocationConverter()
+    private val presenter = MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm, iqp,
+        converter)
 
     @Before fun setUp() {
         presenter.mainViewController = mainController
@@ -311,11 +315,11 @@ class MainPresenterTest {
 
     @Test fun onLocationChanged_shouldNotifyRouteControllerIfRoutingIsEnabled() {
         presenter.routingEnabled = false
-        presenter.onLocationChangeEvent(LocationChangeEvent(getTestLocation()))
+        presenter.onLocationChangeEvent(LocationChangeEvent(getTestAndroidLocation()))
         assertThat(routeController.location).isNull()
 
         presenter.routingEnabled = true
-        presenter.onLocationChangeEvent(LocationChangeEvent(getTestLocation()))
+        presenter.onLocationChangeEvent(LocationChangeEvent(getTestAndroidLocation()))
         assertThat(routeController.location).isNotNull()
     }
 

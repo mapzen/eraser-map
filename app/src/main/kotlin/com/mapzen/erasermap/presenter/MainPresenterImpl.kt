@@ -6,6 +6,7 @@ import com.mapzen.erasermap.controller.MainViewController
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.IntentQuery
 import com.mapzen.erasermap.model.IntentQueryParser
+import com.mapzen.erasermap.model.LocationConverter
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.event.LocationChangeEvent
@@ -20,6 +21,7 @@ import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTING
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
 import com.mapzen.erasermap.view.RouteViewController
+import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
@@ -32,7 +34,7 @@ import java.util.ArrayList
 
 open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         val routeManager: RouteManager, val settings: AppSettings, val vsm: ViewStateManager,
-        val intentQueryParser: IntentQueryParser)
+        val intentQueryParser: IntentQueryParser, val converter: LocationConverter)
         : MainPresenter, RouteCallback {
 
     companion object {
@@ -352,7 +354,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         return mapzenLocation
     }
 
-    override fun onReroute(location: Location) {
+    override fun onReroute(location: ValhallaLocation) {
         if (waitingForRoute) {
             return
         }
@@ -361,7 +363,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         fetchNewRoute(location)
     }
 
-    private fun fetchNewRoute(location: Location) {
+    private fun fetchNewRoute(location: ValhallaLocation) {
         routeManager.origin = location
         routeManager.destination = destination
         routeManager.reverse = false
@@ -391,7 +393,8 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         val location = mapzenLocation.getLastLocation()
         val feature = destination
         if (location is Location && feature is Feature) {
-            mainViewController?.showRoutePreview(location, feature)
+            val mapzenLocation = converter.mapzenLocation(location)
+            mainViewController?.showRoutePreview(mapzenLocation, feature)
         }
     }
 

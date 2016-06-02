@@ -1,7 +1,7 @@
 package com.mapzen.erasermap.controller
 
 import android.graphics.PointF
-import android.location.Location
+import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
@@ -90,7 +90,7 @@ public class TestMainController : MainViewController {
         queryText = ""
     }
 
-    override fun showRoutePreview(location: Location, feature: Feature) {
+    override fun showRoutePreview(location: ValhallaLocation, feature: Feature) {
         isRoutePreviewVisible = true
     }
 
