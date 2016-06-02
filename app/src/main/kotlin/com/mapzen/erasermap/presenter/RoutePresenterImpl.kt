@@ -5,6 +5,7 @@ import com.mapzen.erasermap.model.event.RouteCancelEvent
 import com.mapzen.erasermap.view.MapListToggleButton
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.helpers.RouteEngine
+import com.mapzen.model.ValhallaLocation
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
@@ -22,12 +23,12 @@ class RoutePresenterImpl(private val routeEngine: RouteEngine,
         }
 
     override var currentInstructionIndex: Int = 0
-    override var currentSnapLocation: Location? = null
+    override var currentSnapLocation: ValhallaLocation? = null
 
     private var route: Route? = null
     private var isTrackingCurrentLocation: Boolean = true
 
-    override fun onLocationChanged(location: Location) {
+    override fun onLocationChanged(location: ValhallaLocation) {
         routeEngine.onLocationChanged(location)
     }
 
@@ -75,7 +76,7 @@ class RoutePresenterImpl(private val routeEngine: RouteEngine,
         }
     }
 
-    override fun onUpdateSnapLocation(location: Location) {
+    override fun onUpdateSnapLocation(location: ValhallaLocation) {
         routeController?.showRouteIcon(location)
         if (isTrackingCurrentLocation) {
             routeController?.centerMapOnLocation(location)

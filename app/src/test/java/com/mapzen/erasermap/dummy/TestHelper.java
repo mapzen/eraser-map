@@ -1,5 +1,6 @@
 package com.mapzen.erasermap.dummy;
 
+import com.mapzen.model.ValhallaLocation;
 import com.mapzen.pelias.SimpleFeature;
 import com.mapzen.pelias.gson.Feature;
 import com.mapzen.pelias.gson.Geometry;
@@ -76,8 +77,13 @@ public class TestHelper {
         return location;
     }
 
-    public static Location getTestLocation() {
+    public static Location getTestAndroidLocation() {
         final Location location = new Location("test");
+        return location;
+    }
+
+    public static ValhallaLocation getTestLocation() {
+        final ValhallaLocation location = new ValhallaLocation();
         return location;
     }
 
@@ -88,9 +94,9 @@ public class TestHelper {
         return new Instruction(jsonObject);
     }
 
-    public static Location getMockLocation(double lon, double lat, float bearing,
+    public static ValhallaLocation getMockLocation(double lon, double lat, float bearing,
             boolean hasBearing) {
-        Location location = Mockito.mock(Location.class);
+        ValhallaLocation location = Mockito.mock(ValhallaLocation.class);
         Mockito.when(location.getLongitude()).thenReturn(lon);
         Mockito.when(location.getLatitude()).thenReturn(lat);
         Mockito.when(location.getBearing()).thenReturn(bearing);

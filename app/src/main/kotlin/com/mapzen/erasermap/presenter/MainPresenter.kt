@@ -3,6 +3,7 @@ package com.mapzen.erasermap.presenter
 import android.location.Location
 import com.mapzen.erasermap.controller.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
+import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
@@ -44,7 +45,7 @@ public interface MainPresenter {
     public fun onMuteClick()
     public fun onCompassClick()
     public fun getPeliasLocationProvider(): PeliasLocationProvider
-    public fun onReroute(location: Location)
+    public fun onReroute(location: ValhallaLocation)
     public fun onMapMotionEvent(): Boolean
     public fun onReverseGeoRequested(screenX: Float?, screenY: Float?): Boolean
     public fun onPlaceSearchRequested(gid: String): Boolean

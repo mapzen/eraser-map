@@ -1,12 +1,12 @@
 package com.mapzen.erasermap.presenter
 
-import android.location.Location
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getFixture
 import com.mapzen.erasermap.model.event.RouteCancelEvent
 import com.mapzen.erasermap.view.MapListToggleButton
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.helpers.RouteEngine
+import com.mapzen.model.ValhallaLocation
 import com.mapzen.valhalla.Route
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
@@ -67,14 +67,14 @@ class RoutePresenterTest {
     @Test fun onMapPan_shouldDisableLocationTracking() {
         routePresenter.onResumeButtonClick()
         routePresenter.onMapPan(-RoutePresenter.GESTURE_MIN_DELTA, RoutePresenter.GESTURE_MIN_DELTA)
-        routePresenter.onUpdateSnapLocation(Location("test"))
+        routePresenter.onUpdateSnapLocation(ValhallaLocation())
         assertThat(routeController.mapLocation).isNull()
     }
 
     @Test fun onMapPan_shouldNotDisableLocationTrackingIfDeltaIsLessThanMinDistance() {
         routePresenter.onResumeButtonClick()
         routePresenter.onMapPan(0f, 0f)
-        routePresenter.onUpdateSnapLocation(Location("test"))
+        routePresenter.onUpdateSnapLocation(ValhallaLocation())
         assertThat(routeController.mapLocation).isNotNull()
     }
 
@@ -87,7 +87,7 @@ class RoutePresenterTest {
     @Test fun onResumeButtonClick_shouldEnableLocationTracking() {
         routePresenter.onMapPan(RoutePresenter.GESTURE_MIN_DELTA, RoutePresenter.GESTURE_MIN_DELTA)
         routePresenter.onResumeButtonClick()
-        routePresenter.onUpdateSnapLocation(Location("test"))
+        routePresenter.onUpdateSnapLocation(ValhallaLocation())
         assertThat(routeController.mapLocation).isNotNull()
     }
 
@@ -100,7 +100,7 @@ class RoutePresenterTest {
     @Test fun onInstructionPagerTouch_shouldDisableLocationTracking() {
         routePresenter.onResumeButtonClick()
         routePresenter.onInstructionPagerTouch()
-        routePresenter.onUpdateSnapLocation(Location("test"))
+        routePresenter.onUpdateSnapLocation(ValhallaLocation())
         assertThat(routeController.mapLocation).isNull()
     }
 

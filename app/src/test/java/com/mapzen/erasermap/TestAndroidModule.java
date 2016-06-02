@@ -4,6 +4,7 @@ import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.model.AppSettings;
 import com.mapzen.erasermap.model.IntentQueryParser;
+import com.mapzen.erasermap.model.LocationConverter;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
 import com.mapzen.erasermap.model.PermissionManager;
@@ -63,9 +64,9 @@ public class TestAndroidModule {
 
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation, Bus bus,
             RouteManager routeManager, AppSettings settings, ViewStateManager vsm,
-            IntentQueryParser intentQueryParser) {
+            IntentQueryParser intentQueryParser, LocationConverter converter) {
         return new MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm,
-                intentQueryParser);
+                intentQueryParser, converter);
     }
 
     @Provides @Singleton RouteManager provideRouteManager() {
@@ -100,5 +101,9 @@ public class TestAndroidModule {
 
     @Provides @Singleton ApiKeys provideApiKeys() {
         return ApiKeys.Companion.sharedInstance(application);
+    }
+
+    @Provides @Singleton LocationConverter provideLocationConverter() {
+        return new LocationConverter();
     }
 }

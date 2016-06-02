@@ -1,10 +1,10 @@
 package com.mapzen.erasermap.presenter
 
-import android.location.Location
 import android.util.Log
 import com.mapzen.erasermap.view.RouteViewController
-import com.mapzen.helpers.RouteEngine
 import com.mapzen.helpers.RouteListener
+import com.mapzen.helpers.RouteEngine
+import com.mapzen.model.ValhallaLocation
 
 class RouteEngineListener : RouteListener {
     companion object {
@@ -20,7 +20,7 @@ class RouteEngineListener : RouteListener {
         controller?.playPreInstructionAlert(0)
     }
 
-    override fun onSnapLocation(originalLocation: Location, snapLocation: Location) {
+    override fun onSnapLocation(originalLocation: ValhallaLocation, snapLocation: ValhallaLocation) {
         log("[onSnapLocation]", "original = $originalLocation | snap = $snapLocation")
         controller?.updateSnapLocation(snapLocation);
     }
@@ -55,7 +55,7 @@ class RouteEngineListener : RouteListener {
         controller?.setRouteComplete()
     }
 
-    override fun onRecalculate(location: Location) {
+    override fun onRecalculate(location: ValhallaLocation) {
         log("[onRecalculate]", location)
         controller?.showReroute(location)
     }

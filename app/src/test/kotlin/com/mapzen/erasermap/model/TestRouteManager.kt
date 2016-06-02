@@ -1,7 +1,7 @@
 package com.mapzen.erasermap.model
 
-import android.location.Location
 import com.mapzen.erasermap.BuildConfig
+import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
@@ -10,7 +10,7 @@ import org.json.JSONObject
 import java.util.ArrayList
 
 public class TestRouteManager : RouteManager {
-    override var origin: Location? = null
+    override var origin: ValhallaLocation? = null
     override var destination: Feature? = null
     override var type: Router.Type = Router.Type.DRIVING
     override var reverse: Boolean = false

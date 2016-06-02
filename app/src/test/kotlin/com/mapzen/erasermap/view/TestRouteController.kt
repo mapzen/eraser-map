@@ -2,11 +2,12 @@ package com.mapzen.erasermap.view
 
 import android.location.Location
 import com.mapzen.helpers.RouteEngine
+import com.mapzen.model.ValhallaLocation
 
 public class TestRouteController : RouteViewController {
 
     public var location: Location? = null
-    public var mapLocation: Location? = null
+    public var mapLocation: ValhallaLocation? = null
     public var isDirectionListVisible: Boolean = false
     public var isResumeButtonVisible: Boolean = false
     public var isRouteIconVisible: Boolean = false
@@ -33,13 +34,13 @@ public class TestRouteController : RouteViewController {
         return isResumeButtonVisible == false
     }
 
-    override fun showRouteIcon(location: Location) {
+    override fun showRouteIcon(location: ValhallaLocation) {
     }
 
     override fun centerMapOnCurrentLocation() {
     }
 
-    override fun centerMapOnLocation(location: Location) {
+    override fun centerMapOnLocation(location: ValhallaLocation) {
         mapLocation = location
     }
 
@@ -68,10 +69,10 @@ public class TestRouteController : RouteViewController {
     override fun setRouteComplete() {
     }
 
-    override fun showReroute(location: Location) {
+    override fun showReroute(location: ValhallaLocation) {
     }
 
-    override fun updateSnapLocation(location: Location) {
+    override fun updateSnapLocation(location: ValhallaLocation) {
     }
 
     override fun hideRouteIcon() {

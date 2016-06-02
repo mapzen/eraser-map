@@ -11,7 +11,7 @@ import java.io.File
 public class TestAppSettings : AppSettings {
     override var distanceUnits: Router.DistanceUnits = Router.DistanceUnits.MILES
     override var isMockLocationEnabled: Boolean = false
-    override var mockLocation: Location = TestHelper.getTestLocation()
+    override var mockLocation: Location = TestHelper.getTestAndroidLocation()
     override var isMockRouteEnabled: Boolean = false
     override var mockRoute: File = File("lost.gpx")
     override var isTileDebugEnabled: Boolean = false

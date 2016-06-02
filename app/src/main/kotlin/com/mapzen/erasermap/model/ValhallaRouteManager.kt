@@ -2,6 +2,7 @@ package com.mapzen.erasermap.model
 
 import android.location.Location
 import com.mapzen.erasermap.BuildConfig
+import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.valhalla.Route
@@ -13,7 +14,7 @@ import retrofit.RestAdapter
 public class ValhallaRouteManager(val settings: AppSettings,
         val routerFactory: RouterFactory) : RouteManager {
     override var apiKey: String = ""
-    override var origin: Location? = null
+    override var origin: ValhallaLocation? = null
     override var destination: Feature? = null
     override var type: Router.Type = Router.Type.DRIVING
     override var reverse: Boolean = false
@@ -35,7 +36,7 @@ public class ValhallaRouteManager(val settings: AppSettings,
     private fun fetchForwardRoute(callback: RouteCallback) {
         val location = origin
         val simpleFeature = SimpleFeature.fromFeature(destination)
-        if (location is Location) {
+        if (location is ValhallaLocation) {
             val start: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
             val dest: DoubleArray = doubleArrayOf(simpleFeature.lat(), simpleFeature.lng())
             val units: Router.DistanceUnits = settings.distanceUnits
@@ -66,7 +67,7 @@ public class ValhallaRouteManager(val settings: AppSettings,
     private fun fetchReverseRoute(callback: RouteCallback) {
         val location = origin
         val simpleFeature = SimpleFeature.fromFeature(destination)
-        if (location is Location) {
+        if (location is ValhallaLocation) {
             val start: DoubleArray = doubleArrayOf(simpleFeature.lat(), simpleFeature.lng())
             val dest: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
             val units: Router.DistanceUnits = settings.distanceUnits

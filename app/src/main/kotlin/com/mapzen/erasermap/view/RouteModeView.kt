@@ -19,11 +19,13 @@ import com.mapzen.android.model.EaseType
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AppSettings
+import com.mapzen.erasermap.model.LocationConverter
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.presenter.RoutePresenter
 import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.erasermap.util.NotificationCreator
 import com.mapzen.helpers.RouteEngine
+import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
@@ -87,6 +89,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     var notificationCreator: NotificationCreator? = null
     @Inject lateinit var routePresenter: RoutePresenter
     @Inject lateinit var settings: AppSettings
+    @Inject lateinit var converter: LocationConverter
 
     private var previousScrollState: Int = ViewPager.SCROLL_STATE_IDLE
     private var userScrollChange: Boolean = false
@@ -219,7 +222,8 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
 
     override fun onLocationChanged(location: Location) {
         if (route != null) {
-            routePresenter.onLocationChanged(location)
+            val mapzenLocation = converter.mapzenLocation(location)
+            routePresenter.onLocationChanged(mapzenLocation)
         }
     }
 
@@ -241,19 +245,19 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         return resumeButton.visibility == View.GONE
     }
 
-    override fun showRouteIcon(location: Location) {
+    override fun showRouteIcon(location: ValhallaLocation) {
         mapzenMap?.clearRouteLocationMarker()
         mapzenMap?.drawRouteLocationMarker(LngLat(location.longitude, location.latitude))
     }
 
     override fun centerMapOnCurrentLocation() {
         val location = routePresenter.currentSnapLocation
-        if (location is Location) {
+        if (location is ValhallaLocation) {
             centerMapOnLocation(location)
         }
     }
 
-    override fun centerMapOnLocation(location: Location) {
+    override fun centerMapOnLocation(location: ValhallaLocation) {
         routePresenter.currentSnapLocation = location
         // If the user isnt making the resume button show by scrolling through
         // instruction pager, then they are viewing map at custom view/position
@@ -304,7 +308,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         }
     }
 
-    override fun updateSnapLocation(location: Location) {
+    override fun updateSnapLocation(location: ValhallaLocation) {
         routePresenter.onUpdateSnapLocation(location)
     }
 
@@ -385,7 +389,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         playFinalVerbalInstruction()
 
         val location = route?.getGeometry()?.get(route?.getGeometry()?.size?.minus(1) ?: 0)
-        if (location is Location) {
+        if (location is ValhallaLocation) {
             centerMapOnLocation(location)
             showRouteIcon(location)
         }
@@ -397,12 +401,12 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         if (finalInstruction is Instruction) voiceNavigationController?.playPre(finalInstruction)
     }
 
-    override fun showReroute(location: Location) {
+    override fun showReroute(location: ValhallaLocation) {
         setAdapterRerouting(ReroutingAdapter(context))
         mainPresenter?.onReroute(location)
     }
 
-    private fun getBearingInRadians(location: Location): Float {
+    private fun getBearingInRadians(location: ValhallaLocation): Float {
         return Math.toRadians(360 - location.bearing.toDouble()).toFloat()
     }
 
@@ -437,7 +441,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
 
     private fun initStartLocation() {
         val startingLocation = route?.getRouteInstructions()?.get(0)?.location
-        if (startingLocation is Location) {
+        if (startingLocation is ValhallaLocation) {
             centerMapOnLocation(startingLocation)
             showRouteIcon(startingLocation)
         }
@@ -457,9 +461,9 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
     }
 
     fun drawRoute(route: Route) {
-        val geometry: ArrayList<Location>? = route.getGeometry()
+        val geometry: ArrayList<ValhallaLocation>? = route.getGeometry()
         val mapGeometry: ArrayList<LngLat> = ArrayList()
-        if (geometry is ArrayList<Location>) {
+        if (geometry is ArrayList<ValhallaLocation>) {
             for (location in geometry) {
                 mapGeometry.add(LngLat(location.longitude, location.latitude))
             }
