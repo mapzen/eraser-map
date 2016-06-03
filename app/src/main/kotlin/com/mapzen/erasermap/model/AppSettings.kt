@@ -3,12 +3,12 @@ package com.mapzen.erasermap.model
 import android.content.Context
 import android.location.Location
 import com.mapzen.android.MapzenMap
+import com.mapzen.android.MapzenRouter
 import com.mapzen.pelias.SavedSearch
-import com.mapzen.valhalla.Router
 import java.io.File
 
 interface AppSettings {
-    var distanceUnits: Router.DistanceUnits
+    var distanceUnits: MapzenRouter.DistanceUnits
     var isMockLocationEnabled: Boolean
     var mockLocation: Location
     var isMockRouteEnabled: Boolean

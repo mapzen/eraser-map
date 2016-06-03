@@ -1,7 +1,8 @@
 package com.mapzen.erasermap.model
 
-import com.mapzen.valhalla.Router
+import android.content.Context
+import com.mapzen.android.MapzenRouter
 
 interface RouterFactory {
-    public fun getRouter(): Router
+    public fun getRouter(context: Context): MapzenRouter
 }
