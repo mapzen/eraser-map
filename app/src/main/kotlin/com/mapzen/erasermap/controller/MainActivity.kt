@@ -1280,6 +1280,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     permissionManager.grantPermissions()
                     checkPermissionAndEnableLocation()
+                    val findMe = mapView.findViewById(R.id.mz_find_me);
+                    findMe.callOnClick();
                 }
             }
         }
