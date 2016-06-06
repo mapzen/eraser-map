@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.model
 
 import android.content.Context
+import android.util.Log
 import com.mapzen.android.MapzenRouter
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.model.ValhallaLocation
@@ -82,16 +83,20 @@ public class ValhallaRouteManager(val settings: AppSettings,
     }
 
     private fun getInitializedRouter(type: Router.Type): MapzenRouter {
-        val endpoint = BuildConfig.ROUTE_BASE_URL ?: ValhallaRouter.DEFAULT_URL
+        val endpoint = BuildConfig.ROUTE_BASE_URL ?: null
         val logLevel = if (BuildConfig.DEBUG) RestAdapter.LogLevel.FULL else
             RestAdapter.LogLevel.NONE
-        routerFactory.getRouter(context).router
-                .setApiKey(apiKey)
-                .setEndpoint(endpoint)
-                .setLogLevel(logLevel)
-                .setDntEnabled(true)
+        var httpHandler: ValhallaHttpHandler?
+        if  (endpoint != null) {
+            httpHandler = ValhallaHttpHandler(apiKey, endpoint, logLevel)
+        } else {
+            httpHandler = ValhallaHttpHandler(apiKey, logLevel)
+        }
+
         val router = routerFactory.getRouter(context)
-            when(type) {
+        router.router.setHttpHandler(httpHandler)
+
+        when(type) {
             Router.Type.DRIVING -> return router.setDriving()
             Router.Type.WALKING -> return router.setWalking()
             Router.Type.BIKING -> return router.setBiking()

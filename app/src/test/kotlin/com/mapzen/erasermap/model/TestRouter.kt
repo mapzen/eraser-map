@@ -2,10 +2,7 @@ package com.mapzen.erasermap.model
 
 import android.content.Context
 import com.mapzen.android.MapzenRouter
-import com.mapzen.valhalla.JSON
 import com.mapzen.valhalla.RouteCallback
-import com.mapzen.valhalla.Router
-import retrofit.RestAdapter
 import java.util.ArrayList
 
 public class TestRouter(context: Context) : MapzenRouter(context) {
@@ -22,10 +19,6 @@ public class TestRouter(context: Context) : MapzenRouter(context) {
 
     override fun fetch() {
         isFetching = true
-    }
-
-    override fun setApiKey(key: String): MapzenRouter {
-        return this
     }
 
     override fun setBiking(): MapzenRouter {
