@@ -34,7 +34,8 @@ class SearchResultsAdapter(val context: Context, val features: List<Feature>,
         val title = view.findViewById(R.id.title) as TextView
         val address = view.findViewById(R.id.address) as TextView
         val start = view.findViewById(R.id.preview) as ImageButton
-        if (confidenceHandler.useRawLatLng(simpleFeature.confidence())) {
+        if (confidenceHandler.useRawLatLng(simpleFeature.confidence())
+            || simpleFeature.name().isBlank()) {
             title.text = context.getString(R.string.dropped_pin)
         } else {
             title.text = simpleFeature.name()
