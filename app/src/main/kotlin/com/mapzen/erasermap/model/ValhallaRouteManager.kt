@@ -88,10 +88,11 @@ public class ValhallaRouteManager(val settings: AppSettings,
             RestAdapter.LogLevel.NONE
         var httpHandler: ValhallaHttpHandler?
         if  (endpoint != null) {
-            httpHandler = ValhallaHttpHandler(apiKey, endpoint, logLevel)
+            httpHandler = ValhallaHttpHandler(endpoint, logLevel)
         } else {
-            httpHandler = ValhallaHttpHandler(apiKey, logLevel)
+            httpHandler = ValhallaHttpHandler(logLevel)
         }
+        httpHandler.setApiKey(apiKey);
 
         val router = routerFactory.getRouter(context)
         router.router.setHttpHandler(httpHandler)

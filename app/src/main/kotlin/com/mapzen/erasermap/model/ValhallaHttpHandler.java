@@ -1,25 +1,24 @@
 package com.mapzen.erasermap.model;
 
+import com.mapzen.android.TurnByTurnHttpHandler;
 import com.mapzen.valhalla.HttpHandler;
 
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 
-public class ValhallaHttpHandler extends HttpHandler {
+public class ValhallaHttpHandler extends TurnByTurnHttpHandler {
 
-  public ValhallaHttpHandler(String apiKey) {
-    super(apiKey);
+  public ValhallaHttpHandler(String endpoint, RestAdapter.LogLevel logLevel) {
+    configure(endpoint, logLevel);
   }
 
-  public ValhallaHttpHandler(String apiKey, RestAdapter.LogLevel logLevel) {
-    super(apiKey, logLevel);
+  public ValhallaHttpHandler(RestAdapter.LogLevel logLevel) {
+    configure(DEFAULT_URL, logLevel);
   }
 
-  public ValhallaHttpHandler(String apiKey, String endpoint, RestAdapter.LogLevel logLevel) {
-    super(apiKey, endpoint, logLevel);
-  }
-
-  protected void addHeadersForRequest(RequestInterceptor.RequestFacade requestFacade) {
+  @Override
+  protected void onRequest(RequestInterceptor.RequestFacade requestFacade) {
+    super.onRequest(requestFacade);
     requestFacade.addHeader(Http.HEADER_DNT, Http.VALUE_HEADER_DNT);
   }
 }
