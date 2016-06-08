@@ -69,7 +69,7 @@ public class AndroidModule {
 
     @Provides @Singleton RouteManager provideRouteManager(AppSettings settings, ApiKeys apiKeys) {
         final ValhallaRouteManager manager = new ValhallaRouteManager(settings,
-                new ValhallaRouterFactory());
+                new ValhallaRouterFactory(), application.getApplicationContext());
         manager.setApiKey(apiKeys.getRoutingKey());
         return manager;
     }

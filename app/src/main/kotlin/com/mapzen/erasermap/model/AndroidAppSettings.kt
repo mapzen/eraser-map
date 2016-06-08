@@ -4,6 +4,7 @@ import android.content.Context
 import android.location.Location
 import android.preference.PreferenceManager
 import com.mapzen.android.MapzenMap
+import com.mapzen.android.MapzenRouter
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.pelias.SavedSearch
@@ -38,15 +39,15 @@ class AndroidAppSettings(val application: EraserMapApplication) : AppSettings {
     /**
      * Routing distance units setting.
      */
-    override var distanceUnits: Router.DistanceUnits
+    override var distanceUnits: MapzenRouter.DistanceUnits
         get() {
             val value = prefs.getString(KEY_DISTANCE_UNITS, null)
             when (value) {
-                Router.DistanceUnits.MILES.toString() -> return Router.DistanceUnits.MILES
-                Router.DistanceUnits.KILOMETERS.toString() -> return Router.DistanceUnits.KILOMETERS
+                Router.DistanceUnits.MILES.toString() -> return MapzenRouter.DistanceUnits.MILES
+                Router.DistanceUnits.KILOMETERS.toString() -> return MapzenRouter.DistanceUnits.KILOMETERS
             }
 
-            return Router.DistanceUnits.KILOMETERS
+            return MapzenRouter.DistanceUnits.KILOMETERS
         }
         set(value) {
             prefs.edit().putString(KEY_DISTANCE_UNITS, value.toString()).commit()
@@ -151,9 +152,9 @@ class AndroidAppSettings(val application: EraserMapApplication) : AppSettings {
         if (distanceUnitsPref == null) {
             val locale = Locale.getDefault()
             if (locale == Locale.US || locale == Locale.UK) {
-                this.distanceUnits = Router.DistanceUnits.MILES
+                this.distanceUnits = MapzenRouter.DistanceUnits.MILES
             } else {
-                this.distanceUnits = Router.DistanceUnits.KILOMETERS
+                this.distanceUnits = MapzenRouter.DistanceUnits.KILOMETERS
             }
         }
     }

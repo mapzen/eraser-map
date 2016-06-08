@@ -1,11 +1,19 @@
 package com.mapzen.erasermap.model
 
-import com.mapzen.valhalla.Router
+import android.content.Context
+import com.mapzen.android.MapzenRouter
 
 public class TestRouterFactory : RouterFactory {
-    val router = TestRouter()
 
-    override fun getRouter(): Router {
-        return router
+    companion object {
+        var router: TestRouter? = null
+    }
+
+    override fun getRouter(context: Context): MapzenRouter {
+        if (router == null) {
+            router = TestRouter(context)
+        }
+        return router as MapzenRouter
+
     }
 }

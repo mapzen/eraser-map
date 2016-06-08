@@ -1,10 +1,10 @@
 package com.mapzen.erasermap.model
 
-import com.mapzen.valhalla.Router
-import com.mapzen.valhalla.ValhallaRouter
+import android.content.Context
+import com.mapzen.android.MapzenRouter
 
 public class ValhallaRouterFactory : RouterFactory {
-    override fun getRouter(): Router {
-        return ValhallaRouter()
+    override fun getRouter(context: Context): MapzenRouter {
+        return MapzenRouter(context)
     }
 }

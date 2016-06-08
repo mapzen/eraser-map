@@ -1,6 +1,8 @@
 package com.mapzen.erasermap.model
 
-import android.location.Location
+import android.content.Context
+import android.util.Log
+import com.mapzen.android.MapzenRouter
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.SimpleFeature
@@ -12,7 +14,7 @@ import com.mapzen.valhalla.ValhallaRouter
 import retrofit.RestAdapter
 
 public class ValhallaRouteManager(val settings: AppSettings,
-        val routerFactory: RouterFactory) : RouteManager {
+        val routerFactory: RouterFactory, val context: Context) : RouteManager {
     override var apiKey: String = ""
     override var origin: ValhallaLocation? = null
     override var destination: Feature? = null
@@ -39,7 +41,7 @@ public class ValhallaRouteManager(val settings: AppSettings,
         if (location is ValhallaLocation) {
             val start: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
             val dest: DoubleArray = doubleArrayOf(simpleFeature.lat(), simpleFeature.lng())
-            val units: Router.DistanceUnits = settings.distanceUnits
+            val units: MapzenRouter.DistanceUnits = settings.distanceUnits
             var name: String? = null
 
             if (!simpleFeature.isAddress) {
@@ -70,7 +72,7 @@ public class ValhallaRouteManager(val settings: AppSettings,
         if (location is ValhallaLocation) {
             val start: DoubleArray = doubleArrayOf(simpleFeature.lat(), simpleFeature.lng())
             val dest: DoubleArray = doubleArrayOf(location.latitude, location.longitude)
-            val units: Router.DistanceUnits = settings.distanceUnits
+            val units: MapzenRouter.DistanceUnits = settings.distanceUnits
             getInitializedRouter(type)
                     .setLocation(start)
                     .setLocation(dest)
@@ -80,15 +82,21 @@ public class ValhallaRouteManager(val settings: AppSettings,
         }
     }
 
-    private fun getInitializedRouter(type: Router.Type): Router {
-        val endpoint = BuildConfig.ROUTE_BASE_URL ?: ValhallaRouter.DEFAULT_URL
+    private fun getInitializedRouter(type: Router.Type): MapzenRouter {
+        val endpoint = BuildConfig.ROUTE_BASE_URL ?: null
         val logLevel = if (BuildConfig.DEBUG) RestAdapter.LogLevel.FULL else
             RestAdapter.LogLevel.NONE
-        val router = routerFactory.getRouter()
-                .setApiKey(apiKey)
-                .setEndpoint(endpoint)
-                .setLogLevel(logLevel)
-                .setDntEnabled(true)
+        var httpHandler: ValhallaHttpHandler?
+        if  (endpoint != null) {
+            httpHandler = ValhallaHttpHandler(endpoint, logLevel)
+        } else {
+            httpHandler = ValhallaHttpHandler(logLevel)
+        }
+        httpHandler.setApiKey(apiKey);
+
+        val router = routerFactory.getRouter(context)
+        router.router.setHttpHandler(httpHandler)
+
         when(type) {
             Router.Type.DRIVING -> return router.setDriving()
             Router.Type.WALKING -> return router.setWalking()

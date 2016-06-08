@@ -1,20 +1,18 @@
 package com.mapzen.erasermap.model
 
-import com.mapzen.valhalla.JSON
+import android.content.Context
+import com.mapzen.android.MapzenRouter
 import com.mapzen.valhalla.RouteCallback
-import com.mapzen.valhalla.Router
-import retrofit.RestAdapter
 import java.util.ArrayList
 
-public class TestRouter : Router {
+public class TestRouter(context: Context) : MapzenRouter(context) {
     public var locations: ArrayList<DoubleArray> = ArrayList()
     public var isFetching: Boolean = false
-    public var units: Router.DistanceUnits = Router.DistanceUnits.MILES
+    public var units: MapzenRouter.DistanceUnits = MapzenRouter.DistanceUnits.MILES
     public var bearing: Float = 0f
     public var name: String? = null
-    public var logLevel: RestAdapter.LogLevel = RestAdapter.LogLevel.BASIC
 
-    override fun clearLocations(): Router {
+    override fun clearLocations(): MapzenRouter {
         locations.clear()
         return this
     }
@@ -23,71 +21,42 @@ public class TestRouter : Router {
         isFetching = true
     }
 
-    override fun getEndpoint(): String {
-        return ""
-    }
-
-    override fun getJSONRequest(): JSON {
-        return JSON()
-    }
-
-    override fun setApiKey(key: String): Router {
+    override fun setBiking(): MapzenRouter {
         return this
     }
 
-    override fun setBiking(): Router {
+    override fun setCallback(callback: RouteCallback): MapzenRouter {
         return this
     }
 
-    override fun setCallback(callback: RouteCallback): Router {
+    override fun setDriving(): MapzenRouter {
         return this
     }
 
-    override fun setDriving(): Router {
-        return this
-    }
-
-    override fun setEndpoint(url: String): Router {
-        return this
-    }
-
-    override fun setLocation(point: DoubleArray): Router {
+    override fun setLocation(point: DoubleArray): MapzenRouter {
         locations.add(point)
         return this
     }
 
-    override fun setLocation(point: DoubleArray, heading: Float): Router {
+    override fun setLocation(point: DoubleArray, heading: Float): MapzenRouter {
         locations.add(point)
         bearing = heading
         return this
     }
 
     override fun setLocation(point: DoubleArray, name: String?, street: String?, city: String?,
-            state: String?): Router {
+            state: String?): MapzenRouter {
         this.name = name
         locations.add(point)
         return this
     }
 
-    override fun setWalking(): Router {
+    override fun setWalking(): MapzenRouter {
         return this
     }
 
-    override fun setDistanceUnits(units: Router.DistanceUnits): Router {
+    override fun setDistanceUnits(units: MapzenRouter.DistanceUnits): MapzenRouter {
         this.units = units
-        return this
-    }
-
-    override fun setLogLevel(logLevel: RestAdapter.LogLevel): Router {
-        this.logLevel = logLevel
-        return this
-    }
-
-    override fun isDntEnabled(): Boolean {
-        return true
-    }
-
-    override fun setDntEnabled(enabled: Boolean): Router {
         return this
     }
 }
