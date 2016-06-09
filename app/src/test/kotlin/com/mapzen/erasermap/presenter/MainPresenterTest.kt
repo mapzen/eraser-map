@@ -68,6 +68,15 @@ class MainPresenterTest {
         assertThat(mainController.searchResults).isEqualTo(features)
     }
 
+    @Test fun onSearchResultsAvailable_shouldDeactivateFindMeTracking() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.features = features
+        mainController.isFindMeTrackingEnabled = true
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.isFindMeTrackingEnabled).isFalse()
+    }
+
     @Test fun onReverseGeocodeResultsAvailable_shouldShowSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()

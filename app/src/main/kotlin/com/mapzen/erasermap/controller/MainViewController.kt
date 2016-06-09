@@ -1,6 +1,5 @@
 package com.mapzen.erasermap.controller
 
-import android.location.Location
 import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
@@ -51,4 +50,5 @@ interface MainViewController {
     fun checkPermissionAndEnableLocation()
     fun executeSearch(query: String)
     fun onCloseAllSearchResults()
+    fun deactivateFindMeTracking()
 }

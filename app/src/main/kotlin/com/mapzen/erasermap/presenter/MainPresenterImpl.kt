@@ -73,6 +73,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         this.searchResults = result
         mainViewController?.showSearchResults(result?.features)
         mainViewController?.hideProgress()
+        mainViewController?.deactivateFindMeTracking()
         val featureCount = result?.features?.size
         if (featureCount != null && featureCount > 1) {
             mainViewController?.showActionViewAll()
