@@ -212,7 +212,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         mainViewController?.showAllSearchResults(searchResults?.features)
     }
 
-    @Subscribe public fun onRoutePreviewEvent(event: RoutePreviewEvent) {
+    @Subscribe fun onRoutePreviewEvent(event: RoutePreviewEvent) {
         vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
         if (reverseGeo) {
             restoreReverseGeoOnBack = true
@@ -222,10 +222,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         mainViewController?.collapseSearchView()
         mainViewController?.hideSearchResults()
         mainViewController?.hideReverseGeolocateResult()
+        mainViewController?.deactivateFindMeTracking()
         generateRoutePreview()
     }
 
-    @Subscribe public fun onRouteCancelEvent(event: RouteCancelEvent) {
+    @Subscribe fun onRouteCancelEvent(event: RouteCancelEvent) {
         mainViewController?.onBackPressed()
     }
 
@@ -323,7 +324,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         mapzenLocation.startLocationUpdates()
     }
 
-    @Subscribe public fun onLocationChangeEvent(event: LocationChangeEvent) {
+    @Subscribe fun onLocationChangeEvent(event: LocationChangeEvent) {
         if (routingEnabled) {
             routeViewController?.onLocationChanged(event.location)
         }

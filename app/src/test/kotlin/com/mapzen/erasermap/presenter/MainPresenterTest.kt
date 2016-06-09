@@ -269,6 +269,12 @@ class MainPresenterTest {
         assertThat(presenter.onReverseGeoRequested(0f, 0f)).isFalse()
     }
 
+    @Test fun onRoutePreviewEvent_shouldDeactivateFindMeTracking() {
+        mainController.isFindMeTrackingEnabled = true
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        assertThat(mainController.isFindMeTrackingEnabled).isFalse()
+    }
+
     @Test fun onBackPressed_shouldHideRoutePreview() {
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
         presenter.onBackPressed()
