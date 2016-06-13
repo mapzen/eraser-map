@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Point
-import android.location.Location
 import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
@@ -1301,4 +1300,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         }
     }
 
+    override fun deactivateFindMeTracking() {
+        mapView.findMe.isActivated = false
+    }
 }

@@ -68,6 +68,15 @@ class MainPresenterTest {
         assertThat(mainController.searchResults).isEqualTo(features)
     }
 
+    @Test fun onSearchResultsAvailable_shouldDeactivateFindMeTracking() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.features = features
+        mainController.isFindMeTrackingEnabled = true
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.isFindMeTrackingEnabled).isFalse()
+    }
+
     @Test fun onReverseGeocodeResultsAvailable_shouldShowSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
@@ -258,6 +267,12 @@ class MainPresenterTest {
         presenter.onReverseGeoRequested(0f, 0f)
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
         assertThat(presenter.onReverseGeoRequested(0f, 0f)).isFalse()
+    }
+
+    @Test fun onRoutePreviewEvent_shouldDeactivateFindMeTracking() {
+        mainController.isFindMeTrackingEnabled = true
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        assertThat(mainController.isFindMeTrackingEnabled).isFalse()
     }
 
     @Test fun onBackPressed_shouldHideRoutePreview() {

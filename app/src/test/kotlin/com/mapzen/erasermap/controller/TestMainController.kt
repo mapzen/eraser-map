@@ -6,35 +6,36 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 
-public class TestMainController : MainViewController {
+class TestMainController : MainViewController {
     override fun onCloseAllSearchResults() {
         throw UnsupportedOperationException()
     }
 
-    public var searchResults: List<Feature>? = null
-    public var reverseGeoCodeResults: List<Feature>? = null
-    public var lngLat: LngLat? = null
-    public var zoom: Float = 0f
-    public var tilt: Float = 0f
-    public var muted: Boolean = false
-    public var rotation: Float = 0f
-    public var routeLine: Route? = null
-    public var queryText: String = ""
-    public var reverseGeolocatePoint: PointF? = null
-    public var placeSearchPoint: PointF? = null
+    var searchResults: List<Feature>? = null
+    var reverseGeoCodeResults: List<Feature>? = null
+    var lngLat: LngLat? = null
+    var zoom: Float = 0f
+    var tilt: Float = 0f
+    var muted: Boolean = false
+    var rotation: Float = 0f
+    var routeLine: Route? = null
+    var queryText: String = ""
+    var reverseGeolocatePoint: PointF? = null
+    var placeSearchPoint: PointF? = null
 
-    public var isProgressVisible: Boolean = false
-    public var isViewAllVisible: Boolean = false
-    public var isSearchVisible: Boolean = false
-    public var isRoutePreviewVisible: Boolean = false
-    public var isDirectionListVisible: Boolean = false
-    public var isRoutingModeVisible: Boolean = false
-    public var isCenteredOnCurrentFeature: Boolean = false
-    public var isCenteredOnTappedFeature: Boolean = false
-    public var isReverseGeocodeVisible: Boolean = false
-    public var isPlaceResultOverridden: Boolean = false
-    public var isSettingsVisible: Boolean = false
-    public var popBackStack: Boolean = false
+    var isProgressVisible: Boolean = false
+    var isViewAllVisible: Boolean = false
+    var isSearchVisible: Boolean = false
+    var isRoutePreviewVisible: Boolean = false
+    var isDirectionListVisible: Boolean = false
+    var isRoutingModeVisible: Boolean = false
+    var isCenteredOnCurrentFeature: Boolean = false
+    var isCenteredOnTappedFeature: Boolean = false
+    var isReverseGeocodeVisible: Boolean = false
+    var isPlaceResultOverridden: Boolean = false
+    var isSettingsVisible: Boolean = false
+    var isFindMeTrackingEnabled: Boolean = false
+    var popBackStack: Boolean = false
 
     override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
@@ -206,4 +207,7 @@ public class TestMainController : MainViewController {
         queryText = query
     }
 
+    override fun deactivateFindMeTracking() {
+        isFindMeTrackingEnabled = false
+    }
 }
