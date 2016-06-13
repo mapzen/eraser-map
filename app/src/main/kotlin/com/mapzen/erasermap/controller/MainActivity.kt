@@ -129,6 +129,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     val byCar: RadioButton by lazy { findViewById(R.id.by_car) as RadioButton }
     val byBike: RadioButton by lazy { findViewById(R.id.by_bike) as RadioButton }
     val byFoot: RadioButton by lazy { findViewById(R.id.by_foot) as RadioButton }
+    val byTransit: RadioButton by lazy { findViewById(R.id.by_transit) as RadioButton }
     val routePreviewCompass: CompassView by lazy { findViewById(R.id.route_preview_compass_view) as CompassView }
     val routeTopContainer: RelativeLayout by lazy { routePreviewView.findViewById(R.id.main_content) as RelativeLayout }
     val routeBtmContainer: LinearLayout by lazy { routePreviewView.findViewById(R.id.bottom_content) as LinearLayout }
@@ -978,6 +979,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             if (isChecked) {
                 routeManager.type = Router.Type.DRIVING
                 route()
+                startNavigationButton.visibility = View.VISIBLE
             }
         }
 
@@ -985,6 +987,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             if (isChecked) {
                 routeManager.type = Router.Type.BIKING
                 route()
+                startNavigationButton.visibility = View.VISIBLE
             }
         }
 
@@ -992,6 +995,15 @@ class MainActivity : AppCompatActivity(), MainViewController,
             if (isChecked) {
                 routeManager.type = Router.Type.WALKING
                 route()
+                startNavigationButton.visibility = View.VISIBLE
+            }
+        }
+
+        byTransit.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                routeManager.type = Router.Type.MULTIMODAL
+                route()
+                startNavigationButton.visibility = View.GONE
             }
         }
     }

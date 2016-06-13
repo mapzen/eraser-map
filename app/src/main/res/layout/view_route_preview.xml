@@ -104,6 +104,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
+
+                <RadioButton
+                    android:id="@+id/by_transit"
+                    android:background="@drawable/radio_button_transit"
+                    android:button="@android:color/transparent"
+                    android:gravity="center_horizontal"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
             </RadioGroup>
 
             <LinearLayout
