@@ -36,6 +36,7 @@ class TestMainController : MainViewController {
     var isSettingsVisible: Boolean = false
     var isFindMeTrackingEnabled: Boolean = false
     var popBackStack: Boolean = false
+    var routeRequestCanceled: Boolean = false
 
     override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
@@ -209,5 +210,9 @@ class TestMainController : MainViewController {
 
     override fun deactivateFindMeTracking() {
         isFindMeTrackingEnabled = false
+    }
+
+    override fun cancelRouteRequest() {
+        routeRequestCanceled = true
     }
 }

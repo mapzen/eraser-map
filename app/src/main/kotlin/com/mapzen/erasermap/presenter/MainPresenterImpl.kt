@@ -276,6 +276,9 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
             restoreReverseGeoOnBack = false
             reverseGeo = true
         }
+
+        mainViewController?.hideProgress()
+        mainViewController?.cancelRouteRequest()
         mainViewController?.hideRoutePreview()
         mainViewController?.clearRoute()
         if (searchResults != null) {
@@ -483,5 +486,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         mainViewController?.hideSettingsBtn()
         mainViewController?.hideSearchResults()
         mainViewController?.executeSearch(queryString)
+    }
+
+    override fun onRouteRequest(callback: RouteCallback) {
+        mainViewController?.showProgress()
+        mainViewController?.cancelRouteRequest()
+        routeManager.fetchRoute(callback)
     }
 }

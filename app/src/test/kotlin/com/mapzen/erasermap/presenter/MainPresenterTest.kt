@@ -11,6 +11,7 @@ import com.mapzen.erasermap.model.LocationConverter
 import com.mapzen.erasermap.model.TestAppSettings
 import com.mapzen.erasermap.model.TestMapzenLocation
 import com.mapzen.erasermap.model.TestRouteManager
+import com.mapzen.erasermap.model.ValhallaRouteManagerTest.TestRouteCallback
 import com.mapzen.erasermap.model.event.LocationChangeEvent
 import com.mapzen.erasermap.model.event.RouteCancelEvent
 import com.mapzen.erasermap.model.event.RouteEvent
@@ -397,6 +398,20 @@ class MainPresenterTest {
         assertThat(vsm.viewState).isEqualTo(DEFAULT)
     }
 
+    @Test fun onBackPressed_shouldHideProgressInStateRoutePreview() {
+        vsm.viewState = ROUTE_PREVIEW
+        mainController.isProgressVisible = true
+        presenter.onBackPressed()
+        assertThat(mainController.isProgressVisible).isFalse()
+    }
+
+    @Test fun onBackPressed_shouldCancelRouteRequestInStateRoutePreview() {
+        vsm.viewState = ROUTE_PREVIEW
+        mainController.routeRequestCanceled = false
+        presenter.onBackPressed()
+        assertThat(mainController.routeRequestCanceled).isTrue()
+    }
+
     @Test fun configureMapzenMap_shouldSetMapLocationFirstTimeInvoked() {
         presenter.configureMapzenMap()
         assertThat(mainController.lngLat).isNotNull()
@@ -573,6 +588,23 @@ class MainPresenterTest {
         `when`(iqp.parse(input)).thenReturn(IntentQuery("test_query", expected))
         presenter.onIntentQueryReceived(input)
         assertThat(mainController.lngLat).isEqualTo(expected)
+    }
+
+    @Test fun onRouteRequest_shouldShowProgress() {
+        mainController.isProgressVisible = false
+        presenter.onRouteRequest(TestRouteCallback())
+        assertThat(mainController.isProgressVisible).isTrue()
+    }
+
+    @Test fun onRouteRequest_shouldCancelRequest() {
+        mainController.routeRequestCanceled = false
+        presenter.onRouteRequest(TestRouteCallback())
+        assertThat(mainController.routeRequestCanceled).isTrue()
+    }
+
+    @Test fun onRouteRequest_shouldFetchRoute() {
+        presenter.onRouteRequest(TestRouteCallback())
+        assertThat(routeManager.route).isNotNull()
     }
 
     class RouteEventSubscriber {

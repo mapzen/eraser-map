@@ -51,4 +51,5 @@ interface MainViewController {
     fun executeSearch(query: String)
     fun onCloseAllSearchResults()
     fun deactivateFindMeTracking()
+    fun cancelRouteRequest()
 }

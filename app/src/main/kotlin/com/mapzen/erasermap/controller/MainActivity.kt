@@ -79,7 +79,7 @@ import java.text.DecimalFormat
 import java.util.ArrayList
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
+class MainActivity : AppCompatActivity(), MainViewController,
         SearchViewController.OnSearchResultSelectedListener {
 
     companion object {
@@ -882,7 +882,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         routeModeView.clearRoute()
     }
 
-    override fun success(route: Route) {
+    private fun onRouteSuccess(route: Route) {
         routeManager.route = route
         routePreviewView.route = route
         runOnUiThread ({
@@ -978,7 +978,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         }
     }
 
-    override fun failure(statusCode: Int) {
+    private fun onRouteFailure(statusCode: Int) {
         runOnUiThread ({
             if (routeModeView.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
@@ -1006,8 +1006,14 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     }
 
     private fun route() {
-        showProgress()
-        routeManager.fetchRoute(this)
+        presenter.onRouteRequest(CancelableRouteCallback())
+    }
+
+    override fun cancelRouteRequest() {
+        val callback = routeManager.currentRequest
+        if (callback is CancelableRouteCallback) {
+            callback.isCanceled = true
+        }
     }
 
     private fun updateRoutePreview() {
@@ -1302,5 +1308,21 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     override fun deactivateFindMeTracking() {
         mapView.findMe.isActivated = false
+    }
+
+    inner class CancelableRouteCallback : RouteCallback {
+        var isCanceled: Boolean = false
+
+        override fun success(route: Route) {
+            if (!isCanceled) {
+                onRouteSuccess(route)
+            }
+        }
+
+        override fun failure(statusCode: Int) {
+            if (!isCanceled) {
+                onRouteFailure(statusCode)
+            }
+        }
     }
 }
