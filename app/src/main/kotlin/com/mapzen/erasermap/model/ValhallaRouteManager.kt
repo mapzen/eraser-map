@@ -1,7 +1,6 @@
 package com.mapzen.erasermap.model
 
 import android.content.Context
-import android.util.Log
 import com.mapzen.android.MapzenRouter
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.model.ValhallaLocation
@@ -10,10 +9,9 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
-import com.mapzen.valhalla.ValhallaRouter
 import retrofit.RestAdapter
 
-public class ValhallaRouteManager(val settings: AppSettings,
+class ValhallaRouteManager(val settings: AppSettings,
         val routerFactory: RouterFactory, val context: Context) : RouteManager {
     override var apiKey: String = ""
     override var origin: ValhallaLocation? = null
@@ -22,8 +20,10 @@ public class ValhallaRouteManager(val settings: AppSettings,
     override var reverse: Boolean = false
     override var route: Route? = null
     override var bearing: Float? = null
+    override var currentRequest: RouteCallback? = null
 
     override fun fetchRoute(callback: RouteCallback) {
+        currentRequest = callback
         if (reverse) {
             fetchReverseRoute(callback)
         } else {
@@ -86,7 +86,7 @@ public class ValhallaRouteManager(val settings: AppSettings,
         val endpoint = BuildConfig.ROUTE_BASE_URL ?: null
         val logLevel = if (BuildConfig.DEBUG) RestAdapter.LogLevel.FULL else
             RestAdapter.LogLevel.NONE
-        var httpHandler: ValhallaHttpHandler?
+        val httpHandler: ValhallaHttpHandler?
         if  (endpoint != null) {
             httpHandler = ValhallaHttpHandler(endpoint, logLevel)
         } else {

@@ -1,7 +1,7 @@
 package com.mapzen.erasermap.controller
 
 import android.graphics.PointF
-import com.mapzen.model.ValhallaLocation
+import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
@@ -36,6 +36,7 @@ class TestMainController : MainViewController {
     var isSettingsVisible: Boolean = false
     var isFindMeTrackingEnabled: Boolean = false
     var popBackStack: Boolean = false
+    var routeRequestCanceled: Boolean = false
 
     override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
@@ -91,8 +92,11 @@ class TestMainController : MainViewController {
         queryText = ""
     }
 
-    override fun showRoutePreview(location: ValhallaLocation, feature: Feature) {
+    override fun showRoutePreview(destination: SimpleFeature) {
         isRoutePreviewVisible = true
+    }
+
+    override fun route() {
     }
 
     override fun hideRoutePreview() {
@@ -209,5 +213,15 @@ class TestMainController : MainViewController {
 
     override fun deactivateFindMeTracking() {
         isFindMeTrackingEnabled = false
+    }
+
+    override fun cancelRouteRequest() {
+        routeRequestCanceled = true
+    }
+
+    override fun layoutAttributionAboveOptions() {
+    }
+
+    override fun layoutFindMeAboveOptions() {
     }
 }

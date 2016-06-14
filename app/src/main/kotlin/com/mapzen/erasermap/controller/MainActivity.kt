@@ -16,6 +16,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.View.TRANSLATION_Y
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Button
 import android.widget.ImageButton
@@ -74,12 +75,10 @@ import com.mapzen.valhalla.Router
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
-import java.math.RoundingMode
-import java.text.DecimalFormat
 import java.util.ArrayList
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
+class MainActivity : AppCompatActivity(), MainViewController,
         SearchViewController.OnSearchResultSelectedListener {
 
     companion object {
@@ -209,7 +208,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             permissionManager.grantPermissions()
         }
         presenter.onResume()
-        app?.onActivityResume()
+        app.onActivityResume()
         autoCompleteAdapter?.clear()
         autoCompleteAdapter?.notifyDataSetChanged()
         invalidateOptionsMenu()
@@ -222,7 +221,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     override public fun onPause() {
         super.onPause()
-        app?.onActivityPause()
+        app.onActivityPause()
         if (mapzenMap?.isMyLocationEnabled != null && mapzenMap?.isMyLocationEnabled as Boolean
                 && !presenter.routingEnabled) {
             enableLocation = true
@@ -234,7 +233,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         super.onStop()
         PreferenceManager.getDefaultSharedPreferences(this)
                 .edit()
-                .putString(SavedSearch.TAG, savedSearch?.serialize())
+                .putString(SavedSearch.TAG, savedSearch.serialize())
                 .commit()
     }
 
@@ -266,8 +265,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             override fun onSingleTapUp(x: Float, y: Float): Boolean = false
             override fun onSingleTapConfirmed(x: Float, y: Float): Boolean {
                 confidenceHandler.longPressed = false
-                var coords = mapzenMap?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
-                presenter?.reverseGeoLngLat = coords
+                val coords = mapzenMap?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
+                presenter.reverseGeoLngLat = coords
                 poiTapPoint = floatArrayOf(x, y)
                 return true
             }
@@ -355,7 +354,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
     override fun centerMapOnLocation(lngLat: LngLat, zoom: Float) {
         mapzenMap?.position = lngLat
         mapzenMap?.zoom = zoom
-        centerMap(lngLat)
     }
 
     override fun setMapTilt(radians: Float) {
@@ -609,7 +607,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         }
     }
 
-    private fun layoutAttributionAboveOptions() {
+    override fun layoutAttributionAboveOptions() {
         val layoutParams = baseAttributionParams()
         val optionsView = findViewById(R.id.options)
         optionsView?.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop,
@@ -630,7 +628,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         mapView.findMe.layoutParams = layoutParams
     }
 
-    private fun layoutFindMeAboveOptions() {
+    override fun layoutFindMeAboveOptions() {
         val layoutParams = baseFindMeParams()
         val optionsView = findViewById(R.id.options)
         optionsView?.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop,
@@ -829,49 +827,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         optionsMenu?.findItem(R.id.action_settings)?.setVisible(true)
     }
 
-    private fun centerMap(lngLat: LngLat) {
-        mapzenMap?.position = lngLat
-    }
-
-    override fun showRoutePreview(location: ValhallaLocation, feature: Feature) {
-        centerMap(LngLat(location.longitude, location.latitude));
-        layoutAttributionAboveOptions()
-        layoutFindMeAboveOptions()
-
-        routeManager.origin = location
-
-        if (location.hasBearing()) {
-            routeManager.bearing = location.bearing
-        } else {
-            routeManager.bearing = null
-        }
-
-        if (!confidenceHandler.useRawLatLng(feature.properties.confidence)) {
-            routePreviewView.destination = SimpleFeature.fromFeature(feature)
-            routeManager.destination = feature
-        } else {
-            val rawFeature = generateRawFeature()
-            routePreviewView.destination = SimpleFeature.fromFeature(rawFeature)
-            routeManager.destination = rawFeature
-        }
-        route()
-    }
-
-    private fun generateRawFeature(): Feature {
-        var rawFeature: Feature = Feature()
-        rawFeature.geometry = Geometry()
-        val coords = ArrayList<Double>()
-        coords.add(presenter?.reverseGeoLngLat?.longitude as Double)
-        coords.add(presenter?.reverseGeoLngLat?.latitude as Double)
-        rawFeature.geometry.coordinates = coords
-        val properties = Properties()
-        val formatter = DecimalFormat(".####")
-        formatter.roundingMode = RoundingMode.HALF_UP
-        val lng = formatter.format(presenter?.reverseGeoLngLat?.longitude as Double)
-        val lat = formatter.format(presenter?.reverseGeoLngLat?.latitude  as Double)
-        properties.name = "$lng, $lat"
-        rawFeature.properties = properties
-        return rawFeature
+    override fun showRoutePreview(destination: SimpleFeature) {
+        routePreviewView.destination = destination
     }
 
     override fun drawRoute(route: Route) {
@@ -882,7 +839,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         routeModeView.clearRoute()
     }
 
-    override fun success(route: Route) {
+    private fun onRouteSuccess(route: Route) {
         routeManager.route = route
         routePreviewView.route = route
         runOnUiThread ({
@@ -912,7 +869,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         // Determine the smallest axis-aligned box that contains the route longitude and latitude
         val start = route.first()
         val finish = route.last()
-        var routeBounds = AxisAlignedBoundingBox()
+        val routeBounds = AxisAlignedBoundingBox()
         routeBounds.center = PointD(start.longitude, start.latitude)
 
         for (p in route) {
@@ -937,7 +894,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         val zoomDelta = -Math.log(Math.max(scaleX, scaleY)) / Math.log(2.0)
 
         // Update map position and zoom
-        var map = mapzenMap
+        val map = mapzenMap
         if (map != null) {
             val z = map.zoom + zoomDelta.toFloat()
             map.zoom = z
@@ -978,7 +935,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         }
     }
 
-    override fun failure(statusCode: Int) {
+    private fun onRouteFailure(statusCode: Int) {
         runOnUiThread ({
             if (routeModeView.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
@@ -1005,9 +962,15 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         }
     }
 
-    private fun route() {
-        showProgress()
-        routeManager.fetchRoute(this)
+    override fun route() {
+        presenter.onRouteRequest(CancelableRouteCallback())
+    }
+
+    override fun cancelRouteRequest() {
+        val callback = routeManager.currentRequest
+        if (callback is CancelableRouteCallback) {
+            callback.isCanceled = true
+        }
     }
 
     private fun updateRoutePreview() {
@@ -1091,10 +1054,10 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         routeBtmContainer.visibility = View.VISIBLE
         distanceView.distanceInMeters = instructionDistances[0]
         destinationNameTextView.text = simpleFeature.name()
-        previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings, instructionTypes,
-                instructionDistances, routeManager.reverse)
-        val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, View.TRANSLATION_Y, -height)
-        val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, View.TRANSLATION_Y, 0f)
+        previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings,
+                instructionTypes, instructionDistances, routeManager.reverse)
+        val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, TRANSLATION_Y,-height)
+        val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, TRANSLATION_Y, 0f)
         val animations = AnimatorSet()
         animations.playTogether(topContainerAnimator, btmContainerAnimator)
         animations.duration = DIRECTION_LIST_ANIMATION_DURATION
@@ -1116,8 +1079,8 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         display.getSize(size);
         val height = size.y.toFloat();
 
-        val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, View.TRANSLATION_Y, 0f)
-        val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, View.TRANSLATION_Y, height)
+        val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, TRANSLATION_Y, 0f)
+        val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, TRANSLATION_Y, height)
         val animations = AnimatorSet()
         animations.playTogether(topContainerAnimator, btmContainerAnimator)
         animations.duration = DIRECTION_LIST_ANIMATION_DURATION
@@ -1141,7 +1104,7 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         // before MapzenMap#queueEvent
         setRoutingCamera()
         if (confidenceHandler.useRawLatLng(feature.properties.confidence)) {
-            val rawFeature = generateRawFeature()
+            val rawFeature = presenter.generateRawFeature()
             showRoutingMode(rawFeature)
             routeModeView.startRoute(rawFeature, routeManager.route)
         } else {
@@ -1192,11 +1155,6 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
         setDefaultCamera()
         checkPermissionAndEnableLocation()
         routeModeView.visibility = View.GONE
-        val location = routeManager.origin
-        val feature = routeManager.destination
-        if (location is ValhallaLocation && feature is Feature) {
-            showRoutePreview(location, feature)
-        }
         supportActionBar?.hide()
         routeModeView.route = null
         routeModeView.hideRouteIcon()
@@ -1210,9 +1168,9 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
             val pointX = poiTapPoint?.get(0)?.toDouble()
             val pointY = poiTapPoint?.get(1)?.toDouble()
             if (pointX != null && pointY != null) {
-                var coords = mapzenMap?.coordinatesAtScreenPosition(pointX, pointY)
-                var lng = coords?.longitude
-                var lat = coords?.latitude
+                val coords = mapzenMap?.coordinatesAtScreenPosition(pointX, pointY)
+                val lng = coords?.longitude
+                val lat = coords?.latitude
                 if (lng != null && lat!= null) {
                     coordinates.add(lng)
                     coordinates.add(lat)
@@ -1302,5 +1260,21 @@ class MainActivity : AppCompatActivity(), MainViewController, RouteCallback,
 
     override fun deactivateFindMeTracking() {
         mapView.findMe.isActivated = false
+    }
+
+    inner class CancelableRouteCallback : RouteCallback {
+        var isCanceled: Boolean = false
+
+        override fun success(route: Route) {
+            if (!isCanceled) {
+                onRouteSuccess(route)
+            }
+        }
+
+        override fun failure(statusCode: Int) {
+            if (!isCanceled) {
+                onRouteFailure(statusCode)
+            }
+        }
     }
 }

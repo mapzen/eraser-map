@@ -1,6 +1,5 @@
 package com.mapzen.erasermap.presenter
 
-import android.location.Location
 import com.mapzen.erasermap.controller.MainViewController
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.model.ValhallaLocation
@@ -8,8 +7,9 @@ import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.tangram.LngLat
+import com.mapzen.valhalla.RouteCallback
 
-public interface MainPresenter {
+interface MainPresenter {
     companion object {
         val LONG_MANEUVER_ZOOM: Float = 15f
         val DEFAULT_ZOOM: Float = 16f
@@ -17,38 +17,40 @@ public interface MainPresenter {
         val ROUTING_TILT: Float = 0.96f // 55°
     }
 
-    public var mainViewController: MainViewController?
-    public var routeViewController: RouteViewController?
-    public var currentSearchTerm: String?
-    public var currentFeature: Feature?
-    public var routingEnabled: Boolean
-    public var resultListVisible: Boolean
-    public var reverseGeo: Boolean
-    public var reverseGeoLngLat: LngLat?
+    var mainViewController: MainViewController?
+    var routeViewController: RouteViewController?
+    var currentSearchTerm: String?
+    var currentFeature: Feature?
+    var routingEnabled: Boolean
+    var resultListVisible: Boolean
+    var reverseGeo: Boolean
+    var reverseGeoLngLat: LngLat?
 
-    public fun onSearchResultsAvailable(result: Result?)
-    public fun onReverseGeocodeResultsAvailable(searchResults: Result?)
-    public fun onPlaceSearchResultsAvailable(searchResults: Result?)
-    public fun onSearchResultSelected(position: Int)
-    public fun onSearchResultTapped(position: Int)
-    public fun onExpandSearchView()
-    public fun onCollapseSearchView()
-    public fun onClickViewList()
-    public fun onClickStartNavigation()
-    public fun onQuerySubmit()
-    public fun onViewAllSearchResults()
-    public fun updateLocation()
-    public fun onBackPressed()
-    public fun onRestoreViewState()
-    public fun onResume()
-    public fun onMuteClick()
-    public fun onCompassClick()
-    public fun getPeliasLocationProvider(): PeliasLocationProvider
-    public fun onReroute(location: ValhallaLocation)
-    public fun onMapMotionEvent(): Boolean
-    public fun onReverseGeoRequested(screenX: Float?, screenY: Float?): Boolean
-    public fun onPlaceSearchRequested(gid: String): Boolean
-    public fun onExitNavigation()
-    public fun configureMapzenMap()
-    public fun onIntentQueryReceived(query: String?)
+    fun onSearchResultsAvailable(result: Result?)
+    fun onReverseGeocodeResultsAvailable(searchResults: Result?)
+    fun onPlaceSearchResultsAvailable(searchResults: Result?)
+    fun onSearchResultSelected(position: Int)
+    fun onSearchResultTapped(position: Int)
+    fun onExpandSearchView()
+    fun onCollapseSearchView()
+    fun onClickViewList()
+    fun onClickStartNavigation()
+    fun onQuerySubmit()
+    fun onViewAllSearchResults()
+    fun updateLocation()
+    fun onBackPressed()
+    fun onRestoreViewState()
+    fun onResume()
+    fun onMuteClick()
+    fun onCompassClick()
+    fun getPeliasLocationProvider(): PeliasLocationProvider
+    fun onReroute(location: ValhallaLocation)
+    fun onMapMotionEvent(): Boolean
+    fun onReverseGeoRequested(screenX: Float?, screenY: Float?): Boolean
+    fun onPlaceSearchRequested(gid: String): Boolean
+    fun onExitNavigation()
+    fun configureMapzenMap()
+    fun onIntentQueryReceived(query: String?)
+    fun onRouteRequest(callback: RouteCallback)
+    fun generateRawFeature(): Feature
 }

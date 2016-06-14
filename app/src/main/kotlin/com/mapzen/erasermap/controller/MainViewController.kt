@@ -1,6 +1,6 @@
 package com.mapzen.erasermap.controller
 
-import com.mapzen.model.ValhallaLocation
+import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
@@ -24,7 +24,8 @@ interface MainViewController {
     fun collapseSearchView()
     fun expandSearchView()
     fun clearQuery()
-    fun showRoutePreview(location: ValhallaLocation, feature: Feature)
+    fun showRoutePreview(destination: SimpleFeature)
+    fun route()
     fun hideRoutePreview()
     fun hideRoutingMode()
     fun startRoutingMode(feature: Feature)
@@ -51,4 +52,7 @@ interface MainViewController {
     fun executeSearch(query: String)
     fun onCloseAllSearchResults()
     fun deactivateFindMeTracking()
+    fun cancelRouteRequest()
+    fun layoutAttributionAboveOptions()
+    fun layoutFindMeAboveOptions()
 }
