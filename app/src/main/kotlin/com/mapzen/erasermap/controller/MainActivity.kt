@@ -16,6 +16,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.View.TRANSLATION_Y
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Button
 import android.widget.ImageButton
@@ -209,7 +210,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             permissionManager.grantPermissions()
         }
         presenter.onResume()
-        app?.onActivityResume()
+        app.onActivityResume()
         autoCompleteAdapter?.clear()
         autoCompleteAdapter?.notifyDataSetChanged()
         invalidateOptionsMenu()
@@ -222,7 +223,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     override public fun onPause() {
         super.onPause()
-        app?.onActivityPause()
+        app.onActivityPause()
         if (mapzenMap?.isMyLocationEnabled != null && mapzenMap?.isMyLocationEnabled as Boolean
                 && !presenter.routingEnabled) {
             enableLocation = true
@@ -234,7 +235,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         super.onStop()
         PreferenceManager.getDefaultSharedPreferences(this)
                 .edit()
-                .putString(SavedSearch.TAG, savedSearch?.serialize())
+                .putString(SavedSearch.TAG, savedSearch.serialize())
                 .commit()
     }
 
@@ -266,8 +267,8 @@ class MainActivity : AppCompatActivity(), MainViewController,
             override fun onSingleTapUp(x: Float, y: Float): Boolean = false
             override fun onSingleTapConfirmed(x: Float, y: Float): Boolean {
                 confidenceHandler.longPressed = false
-                var coords = mapzenMap?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
-                presenter?.reverseGeoLngLat = coords
+                val coords = mapzenMap?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
+                presenter.reverseGeoLngLat = coords
                 poiTapPoint = floatArrayOf(x, y)
                 return true
             }
@@ -858,17 +859,17 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     private fun generateRawFeature(): Feature {
-        var rawFeature: Feature = Feature()
+        val rawFeature: Feature = Feature()
         rawFeature.geometry = Geometry()
         val coords = ArrayList<Double>()
-        coords.add(presenter?.reverseGeoLngLat?.longitude as Double)
-        coords.add(presenter?.reverseGeoLngLat?.latitude as Double)
+        coords.add(presenter.reverseGeoLngLat?.longitude as Double)
+        coords.add(presenter.reverseGeoLngLat?.latitude as Double)
         rawFeature.geometry.coordinates = coords
         val properties = Properties()
         val formatter = DecimalFormat(".####")
         formatter.roundingMode = RoundingMode.HALF_UP
-        val lng = formatter.format(presenter?.reverseGeoLngLat?.longitude as Double)
-        val lat = formatter.format(presenter?.reverseGeoLngLat?.latitude  as Double)
+        val lng = formatter.format(presenter.reverseGeoLngLat?.longitude as Double)
+        val lat = formatter.format(presenter.reverseGeoLngLat?.latitude  as Double)
         properties.name = "$lng, $lat"
         rawFeature.properties = properties
         return rawFeature
@@ -912,7 +913,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         // Determine the smallest axis-aligned box that contains the route longitude and latitude
         val start = route.first()
         val finish = route.last()
-        var routeBounds = AxisAlignedBoundingBox()
+        val routeBounds = AxisAlignedBoundingBox()
         routeBounds.center = PointD(start.longitude, start.latitude)
 
         for (p in route) {
@@ -937,7 +938,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         val zoomDelta = -Math.log(Math.max(scaleX, scaleY)) / Math.log(2.0)
 
         // Update map position and zoom
-        var map = mapzenMap
+        val map = mapzenMap
         if (map != null) {
             val z = map.zoom + zoomDelta.toFloat()
             map.zoom = z
@@ -1097,10 +1098,10 @@ class MainActivity : AppCompatActivity(), MainViewController,
         routeBtmContainer.visibility = View.VISIBLE
         distanceView.distanceInMeters = instructionDistances[0]
         destinationNameTextView.text = simpleFeature.name()
-        previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings, instructionTypes,
-                instructionDistances, routeManager.reverse)
-        val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, View.TRANSLATION_Y, -height)
-        val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, View.TRANSLATION_Y, 0f)
+        previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings,
+                instructionTypes, instructionDistances, routeManager.reverse)
+        val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, TRANSLATION_Y,-height)
+        val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, TRANSLATION_Y, 0f)
         val animations = AnimatorSet()
         animations.playTogether(topContainerAnimator, btmContainerAnimator)
         animations.duration = DIRECTION_LIST_ANIMATION_DURATION
@@ -1122,8 +1123,8 @@ class MainActivity : AppCompatActivity(), MainViewController,
         display.getSize(size);
         val height = size.y.toFloat();
 
-        val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, View.TRANSLATION_Y, 0f)
-        val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, View.TRANSLATION_Y, height)
+        val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, TRANSLATION_Y, 0f)
+        val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, TRANSLATION_Y, height)
         val animations = AnimatorSet()
         animations.playTogether(topContainerAnimator, btmContainerAnimator)
         animations.duration = DIRECTION_LIST_ANIMATION_DURATION
@@ -1216,9 +1217,9 @@ class MainActivity : AppCompatActivity(), MainViewController,
             val pointX = poiTapPoint?.get(0)?.toDouble()
             val pointY = poiTapPoint?.get(1)?.toDouble()
             if (pointX != null && pointY != null) {
-                var coords = mapzenMap?.coordinatesAtScreenPosition(pointX, pointY)
-                var lng = coords?.longitude
-                var lat = coords?.latitude
+                val coords = mapzenMap?.coordinatesAtScreenPosition(pointX, pointY)
+                val lng = coords?.longitude
+                val lat = coords?.latitude
                 if (lng != null && lat!= null) {
                     coordinates.add(lng)
                     coordinates.add(lat)
