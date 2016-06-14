@@ -75,8 +75,6 @@ import com.mapzen.valhalla.Router
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
-import java.math.RoundingMode
-import java.text.DecimalFormat
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -356,7 +354,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
     override fun centerMapOnLocation(lngLat: LngLat, zoom: Float) {
         mapzenMap?.position = lngLat
         mapzenMap?.zoom = zoom
-        centerMap(lngLat)
     }
 
     override fun setMapTilt(radians: Float) {
@@ -610,7 +607,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         }
     }
 
-    private fun layoutAttributionAboveOptions() {
+    override fun layoutAttributionAboveOptions() {
         val layoutParams = baseAttributionParams()
         val optionsView = findViewById(R.id.options)
         optionsView?.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop,
@@ -631,7 +628,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         mapView.findMe.layoutParams = layoutParams
     }
 
-    private fun layoutFindMeAboveOptions() {
+    override fun layoutFindMeAboveOptions() {
         val layoutParams = baseFindMeParams()
         val optionsView = findViewById(R.id.options)
         optionsView?.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop,
@@ -830,49 +827,8 @@ class MainActivity : AppCompatActivity(), MainViewController,
         optionsMenu?.findItem(R.id.action_settings)?.setVisible(true)
     }
 
-    private fun centerMap(lngLat: LngLat) {
-        mapzenMap?.position = lngLat
-    }
-
-    override fun showRoutePreview(location: ValhallaLocation, feature: Feature) {
-        centerMap(LngLat(location.longitude, location.latitude));
-        layoutAttributionAboveOptions()
-        layoutFindMeAboveOptions()
-
-        routeManager.origin = location
-
-        if (location.hasBearing()) {
-            routeManager.bearing = location.bearing
-        } else {
-            routeManager.bearing = null
-        }
-
-        if (!confidenceHandler.useRawLatLng(feature.properties.confidence)) {
-            routePreviewView.destination = SimpleFeature.fromFeature(feature)
-            routeManager.destination = feature
-        } else {
-            val rawFeature = generateRawFeature()
-            routePreviewView.destination = SimpleFeature.fromFeature(rawFeature)
-            routeManager.destination = rawFeature
-        }
-        route()
-    }
-
-    private fun generateRawFeature(): Feature {
-        val rawFeature: Feature = Feature()
-        rawFeature.geometry = Geometry()
-        val coords = ArrayList<Double>()
-        coords.add(presenter.reverseGeoLngLat?.longitude as Double)
-        coords.add(presenter.reverseGeoLngLat?.latitude as Double)
-        rawFeature.geometry.coordinates = coords
-        val properties = Properties()
-        val formatter = DecimalFormat(".####")
-        formatter.roundingMode = RoundingMode.HALF_UP
-        val lng = formatter.format(presenter.reverseGeoLngLat?.longitude as Double)
-        val lat = formatter.format(presenter.reverseGeoLngLat?.latitude  as Double)
-        properties.name = "$lng, $lat"
-        rawFeature.properties = properties
-        return rawFeature
+    override fun showRoutePreview(destination: SimpleFeature) {
+        routePreviewView.destination = destination
     }
 
     override fun drawRoute(route: Route) {
@@ -1006,7 +962,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         }
     }
 
-    private fun route() {
+    override fun route() {
         presenter.onRouteRequest(CancelableRouteCallback())
     }
 
@@ -1148,7 +1104,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         // before MapzenMap#queueEvent
         setRoutingCamera()
         if (confidenceHandler.useRawLatLng(feature.properties.confidence)) {
-            val rawFeature = generateRawFeature()
+            val rawFeature = presenter.generateRawFeature()
             showRoutingMode(rawFeature)
             routeModeView.startRoute(rawFeature, routeManager.route)
         } else {
@@ -1199,11 +1155,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
         setDefaultCamera()
         checkPermissionAndEnableLocation()
         routeModeView.visibility = View.GONE
-        val location = routeManager.origin
-        val feature = routeManager.destination
-        if (location is ValhallaLocation && feature is Feature) {
-            showRoutePreview(location, feature)
-        }
         supportActionBar?.hide()
         routeModeView.route = null
         routeModeView.hideRouteIcon()

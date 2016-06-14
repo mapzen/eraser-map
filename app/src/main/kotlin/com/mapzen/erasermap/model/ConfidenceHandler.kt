@@ -16,7 +16,7 @@ class ConfidenceHandler(val presenter: MainPresenter) {
             return false;
         }
         return confidence < CONFIDENCE_THRESHOLD
-                && presenter?.reverseGeoLngLat != null
+                && presenter.reverseGeoLngLat != null
     }
 
 }

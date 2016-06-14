@@ -4,6 +4,7 @@ import android.location.Location
 import android.util.Log
 import com.mapzen.erasermap.controller.MainViewController
 import com.mapzen.erasermap.model.AppSettings
+import com.mapzen.erasermap.model.ConfidenceHandler
 import com.mapzen.erasermap.model.IntentQuery
 import com.mapzen.erasermap.model.IntentQueryParser
 import com.mapzen.erasermap.model.LocationConverter
@@ -23,13 +24,18 @@ import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
 import com.mapzen.erasermap.view.RouteViewController
 import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.PeliasLocationProvider
+import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
+import com.mapzen.pelias.gson.Geometry
+import com.mapzen.pelias.gson.Properties
 import com.mapzen.pelias.gson.Result
 import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import java.util.ArrayList
 
 open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
@@ -306,6 +312,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         mapzenLocation.stopLocationUpdates() //must call before calling mainViewController?.hideRoutingMode()
         mainViewController?.hideRoutingMode()
         mainViewController?.stopSpeaker()
+        val location = routeManager.origin
+        val feature = routeManager.destination
+        if (location is ValhallaLocation && feature is Feature) {
+            showRoutePreview(location, feature)
+        }
     }
 
     private fun onBackPressedStateRouteDirectionList() {
@@ -399,7 +410,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         val feature = destination
         if (location is Location && feature is Feature) {
             val mapzenLocation = converter.mapzenLocation(location)
-            mainViewController?.showRoutePreview(mapzenLocation, feature)
+            showRoutePreview(mapzenLocation, feature)
         }
     }
 
@@ -492,5 +503,46 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         mainViewController?.showProgress()
         mainViewController?.cancelRouteRequest()
         routeManager.fetchRoute(callback)
+    }
+
+    private fun showRoutePreview(location: ValhallaLocation, feature: Feature) {
+        mainViewController?.layoutAttributionAboveOptions()
+        mainViewController?.layoutFindMeAboveOptions()
+        routeManager.origin = location
+
+        if (location.hasBearing()) {
+            routeManager.bearing = location.bearing
+        } else {
+            routeManager.bearing = null
+        }
+
+        val confidenceHandler = ConfidenceHandler(this)
+        if (!confidenceHandler.useRawLatLng(feature.properties.confidence)) {
+            mainViewController?.showRoutePreview(SimpleFeature.fromFeature(feature))
+            routeManager.destination = feature
+        } else {
+            val rawFeature = generateRawFeature()
+            mainViewController?.showRoutePreview(SimpleFeature.fromFeature(rawFeature))
+            routeManager.destination = rawFeature
+        }
+
+        mainViewController?.route()
+    }
+
+    override fun generateRawFeature(): Feature {
+        val rawFeature: Feature = Feature()
+        rawFeature.geometry = Geometry()
+        val coords = ArrayList<Double>()
+        coords.add(reverseGeoLngLat?.longitude as Double)
+        coords.add(reverseGeoLngLat?.latitude as Double)
+        rawFeature.geometry.coordinates = coords
+        val properties = Properties()
+        val formatter = DecimalFormat(".####")
+        formatter.roundingMode = RoundingMode.HALF_UP
+        val lng = formatter.format(reverseGeoLngLat?.longitude as Double)
+        val lat = formatter.format(reverseGeoLngLat?.latitude  as Double)
+        properties.name = "$lng, $lat"
+        rawFeature.properties = properties
+        return rawFeature
     }
 }
