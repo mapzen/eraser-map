@@ -101,7 +101,7 @@ class ValhallaRouteManager(val settings: AppSettings,
             Router.Type.DRIVING -> return router.setDriving()
             Router.Type.WALKING -> return router.setWalking()
             Router.Type.BIKING -> return router.setBiking()
-            else -> return router.setDriving()
+            Router.Type.MULTIMODAL -> return router.setMultimodal()
         }
     }
 }
