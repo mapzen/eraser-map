@@ -979,7 +979,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             if (isChecked) {
                 routeManager.type = Router.Type.DRIVING
                 route()
-                startNavigationButton.visibility = View.VISIBLE
+                safeShowStartNavigation()
             }
         }
 
@@ -987,7 +987,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             if (isChecked) {
                 routeManager.type = Router.Type.BIKING
                 route()
-                startNavigationButton.visibility = View.VISIBLE
+                safeShowStartNavigation()
             }
         }
 
@@ -995,7 +995,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             if (isChecked) {
                 routeManager.type = Router.Type.WALKING
                 route()
-                startNavigationButton.visibility = View.VISIBLE
+                safeShowStartNavigation()
             }
         }
 
@@ -1005,6 +1005,12 @@ class MainActivity : AppCompatActivity(), MainViewController,
                 route()
                 startNavigationButton.visibility = View.GONE
             }
+        }
+    }
+
+    private fun safeShowStartNavigation() {
+        if (!routePreviewView.reverse) {
+            startNavigationButton.visibility = View.VISIBLE
         }
     }
 
