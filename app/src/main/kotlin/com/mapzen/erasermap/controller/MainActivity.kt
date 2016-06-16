@@ -1201,6 +1201,8 @@ class MainActivity : AppCompatActivity(), MainViewController,
         findViewById(R.id.route_preview)?.visibility = View.GONE
         presenter.onExitNavigation()
         mapzenMap?.setPanResponder(null)
+        setDefaultCamera()
+        layoutFindMeAlignBottom()
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {
