@@ -10,7 +10,6 @@ public class TestMapzenLocation : MapzenLocation {
     public var connected = false
 
     override var mapzenMap: MapzenMap? = null
-    override var locationClient: LostApiClient? = null
 
     override fun startLocationUpdates() {
         connected = true

@@ -52,9 +52,9 @@ public class TestAndroidModule {
         return Mockito.mock(CrashReportService.class);
     }
 
-    @Provides @Singleton MapzenLocation provideMapzenLocation(AppSettings settings, Bus bus,
-        PermissionManager permissionsManager) {
-        return new MapzenLocationImpl(settings, bus, application,
+    @Provides @Singleton MapzenLocation provideMapzenLocation(LostApiClient locationClient,
+        AppSettings settings, Bus bus, PermissionManager permissionsManager) {
+        return new MapzenLocationImpl(locationClient, settings, bus, application,
                 permissionsManager);
     }
 
