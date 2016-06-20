@@ -1,6 +1,5 @@
 package com.mapzen.erasermap;
 
-import com.mapzen.android.LocationFactory;
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.AndroidAppSettings;
 import com.mapzen.erasermap.model.ApiKeys;
@@ -53,7 +52,7 @@ public class AndroidModule {
     }
 
     @Provides @Singleton MapzenLocation provideMapzenLocation(LostApiClient locationClient,
-        AppSettings settings, Bus bus, PermissionManager permissionManager) {
+            AppSettings settings, Bus bus, PermissionManager permissionManager) {
         return new MapzenLocationImpl(locationClient, settings, bus, application, permissionManager);
     }
 

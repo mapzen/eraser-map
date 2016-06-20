@@ -53,7 +53,7 @@ public class TestAndroidModule {
     }
 
     @Provides @Singleton MapzenLocation provideMapzenLocation(LostApiClient locationClient,
-        AppSettings settings, Bus bus, PermissionManager permissionsManager) {
+            AppSettings settings, Bus bus, PermissionManager permissionsManager) {
         return new MapzenLocationImpl(locationClient, settings, bus, application,
                 permissionsManager);
     }
