@@ -2,6 +2,7 @@ package com.mapzen.erasermap.model
 
 import android.location.Location
 import com.mapzen.android.MapzenMap
+import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.pelias.BoundingBox
 import org.mockito.Mockito
 
@@ -9,6 +10,7 @@ public class TestMapzenLocation : MapzenLocation {
     public var connected = false
 
     override var mapzenMap: MapzenMap? = null
+    override var locationClient: LostApiClient? = null
 
     override fun startLocationUpdates() {
         connected = true

@@ -2,11 +2,13 @@ package com.mapzen.erasermap.model
 
 import android.location.Location
 import com.mapzen.android.MapzenMap
+import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.pelias.PeliasLocationProvider
 
-public interface MapzenLocation : PeliasLocationProvider {
-    public var mapzenMap: MapzenMap?
-    public fun getLastLocation(): Location?
-    public fun startLocationUpdates()
-    public fun stopLocationUpdates()
+interface MapzenLocation : PeliasLocationProvider {
+    var mapzenMap: MapzenMap?
+    var locationClient: LostApiClient?
+    fun getLastLocation(): Location?
+    fun startLocationUpdates()
+    fun stopLocationUpdates()
 }

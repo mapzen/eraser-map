@@ -25,6 +25,7 @@ import android.widget.RadioButton
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
+import com.mapzen.android.LocationFactory
 import com.mapzen.android.MapView
 import com.mapzen.android.MapzenMap
 import com.mapzen.erasermap.CrashReportService
@@ -309,6 +310,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         }
         mapzenMap?.mapController?.setHttpHandler(tileHttpHandler)
         mapzenLocation.mapzenMap = mapzenMap
+        mapzenLocation.locationClient = LocationFactory.sharedClient(mapView.context)
         routeModeView.mapzenMap = mapzenMap
         settings.mapzenMap = mapzenMap
     }
