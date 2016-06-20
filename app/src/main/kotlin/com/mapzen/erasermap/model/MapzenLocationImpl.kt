@@ -16,7 +16,8 @@ import com.mapzen.pelias.BoundingBox
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
 
-public class MapzenLocationImpl(val settings: AppSettings,
+public class MapzenLocationImpl(val locationClient: LostApiClient,
+        val settings: AppSettings,
         val bus: Bus,
         val application: EraserMapApplication,
         val permissionManager: PermissionManager) : MapzenLocation {
@@ -31,13 +32,12 @@ public class MapzenLocationImpl(val settings: AppSettings,
     }
 
     override var mapzenMap: MapzenMap? = null
-    override var locationClient: LostApiClient? = null
 
     private var previousLocation: Location? = null
 
     private fun connect() {
-        if (locationClient != null && !locationClient!!.isConnected) {
-            locationClient?.connect()
+        if (!locationClient.isConnected) {
+            locationClient.connect()
         }
         if (settings.isMockLocationEnabled) {
             LocationServices.FusedLocationApi?.setMockMode(true)
@@ -46,9 +46,7 @@ public class MapzenLocationImpl(val settings: AppSettings,
     }
 
     private fun disconnect() {
-        if (locationClient?.numberOfListeners() == 1) {
-            locationClient?.disconnect()
-        }
+        locationClient.disconnect()
     }
 
     override fun getLastLocation(): Location? {

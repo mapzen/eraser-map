@@ -52,9 +52,9 @@ public class AndroidModule {
         return new CrashReportService();
     }
 
-    @Provides @Singleton MapzenLocation provideMapzenLocation(AppSettings settings, Bus bus,
-        PermissionManager permissionManager) {
-        return new MapzenLocationImpl(settings, bus, application, permissionManager);
+    @Provides @Singleton MapzenLocation provideMapzenLocation(LostApiClient locationClient,
+        AppSettings settings, Bus bus, PermissionManager permissionManager) {
+        return new MapzenLocationImpl(locationClient, settings, bus, application, permissionManager);
     }
 
     @Provides @Singleton AppSettings provideAppSettings() {

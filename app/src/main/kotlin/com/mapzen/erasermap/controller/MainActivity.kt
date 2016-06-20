@@ -310,7 +310,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
         }
         mapzenMap?.mapController?.setHttpHandler(tileHttpHandler)
         mapzenLocation.mapzenMap = mapzenMap
-        mapzenLocation.locationClient = LocationFactory.sharedClient(mapView.context)
         routeModeView.mapzenMap = mapzenMap
         settings.mapzenMap = mapzenMap
     }
