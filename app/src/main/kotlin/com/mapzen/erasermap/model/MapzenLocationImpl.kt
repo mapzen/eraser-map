@@ -11,10 +11,8 @@ import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.model.event.LocationChangeEvent
-import com.mapzen.erasermap.model.event.RouteEvent
 import com.mapzen.pelias.BoundingBox
 import com.squareup.otto.Bus
-import com.squareup.otto.Subscribe
 
 public class MapzenLocationImpl(val locationClient: LostApiClient,
         val settings: AppSettings,
@@ -42,6 +40,7 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
         if (settings.isMockLocationEnabled) {
             LocationServices.FusedLocationApi?.setMockMode(true)
             LocationServices.FusedLocationApi?.setMockLocation(settings.mockLocation)
+            LocationServices.FusedLocationApi?.setMockTrace(settings.mockRoute)
         }
     }
 
@@ -93,14 +92,6 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
 
     override fun stopLocationUpdates() {
         disconnect()
-    }
-
-    @Subscribe public fun onRouteEvent(event: RouteEvent) {
-        if (settings.isMockRouteEnabled) {
-            LocationServices.FusedLocationApi?.setMockMode(true)
-            LocationServices.FusedLocationApi?.setMockTrace(settings.mockRoute)
-            startLocationUpdates()
-        }
     }
 
     override fun getLat(): Double {
