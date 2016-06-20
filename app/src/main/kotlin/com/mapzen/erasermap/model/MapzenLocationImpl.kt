@@ -38,11 +38,10 @@ public class MapzenLocationImpl(val settings: AppSettings,
     private fun connect() {
         if (locationClient != null && !locationClient!!.isConnected) {
             locationClient?.connect()
-
-            if (settings.isMockLocationEnabled) {
-                LocationServices.FusedLocationApi?.setMockMode(true)
-                LocationServices.FusedLocationApi?.setMockLocation(settings.mockLocation)
-            }
+        }
+        if (settings.isMockLocationEnabled) {
+            LocationServices.FusedLocationApi?.setMockMode(true)
+            LocationServices.FusedLocationApi?.setMockLocation(settings.mockLocation)
         }
     }
 
