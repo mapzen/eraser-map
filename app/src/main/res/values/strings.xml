@@ -43,4 +43,5 @@
 
     <string name="need_permissions">Turn on location permissions in your system settings menu</string>
     <string name="search_hint">Search for place or address</string>
+    <string name="edittext_tangram_version_title">Tangram Version</string>
 </resources>

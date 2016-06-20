@@ -36,6 +36,7 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
             initTileDebugPref()
             initLabelDebugPref()
             initTangramInfosDebugPref()
+            initTangramVersionPref()
         }
         initDistanceUnitsPref()
         initEraseHistoryPref()
@@ -136,6 +137,11 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
 
         findPreference(AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY).onPreferenceChangeListener = this
 
+    }
+
+    private fun initTangramVersionPref() {
+        findPreference(AndroidAppSettings.KEY_TANGRAM_VERSION).summary = context.getString(
+            R.string.tangram_version)
     }
 
     private fun getSettingsActivity(): SettingsActivity {

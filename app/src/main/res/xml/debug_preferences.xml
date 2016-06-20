@@ -46,6 +46,10 @@
             android:key="edittext_build_number"
             android:title="@string/edittext_build_number_title" />
 
+        <com.mapzen.erasermap.view.ReadOnlyPreference
+            android:key="edittext_tangram_version"
+            android:title="@string/edittext_tangram_version_title" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>
