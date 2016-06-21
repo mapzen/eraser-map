@@ -32,6 +32,7 @@ class AndroidAppSettings(val application: EraserMapApplication) : AppSettings {
         val KEY_SEARCH_RESULTS_VERSION = "search_results_version"
         val SEARCH_RESULTS_VERSION_UNKNOWN = -1
         val SEARCH_RESULTS_VERSION = 1
+        val KEY_TANGRAM_VERSION: String = "edittext_tangram_version"
     }
 
     private val prefs = PreferenceManager.getDefaultSharedPreferences(application)
