@@ -40,6 +40,8 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
         if (settings.isMockLocationEnabled) {
             LocationServices.FusedLocationApi?.setMockMode(true)
             LocationServices.FusedLocationApi?.setMockLocation(settings.mockLocation)
+        }
+        if (settings.isMockRouteEnabled) {
             LocationServices.FusedLocationApi?.setMockTrace(settings.mockRoute)
         }
     }
