@@ -1176,6 +1176,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         supportActionBar?.hide()
         routeModeView.route = null
         routeModeView.hideRouteIcon()
+        routeModeView.hideResumeButton()
         hideReverseGeolocateResult()
     }
 
