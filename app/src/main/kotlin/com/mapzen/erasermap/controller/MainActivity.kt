@@ -1071,7 +1071,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         balancerView.visibility = View.GONE
         routeBtmContainer.translationY = height
         routeBtmContainer.visibility = View.VISIBLE
-        distanceView.distanceInMeters = instructionDistances[0]
+        distanceView.distanceInMeters = routeManager.route?.getTotalDistance() as Int
         destinationNameTextView.text = simpleFeature.name()
         previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings,
                 instructionTypes, instructionDistances, routeManager.reverse)
