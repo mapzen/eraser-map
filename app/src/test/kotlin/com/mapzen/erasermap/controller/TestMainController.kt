@@ -37,6 +37,7 @@ class TestMainController : MainViewController {
     var isFindMeTrackingEnabled: Boolean = false
     var popBackStack: Boolean = false
     var routeRequestCanceled: Boolean = false
+    var isNew: Boolean = false
 
     override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
@@ -118,8 +119,9 @@ class TestMainController : MainViewController {
         isRoutingModeVisible = false
     }
 
-    override fun startRoutingMode(feature: Feature) {
+    override fun startRoutingMode(feature: Feature, isNew: Boolean) {
         isRoutingModeVisible = true
+        this.isNew = isNew
     }
 
     override fun resumeRoutingMode(feature: Feature) {

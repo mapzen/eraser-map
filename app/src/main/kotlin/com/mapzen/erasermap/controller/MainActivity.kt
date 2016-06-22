@@ -1118,7 +1118,18 @@ class MainActivity : AppCompatActivity(), MainViewController,
         animations.start()
     }
 
-    override fun startRoutingMode(feature: Feature) {
+    /**
+     * Create and/or update routing mode UI.
+     *
+     * @param feature the current destination.
+     * @param isNew true if the call is for a new route; false if this call is for a reroute.
+     */
+    override fun startRoutingMode(feature: Feature, isNew: Boolean) {
+        if (isNew) {
+            // Resume button should be hidden at the start of a new route.
+            routeModeView.hideResumeButton()
+        }
+
         // Set camera before RouteModeView#startRoute so that MapzenMap#sceneUpdate called
         // before MapzenMap#queueEvent
         setRoutingCamera()
@@ -1177,6 +1188,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         supportActionBar?.hide()
         routeModeView.route = null
         routeModeView.hideRouteIcon()
+        routeModeView.hideResumeButton()
         hideReverseGeolocateResult()
     }
 

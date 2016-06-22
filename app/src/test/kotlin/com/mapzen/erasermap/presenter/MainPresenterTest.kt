@@ -321,11 +321,11 @@ class MainPresenterTest {
 
     @Test fun onStartRoutingMode_shouldNotResetMute() {
         mainController.muted = true
-        mainController.startRoutingMode(getTestFeature())
+        mainController.startRoutingMode(getTestFeature(), true)
         assertThat(mainController.muted).isTrue()
 
         mainController.muted = false
-        mainController.startRoutingMode(getTestFeature())
+        mainController.startRoutingMode(getTestFeature(), false)
         assertThat(mainController.muted).isFalse()
     }
 
@@ -605,6 +605,20 @@ class MainPresenterTest {
     @Test fun onRouteRequest_shouldFetchRoute() {
         presenter.onRouteRequest(TestRouteCallback())
         assertThat(routeManager.route).isNotNull()
+    }
+
+    @Test fun onClickStartNavigation_shouldSetIsNewTrue() {
+        mainController.isNew = false
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.onClickStartNavigation()
+        assertThat(mainController.isNew).isTrue()
+    }
+
+    @Test fun onRerouteSuccess_shouldSetIsNewFalse() {
+        mainController.isNew = true
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.success(Route(JSONObject()))
+        assertThat(mainController.isNew).isFalse()
     }
 
     class RouteEventSubscriber {
