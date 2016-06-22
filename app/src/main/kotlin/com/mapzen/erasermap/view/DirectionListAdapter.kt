@@ -92,6 +92,7 @@ class DirectionListAdapter(val context: Context, val strings: ArrayList<String>,
 
     private fun setListItemToCurrentLocation(holder: ViewHolder) {
         holder.simpleInstruction.setText(R.string.current_location)
+        holder.distanceView.text = ""
         holder.iconImageView.setImageResource(R.drawable.ic_locate)
     }
 
