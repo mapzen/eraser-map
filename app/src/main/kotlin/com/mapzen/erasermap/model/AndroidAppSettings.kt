@@ -97,14 +97,18 @@ class AndroidAppSettings(val application: EraserMapApplication) : AppSettings {
     /**
      * Mock route GPX trace file setting.
      */
-    override var mockRoute: File
+    override var mockRoute: File?
         get() {
             val default = application.getString(R.string.edittext_mock_route_default_value)
             val value = prefs.getString(KEY_MOCK_ROUTE_VALUE, default)
-            return File(application.getExternalFilesDir(null), value)
+            val file = File(application.getExternalFilesDir(null), value)
+            if (file.exists()) {
+                return file
+            }
+            return null
         }
         set(value) {
-            prefs.edit().putString(KEY_MOCK_ROUTE_VALUE, value.name).commit()
+            prefs.edit().putString(KEY_MOCK_ROUTE_VALUE, value?.name).commit()
         }
 
     /**

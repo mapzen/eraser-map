@@ -12,7 +12,7 @@ interface AppSettings {
     var isMockLocationEnabled: Boolean
     var mockLocation: Location
     var isMockRouteEnabled: Boolean
-    var mockRoute: File
+    var mockRoute: File?
     var isTileDebugEnabled: Boolean
     var isLabelDebugEnabled: Boolean
     var isTangramInfosDebugEnabled: Boolean

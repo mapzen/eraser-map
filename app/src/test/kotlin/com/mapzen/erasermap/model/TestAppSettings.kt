@@ -14,7 +14,7 @@ public class TestAppSettings : AppSettings {
     override var isMockLocationEnabled: Boolean = false
     override var mockLocation: Location = TestHelper.getTestAndroidLocation()
     override var isMockRouteEnabled: Boolean = false
-    override var mockRoute: File = File("lost.gpx")
+    override var mockRoute: File? = File("lost.gpx")
     override var isTileDebugEnabled: Boolean = false
     override var isLabelDebugEnabled: Boolean = false
     override var isTangramInfosDebugEnabled: Boolean = false
