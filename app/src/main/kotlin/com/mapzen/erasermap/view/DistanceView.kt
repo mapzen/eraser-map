@@ -12,6 +12,8 @@ public class DistanceView(context: Context, attrs: AttributeSet) : TextView(cont
 
     @Inject lateinit var settings: AppSettings
 
+    var realTime = false
+
     init {
         (context.applicationContext as EraserMapApplication).component().inject(this)
     }
@@ -19,6 +21,6 @@ public class DistanceView(context: Context, attrs: AttributeSet) : TextView(cont
     public var distanceInMeters: Int = 0
         set (value) {
             field = value
-            text = MapzenDistanceFormatter.format(value, true, settings.distanceUnits)
+            text = MapzenDistanceFormatter.format(value, realTime, settings.distanceUnits)
         }
 }

@@ -27,6 +27,7 @@ class InstructionAdapter(private val context: Context,
         val icon = view.findViewById(R.id.icon) as ImageView
         val turn = instruction.getIntegerInstruction()
         val iconId: Int = DisplayHelper.getRouteDrawable(context, turn, true)
+        distance.realTime = true
         distance.distanceInMeters = instruction.distance
         title.text = instruction.getName()
         icon.setImageResource(iconId)
