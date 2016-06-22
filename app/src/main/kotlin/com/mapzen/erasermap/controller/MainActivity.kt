@@ -36,6 +36,7 @@ import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
 import com.mapzen.erasermap.model.MapzenLocation
+import com.mapzen.erasermap.model.MultiModalHelper
 import com.mapzen.erasermap.model.PermissionManager
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.TileHttpHandler
@@ -1074,7 +1075,8 @@ class MainActivity : AppCompatActivity(), MainViewController,
         distanceView.distanceInMeters = routeManager.route?.getTotalDistance() as Int
         destinationNameTextView.text = simpleFeature.name()
         previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings,
-                instructionTypes, instructionDistances, routeManager.reverse)
+                instructionTypes, instructionDistances, routeManager.reverse,
+                MultiModalHelper(routeManager.route?.rawRoute))
         val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, TRANSLATION_Y,-height)
         val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, TRANSLATION_Y, 0f)
         val animations = AnimatorSet()
