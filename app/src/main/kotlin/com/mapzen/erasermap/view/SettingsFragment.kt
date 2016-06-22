@@ -1,6 +1,5 @@
 package com.mapzen.erasermap.view
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.CheckBoxPreference
 import android.preference.Preference
@@ -137,7 +136,7 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
 
     private fun updateMockTracePref(mockLocationEnabled: Boolean) {
         if (!mockLocationEnabled) {
-            val prefs = PreferenceManager.getDefaultSharedPreferences(this.context)
+            val prefs = PreferenceManager.getDefaultSharedPreferences(this.activity)
             prefs.edit().putBoolean(AndroidAppSettings.KEY_MOCK_ROUTE_ENABLED, false).commit()
             val pref = findPreference(AndroidAppSettings.KEY_MOCK_ROUTE_ENABLED) as CheckBoxPreference
             pref.isChecked = false
@@ -146,7 +145,7 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
 
     private fun updateMockLocationPref(mockTraceEnabled: Boolean) {
         if (mockTraceEnabled) {
-            val prefs = PreferenceManager.getDefaultSharedPreferences(this.context)
+            val prefs = PreferenceManager.getDefaultSharedPreferences(this.activity)
             prefs.edit().putBoolean(AndroidAppSettings.KEY_MOCK_LOCATION_ENABLED, true).commit()
             val pref = findPreference(AndroidAppSettings.KEY_MOCK_LOCATION_ENABLED) as CheckBoxPreference
             pref.isChecked = true
