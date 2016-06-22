@@ -28,7 +28,7 @@ interface MainViewController {
     fun route()
     fun hideRoutePreview()
     fun hideRoutingMode()
-    fun startRoutingMode(feature: Feature)
+    fun startRoutingMode(feature: Feature, isNew: Boolean)
     fun resumeRoutingMode(feature: Feature)
     fun shutDown()
     fun centerMapOnLocation(lngLat: LngLat, zoom: Float)

@@ -332,7 +332,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     override fun onClickStartNavigation() {
         bus.post(RouteEvent())
         mainViewController?.resetMute() //must call before generateRoutingMode()
-        generateRoutingMode()
+        generateRoutingMode(true)
         vsm.viewState = ViewStateManager.ViewState.ROUTING
         routeViewController?.hideResumeButton()
         mapzenLocation.startLocationUpdates()
@@ -400,7 +400,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     override fun success(route: Route) {
         mainViewController?.hideProgress()
         routeManager.route = route
-        generateRoutingMode()
+        generateRoutingMode(false)
         mainViewController?.drawRoute(route)
         waitingForRoute = false
     }
@@ -414,11 +414,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         }
     }
 
-    private fun generateRoutingMode() {
+    private fun generateRoutingMode(isNew: Boolean) {
         routingEnabled = true
         val feature = destination
         if (feature is Feature) {
-            mainViewController?.startRoutingMode(feature)
+            mainViewController?.startRoutingMode(feature, isNew)
         }
     }
 
