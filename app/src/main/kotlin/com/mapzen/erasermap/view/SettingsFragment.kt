@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.view
 
 import android.os.Bundle
+import android.preference.CheckBoxPreference
 import android.preference.Preference
 import android.preference.PreferenceFragment
 import android.preference.PreferenceManager
@@ -37,6 +38,7 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
             initLabelDebugPref()
             initTangramInfosDebugPref()
             initTangramVersionPref()
+            initMockDebugPrefs()
         }
         initDistanceUnitsPref()
         initEraseHistoryPref()
@@ -64,6 +66,14 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
             }
             if (AndroidAppSettings.KEY_CACHE_SEARCH_HISTORY.equals(preference.key)) {
                 updateCacheSearchResults(value)
+                return true
+            }
+            if (AndroidAppSettings.KEY_MOCK_LOCATION_ENABLED.equals(preference.key)) {
+                updateMockTracePref(value)
+                return true
+            }
+            if (AndroidAppSettings.KEY_MOCK_ROUTE_ENABLED.equals(preference.key)) {
+                updateMockLocationPref(value)
                 return true
             }
         }
@@ -108,6 +118,11 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
         updateTangramInfosDebugPref(settings?.isTileDebugEnabled ?: false)
     }
 
+    private fun initMockDebugPrefs() {
+        findPreference(AndroidAppSettings.KEY_MOCK_LOCATION_ENABLED).onPreferenceChangeListener = this
+        findPreference(AndroidAppSettings.KEY_MOCK_ROUTE_ENABLED).onPreferenceChangeListener = this
+    }
+
     private fun updateTangramInfosDebugPref(value: Boolean) {
         settings?.mapzenMap?.mapController?.setDebugFlag(MapController.DebugFlag.TANGRAM_INFOS, value)
     }
@@ -117,6 +132,24 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
         var status = getString(if (value == true) R.string.enabled else R.string.disabled)
         var title = getString(R.string.cache_search_results_status, status)
         getSettingsActivity().clearHistory(title)
+    }
+
+    private fun updateMockTracePref(mockLocationEnabled: Boolean) {
+        if (!mockLocationEnabled) {
+            val prefs = PreferenceManager.getDefaultSharedPreferences(this.activity)
+            prefs.edit().putBoolean(AndroidAppSettings.KEY_MOCK_ROUTE_ENABLED, false).commit()
+            val pref = findPreference(AndroidAppSettings.KEY_MOCK_ROUTE_ENABLED) as CheckBoxPreference
+            pref.isChecked = false
+        }
+    }
+
+    private fun updateMockLocationPref(mockTraceEnabled: Boolean) {
+        if (mockTraceEnabled) {
+            val prefs = PreferenceManager.getDefaultSharedPreferences(this.activity)
+            prefs.edit().putBoolean(AndroidAppSettings.KEY_MOCK_LOCATION_ENABLED, true).commit()
+            val pref = findPreference(AndroidAppSettings.KEY_MOCK_LOCATION_ENABLED) as CheckBoxPreference
+            pref.isChecked = true
+        }
     }
 
     private fun initLabelDebugPref() {

@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.util.Log
+import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.event.LocationChangeEvent
@@ -46,6 +47,8 @@ public class MockLocationReceiver : BroadcastReceiver() {
             location.latitude = lat.toDouble()
             location.longitude = lng.toDouble()
             settings.mockLocation = location
+            LocationServices.FusedLocationApi?.setMockMode(true)
+            LocationServices.FusedLocationApi?.setMockLocation(location)
             bus.post(LocationChangeEvent(location))
             Log.d(TAG, "[mock location set] ($lat, $lng)")
         }

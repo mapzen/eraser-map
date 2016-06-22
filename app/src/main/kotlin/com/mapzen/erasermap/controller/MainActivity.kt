@@ -27,6 +27,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.mapzen.android.MapView
 import com.mapzen.android.MapzenMap
+import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
@@ -1267,6 +1268,10 @@ class MainActivity : AppCompatActivity(), MainViewController,
     override fun checkPermissionAndEnableLocation() {
         if (permissionManager.granted && !presenter.routingEnabled) {
             mapzenMap?.isMyLocationEnabled = true
+            if (settings.isMockLocationEnabled) {
+                LocationServices.FusedLocationApi?.setMockMode(true)
+                LocationServices.FusedLocationApi?.setMockLocation(settings.mockLocation)
+            }
         }
     }
 
