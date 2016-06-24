@@ -8,8 +8,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.MultiModalHelper
-import com.mapzen.erasermap.model.MultiModalHelper.TravelMode
 import com.mapzen.erasermap.util.DisplayHelper
+import com.mapzen.valhalla.TravelMode
+import com.mapzen.valhalla.TravelType
 import java.util.ArrayList
 
 /**
@@ -17,6 +18,7 @@ import java.util.ArrayList
  */
 class DirectionListAdapter(val context: Context, val strings: ArrayList<String>,
         val types: ArrayList<Int>, val distances: ArrayList<Int>,
+        val travelTypes: ArrayList<TravelType>, val travelModes: ArrayList<TravelMode>,
         val reverse : Boolean?, val multiModalHelper: MultiModalHelper) : BaseAdapter() {
 
     private final val CURRENT_LOCATION_OFFSET =  1
@@ -72,9 +74,8 @@ class DirectionListAdapter(val context: Context, val strings: ArrayList<String>,
             val distance = distances[position]
             var iconId: Int = DisplayHelper.getRouteDrawable(context, types[position])
 
-            if (multiModalHelper.getTravelMode(position) == TravelMode.TRANSIT) {
-                val type = multiModalHelper.getTravelType(position)
-                iconId = multiModalHelper.getTransitIcon(type)
+            if (travelModes[position] == TravelMode.TRANSIT) {
+                iconId = multiModalHelper.getTransitIcon(travelTypes[position])
             }
 
             holder.simpleInstruction.text = strings[position].toString()
@@ -88,12 +89,11 @@ class DirectionListAdapter(val context: Context, val strings: ArrayList<String>,
             setListItemToCurrentLocation(holder)
         } else {
             val adjustedPosition = position - CURRENT_LOCATION_OFFSET
-            val distance = distances[position - CURRENT_LOCATION_OFFSET]
+            val distance = distances[adjustedPosition]
             var iconId = DisplayHelper.getRouteDrawable(context, types[adjustedPosition])
 
-            if (multiModalHelper.getTravelMode(adjustedPosition) == TravelMode.TRANSIT) {
-                val type = multiModalHelper.getTravelType(adjustedPosition)
-                iconId = multiModalHelper.getTransitIcon(type)
+            if (travelModes[adjustedPosition] == TravelMode.TRANSIT) {
+                iconId = multiModalHelper.getTransitIcon(travelTypes[adjustedPosition])
             }
 
             holder.simpleInstruction.text = strings[adjustedPosition].toString()

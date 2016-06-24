@@ -74,6 +74,8 @@ import com.mapzen.tangram.TouchInput
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
+import com.mapzen.valhalla.TravelMode
+import com.mapzen.valhalla.TravelType
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
@@ -1050,6 +1052,9 @@ class MainActivity : AppCompatActivity(), MainViewController,
         val instructionStrings = ArrayList<String>()
         val instructionTypes = ArrayList<Int>()
         val instructionDistances = ArrayList<Int>()
+        val instructionTravelTypes = ArrayList<TravelType>()
+        val instructionTravelModes = ArrayList<TravelMode>()
+
         val instructions = routeManager.route?.getRouteInstructions()
         if (instructions != null) {
             for(instruction in instructions) {
@@ -1059,6 +1064,8 @@ class MainActivity : AppCompatActivity(), MainViewController,
                 }
                 instructionTypes.add(instruction.turnInstruction)
                 instructionDistances.add(instruction.distance)
+                instructionTravelTypes.add(instruction.getTravelType())
+                instructionTravelModes.add(instruction.getTravelMode())
             }
         }
 
@@ -1075,7 +1082,8 @@ class MainActivity : AppCompatActivity(), MainViewController,
         distanceView.distanceInMeters = routeManager.route?.getTotalDistance() as Int
         destinationNameTextView.text = simpleFeature.name()
         previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings,
-                instructionTypes, instructionDistances, routeManager.reverse,
+                instructionTypes, instructionDistances, instructionTravelTypes,
+            instructionTravelModes, routeManager.reverse,
                 MultiModalHelper(routeManager.route?.rawRoute))
         val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, TRANSLATION_Y,-height)
         val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, TRANSLATION_Y, 0f)
