@@ -35,10 +35,12 @@ import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
+import com.mapzen.erasermap.model.InstructionGrouper
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.MultiModalHelper
 import com.mapzen.erasermap.model.PermissionManager
 import com.mapzen.erasermap.model.RouteManager
+import com.mapzen.erasermap.model.SectionCalculator
 import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.util.AxisAlignedBoundingBox
@@ -52,8 +54,10 @@ import com.mapzen.erasermap.view.DistanceView
 import com.mapzen.erasermap.view.MuteView
 import com.mapzen.erasermap.view.RouteModeView
 import com.mapzen.erasermap.view.RoutePreviewView
+import com.mapzen.erasermap.view.RoutingDirectionListAdapter
 import com.mapzen.erasermap.view.SearchResultsAdapter
 import com.mapzen.erasermap.view.SearchResultsView
+import com.mapzen.erasermap.view.SectionAdapterInterface
 import com.mapzen.erasermap.view.SettingsActivity
 import com.mapzen.erasermap.view.Speaker
 import com.mapzen.erasermap.view.VoiceNavigationController
@@ -1081,10 +1085,19 @@ class MainActivity : AppCompatActivity(), MainViewController,
         routeBtmContainer.visibility = View.VISIBLE
         distanceView.distanceInMeters = routeManager.route?.getTotalDistance() as Int
         destinationNameTextView.text = simpleFeature.name()
-        previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings,
+        val instructionGrouper = InstructionGrouper(instructionStrings,
+            instructionTypes, instructionDistances, instructionTravelTypes,
+            instructionTravelModes)
+        if (routeManager.type == Router.Type.MULTIMODAL) {
+            previewDirectionListView.adapter = RoutingDirectionListAdapter(this, instructionGrouper,
+                routeManager.reverse, MultiModalHelper(routeManager.route?.rawRoute))
+        } else {
+            previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings,
                 instructionTypes, instructionDistances, instructionTravelTypes,
-            instructionTravelModes, routeManager.reverse,
+                instructionTravelModes, routeManager.reverse,
                 MultiModalHelper(routeManager.route?.rawRoute))
+        }
+
         val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, TRANSLATION_Y,-height)
         val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, TRANSLATION_Y, 0f)
         val animations = AnimatorSet()
