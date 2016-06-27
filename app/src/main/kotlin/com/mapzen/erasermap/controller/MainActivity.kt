@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Point
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
@@ -153,6 +154,9 @@ class MainActivity : AppCompatActivity(), MainViewController,
     val muteView: MuteView by lazy { findViewById(R.id.route_mode_mute_view) as MuteView }
 
     var submitQueryOnMenuCreate: String? = null
+
+    var divider: Drawable? = null
+    var dividerHeight: Int? = null
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -1056,6 +1060,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         val instructionStrings = ArrayList<String>()
         val instructionTypes = ArrayList<Int>()
         val instructionDistances = ArrayList<Int>()
+        val instructionTimes = ArrayList<Int>()
         val instructionTravelTypes = ArrayList<TravelType>()
         val instructionTravelModes = ArrayList<TravelMode>()
 
@@ -1068,6 +1073,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
                 }
                 instructionTypes.add(instruction.turnInstruction)
                 instructionDistances.add(instruction.distance)
+                instructionTimes.add(instruction.getTime())
                 instructionTravelTypes.add(instruction.getTravelType())
                 instructionTravelModes.add(instruction.getTravelMode())
             }
@@ -1086,16 +1092,26 @@ class MainActivity : AppCompatActivity(), MainViewController,
         distanceView.distanceInMeters = routeManager.route?.getTotalDistance() as Int
         destinationNameTextView.text = simpleFeature.name()
         val instructionGrouper = InstructionGrouper(instructionStrings,
-            instructionTypes, instructionDistances, instructionTravelTypes,
+            instructionTypes, instructionDistances, instructionTimes, instructionTravelTypes,
             instructionTravelModes)
         if (routeManager.type == Router.Type.MULTIMODAL) {
             previewDirectionListView.adapter = RoutingDirectionListAdapter(this, instructionGrouper,
                 routeManager.reverse, MultiModalHelper(routeManager.route?.rawRoute))
+            if (divider == null) {
+                divider = previewDirectionListView.divider
+                dividerHeight = previewDirectionListView.dividerHeight
+            }
+            previewDirectionListView.divider = null;
+            previewDirectionListView.dividerHeight = 0;
         } else {
             previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings,
                 instructionTypes, instructionDistances, instructionTravelTypes,
                 instructionTravelModes, routeManager.reverse,
                 MultiModalHelper(routeManager.route?.rawRoute))
+            if (divider != null) {
+                previewDirectionListView.divider = divider
+                previewDirectionListView.dividerHeight = dividerHeight as Int
+            }
         }
 
         val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, TRANSLATION_Y,-height)

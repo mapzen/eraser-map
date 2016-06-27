@@ -5,7 +5,7 @@ import com.mapzen.valhalla.TravelType
 import java.util.ArrayList
 
 class InstructionGrouper(val strings: ArrayList<String>,
-    val types: ArrayList<Int>, val distances: ArrayList<Int>,
+    val types: ArrayList<Int>, val distances: ArrayList<Int>, val times: ArrayList<Int>,
     val travelTypes: ArrayList<TravelType>, val travelModes: ArrayList<TravelMode>) {
 
   lateinit var instructionGroups: ArrayList<InstructionGroup>
@@ -17,6 +17,7 @@ class InstructionGrouper(val strings: ArrayList<String>,
     var currStrings: ArrayList<String>? = null
     var currTypes: ArrayList<Int>? = null
     var currDistances: ArrayList<Int>? = null
+    var currTimes: ArrayList<Int>? = null
     var currMode: TravelMode? = null
 
     for (i in 0..travelTypes.size-1) {
@@ -26,30 +27,34 @@ class InstructionGrouper(val strings: ArrayList<String>,
         currStrings = ArrayList<String>()
         currTypes = ArrayList<Int>()
         currDistances = ArrayList<Int>()
+        currTimes = ArrayList<Int>()
         currMode = travelModes[i]
       }
       if (currType != travelType) {
         groups.add(InstructionGroup(currStrings as ArrayList<String>,
             currTypes as ArrayList<Int>, currDistances as ArrayList<Int>,
-            currType , currMode as TravelMode))
+            currTimes as ArrayList<Int>, currType , currMode as TravelMode))
         currType = travelType
         currStrings = ArrayList<String>()
         currTypes = ArrayList<Int>()
         currDistances = ArrayList<Int>()
+        currTimes = ArrayList<Int>()
         currMode = travelModes[i]
         currStrings?.add(strings[i])
         currTypes?.add(types[i])
         currDistances?.add(distances[i])
+        currTimes?.add(times[i])
       } else {
         currStrings?.add(strings[i])
         currTypes?.add(types[i])
         currDistances?.add(distances[i])
+        currTimes?.add(times[i])
       }
 
     }
     groups.add(InstructionGroup(currStrings as ArrayList<String>,
         currTypes as ArrayList<Int>, currDistances as ArrayList<Int>,
-        currType as TravelType , currMode as TravelMode))
+        currTimes as ArrayList<Int>, currType as TravelType , currMode as TravelMode))
 
     instructionGroups = groups
   }

@@ -20,7 +20,7 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
   companion object {
     const val SECTION_CURR_LOCATION = 0
     const val NUM_ROWS_CURR_LOCATION = 0
-
+    const val SEC_PER_MIN = 60
     const val VIEW_TYPE_CURRENT_LOCATION_SECTION = 0
     const val VIEW_TYPE_PEDESTRIAN_SECTION = 1
     const val VIEW_TYPE_PADDING_SECTION = 2
@@ -28,8 +28,6 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     const val VIEW_TYPE_TRANSIT_ROW = 4
     const val NUM_VIEW_TYPES = VIEW_TYPE_TRANSIT_ROW + 1
   }
-
-  var currentInstructionIndex: Int = -1
 
   override fun numSections(): Int {
     return instructionGrouper.numGroups() + CURRENT_LOCATION_OFFSET
@@ -76,28 +74,40 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
   }
 
   override fun viewForSection(section: Int, convertView: View?, parent: ViewGroup?): View {
-    var view: View?
+    var view: View
+    var holder: PedestrianSectionViewHolder? = null
 
-    if (isCurrentLocationSection(section)) {
-      view = View.inflate(context, R.layout.current_location_section, null)
-    } else if (isPedestrianSection(section)) {
-      view = View.inflate(context, R.layout.pedestrian_section, null)
+    if (convertView == null) {
+      if (isCurrentLocationSection(section)) {
+        view = View.inflate(context, R.layout.current_location_section, null)
+      } else if (isPedestrianSection(section)) {
+        view = View.inflate(context, R.layout.pedestrian_section, null)
+        holder = PedestrianSectionViewHolder(view)
+        view.tag = holder
+      } else {
+        view = View.inflate(context, R.layout.padding_section, null)
+      }
     } else {
-      view = View.inflate(context, R.layout.padding_section, null)
+      view = convertView
+      holder = view.tag as PedestrianSectionViewHolder?
     }
 
-    return view!!
+    if (isPedestrianSection(section)) {
+      setPedestrianSection(section, holder!!)
+    }
+
+    return view
   }
 
   override fun viewForRow(position: Int, section: Int, row: Int, convertView: View?,
       parent: ViewGroup?): View {
-    val view: View?
+    val view: View
     val holder: ViewHolder
 
     if (convertView == null) {
       if (isPedestrianSection(section)) {
         view = View.inflate(context, R.layout.pedestrian_direction_row, null)
-        holder = PedestrianViewHolder(view)
+        holder = PedestrianRowViewHolder(view)
       } else {
         view = View.inflate(context, R.layout.transit_direction_row, null)
         holder = TransitViewHolder(view)
@@ -109,13 +119,13 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     }
 
     if (isPedestrianSection(section)) {
-      setPedestrianRow(section, row, holder as PedestrianViewHolder)
+      setPedestrianRow(section, row, holder as PedestrianRowViewHolder)
     } else {
       setTransitRow(section, row, holder as TransitViewHolder)
     }
 
 
-    return view as View
+    return view
   }
 
   private fun isSection(position: Int): Boolean {
@@ -128,6 +138,9 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
   }
 
   private fun isPedestrianSection(section: Int): Boolean {
+    if (isCurrentLocationSection(section)) {
+      return false
+    }
     return instructionGrouper.getInstructionGroup(
         adjustedSection(section)).travelMode == TravelMode.PEDESTRIAN
   }
@@ -139,7 +152,13 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     return section
   }
 
-  private fun setPedestrianRow(section: Int, row: Int, holder: PedestrianViewHolder) {
+  private fun setPedestrianSection(section: Int, holder: PedestrianSectionViewHolder) {
+    val instructionGroup = instructionGrouper.getInstructionGroup(adjustedSection(section))
+    holder.distanceView.distanceInMeters = instructionGroup.totalDistance
+    holder.timeView.timeInMinutes = instructionGroup.totalTime / SEC_PER_MIN
+  }
+
+  private fun setPedestrianRow(section: Int, row: Int, holder: PedestrianRowViewHolder) {
     val instructionGroup = instructionGrouper.getInstructionGroup(adjustedSection(section))
     val distance = instructionGroup.distances[row]
     var iconId = DisplayHelper.getRouteDrawable(context, instructionGroup.types[row])
@@ -162,7 +181,17 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
   open class ViewHolder() {
   }
 
-  class PedestrianViewHolder(view: View): ViewHolder() {
+  class PedestrianSectionViewHolder(view: View): ViewHolder() {
+    val distanceView: DistanceView
+    val timeView: TimeView
+
+    init {
+      distanceView = view.findViewById(R.id.distance) as DistanceView
+      timeView = view.findViewById(R.id.time) as TimeView
+    }
+  }
+
+  class PedestrianRowViewHolder(view: View): ViewHolder() {
     val simpleInstruction: TextView
     val distanceView: DistanceView
     val iconImageView: ImageView

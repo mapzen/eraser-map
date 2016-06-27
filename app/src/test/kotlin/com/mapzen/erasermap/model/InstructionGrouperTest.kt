@@ -36,6 +36,14 @@ class InstructionGrouperTest {
     distances.add(50)
     distances.add(60)
 
+    val times = ArrayList<Int>()
+    times.add(10)
+    times.add(20)
+    times.add(30)
+    times.add(40)
+    times.add(50)
+    times.add(60)
+
     val travelTypes = ArrayList<TravelType>()
     travelTypes.add(TravelType.FOOT)
     travelTypes.add(TravelType.BUS)
@@ -52,7 +60,7 @@ class InstructionGrouperTest {
     travelModes.add(TravelMode.PEDESTRIAN)
     travelModes.add(TravelMode.PEDESTRIAN)
 
-    grouper = InstructionGrouper(strings, types, distances, travelTypes, travelModes)
+    grouper = InstructionGrouper(strings, types, distances, times, travelTypes, travelModes)
   }
 
   @Test fun numGroups_shouldBeThree() {
