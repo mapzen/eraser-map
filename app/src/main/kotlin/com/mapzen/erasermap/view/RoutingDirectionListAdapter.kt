@@ -1,116 +1,95 @@
 package com.mapzen.erasermap.view
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.BaseAdapter
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.mapzen.erasermap.R
+import com.mapzen.erasermap.model.InstructionGroup
 import com.mapzen.erasermap.model.InstructionGrouper
+import com.mapzen.erasermap.model.ListRowItem
+import com.mapzen.erasermap.model.ListRowType
 import com.mapzen.erasermap.model.MultiModalHelper
 import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.valhalla.TravelMode
+import java.util.ArrayList
+import java.util.HashMap
 
 class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: InstructionGrouper,
-    val reverse : Boolean?, val multiModalHelper: MultiModalHelper) : SectionBaseAdapter(),
-    SectionAdapterInterface, SectionViewAdapterInterface {
-
-  private final val CURRENT_LOCATION_OFFSET =  1
+    val reverse : Boolean?, val multiModalHelper: MultiModalHelper) : BaseAdapter() {
 
   companion object {
-    const val SECTION_CURR_LOCATION = 0
-    const val NUM_ROWS_CURR_LOCATION = 0
     const val SEC_PER_MIN = 60
-    const val VIEW_TYPE_CURRENT_LOCATION_SECTION = 0
-    const val VIEW_TYPE_PEDESTRIAN_SECTION = 1
-    const val VIEW_TYPE_PADDING_SECTION = 2
-    const val VIEW_TYPE_PEDESTRIAN_ROW = 3
-    const val VIEW_TYPE_TRANSIT_ROW = 4
-    const val NUM_VIEW_TYPES = VIEW_TYPE_TRANSIT_ROW + 1
+    const val NUM_VIEW_TYPES = 3
   }
 
-  override fun numSections(): Int {
-    return instructionGrouper.numGroups() + CURRENT_LOCATION_OFFSET
+  private val TRAVEL_MODE_TO_ICON = HashMap<TravelMode, Int>()
+  private val TRAVEL_MODE_TO_LAYOUT_ID = HashMap<TravelMode, Int>()
+  private val TRAVEL_MODE_TO_ITEM_TYPE = HashMap<TravelMode, ListRowType>()
+
+  lateinit var listItems: ArrayList<ListRowItem>
+
+  init {
+    TRAVEL_MODE_TO_ICON.put(TravelMode.PEDESTRIAN, R.drawable.ic_pedestrian)
+    TRAVEL_MODE_TO_ICON.put(TravelMode.TRANSIT, R.drawable.ic_current_location)
+
+    TRAVEL_MODE_TO_LAYOUT_ID.put(TravelMode.PEDESTRIAN, R.layout.pedestrian_direction_row)
+    TRAVEL_MODE_TO_LAYOUT_ID.put(TravelMode.TRANSIT, R.layout.transit_direction_row)
+
+    TRAVEL_MODE_TO_ITEM_TYPE.put(TravelMode.PEDESTRIAN, ListRowType.PEDESTRIAN)
+    TRAVEL_MODE_TO_ITEM_TYPE.put(TravelMode.TRANSIT, ListRowType.TRANSIT)
+
+    listItems = ArrayList<ListRowItem>()
+    prepareListItems()
   }
 
-  override fun numRowsForSection(section: Int): Int {
-    if (reverse != null && !reverse) {
-      if (section == SECTION_CURR_LOCATION) {
-        return NUM_ROWS_CURR_LOCATION
-      }
-      return instructionGrouper.numInstructionsInGroup(section - CURRENT_LOCATION_OFFSET)
-    } else {
-      if (section == instructionGrouper.numGroups()) {
-        return NUM_ROWS_CURR_LOCATION
-      } else {
-        return instructionGrouper.numInstructionsInGroup(section)
-      }
-    }
+  override fun getItem(position: Int): Any? {
+    return 0
+  }
 
+  override fun getItemId(position: Int): Long {
+    return 0
+  }
+
+  override fun getCount(): Int {
+    return listItems.size
   }
 
   override fun getItemViewType(position: Int): Int {
-    if (isSection(position)) {
-      val section = sectionCalculator.positionToSection[position] as Int
-      if (isCurrentLocationSection(section)) {
-        return VIEW_TYPE_CURRENT_LOCATION_SECTION
-      } else if(isPedestrianSection(section)) {
-        return VIEW_TYPE_PEDESTRIAN_SECTION
-      } else {
-        return VIEW_TYPE_PADDING_SECTION
-      }
-    } else {
-      val section = sectionCalculator.positionsToSection[position] as Int
-      if (isPedestrianSection(section)) {
-        return VIEW_TYPE_PEDESTRIAN_ROW
-      } else {
-        return VIEW_TYPE_TRANSIT_ROW
-      }
+    when (listItems[position].layoutId) {
+      R.layout.icon_title_row -> return 0
+      R.layout.pedestrian_direction_row -> return 1
+      R.layout.transit_direction_row -> return 2
     }
+    return 0
   }
 
   override fun getViewTypeCount(): Int {
     return NUM_VIEW_TYPES
   }
 
-  override fun viewForSection(section: Int, convertView: View?, parent: ViewGroup?): View {
-    var view: View
-    var holder: PedestrianSectionViewHolder? = null
-
-    if (convertView == null) {
-      if (isCurrentLocationSection(section)) {
-        view = View.inflate(context, R.layout.current_location_section, null)
-      } else if (isPedestrianSection(section)) {
-        view = View.inflate(context, R.layout.pedestrian_section, null)
-        holder = PedestrianSectionViewHolder(view)
-        view.tag = holder
-      } else {
-        view = View.inflate(context, R.layout.padding_section, null)
-      }
-    } else {
-      view = convertView
-      holder = view.tag as PedestrianSectionViewHolder?
-    }
-
-    if (isPedestrianSection(section)) {
-      setPedestrianSection(section, holder!!)
-    }
-
-    return view
-  }
-
-  override fun viewForRow(position: Int, section: Int, row: Int, convertView: View?,
-      parent: ViewGroup?): View {
+  override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
     val view: View
     val holder: ViewHolder
+    val listItem = listItems[position]
 
     if (convertView == null) {
-      if (isPedestrianSection(section)) {
-        view = View.inflate(context, R.layout.pedestrian_direction_row, null)
-        holder = PedestrianRowViewHolder(view)
-      } else {
-        view = View.inflate(context, R.layout.transit_direction_row, null)
-        holder = TransitViewHolder(view)
+      view = View.inflate(context, listItem.layoutId, null)
+      when (listItem.type) {
+        ListRowType.CURRENT_LOCATION,
+        ListRowType.ARRIVAL -> {
+          holder = IconTitleViewHolder(view)
+        }
+        ListRowType.PEDESTRIAN -> {
+          holder = PedestrianViewHolder(view)
+        }
+        ListRowType.TRANSIT -> {
+          holder = TransitViewHolder(view)
+        }
       }
       view.tag = holder
     } else {
@@ -118,88 +97,127 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
       holder = view.tag as ViewHolder
     }
 
-    if (isPedestrianSection(section)) {
-      setPedestrianRow(section, row, holder as PedestrianRowViewHolder)
-    } else {
-      setTransitRow(section, row, holder as TransitViewHolder)
+    when (listItem.type) {
+      ListRowType.CURRENT_LOCATION,
+      ListRowType.ARRIVAL -> {
+        setIconTitleRow(position, holder as IconTitleViewHolder)
+      }
+      ListRowType.PEDESTRIAN -> {
+        setPedestrianRow(position, holder as PedestrianViewHolder)
+      }
+      ListRowType.TRANSIT -> {
+        setTransitRow(position, holder as TransitViewHolder)
+      }
     }
-
 
     return view
   }
 
-  private fun isSection(position: Int): Boolean {
-    return sectionCalculator.positionToSection.contains(position)
-  }
-
-  private fun isCurrentLocationSection(section: Int): Boolean {
-    return reverse == false && section == SECTION_CURR_LOCATION || reverse == true
-        && section == instructionGrouper.numGroups()
-  }
-
-  private fun isPedestrianSection(section: Int): Boolean {
-    if (isCurrentLocationSection(section)) {
-      return false
-    }
-    return instructionGrouper.getInstructionGroup(
-        adjustedSection(section)).travelMode == TravelMode.PEDESTRIAN
-  }
-
-  private fun adjustedSection(section: Int): Int {
+  private fun prepareListItems() {
     if (reverse == false) {
-      return section - CURRENT_LOCATION_OFFSET
+      listItems.add(listItemForCurrentLocation())
     }
-    return section
-  }
-
-  private fun setPedestrianSection(section: Int, holder: PedestrianSectionViewHolder) {
-    val instructionGroup = instructionGrouper.getInstructionGroup(adjustedSection(section))
-    holder.distanceView.distanceInMeters = instructionGroup.totalDistance
-    holder.timeView.timeInMinutes = instructionGroup.totalTime / SEC_PER_MIN
-  }
-
-  private fun setPedestrianRow(section: Int, row: Int, holder: PedestrianRowViewHolder) {
-    val instructionGroup = instructionGrouper.getInstructionGroup(adjustedSection(section))
-    val distance = instructionGroup.distances[row]
-    var iconId = DisplayHelper.getRouteDrawable(context, instructionGroup.types[row])
-
-    if (instructionGroup.travelMode == TravelMode.TRANSIT) {
-      iconId = multiModalHelper.getTransitIcon(instructionGroup.travelType)
+    for (i in 0..instructionGrouper.numGroups() - 1) {
+      listItems.add(listItemForInstructionGroup(instructionGrouper.getInstructionGroup(i)))
     }
-
-    holder.simpleInstruction.text = instructionGroup.strings[row].toString()
-    holder.distanceView.distanceInMeters = distance
-    holder.iconImageView.setImageResource(iconId)
+    val lastInstructionGroup = instructionGrouper.getInstructionGroup(
+        instructionGrouper.numGroups() - 1)
+    listItems.add(listItemForLastInstruction(lastInstructionGroup))
+    if (reverse == true) {
+      listItems.add(listItemForCurrentLocation())
+    }
   }
 
-  private fun setTransitRow(section: Int, row: Int, holder: TransitViewHolder) {
-    val instructionGroup = instructionGrouper.getInstructionGroup(adjustedSection(section))
+  private fun listItemForCurrentLocation(): ListRowItem {
+    val listItem = ListRowItem(ListRowType.CURRENT_LOCATION, R.layout.icon_title_row)
+    listItem.iconId = R.drawable.ic_locate
+    listItem.title = context.getString(R.string.current_location)
 
-    holder.subtitle.text = instructionGroup.strings[row].toString()
+    return listItem
+  }
+
+  private fun listItemForInstructionGroup(instructionGroup: InstructionGroup): ListRowItem {
+    val travelMode = instructionGroup.travelMode
+    val item = ListRowItem(TRAVEL_MODE_TO_ITEM_TYPE[travelMode] as ListRowType,
+        TRAVEL_MODE_TO_LAYOUT_ID[travelMode] as Int)
+    item.iconId = TRAVEL_MODE_TO_ICON[travelMode]
+    item.extra = instructionGroup
+    return item
+  }
+
+  private fun listItemForLastInstruction(instructionGroup: InstructionGroup): ListRowItem {
+    val index = instructionGroup.strings.size-1
+    val item = ListRowItem(ListRowType.ARRIVAL, R.layout.icon_title_row)
+    item.iconId = DisplayHelper.getRouteDrawable(context, instructionGroup.types[index])
+    item.title = instructionGroup.strings[index]
+    return item
+  }
+
+  private fun setIconTitleRow(position: Int, holder: IconTitleViewHolder) {
+    val item = listItems[position]
+    holder.titleView.text = item.title
+    holder.iconView.setImageResource(item.iconId as Int)
+  }
+
+  private fun setPedestrianRow(position: Int, holder: PedestrianViewHolder) {
+    val listItem = listItems[position]
+    val instructionGroup = listItem.extra as InstructionGroup
+    holder.totalDistanceView.distanceInMeters = instructionGroup.totalDistance
+    holder.totalTimeView.timeInMinutes = instructionGroup.totalTime / SEC_PER_MIN
+
+    holder.instructionsContainer.removeAllViews()
+
+    for (i in 0..instructionGroup.strings.size - 1) { //TODO: recycle views added to this
+      val distance = instructionGroup.distances[i]
+      val instructionRow = View.inflate(context, R.layout.instruction_row, null)
+      var iconId = DisplayHelper.getRouteDrawable(context, instructionGroup.types[i])
+      if (instructionGroup.travelMode == TravelMode.TRANSIT) {
+        iconId = multiModalHelper.getTransitIcon(instructionGroup.travelType)
+      }
+
+      val iconView = instructionRow.findViewById(R.id.icon) as ImageView
+      val titleView = instructionRow.findViewById(R.id.title) as TextView
+      val distanceView = instructionRow.findViewById(R.id.distance) as DistanceView
+
+      iconView.setImageResource(iconId)
+      titleView.text = instructionGroup.strings[i].toString()
+      distanceView.distanceInMeters = distance
+
+      holder.instructionsContainer.addView(instructionRow)
+    }
+  }
+
+  //TODO:
+  private fun setTransitRow(position: Int, holder: TransitViewHolder) {
+    val listItem = listItems[position]
+    val instructionGroup = listItem.extra as InstructionGroup
+    holder.subtitle.text = instructionGroup.strings[0].toString()
   }
 
   open class ViewHolder() {
   }
 
-  class PedestrianSectionViewHolder(view: View): ViewHolder() {
-    val distanceView: DistanceView
-    val timeView: TimeView
+  class IconTitleViewHolder(view: View): ViewHolder() {
+    val titleView: TextView
+    val iconView: ImageView
 
     init {
-      distanceView = view.findViewById(R.id.distance) as DistanceView
-      timeView = view.findViewById(R.id.time) as TimeView
+      titleView = view.findViewById(R.id.title) as TextView
+      iconView = view.findViewById(R.id.image_view) as ImageView
     }
   }
 
-  class PedestrianRowViewHolder(view: View): ViewHolder() {
-    val simpleInstruction: TextView
-    val distanceView: DistanceView
-    val iconImageView: ImageView
+  class PedestrianViewHolder(view: View): ViewHolder() {
+    val totalDistanceView: DistanceView
+    val totalTimeView: TimeView
+    val instructionsContainer: LinearLayout
+    val dashedLine: View
 
     init {
-      simpleInstruction = view.findViewById(R.id.simple_instruction) as TextView
-      distanceView = view.findViewById(R.id.distance) as DistanceView
-      iconImageView = view.findViewById(R.id.icon) as ImageView
+      totalDistanceView = view.findViewById(R.id.total_distance) as DistanceView
+      totalTimeView = view.findViewById(R.id.total_time) as TimeView
+      instructionsContainer = view.findViewById(R.id.instructions_container) as LinearLayout
+      dashedLine = view.findViewById(R.id.dashed_line)
     }
   }
 
