@@ -19,7 +19,7 @@ import java.util.ArrayList
 class DirectionListAdapter(val context: Context, val strings: ArrayList<String>,
         val types: ArrayList<Int>, val distances: ArrayList<Int>,
         val travelTypes: ArrayList<TravelType>, val travelModes: ArrayList<TravelMode>,
-        val reverse : Boolean?, val multiModalHelper: MultiModalHelper) : BaseAdapter() {
+        val reverse : Boolean?) : BaseAdapter() {
 
     private final val CURRENT_LOCATION_OFFSET =  1
 
@@ -74,10 +74,6 @@ class DirectionListAdapter(val context: Context, val strings: ArrayList<String>,
             val distance = distances[position]
             var iconId: Int = DisplayHelper.getRouteDrawable(context, types[position])
 
-            if (travelModes[position] == TravelMode.TRANSIT) {
-                iconId = multiModalHelper.getTransitIcon(travelTypes[position])
-            }
-
             holder.simpleInstruction.text = strings[position].toString()
             holder.distanceView.distanceInMeters = distance
             holder.iconImageView.setImageResource(iconId)
@@ -91,10 +87,6 @@ class DirectionListAdapter(val context: Context, val strings: ArrayList<String>,
             val adjustedPosition = position - CURRENT_LOCATION_OFFSET
             val distance = distances[adjustedPosition]
             var iconId = DisplayHelper.getRouteDrawable(context, types[adjustedPosition])
-
-            if (travelModes[adjustedPosition] == TravelMode.TRANSIT) {
-                iconId = multiModalHelper.getTransitIcon(travelTypes[adjustedPosition])
-            }
 
             holder.simpleInstruction.text = strings[adjustedPosition].toString()
             holder.distanceView.distanceInMeters = distance

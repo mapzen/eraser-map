@@ -1106,8 +1106,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         } else {
             previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings,
                 instructionTypes, instructionDistances, instructionTravelTypes,
-                instructionTravelModes, routeManager.reverse,
-                MultiModalHelper(routeManager.route?.rawRoute))
+                instructionTravelModes, routeManager.reverse)
             if (divider != null) {
                 previewDirectionListView.divider = divider
                 previewDirectionListView.dividerHeight = dividerHeight as Int
