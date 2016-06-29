@@ -8,7 +8,7 @@
       android:id="@+id/starting_dot"
       android:layout_width="10dp"
       android:layout_height="10dp"
-      android:background="@drawable/first_transit_stop_dot"
+      android:background="@drawable/ic_transit_stop"
       android:layout_marginLeft="16dp"
       />
 

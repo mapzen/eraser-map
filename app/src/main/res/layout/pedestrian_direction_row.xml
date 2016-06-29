@@ -7,13 +7,13 @@
 
   <ImageView
       android:id="@+id/pedestrian_icon"
-      android:layout_width="30dp"
-      android:layout_height="30dp"
+      android:layout_width="18dp"
+      android:layout_height="25dp"
       android:background="@drawable/ic_pedestrian"
       android:layout_alignParentTop="true"
       android:layout_alignParentLeft="true"
-      android:paddingLeft="10dp"
-      android:paddingRight="10dp"
+      android:layout_marginLeft="20dp"
+      android:layout_marginRight="10dp"
       />
 
   <com.mapzen.erasermap.view.DistanceTimeExpanderLayout
