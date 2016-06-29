@@ -140,7 +140,7 @@ dependencies {
   compile 'com.splunk.mint:mint:4.2.1'
   compile 'com.squareup.okhttp:okhttp:2.4.0'
   compile 'com.mapzen.android:speakerbox:1.4.1'
-  compile 'com.mapzen:on-the-road:0.8.2-SNAPSHOT'
+  compile 'com.mapzen:on-the-road:0.8.3-SNAPSHOT'
 
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.9.5'
