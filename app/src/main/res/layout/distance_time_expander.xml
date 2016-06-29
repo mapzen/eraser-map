@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/distance_time_container"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+  <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:background="@drawable/bg_white_light_gray_border"
+      android:layout_gravity="center_vertical">
+
+    <com.mapzen.erasermap.view.DistanceView
+        android:id="@+id/total_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/dark_gray"
+        android:textSize="@dimen/font_small"
+        android:paddingLeft="8dp" />
+
+    <TextView
+        android:id="@+id/distance_time_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/dark_gray"
+        android:textSize="@dimen/font_small"
+        android:text="@string/comma" />
+
+    <com.mapzen.erasermap.view.TimeView
+        android:id="@+id/total_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/dark_gray"
+        android:textSize="@dimen/font_small"
+        android:paddingRight="8dp"
+        android:paddingLeft="2dp" />
+
+  </LinearLayout>
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="1dp"
+      android:background="@color/light_gray"
+      android:layout_gravity="center_vertical"
+      />
+
+</LinearLayout>

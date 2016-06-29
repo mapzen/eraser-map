@@ -188,11 +188,18 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     }
   }
 
-  //TODO:
   private fun setTransitRow(position: Int, holder: TransitViewHolder) {
     val listItem = listItems[position]
     val instructionGroup = listItem.extra as InstructionGroup
-    holder.subtitle.text = instructionGroup.instructions[0].getHumanTurnInstruction()
+    val instruction = instructionGroup.instructions[0]
+    holder.startingStationName.text = instructionGroup.firstStationName(context, instruction)
+    holder.travelTypeIcon.setImageResource(multiModalHelper.getTransitIcon(
+        instruction.getTravelType()))
+    holder.instructionText.text = instruction.getHumanTurnInstruction()
+    holder.distanceTimeText.text = instructionGroup.numberOfStops(context, instruction)
+    holder.timeView.timeInMinutes = instructionGroup.totalTime / 60
+//TODO
+//    val stationNamesContainer: LinearLayout
   }
 
   open class ViewHolder() {
@@ -223,15 +230,23 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
   }
 
   class TransitViewHolder(view: View): ViewHolder() {
-    val title: TextView
-    val subtitle: TextView
-    val tertiaryTitle: TextView
+    val startingStationName: TextView
+    val travelTypeIcon: ImageView
+    val instructionText: TextView
+    val distanceTimeText: TextView
+    val timeView: TimeView
+    val stationNamesContainer: LinearLayout
 
     init {
-      title = view.findViewById(R.id.title) as TextView
-      subtitle = view.findViewById(R.id.subtitle) as TextView
-      tertiaryTitle = view.findViewById(R.id.tertiary_title) as TextView
+      startingStationName = view.findViewById(R.id.starting_station_name) as TextView
+      travelTypeIcon = view.findViewById(R.id.travel_type_icon) as ImageView
+      instructionText = view.findViewById(R.id.instruction_text) as TextView
+      distanceTimeText = view.findViewById(R.id.distance_time_text_view) as TextView
+      timeView = view.findViewById(R.id.total_time) as TimeView
+      stationNamesContainer = view.findViewById(R.id.station_names_container) as LinearLayout
+      view.findViewById(R.id.total_distance).visibility = View.GONE
     }
+
   }
 
 }

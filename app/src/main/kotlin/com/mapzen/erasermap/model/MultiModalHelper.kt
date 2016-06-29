@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.model
 
 import com.mapzen.erasermap.R
+import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.TravelType
 import org.json.JSONObject
 
@@ -19,6 +20,4 @@ class MultiModalHelper(private val rawRoute: JSONObject?) {
             else -> return 0
         }
     }
-
-
 }
