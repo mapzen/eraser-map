@@ -41,7 +41,6 @@ import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.MultiModalHelper
 import com.mapzen.erasermap.model.PermissionManager
 import com.mapzen.erasermap.model.RouteManager
-import com.mapzen.erasermap.model.SectionCalculator
 import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.util.AxisAlignedBoundingBox
@@ -58,7 +57,6 @@ import com.mapzen.erasermap.view.RoutePreviewView
 import com.mapzen.erasermap.view.RoutingDirectionListAdapter
 import com.mapzen.erasermap.view.SearchResultsAdapter
 import com.mapzen.erasermap.view.SearchResultsView
-import com.mapzen.erasermap.view.SectionAdapterInterface
 import com.mapzen.erasermap.view.SettingsActivity
 import com.mapzen.erasermap.view.Speaker
 import com.mapzen.erasermap.view.VoiceNavigationController
