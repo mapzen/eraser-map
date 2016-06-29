@@ -165,28 +165,39 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     val instructionGroup = listItem.extra as InstructionGroup
     holder.totalDistanceView.distanceInMeters = instructionGroup.totalDistance
     holder.totalTimeView.timeInMinutes = instructionGroup.totalTime / SEC_PER_MIN
+    if (listItem.expanded) {
+      holder.distanceTimeContainer.openArrow()
+    } else {
+      holder.distanceTimeContainer.closeArrow()
+    }
+    holder.distanceTimeContainer.setOnClickListener {
+      listItem.expanded = !listItem.expanded
+      notifyDataSetChanged()
+    }
 
     holder.instructionsContainer.removeAllViews()
+    if (listItem.expanded) {
+      for (i in 0..instructionGroup.instructions.size - 1) { //TODO: recycle views added to this
+        val instruction = instructionGroup.instructions[i]
+        val distance = instruction.distance
+        val instructionRow = View.inflate(context, R.layout.instruction_row, null)
+        var iconId = DisplayHelper.getRouteDrawable(context, instruction.turnInstruction)
+        if (instruction.getTravelMode() == TravelMode.TRANSIT) {
+          iconId = multiModalHelper.getTransitIcon(instructionGroup.travelType)
+        }
 
-    for (i in 0..instructionGroup.instructions.size - 1) { //TODO: recycle views added to this
-      val instruction = instructionGroup.instructions[i]
-      val distance = instruction.distance
-      val instructionRow = View.inflate(context, R.layout.instruction_row, null)
-      var iconId = DisplayHelper.getRouteDrawable(context, instruction.turnInstruction)
-      if (instruction.getTravelMode() == TravelMode.TRANSIT) {
-        iconId = multiModalHelper.getTransitIcon(instructionGroup.travelType)
+        val iconView = instructionRow.findViewById(R.id.icon) as ImageView
+        val titleView = instructionRow.findViewById(R.id.title) as TextView
+        val distanceView = instructionRow.findViewById(R.id.distance) as DistanceView
+
+        iconView.setImageResource(iconId)
+        titleView.text = instruction.getHumanTurnInstruction()
+        distanceView.distanceInMeters = distance
+
+        holder.instructionsContainer.addView(instructionRow)
       }
-
-      val iconView = instructionRow.findViewById(R.id.icon) as ImageView
-      val titleView = instructionRow.findViewById(R.id.title) as TextView
-      val distanceView = instructionRow.findViewById(R.id.distance) as DistanceView
-
-      iconView.setImageResource(iconId)
-      titleView.text = instruction.getHumanTurnInstruction()
-      distanceView.distanceInMeters = distance
-
-      holder.instructionsContainer.addView(instructionRow)
     }
+
   }
 
   private fun setTransitRow(position: Int, holder: TransitViewHolder) {
@@ -199,15 +210,25 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     holder.instructionText.text = instruction.getHumanTurnInstruction()
     holder.distanceTimeText.text = instructionGroup.numberOfStops(context, instruction)
     holder.timeView.timeInMinutes = instructionGroup.totalTime / 60
-
+    if (listItem.expanded) {
+      holder.distanceTimeContainer.openArrow()
+    } else {
+      holder.distanceTimeContainer.closeArrow()
+    }
+    holder.distanceTimeContainer.setOnClickListener {
+      listItem.expanded = !listItem.expanded
+      notifyDataSetChanged()
+    }
     //TODO: recycle views added to this container
     holder.stationNamesContainer.removeAllViews()
-    val transitStops = instruction.getTransitInfo()?.getTransitStops() as ArrayList<TransitStop>
-    for (i in 1..transitStops.size - 1) {
-      val stationRow = View.inflate(context, R.layout.transit_station_row, null)
-      val stationName = stationRow.findViewById(R.id.station_name) as TextView
-      stationName.text = transitStops[i].getName()
-      holder.stationNamesContainer.addView(stationRow)
+    if (listItem.expanded) {
+      val transitStops = instruction.getTransitInfo()?.getTransitStops() as ArrayList<TransitStop>
+      for (i in 1..transitStops.size - 1) {
+        val stationRow = View.inflate(context, R.layout.transit_station_row, null)
+        val stationName = stationRow.findViewById(R.id.station_name) as TextView
+        stationName.text = transitStops[i].getName()
+        holder.stationNamesContainer.addView(stationRow)
+      }
     }
   }
 
@@ -229,12 +250,15 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     val totalTimeView: TimeView
     val instructionsContainer: LinearLayout
     val dashedLine: View
+    val distanceTimeContainer: DistanceTimeExpanderLayout
 
     init {
       totalDistanceView = view.findViewById(R.id.total_distance) as DistanceView
       totalTimeView = view.findViewById(R.id.total_time) as TimeView
       instructionsContainer = view.findViewById(R.id.instructions_container) as LinearLayout
       dashedLine = view.findViewById(R.id.dashed_line)
+      distanceTimeContainer = view.findViewById(R.id.distance_time_container)
+          as DistanceTimeExpanderLayout
     }
   }
 
@@ -245,6 +269,7 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     val distanceTimeText: TextView
     val timeView: TimeView
     val stationNamesContainer: LinearLayout
+    val distanceTimeContainer: DistanceTimeExpanderLayout
 
     init {
       startingStationName = view.findViewById(R.id.starting_station_name) as TextView
@@ -253,6 +278,8 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
       distanceTimeText = view.findViewById(R.id.distance_time_text_view) as TextView
       timeView = view.findViewById(R.id.total_time) as TimeView
       stationNamesContainer = view.findViewById(R.id.station_names_container) as LinearLayout
+      distanceTimeContainer = view.findViewById(R.id.distance_time_container)
+          as DistanceTimeExpanderLayout
       view.findViewById(R.id.total_distance).visibility = View.GONE
     }
 

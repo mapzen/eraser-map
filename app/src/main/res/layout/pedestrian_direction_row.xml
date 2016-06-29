@@ -16,8 +16,9 @@
       android:paddingRight="10dp"
       />
 
-  <include
-      layout="@layout/distance_time_expander"
+  <com.mapzen.erasermap.view.DistanceTimeExpanderLayout
+      android:id="@+id/distance_time_container"
+      android:orientation="horizontal"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_toRightOf="@+id/pedestrian_icon"/>

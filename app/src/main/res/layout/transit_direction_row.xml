@@ -6,9 +6,9 @@
 
   <ImageView
       android:id="@+id/starting_dot"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:background="@drawable/ic_current_location"
+      android:layout_width="10dp"
+      android:layout_height="10dp"
+      android:background="@drawable/first_transit_stop_dot"
       android:layout_marginLeft="16dp"
       />
 
@@ -44,8 +44,9 @@
       android:layout_marginBottom="8dp"
       />
 
-  <include
-      layout="@layout/distance_time_expander"
+  <com.mapzen.erasermap.view.DistanceTimeExpanderLayout
+      android:id="@+id/distance_time_container"
+      android:orientation="horizontal"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_below="@+id/instruction_text"
