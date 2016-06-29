@@ -7,10 +7,7 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.model.MultiModalHelper
 import com.mapzen.erasermap.util.DisplayHelper
-import com.mapzen.valhalla.TravelMode
-import com.mapzen.valhalla.TravelType
 import java.util.ArrayList
 
 /**
@@ -18,8 +15,7 @@ import java.util.ArrayList
  */
 class DirectionListAdapter(val context: Context, val strings: ArrayList<String>,
         val types: ArrayList<Int>, val distances: ArrayList<Int>,
-        val travelTypes: ArrayList<TravelType>, val travelModes: ArrayList<TravelMode>,
-        val reverse : Boolean?) : BaseAdapter() {
+    val reverse : Boolean?) : BaseAdapter() {
 
     private final val CURRENT_LOCATION_OFFSET =  1
 

@@ -146,10 +146,11 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
   }
 
   private fun listItemForLastInstruction(instructionGroup: InstructionGroup): ListRowItem {
-    val index = instructionGroup.strings.size-1
+    val index = instructionGroup.instructions.size-1
     val item = ListRowItem(ListRowType.ARRIVAL, R.layout.icon_title_row)
-    item.iconId = DisplayHelper.getRouteDrawable(context, instructionGroup.types[index])
-    item.title = instructionGroup.strings[index]
+    val instruction = instructionGroup.instructions[index]
+    item.iconId = DisplayHelper.getRouteDrawable(context, instruction.turnInstruction)
+    item.title = instruction.getHumanTurnInstruction()
     return item
   }
 
@@ -167,11 +168,12 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
 
     holder.instructionsContainer.removeAllViews()
 
-    for (i in 0..instructionGroup.strings.size - 1) { //TODO: recycle views added to this
-      val distance = instructionGroup.distances[i]
+    for (i in 0..instructionGroup.instructions.size - 1) { //TODO: recycle views added to this
+      val instruction = instructionGroup.instructions[i]
+      val distance = instruction.distance
       val instructionRow = View.inflate(context, R.layout.instruction_row, null)
-      var iconId = DisplayHelper.getRouteDrawable(context, instructionGroup.types[i])
-      if (instructionGroup.travelMode == TravelMode.TRANSIT) {
+      var iconId = DisplayHelper.getRouteDrawable(context, instruction.turnInstruction)
+      if (instruction.getTravelMode() == TravelMode.TRANSIT) {
         iconId = multiModalHelper.getTransitIcon(instructionGroup.travelType)
       }
 
@@ -180,7 +182,7 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
       val distanceView = instructionRow.findViewById(R.id.distance) as DistanceView
 
       iconView.setImageResource(iconId)
-      titleView.text = instructionGroup.strings[i].toString()
+      titleView.text = instruction.getHumanTurnInstruction()
       distanceView.distanceInMeters = distance
 
       holder.instructionsContainer.addView(instructionRow)
@@ -191,7 +193,7 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
   private fun setTransitRow(position: Int, holder: TransitViewHolder) {
     val listItem = listItems[position]
     val instructionGroup = listItem.extra as InstructionGroup
-    holder.subtitle.text = instructionGroup.strings[0].toString()
+    holder.subtitle.text = instructionGroup.instructions[0].getHumanTurnInstruction()
   }
 
   open class ViewHolder() {

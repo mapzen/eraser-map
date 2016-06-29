@@ -1,60 +1,41 @@
 package com.mapzen.erasermap.model
 
+import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.TravelMode
 import com.mapzen.valhalla.TravelType
 import java.util.ArrayList
 
-class InstructionGrouper(val strings: ArrayList<String>,
-    val types: ArrayList<Int>, val distances: ArrayList<Int>, val times: ArrayList<Int>,
-    val travelTypes: ArrayList<TravelType>, val travelModes: ArrayList<TravelMode>) {
+class InstructionGrouper(val instructions: ArrayList<Instruction>) {
 
   lateinit var instructionGroups: ArrayList<InstructionGroup>
 
   init {
     val groups = ArrayList<InstructionGroup>()
 
+    var currInstructions: ArrayList<Instruction>? = null
     var currType: TravelType? = null
-    var currStrings: ArrayList<String>? = null
-    var currTypes: ArrayList<Int>? = null
-    var currDistances: ArrayList<Int>? = null
-    var currTimes: ArrayList<Int>? = null
     var currMode: TravelMode? = null
 
-    for (i in 0..travelTypes.size-1) {
-      val travelType = travelTypes[i]
+    for (i in 0..instructions.size-1) {
+      val travelType = instructions[i].getTravelType()
+      val travelMode = instructions[i].getTravelMode()
       if (currType == null) {
         currType = travelType
-        currStrings = ArrayList<String>()
-        currTypes = ArrayList<Int>()
-        currDistances = ArrayList<Int>()
-        currTimes = ArrayList<Int>()
-        currMode = travelModes[i]
+        currInstructions = ArrayList<Instruction>()
+        currMode = travelMode
       }
-      if (currType != travelType) {
-        groups.add(InstructionGroup(currStrings as ArrayList<String>,
-            currTypes as ArrayList<Int>, currDistances as ArrayList<Int>,
-            currTimes as ArrayList<Int>, currType , currMode as TravelMode))
+      if (currType != travelType || currMode != travelMode) {
+        groups.add(InstructionGroup(currType , currMode as TravelMode, currInstructions as ArrayList<Instruction>))
         currType = travelType
-        currStrings = ArrayList<String>()
-        currTypes = ArrayList<Int>()
-        currDistances = ArrayList<Int>()
-        currTimes = ArrayList<Int>()
-        currMode = travelModes[i]
-        currStrings?.add(strings[i])
-        currTypes?.add(types[i])
-        currDistances?.add(distances[i])
-        currTimes?.add(times[i])
+        currMode = travelMode
+        currInstructions = ArrayList<Instruction>()
+        currInstructions.add(instructions[i])
       } else {
-        currStrings?.add(strings[i])
-        currTypes?.add(types[i])
-        currDistances?.add(distances[i])
-        currTimes?.add(times[i])
+        currInstructions?.add(instructions[i])
       }
 
     }
-    groups.add(InstructionGroup(currStrings as ArrayList<String>,
-        currTypes as ArrayList<Int>, currDistances as ArrayList<Int>,
-        currTimes as ArrayList<Int>, currType as TravelType , currMode as TravelMode))
+    groups.add(InstructionGroup(currType as TravelType , currMode as TravelMode, currInstructions as ArrayList<Instruction>))
 
     instructionGroups = groups
   }
@@ -64,7 +45,7 @@ class InstructionGrouper(val strings: ArrayList<String>,
   }
 
   fun numInstructionsInGroup(index: Int): Int {
-    return instructionGroups[index].strings.size
+    return instructionGroups[index].instructions.size
   }
 
   fun getInstructionGroup(index: Int): InstructionGroup {

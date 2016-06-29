@@ -76,6 +76,7 @@ import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.TouchInput
+import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
@@ -1060,9 +1061,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
         val instructionStrings = ArrayList<String>()
         val instructionTypes = ArrayList<Int>()
         val instructionDistances = ArrayList<Int>()
-        val instructionTimes = ArrayList<Int>()
-        val instructionTravelTypes = ArrayList<TravelType>()
-        val instructionTravelModes = ArrayList<TravelMode>()
 
         val instructions = routeManager.route?.getRouteInstructions()
         if (instructions != null) {
@@ -1073,9 +1071,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
                 }
                 instructionTypes.add(instruction.turnInstruction)
                 instructionDistances.add(instruction.distance)
-                instructionTimes.add(instruction.getTime())
-                instructionTravelTypes.add(instruction.getTravelType())
-                instructionTravelModes.add(instruction.getTravelMode())
             }
         }
 
@@ -1091,9 +1086,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         routeBtmContainer.visibility = View.VISIBLE
         distanceView.distanceInMeters = routeManager.route?.getTotalDistance() as Int
         destinationNameTextView.text = simpleFeature.name()
-        val instructionGrouper = InstructionGrouper(instructionStrings,
-            instructionTypes, instructionDistances, instructionTimes, instructionTravelTypes,
-            instructionTravelModes)
+        val instructionGrouper = InstructionGrouper(instructions as ArrayList<Instruction>)
         if (routeManager.type == Router.Type.MULTIMODAL) {
             previewDirectionListView.adapter = RoutingDirectionListAdapter(this, instructionGrouper,
                 routeManager.reverse, MultiModalHelper(routeManager.route?.rawRoute))
@@ -1105,8 +1098,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             previewDirectionListView.dividerHeight = 0;
         } else {
             previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings,
-                instructionTypes, instructionDistances, instructionTravelTypes,
-                instructionTravelModes, routeManager.reverse)
+                instructionTypes, instructionDistances, routeManager.reverse)
             if (divider != null) {
                 previewDirectionListView.divider = divider
                 previewDirectionListView.dividerHeight = dividerHeight as Int
