@@ -14,6 +14,7 @@ import com.mapzen.erasermap.model.ListRowItem
 import com.mapzen.erasermap.model.ListRowType
 import com.mapzen.erasermap.model.MultiModalHelper
 import com.mapzen.erasermap.util.DisplayHelper
+import com.mapzen.valhalla.TransitStop
 import com.mapzen.valhalla.TravelMode
 import java.util.ArrayList
 import java.util.HashMap
@@ -198,8 +199,16 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     holder.instructionText.text = instruction.getHumanTurnInstruction()
     holder.distanceTimeText.text = instructionGroup.numberOfStops(context, instruction)
     holder.timeView.timeInMinutes = instructionGroup.totalTime / 60
-//TODO
-//    val stationNamesContainer: LinearLayout
+
+    //TODO: recycle views added to this container
+    holder.stationNamesContainer.removeAllViews()
+    val transitStops = instruction.getTransitInfo()?.getTransitStops() as ArrayList<TransitStop>
+    for (i in 1..transitStops.size - 1) {
+      val stationRow = View.inflate(context, R.layout.transit_station_row, null)
+      val stationName = stationRow.findViewById(R.id.station_name) as TextView
+      stationName.text = transitStops[i].getName()
+      holder.stationNamesContainer.addView(stationRow)
+    }
   }
 
   open class ViewHolder() {

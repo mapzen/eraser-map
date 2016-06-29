@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <TextView
+      android:id="@+id/station_dot"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:paddingLeft="32dp"
+      android:paddingRight="32dp"
+      android:textSize="@dimen/font_big"
+      android:textColor="@color/dark_gray"
+      android:text="•"
+      />
+
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textSize="@dimen/font_medium"
+      android:textColor="@color/gray"
+      android:id="@+id/station_name"
+      android:layout_toRightOf="@+id/station_dot"
+      />
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="1dp"
+      android:background="@color/light_gray"
+      android:layout_below="@id/station_name"
+      android:layout_toRightOf="@id/station_dot"
+      android:layout_alignParentBottom="true"
+    />
+
+</RelativeLayout>
