@@ -168,8 +168,10 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     holder.totalTimeView.timeInMinutes = instructionGroup.totalTime / SEC_PER_MIN
     if (listItem.expanded) {
       holder.distanceTimeContainer.openArrow()
+      holder.instructionsContainer.visibility = View.VISIBLE
     } else {
       holder.distanceTimeContainer.closeArrow()
+      holder.instructionsContainer.visibility = View.GONE
     }
     holder.distanceTimeContainer.setOnClickListener {
       listItem.expanded = !listItem.expanded
@@ -216,7 +218,6 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
       holder.stationNamesContainer.visibility = View.VISIBLE
     } else {
       holder.distanceTimeContainer.closeArrow()
-      holder.transitLine.layoutParams.height = 0
       holder.stationNamesContainer.visibility = View.GONE
     }
 

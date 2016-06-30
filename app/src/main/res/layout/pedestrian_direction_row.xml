@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout
+<com.mapzen.erasermap.view.PedestrianRowRelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -15,6 +15,28 @@
       android:layout_marginLeft="20dp"
       android:layout_marginRight="10dp"
       />
+
+  <!--frame the dashed line because it is actually a rectangle and we hide the top,-->
+  <!--right, and bottom edges. we give it negative margins to hide corners. width is-->
+  <!--arbitrary 20dp (its only important that its larger than container's 4dp) -->
+  <FrameLayout
+      android:id="@+id/dashed_line_container"
+      android:layout_width="4dp"
+      android:layout_height="0dp"
+      android:layout_below="@+id/pedestrian_icon"
+      android:layout_marginLeft="24dp" >
+
+      <View
+          android:id="@+id/dashed_line"
+          android:layout_width="20dp"
+          android:layout_height="0dp"
+          android:background="@drawable/dashed_line"
+          android:layerType="software"
+          android:layout_marginTop="-4dp"
+          android:layout_marginBottom="-4dp"
+          />
+
+  </FrameLayout>
 
   <com.mapzen.erasermap.view.DistanceTimeExpanderLayout
       android:id="@+id/distance_time_container"
@@ -37,19 +59,5 @@
 
   </LinearLayout>
 
-  <!--TODO: why does rotation break alignment relationships-->
-  <View
-      android:id="@+id/dashed_line"
-      android:layout_width="600dp"
-      android:layout_height="4dp"
-      android:layout_marginLeft="-285dp"
-      android:layout_below="@+id/pedestrian_icon"
-      android:layout_alignParentLeft="true"
-      android:layout_alignParentBottom="true"
-      android:background="@drawable/dashed_line"
-      android:layerType="software"
-      android:rotation="90"
-      />
 
-
-</RelativeLayout>
+</com.mapzen.erasermap.view.PedestrianRowRelativeLayout>
