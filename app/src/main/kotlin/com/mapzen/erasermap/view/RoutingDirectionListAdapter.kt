@@ -128,10 +128,17 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     if (reverse == false) {
       listItems.add(listItemForCurrentLocation())
     }
+    var prevMode: TravelMode? = null
     for (i in 0..instructionGrouper.numGroups() - 1) {
       val instructionGroup = instructionGrouper.getInstructionGroup(i)
       val listItem = listItemForInstructionGroup(instructionGroup)
+      listItem.prevMode = prevMode
+      if (i <= instructionGrouper.numGroups() - 2) {
+        val nextGroup = instructionGrouper.getInstructionGroup(i+1)
+        listItem.nextItemMode = nextGroup.travelMode
+      }
       listItems.add(listItem)
+      prevMode = instructionGroup.travelMode
     }
     val lastInstructionGroup = instructionGrouper.getInstructionGroup(
         instructionGrouper.numGroups() - 1)
@@ -244,18 +251,50 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     val hex = "#" + Integer.toString(color, 16)
     holder.transitLine.setBackgroundColor(Color.parseColor(hex))
 
+    if (listItem.prevMode != null) {
+      if (listItem.prevMode == TravelMode.TRANSIT) {
+        val prevListItem = listItems[position-1]
+        val prevInstructionGroup = prevListItem.extra as InstructionGroup
+        val prevInstruction = prevInstructionGroup.instructions[0]
+        val prevColor = prevInstruction.getTransitInfo()?.getColor() as Int
+        val prevHex = "#" + Integer.toString(prevColor, 16)
+        holder.prevTransitLine.setBackgroundColor(Color.parseColor(prevHex))
+        holder.prevTransitLine.visibility = View.VISIBLE
+      } else {
+        holder.prevTransitLine.visibility = View.GONE
+      }
+    } else {
+      holder.prevTransitLine.visibility = View.GONE
+    }
+
     //TODO: recycle views added to this container
     holder.stationNamesContainer.removeAllViews()
+    val transitStops = instruction.getTransitInfo()?.getTransitStops() as ArrayList<TransitStop>
+
+    // we show all stops except first and last which are shown in larger font
+    var numStops = transitStops.size - 2
+    if (listItem.nextItemMode != null) {
+      if (listItem.nextItemMode == TravelMode.PEDESTRIAN) {
+        holder.endingStationDot.visibility = View.VISIBLE
+        holder.endingStationName.visibility = View.VISIBLE
+        holder.pedestrianConnector.visibility = View.VISIBLE
+      } else {
+        numStops++
+        holder.endingStationDot.visibility = View.GONE
+        holder.endingStationName.visibility = View.GONE
+        holder.pedestrianConnector.visibility = View.GONE
+      }
+    }
     if (listItem.expanded) {
-      val transitStops = instruction.getTransitInfo()?.getTransitStops() as ArrayList<TransitStop>
-      for (i in 1..transitStops.size - 1) {
+
+      for (i in 1..numStops) {
         val stationRow = View.inflate(context, R.layout.transit_station_row, null)
         val stationName = stationRow.findViewById(R.id.station_name) as TextView
         stationName.text = transitStops[i].getName()
         holder.stationNamesContainer.addView(stationRow)
       }
     }
-
+    holder.endingStationName.text = transitStops[transitStops.size-1].getName()
   }
 
   open class ViewHolder() {
@@ -298,6 +337,10 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     val stationNamesContainer: LinearLayout
     val distanceTimeContainer: DistanceTimeExpanderLayout
     val transitLine: View
+    val endingStationName: TextView
+    val endingStationDot: View
+    val pedestrianConnector: View
+    val prevTransitLine: View
 
     init {
       transitContainer = view
@@ -310,6 +353,10 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
       distanceTimeContainer = view.findViewById(R.id.distance_time_container)
           as DistanceTimeExpanderLayout
       transitLine = view.findViewById(R.id.transit_line)
+      endingStationName = view.findViewById(R.id.ending_station_name) as TextView
+      endingStationDot = view.findViewById(R.id.ending_dot)
+      pedestrianConnector = view.findViewById(R.id.pedestrian_connector)
+      prevTransitLine = view.findViewById(R.id.prev_transit_line)
       view.findViewById(R.id.total_distance).visibility = View.GONE
     }
 

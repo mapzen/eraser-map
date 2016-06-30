@@ -24,7 +24,7 @@
       android:layout_width="4dp"
       android:layout_height="0dp"
       android:layout_below="@+id/pedestrian_icon"
-      android:layout_marginLeft="24dp" >
+      android:layout_marginLeft="30dp" >
 
       <View
           android:id="@+id/dashed_line"

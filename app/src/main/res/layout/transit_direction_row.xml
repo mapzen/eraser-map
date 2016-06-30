@@ -4,12 +4,21 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+  <View
+      android:id="@+id/prev_transit_line"
+      android:layout_width="5dp"
+      android:layout_height="50dp"
+      android:layout_marginLeft="30dp"
+      android:visibility="gone"
+      />
+
   <ImageView
       android:id="@+id/starting_dot"
       android:layout_width="10dp"
       android:layout_height="10dp"
       android:background="@drawable/ic_transit_stop"
       android:layout_marginLeft="27dp"
+      android:layout_marginTop="10dp"
       />
 
   <View
@@ -25,7 +34,6 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_toRightOf="@+id/travel_type_icon"
-      android:layout_marginTop="16dp"
       android:layout_marginLeft="16dp"
       android:textSize="@dimen/font_medium"
       android:textStyle="bold"
@@ -38,6 +46,7 @@
       android:layout_height="30dp"
       android:layout_below="@+id/starting_dot"
       android:layout_marginLeft="16dp"
+      android:layout_marginTop="10dp"
       />
 
   <TextView
@@ -70,5 +79,47 @@
       android:orientation="vertical"
       android:layout_below="@+id/distance_time_container"
       />
+
+  <ImageView
+      android:id="@+id/ending_dot"
+      android:layout_width="10dp"
+      android:layout_height="10dp"
+      android:background="@drawable/ic_transit_stop"
+      android:layout_marginTop="10dp"
+      android:layout_marginLeft="27dp"
+      android:layout_below="@id/station_names_container"
+      />
+
+  <TextView
+      android:id="@+id/ending_station_name"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/station_names_container"
+      android:layout_toRightOf="@+id/travel_type_icon"
+      android:layout_marginLeft="16dp"
+      android:textSize="@dimen/font_medium"
+      android:textStyle="bold"
+      android:textColor="@color/dark_gray"
+      />
+
+  <FrameLayout
+      android:id="@+id/pedestrian_connector"
+      android:layout_width="6dp"
+      android:layout_height="20dp"
+      android:layout_below="@+id/ending_dot"
+      android:layout_marginLeft="30dp"
+      android:background="@color/mz_white">
+
+    <View
+        android:id="@+id/dashed_line"
+        android:layout_width="20dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/dashed_line"
+        android:layerType="software"
+        android:layout_marginTop="-4dp"
+        android:layout_marginBottom="-4dp"
+        />
+
+  </FrameLayout>
 
 </com.mapzen.erasermap.view.TransitRowRelativeLayout>
