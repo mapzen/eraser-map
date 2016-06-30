@@ -1084,8 +1084,8 @@ class MainActivity : AppCompatActivity(), MainViewController,
         routeBtmContainer.visibility = View.VISIBLE
         distanceView.distanceInMeters = routeManager.route?.getTotalDistance() as Int
         destinationNameTextView.text = simpleFeature.name()
-        val instructionGrouper = InstructionGrouper(instructions as ArrayList<Instruction>)
         if (routeManager.type == Router.Type.MULTIMODAL) {
+            val instructionGrouper = InstructionGrouper(instructions as ArrayList<Instruction>)
             previewDirectionListView.adapter = RoutingDirectionListAdapter(this, instructionGrouper,
                 routeManager.reverse, MultiModalHelper(routeManager.route?.rawRoute))
             if (divider == null) {

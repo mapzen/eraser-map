@@ -4,18 +4,32 @@ import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.TravelMode
 import com.mapzen.valhalla.TravelType
 import java.util.ArrayList
+import java.util.HashSet
 
 /**
  * Handles breaking the instructions up into groups so that they can be properly
  * displayed by [RoutingDirectionListAdapter]. The grouper creates a new group
- * when the next instruction's [travelType] or [travelMode] differs from the current. It
- * also creates a new group for every [TravelMode.TRANSIT]
+ * when the next instruction's [travelType] or [travelMode] differs from the current.
+ * It also creates a new group for every [TravelMode.TRANSIT].
+ *
+ * We dont show some instruction types which have distance, those are filtered out and
+ * not added to groups
  */
 class InstructionGrouper(val instructions: ArrayList<Instruction>) {
+
+  companion object {
+    const val INSTRUCTION_TYPE_TRANSIT_CONNECTION_START = 33
+    const val INSTRUCTION_TYPE_TRANSIT_CONNECTION_DESTINATION = 35
+  }
+
+  private val instructionTypesNotShown = HashSet<Int>()
 
   lateinit var instructionGroups: ArrayList<InstructionGroup>
 
   init {
+    instructionTypesNotShown.add(INSTRUCTION_TYPE_TRANSIT_CONNECTION_START)
+    instructionTypesNotShown.add(INSTRUCTION_TYPE_TRANSIT_CONNECTION_DESTINATION)
+
     val groups = ArrayList<InstructionGroup>()
 
     var currInstructions: ArrayList<Instruction>? = null
@@ -31,17 +45,27 @@ class InstructionGrouper(val instructions: ArrayList<Instruction>) {
         currMode = travelMode
       }
       if (currType != travelType || currMode != travelMode || currMode == TravelMode.TRANSIT) {
-        groups.add(InstructionGroup(currType , currMode as TravelMode, currInstructions as ArrayList<Instruction>))
+        if ((currInstructions as ArrayList<Instruction>).size > 0) {
+          groups.add(InstructionGroup(currType, currMode as TravelMode,
+              currInstructions))
+        }
         currType = travelType
         currMode = travelMode
         currInstructions = ArrayList<Instruction>()
-        currInstructions.add(instructions[i])
+        if (!instructionTypesNotShown.contains(instructions[i].turnInstruction)) {
+          currInstructions.add(instructions[i])
+        }
       } else {
-        currInstructions?.add(instructions[i])
+        if (!instructionTypesNotShown.contains(instructions[i].turnInstruction)) {
+          currInstructions?.add(instructions[i])
+        }
       }
 
     }
-    groups.add(InstructionGroup(currType as TravelType , currMode as TravelMode, currInstructions as ArrayList<Instruction>))
+    if ((currInstructions as ArrayList<Instruction>).size > 0) {
+      groups.add(InstructionGroup(currType as TravelType, currMode as TravelMode,
+          currInstructions))
+    }
 
     instructionGroups = groups
   }

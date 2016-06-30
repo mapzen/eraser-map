@@ -19,6 +19,7 @@ import com.mapzen.valhalla.TransitStop
 import com.mapzen.valhalla.TravelMode
 import java.util.ArrayList
 import java.util.HashMap
+import java.util.HashSet
 
 class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: InstructionGrouper,
     val reverse : Boolean?, val multiModalHelper: MultiModalHelper) : BaseAdapter() {
@@ -26,7 +27,12 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
   companion object {
     const val SEC_PER_MIN = 60
     const val NUM_VIEW_TYPES = 3
+    const val INSTRUCTION_TYPE_DESTINATION = 4
+    const val INSTRUCTION_TYPE_DESTINATION_RIGHT = 5
+    const val INSTRUCTION_TYPE_DESTINATION_LEFT = 6
   }
+
+  private val INSTRUCTION_TYPES_NOT_SHOWN = HashSet<Int>()
 
   private val TRAVEL_MODE_TO_ICON = HashMap<TravelMode, Int>()
   private val TRAVEL_MODE_TO_LAYOUT_ID = HashMap<TravelMode, Int>()
@@ -35,6 +41,10 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
   lateinit var listItems: ArrayList<ListRowItem>
 
   init {
+    INSTRUCTION_TYPES_NOT_SHOWN.add(INSTRUCTION_TYPE_DESTINATION)
+    INSTRUCTION_TYPES_NOT_SHOWN.add(INSTRUCTION_TYPE_DESTINATION_RIGHT)
+    INSTRUCTION_TYPES_NOT_SHOWN.add(INSTRUCTION_TYPE_DESTINATION_LEFT)
+
     TRAVEL_MODE_TO_ICON.put(TravelMode.PEDESTRIAN, R.drawable.ic_pedestrian)
     TRAVEL_MODE_TO_ICON.put(TravelMode.TRANSIT, R.drawable.ic_current_location)
 
@@ -119,7 +129,9 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
       listItems.add(listItemForCurrentLocation())
     }
     for (i in 0..instructionGrouper.numGroups() - 1) {
-      listItems.add(listItemForInstructionGroup(instructionGrouper.getInstructionGroup(i)))
+      val instructionGroup = instructionGrouper.getInstructionGroup(i)
+      val listItem = listItemForInstructionGroup(instructionGroup)
+      listItems.add(listItem)
     }
     val lastInstructionGroup = instructionGrouper.getInstructionGroup(
         instructionGrouper.numGroups() - 1)
@@ -182,6 +194,9 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     if (listItem.expanded) {
       for (i in 0..instructionGroup.instructions.size - 1) { //TODO: recycle views added to this
         val instruction = instructionGroup.instructions[i]
+        if (INSTRUCTION_TYPES_NOT_SHOWN.contains(instruction.turnInstruction)) {
+          continue
+        }
         val distance = instruction.distance
         val instructionRow = View.inflate(context, R.layout.instruction_row, null)
         var iconId = DisplayHelper.getRouteDrawable(context, instruction.turnInstruction)
