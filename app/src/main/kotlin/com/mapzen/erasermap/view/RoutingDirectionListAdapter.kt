@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.view
 
 import android.content.Context
+import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
@@ -212,13 +213,21 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     holder.timeView.timeInMinutes = instructionGroup.totalTime / 60
     if (listItem.expanded) {
       holder.distanceTimeContainer.openArrow()
+      holder.stationNamesContainer.visibility = View.VISIBLE
     } else {
       holder.distanceTimeContainer.closeArrow()
+      holder.transitLine.layoutParams.height = 0
+      holder.stationNamesContainer.visibility = View.GONE
     }
+
     holder.distanceTimeContainer.setOnClickListener {
       listItem.expanded = !listItem.expanded
       notifyDataSetChanged()
     }
+    val color = instruction.getTransitInfo()?.getColor() as Int
+    val hex = "#" + Integer.toString(color, 16)
+    holder.transitLine.setBackgroundColor(Color.parseColor(hex))
+
     //TODO: recycle views added to this container
     holder.stationNamesContainer.removeAllViews()
     if (listItem.expanded) {
@@ -230,6 +239,7 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
         holder.stationNamesContainer.addView(stationRow)
       }
     }
+
   }
 
   open class ViewHolder() {
@@ -263,6 +273,7 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
   }
 
   class TransitViewHolder(view: View): ViewHolder() {
+    val transitContainer: View
     val startingStationName: TextView
     val travelTypeIcon: ImageView
     val instructionText: TextView
@@ -270,8 +281,10 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     val timeView: TimeView
     val stationNamesContainer: LinearLayout
     val distanceTimeContainer: DistanceTimeExpanderLayout
+    val transitLine: View
 
     init {
+      transitContainer = view
       startingStationName = view.findViewById(R.id.starting_station_name) as TextView
       travelTypeIcon = view.findViewById(R.id.travel_type_icon) as ImageView
       instructionText = view.findViewById(R.id.instruction_text) as TextView
@@ -280,6 +293,7 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
       stationNamesContainer = view.findViewById(R.id.station_names_container) as LinearLayout
       distanceTimeContainer = view.findViewById(R.id.distance_time_container)
           as DistanceTimeExpanderLayout
+      transitLine = view.findViewById(R.id.transit_line)
       view.findViewById(R.id.total_distance).visibility = View.GONE
     }
 
