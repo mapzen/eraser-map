@@ -2,6 +2,9 @@ package com.mapzen.erasermap.view
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
@@ -15,11 +18,13 @@ import com.mapzen.erasermap.model.ListRowItem
 import com.mapzen.erasermap.model.ListRowType
 import com.mapzen.erasermap.model.MultiModalHelper
 import com.mapzen.erasermap.util.DisplayHelper
+import com.mapzen.valhalla.TransitInfo
 import com.mapzen.valhalla.TransitStop
 import com.mapzen.valhalla.TravelMode
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.HashSet
+import java.util.regex.Pattern
 
 class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: InstructionGrouper,
     val reverse : Boolean?, val multiModalHelper: MultiModalHelper) : BaseAdapter() {
@@ -232,7 +237,20 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     holder.startingStationName.text = instructionGroup.firstStationName(context, instruction)
     holder.travelTypeIcon.setImageResource(multiModalHelper.getTransitIcon(
         instruction.getTravelType()))
-    holder.instructionText.text = instruction.getHumanTurnInstruction()
+    var turnInstruction = instruction.getHumanTurnInstruction()
+    val pattern = Pattern.compile("\\([0-9]+ stops\\)")
+    val matcher = pattern.matcher(turnInstruction)
+    turnInstruction = matcher.replaceAll("")
+
+    val spannableString = SpannableString(turnInstruction)
+    val transitInfo = instruction.getTransitInfo() as TransitInfo
+    val shortnameLoc = spannableString.indexOf(transitInfo.getShortName(), 0, true)
+    val headsignLoc = spannableString.indexOf(transitInfo.getHeadsign(), 0 , true)
+    spannableString.setSpan(StyleSpan(Typeface.BOLD), shortnameLoc,
+        shortnameLoc + transitInfo.getShortName().length, 0)
+    spannableString.setSpan(StyleSpan(Typeface.BOLD), headsignLoc,
+        headsignLoc + transitInfo.getHeadsign().length, 0)
+    holder.instructionText.text = spannableString
     holder.distanceTimeText.text = instructionGroup.numberOfStops(context, instruction)
     holder.timeView.timeInMinutes = instructionGroup.totalTime / 60
     if (listItem.expanded) {
@@ -249,7 +267,11 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     }
     val color = instruction.getTransitInfo()?.getColor() as Int
     val hex = "#" + Integer.toString(color, 16)
-    holder.transitLine.setBackgroundColor(Color.parseColor(hex))
+    try {
+      holder.transitLine.setBackgroundColor(Color.parseColor(hex))
+    } catch(e : IllegalArgumentException) {
+      holder.transitLine.setBackgroundColor(R.color.mz_white)
+    }
 
     if (listItem.prevMode != null) {
       if (listItem.prevMode == TravelMode.TRANSIT) {
@@ -258,7 +280,11 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
         val prevInstruction = prevInstructionGroup.instructions[0]
         val prevColor = prevInstruction.getTransitInfo()?.getColor() as Int
         val prevHex = "#" + Integer.toString(prevColor, 16)
-        holder.prevTransitLine.setBackgroundColor(Color.parseColor(prevHex))
+        try {
+          holder.prevTransitLine.setBackgroundColor(Color.parseColor(prevHex))
+        } catch(e : IllegalArgumentException) {
+          holder.prevTransitLine.setBackgroundColor(R.color.mz_white)
+        }
         holder.prevTransitLine.visibility = View.VISIBLE
       } else {
         holder.prevTransitLine.visibility = View.GONE
