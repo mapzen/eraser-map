@@ -297,8 +297,10 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
           holder.prevTransitLine.setBackgroundColor(R.color.mz_white)
         }
         holder.prevTransitLine.visibility = View.VISIBLE
+        holder.prevPedestrianLine.visibility = View.GONE
       } else {
         holder.prevTransitLine.visibility = View.GONE
+        holder.prevPedestrianLine.visibility = View.VISIBLE
       }
     } else {
       holder.prevTransitLine.visibility = View.GONE
@@ -383,6 +385,7 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     val endingStationDot: View
     val pedestrianConnector: View
     val prevTransitLine: View
+    val prevPedestrianLine: View
 
     init {
       transitContainer = view
@@ -399,6 +402,7 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
       endingStationDot = view.findViewById(R.id.ending_dot)
       pedestrianConnector = view.findViewById(R.id.pedestrian_connector)
       prevTransitLine = view.findViewById(R.id.prev_transit_line)
+      prevPedestrianLine = view.findViewById(R.id.prev_pedestrian_line)
       view.findViewById(R.id.total_distance).visibility = View.GONE
     }
 

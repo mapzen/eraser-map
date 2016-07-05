@@ -12,6 +12,23 @@
       android:visibility="gone"
       />
 
+  <FrameLayout
+      android:layout_width="6dp"
+      android:layout_height="50dp"
+      android:layout_marginLeft="30dp">
+
+    <View
+        android:id="@+id/prev_pedestrian_line"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/dashed_line"
+        android:visibility="gone"
+        android:layout_marginTop="-2dp"
+        android:layout_marginBottom="-2dp"
+        />
+
+  </FrameLayout>
+
   <ImageView
       android:id="@+id/starting_dot"
       android:layout_width="10dp"
@@ -115,7 +132,6 @@
         android:layout_width="20dp"
         android:layout_height="match_parent"
         android:background="@drawable/dashed_line"
-        android:layerType="software"
         android:layout_marginTop="-4dp"
         android:layout_marginBottom="-4dp"
         />

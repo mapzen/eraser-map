@@ -31,7 +31,6 @@
           android:layout_width="20dp"
           android:layout_height="0dp"
           android:background="@drawable/dashed_line"
-          android:layerType="software"
           android:layout_marginTop="-4dp"
           android:layout_marginBottom="-4dp"
           />
