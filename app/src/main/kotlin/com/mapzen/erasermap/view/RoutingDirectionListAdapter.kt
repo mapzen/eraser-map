@@ -105,10 +105,10 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
           holder = IconTitleViewHolder(view)
         }
         ListRowType.PEDESTRIAN -> {
-          holder = PedestrianViewHolder(view)
+          holder = PedestrianViewHolder(view, context)
         }
         ListRowType.TRANSIT -> {
-          holder = TransitViewHolder(view)
+          holder = TransitViewHolder(view, context)
         }
       }
       view.tag = holder
@@ -262,7 +262,11 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     spannableString.setSpan(StyleSpan(Typeface.BOLD), headsignLoc,
         headsignLoc + transitInfo.getHeadsign().length, 0)
     holder.instructionText.text = spannableString
-    holder.distanceTimeText.text = instructionGroup.numberOfStops(context, instruction)
+    val builder = StringBuilder()
+    builder.append(instructionGroup.numberOfStops(context, instruction))
+    builder.append(context.getString(R.string.comma))
+    builder.append(" ")
+    holder.distanceTimeText.text = builder.toString()
     holder.timeView.timeInMinutes = instructionGroup.totalTime / 60
     if (listItem.expanded) {
       holder.distanceTimeContainer.openArrow()
@@ -354,7 +358,7 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     }
   }
 
-  class PedestrianViewHolder(view: View): ViewHolder() {
+  class PedestrianViewHolder(view: View, context: Context): ViewHolder() {
     val totalDistanceView: DistanceView
     val totalTimeView: TimeView
     val instructionsContainer: LinearLayout
@@ -368,10 +372,15 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
       dashedLine = view.findViewById(R.id.dashed_line)
       distanceTimeContainer = view.findViewById(R.id.distance_time_container)
           as DistanceTimeExpanderLayout
+      val textView = view.findViewById(R.id.distance_time_text_view) as TextView
+      val builder = StringBuilder()
+      builder.append(context.getString(R.string.comma))
+      builder.append(" ")
+      textView.text = builder.toString()
     }
   }
 
-  class TransitViewHolder(view: View): ViewHolder() {
+  class TransitViewHolder(view: View, context: Context): ViewHolder() {
     val transitContainer: View
     val startingStationName: TextView
     val travelTypeIcon: ImageView
@@ -404,6 +413,9 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
       prevTransitLine = view.findViewById(R.id.prev_transit_line)
       prevPedestrianLine = view.findViewById(R.id.prev_pedestrian_line)
       view.findViewById(R.id.total_distance).visibility = View.GONE
+      val scale = context.resources.displayMetrics.density
+      distanceTimeText.setPadding((scale * 8).toInt(), distanceTimeText.paddingTop,
+          distanceTimeText.paddingRight, distanceTimeText.paddingBottom)
     }
 
   }

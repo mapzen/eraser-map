@@ -7,7 +7,8 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:background="@drawable/bg_white_light_gray_border"
-      android:layout_gravity="center_vertical">
+      android:layout_gravity="center_vertical"
+      android:padding="5dp">
 
     <com.mapzen.erasermap.view.DistanceView
         android:id="@+id/total_distance"
@@ -22,8 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/dark_gray"
-        android:textSize="@dimen/font_small"
-        android:text="@string/comma" />
+        android:textSize="@dimen/font_small"/>
 
     <com.mapzen.erasermap.view.TimeView
         android:id="@+id/total_time"
