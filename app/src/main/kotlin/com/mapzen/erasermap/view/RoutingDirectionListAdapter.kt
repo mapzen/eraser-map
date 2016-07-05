@@ -35,6 +35,8 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     const val INSTRUCTION_TYPE_DESTINATION = 4
     const val INSTRUCTION_TYPE_DESTINATION_RIGHT = 5
     const val INSTRUCTION_TYPE_DESTINATION_LEFT = 6
+    const val VIEW_TYPE_INSTRUCTION_ROW = 0
+    const val VIEW_TYPE_TRANSIT_ROW = 1
   }
 
   private val INSTRUCTION_TYPES_NOT_SHOWN = HashSet<Int>()
@@ -44,6 +46,8 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
   private val TRAVEL_MODE_TO_ITEM_TYPE = HashMap<TravelMode, ListRowType>()
 
   lateinit var listItems: ArrayList<ListRowItem>
+
+  val recycler = ViewRecycler()
 
   init {
     INSTRUCTION_TYPES_NOT_SHOWN.add(INSTRUCTION_TYPE_DESTINATION)
@@ -202,23 +206,30 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
       notifyDataSetChanged()
     }
 
+    for (i in 0..holder.instructionsContainer.childCount - 1) {
+      recycler.queueView(holder.instructionsContainer.getChildAt(i), VIEW_TYPE_INSTRUCTION_ROW)
+    }
     holder.instructionsContainer.removeAllViews()
     if (listItem.expanded) {
-      for (i in 0..instructionGroup.instructions.size - 1) { //TODO: recycle views added to this
+      for (i in 0..instructionGroup.instructions.size - 1) {
         val instruction = instructionGroup.instructions[i]
         if (INSTRUCTION_TYPES_NOT_SHOWN.contains(instruction.turnInstruction)) {
           continue
         }
         val distance = instruction.distance
-        val instructionRow = View.inflate(context, R.layout.instruction_row, null)
+        var instructionRow = recycler.dequeueView(VIEW_TYPE_INSTRUCTION_ROW)
+        if (instructionRow == null) {
+          instructionRow = View.inflate(context, R.layout.instruction_row, null)
+        }
+
         var iconId = DisplayHelper.getRouteDrawable(context, instruction.turnInstruction)
         if (instruction.getTravelMode() == TravelMode.TRANSIT) {
           iconId = multiModalHelper.getTransitIcon(instructionGroup.travelType)
         }
 
-        val iconView = instructionRow.findViewById(R.id.icon) as ImageView
-        val titleView = instructionRow.findViewById(R.id.title) as TextView
-        val distanceView = instructionRow.findViewById(R.id.distance) as DistanceView
+        val iconView = instructionRow?.findViewById(R.id.icon) as ImageView
+        val titleView = instructionRow?.findViewById(R.id.title) as TextView
+        val distanceView = instructionRow?.findViewById(R.id.distance) as DistanceView
 
         iconView.setImageResource(iconId)
         titleView.text = instruction.getHumanTurnInstruction()
@@ -293,7 +304,9 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
       holder.prevTransitLine.visibility = View.GONE
     }
 
-    //TODO: recycle views added to this container
+    for (i in 0..holder.stationNamesContainer.childCount - 1) {
+      recycler.queueView(holder.stationNamesContainer.getChildAt(i), VIEW_TYPE_TRANSIT_ROW)
+    }
     holder.stationNamesContainer.removeAllViews()
     val transitStops = instruction.getTransitInfo()?.getTransitStops() as ArrayList<TransitStop>
 
@@ -314,8 +327,11 @@ class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: 
     if (listItem.expanded) {
 
       for (i in 1..numStops) {
-        val stationRow = View.inflate(context, R.layout.transit_station_row, null)
-        val stationName = stationRow.findViewById(R.id.station_name) as TextView
+        var stationRow = recycler.dequeueView(VIEW_TYPE_TRANSIT_ROW)
+        if (stationRow == null) {
+          stationRow = View.inflate(context, R.layout.transit_station_row, null)
+        }
+        val stationName = stationRow?.findViewById(R.id.station_name) as TextView
         stationName.text = transitStops[i].getName()
         holder.stationNamesContainer.addView(stationRow)
       }
