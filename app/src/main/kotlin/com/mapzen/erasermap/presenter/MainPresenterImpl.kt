@@ -160,6 +160,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
     private fun onRestoreViewStateRoutePreview() {
         generateRoutePreview()
+        mainViewController?.restoreRoutePreviewButtons()
     }
 
     private fun onRestoreViewStateRoutePreviewList() {

@@ -78,8 +78,6 @@ import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
-import com.mapzen.valhalla.TravelMode
-import com.mapzen.valhalla.TravelType
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
@@ -1016,6 +1014,12 @@ class MainActivity : AppCompatActivity(), MainViewController,
                 route()
                 startNavigationButton.visibility = View.GONE
             }
+        }
+    }
+
+    override fun restoreRoutePreviewButtons() {
+        if (routeManager.type == Router.Type.MULTIMODAL) {
+            startNavigationButton.visibility = View.GONE
         }
     }
 
