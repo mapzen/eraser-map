@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+  <ImageView
+      android:id="@+id/icon"
+      android:layout_width="24dp"
+      android:layout_height="24dp"
+      android:drawablePadding="8dp"
+      android:layout_centerVertical="true"
+      />
+
+  <TextView
+      android:id="@+id/title"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:fontFamily="sans-serif-condensed"
+      android:textColor="@color/dark_gray"
+      android:padding="8dp"
+      android:textSize="@dimen/font_medium"
+      android:layout_toRightOf="@+id/icon"
+      android:layout_toLeftOf="@+id/distance"
+      android:layout_centerVertical="true"
+      />
+
+  <com.mapzen.erasermap.view.DistanceView
+      android:id="@+id/distance"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textStyle="bold"
+      android:fontFamily="sans-serif-condensed-bold"
+      android:textColor="@color/dark_gray"
+      android:textSize="@dimen/font_medium"
+      android:layout_alignParentRight="true"
+      android:layout_centerVertical="true"
+      android:paddingRight="16dp"
+      />
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="1dp"
+      android:background="@color/light_gray"
+      android:layout_alignParentBottom="true"
+      android:layout_marginRight="8dp"
+      />
+
+</RelativeLayout>
+

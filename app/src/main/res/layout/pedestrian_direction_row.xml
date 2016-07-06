@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.mapzen.erasermap.view.PedestrianRowRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+  <ImageView
+      android:id="@+id/pedestrian_icon"
+      android:layout_width="18dp"
+      android:layout_height="25dp"
+      android:background="@drawable/ic_pedestrian"
+      android:layout_alignParentTop="true"
+      android:layout_alignParentLeft="true"
+      android:layout_marginLeft="22dp"
+      android:layout_marginRight="20dp"
+      />
+
+  <!--frame the dashed line because it is actually a rectangle and we hide the top,-->
+  <!--right, and bottom edges. we give it negative margins to hide corners. width is-->
+  <!--arbitrary 20dp (its only important that its larger than container's 4dp) -->
+  <FrameLayout
+      android:id="@+id/dashed_line_container"
+      android:layout_width="4dp"
+      android:layout_height="0dp"
+      android:layout_below="@+id/pedestrian_icon"
+      android:layout_marginLeft="30dp" >
+
+      <View
+          android:id="@+id/dashed_line"
+          android:layout_width="20dp"
+          android:layout_height="0dp"
+          android:background="@drawable/dashed_line"
+          android:layout_marginTop="-4dp"
+          android:layout_marginBottom="-4dp"
+          />
+
+  </FrameLayout>
+
+  <com.mapzen.erasermap.view.DistanceTimeExpanderLayout
+      android:id="@+id/distance_time_container"
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@+id/pedestrian_icon"
+      android:layout_marginRight="8dp"/>
+
+  <LinearLayout
+      android:id="@+id/instructions_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:layout_below="@+id/distance_time_container"
+      android:layout_toRightOf="@+id/pedestrian_icon"
+      >
+
+    <!--Instructions added at runtime-->
+
+  </LinearLayout>
+
+
+</com.mapzen.erasermap.view.PedestrianRowRelativeLayout>

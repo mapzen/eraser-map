@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Point
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
@@ -35,6 +36,7 @@ import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
+import com.mapzen.erasermap.model.InstructionGrouper
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.MultiModalHelper
 import com.mapzen.erasermap.model.PermissionManager
@@ -52,6 +54,7 @@ import com.mapzen.erasermap.view.DistanceView
 import com.mapzen.erasermap.view.MuteView
 import com.mapzen.erasermap.view.RouteModeView
 import com.mapzen.erasermap.view.RoutePreviewView
+import com.mapzen.erasermap.view.MultiModalDirectionListAdapter
 import com.mapzen.erasermap.view.SearchResultsAdapter
 import com.mapzen.erasermap.view.SearchResultsView
 import com.mapzen.erasermap.view.SettingsActivity
@@ -71,9 +74,12 @@ import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.TouchInput
+import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
+import com.mapzen.valhalla.TravelMode
+import com.mapzen.valhalla.TravelType
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
@@ -147,6 +153,9 @@ class MainActivity : AppCompatActivity(), MainViewController,
     val muteView: MuteView by lazy { findViewById(R.id.route_mode_mute_view) as MuteView }
 
     var submitQueryOnMenuCreate: String? = null
+
+    var divider: Drawable? = null
+    var dividerHeight: Int? = null
 
     override public fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -1050,6 +1059,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         val instructionStrings = ArrayList<String>()
         val instructionTypes = ArrayList<Int>()
         val instructionDistances = ArrayList<Int>()
+
         val instructions = routeManager.route?.getRouteInstructions()
         if (instructions != null) {
             for(instruction in instructions) {
@@ -1074,9 +1084,25 @@ class MainActivity : AppCompatActivity(), MainViewController,
         routeBtmContainer.visibility = View.VISIBLE
         distanceView.distanceInMeters = routeManager.route?.getTotalDistance() as Int
         destinationNameTextView.text = simpleFeature.name()
-        previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings,
-                instructionTypes, instructionDistances, routeManager.reverse,
-                MultiModalHelper(routeManager.route?.rawRoute))
+        if (routeManager.type == Router.Type.MULTIMODAL) {
+            val instructionGrouper = InstructionGrouper(instructions as ArrayList<Instruction>)
+            previewDirectionListView.adapter = MultiModalDirectionListAdapter(this, instructionGrouper,
+                routeManager.reverse, MultiModalHelper(routeManager.route?.rawRoute))
+            if (divider == null) {
+                divider = previewDirectionListView.divider
+                dividerHeight = previewDirectionListView.dividerHeight
+            }
+            previewDirectionListView.divider = null;
+            previewDirectionListView.dividerHeight = 0;
+        } else {
+            previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings,
+                instructionTypes, instructionDistances, routeManager.reverse)
+            if (divider != null) {
+                previewDirectionListView.divider = divider
+                previewDirectionListView.dividerHeight = dividerHeight as Int
+            }
+        }
+
         val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, TRANSLATION_Y,-height)
         val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, TRANSLATION_Y, 0f)
         val animations = AnimatorSet()

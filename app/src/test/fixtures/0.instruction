@@ -1,0 +1,13 @@
+{
+    begin_shape_index: 0,
+    length: 0.161,
+    end_shape_index: 1,
+    instruction: "Instruction 0",
+    street_names: [
+        "19th Street"
+    ],
+    type: 1,
+    time: 0,
+    travel_type: "foot",
+    travel_mode: "pedestrian",
+}
