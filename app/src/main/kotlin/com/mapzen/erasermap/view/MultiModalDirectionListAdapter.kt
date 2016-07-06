@@ -24,13 +24,13 @@ import com.mapzen.valhalla.TravelMode
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.HashSet
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 class MultiModalDirectionListAdapter(val context: Context, val instructionGrouper: InstructionGrouper,
     val reverse : Boolean?, val multiModalHelper: MultiModalHelper) : BaseAdapter() {
 
   companion object {
-    const val SEC_PER_MIN = 60
     const val NUM_VIEW_TYPES = 3
     const val INSTRUCTION_TYPE_DESTINATION = 4
     const val INSTRUCTION_TYPE_DESTINATION_RIGHT = 5
@@ -193,7 +193,8 @@ class MultiModalDirectionListAdapter(val context: Context, val instructionGroupe
     val listItem = listItems[position]
     val instructionGroup = listItem.extra as InstructionGroup
     holder.totalDistanceView.distanceInMeters = instructionGroup.totalDistance
-    holder.totalTimeView.timeInMinutes = instructionGroup.totalTime / SEC_PER_MIN
+    holder.totalTimeView.timeInMinutes = TimeUnit.SECONDS.toMinutes(
+        instructionGroup.totalTime.toLong()).toInt()
     if (listItem.expanded) {
       holder.distanceTimeContainer.openArrow()
       holder.instructionsContainer.visibility = View.VISIBLE
