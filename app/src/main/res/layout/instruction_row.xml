@@ -41,8 +41,8 @@
       android:layout_width="match_parent"
       android:layout_height="1dp"
       android:background="@color/light_gray"
-      android:layout_marginLeft="30dp"
       android:layout_alignParentBottom="true"
+      android:layout_marginRight="8dp"
       />
 
 </RelativeLayout>

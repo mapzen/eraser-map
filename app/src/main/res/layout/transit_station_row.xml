@@ -8,7 +8,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:paddingLeft="28dp"
-      android:paddingRight="32dp"
+      android:paddingRight="24dp"
       android:textSize="@dimen/font_big"
       android:textColor="@color/dark_gray"
       android:text="•"
@@ -21,6 +21,9 @@
       android:textColor="@color/gray"
       android:id="@+id/station_name"
       android:layout_toRightOf="@+id/station_dot"
+      android:layout_marginLeft="8dp"
+      android:paddingTop="7dp"
+      android:paddingBottom="8dp"
       />
 
   <View
@@ -30,6 +33,7 @@
       android:layout_below="@id/station_name"
       android:layout_toRightOf="@id/station_dot"
       android:layout_alignParentBottom="true"
+      android:layout_marginRight="8dp"
     />
 
 </RelativeLayout>

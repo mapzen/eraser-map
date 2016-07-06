@@ -12,8 +12,8 @@
       android:background="@drawable/ic_pedestrian"
       android:layout_alignParentTop="true"
       android:layout_alignParentLeft="true"
-      android:layout_marginLeft="20dp"
-      android:layout_marginRight="10dp"
+      android:layout_marginLeft="22dp"
+      android:layout_marginRight="20dp"
       />
 
   <!--frame the dashed line because it is actually a rectangle and we hide the top,-->
@@ -42,13 +42,13 @@
       android:orientation="horizontal"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_toRightOf="@+id/pedestrian_icon"/>
+      android:layout_toRightOf="@+id/pedestrian_icon"
+      android:layout_marginRight="8dp"/>
 
   <LinearLayout
       android:id="@+id/instructions_container"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginLeft="16dp"
       android:orientation="vertical"
       android:layout_below="@+id/distance_time_container"
       android:layout_toRightOf="@+id/pedestrian_icon"

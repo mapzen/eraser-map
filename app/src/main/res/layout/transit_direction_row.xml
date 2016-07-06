@@ -35,7 +35,7 @@
       android:layout_height="10dp"
       android:background="@drawable/ic_transit_stop"
       android:layout_marginLeft="27dp"
-      android:layout_marginTop="10dp"
+      android:layout_marginTop="18dp"
       />
 
   <View
@@ -52,6 +52,8 @@
       android:layout_height="wrap_content"
       android:layout_toRightOf="@+id/travel_type_icon"
       android:layout_marginLeft="16dp"
+      android:layout_marginTop="8dp"
+      android:layout_marginRight="8dp"
       android:textSize="@dimen/font_medium"
       android:textStyle="bold"
       android:textColor="@color/dark_gray"
@@ -62,7 +64,7 @@
       android:layout_width="30dp"
       android:layout_height="30dp"
       android:layout_below="@+id/starting_dot"
-      android:layout_marginLeft="16dp"
+      android:layout_marginLeft="17dp"
       android:layout_marginTop="10dp"
       />
 
@@ -85,8 +87,9 @@
       android:layout_height="wrap_content"
       android:layout_below="@+id/instruction_text"
       android:layout_toRightOf="@+id/travel_type_icon"
-      android:layout_marginBottom="16dp"
+      android:layout_marginBottom="8dp"
       android:layout_marginLeft="16dp"
+      android:layout_marginRight="8dp"
       />
 
   <LinearLayout
@@ -102,7 +105,7 @@
       android:layout_width="10dp"
       android:layout_height="10dp"
       android:background="@drawable/ic_transit_stop"
-      android:layout_marginTop="10dp"
+      android:layout_marginTop="18dp"
       android:layout_marginLeft="27dp"
       android:layout_below="@id/station_names_container"
       />
@@ -114,6 +117,9 @@
       android:layout_below="@+id/station_names_container"
       android:layout_toRightOf="@+id/travel_type_icon"
       android:layout_marginLeft="16dp"
+      android:layout_marginTop="8dp"
+      android:layout_marginBottom="8dp"
+      android:layout_marginRight="8dp"
       android:textSize="@dimen/font_medium"
       android:textStyle="bold"
       android:textColor="@color/dark_gray"
