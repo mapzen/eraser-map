@@ -54,7 +54,7 @@ import com.mapzen.erasermap.view.DistanceView
 import com.mapzen.erasermap.view.MuteView
 import com.mapzen.erasermap.view.RouteModeView
 import com.mapzen.erasermap.view.RoutePreviewView
-import com.mapzen.erasermap.view.RoutingDirectionListAdapter
+import com.mapzen.erasermap.view.MultiModalDirectionListAdapter
 import com.mapzen.erasermap.view.SearchResultsAdapter
 import com.mapzen.erasermap.view.SearchResultsView
 import com.mapzen.erasermap.view.SettingsActivity
@@ -1086,7 +1086,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         destinationNameTextView.text = simpleFeature.name()
         if (routeManager.type == Router.Type.MULTIMODAL) {
             val instructionGrouper = InstructionGrouper(instructions as ArrayList<Instruction>)
-            previewDirectionListView.adapter = RoutingDirectionListAdapter(this, instructionGrouper,
+            previewDirectionListView.adapter = MultiModalDirectionListAdapter(this, instructionGrouper,
                 routeManager.reverse, MultiModalHelper(routeManager.route?.rawRoute))
             if (divider == null) {
                 divider = previewDirectionListView.divider

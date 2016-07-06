@@ -26,7 +26,7 @@ import java.util.HashMap
 import java.util.HashSet
 import java.util.regex.Pattern
 
-class RoutingDirectionListAdapter(val context: Context, val instructionGrouper: InstructionGrouper,
+class MultiModalDirectionListAdapter(val context: Context, val instructionGrouper: InstructionGrouper,
     val reverse : Boolean?, val multiModalHelper: MultiModalHelper) : BaseAdapter() {
 
   companion object {
