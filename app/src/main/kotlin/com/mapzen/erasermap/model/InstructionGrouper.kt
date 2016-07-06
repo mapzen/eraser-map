@@ -36,7 +36,7 @@ class InstructionGrouper(val instructions: ArrayList<Instruction>) {
     var currType: TravelType? = null
     var currMode: TravelMode? = null
 
-    for (i in 0..instructions.size-1) {
+    for (i in instructions.indices) {
       val travelType = instructions[i].getTravelType()
       val travelMode = instructions[i].getTravelMode()
       if (currType == null) {

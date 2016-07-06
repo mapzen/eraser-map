@@ -211,7 +211,7 @@ class MultiModalDirectionListAdapter(val context: Context, val instructionGroupe
     }
     holder.instructionsContainer.removeAllViews()
     if (listItem.expanded) {
-      for (i in 0..instructionGroup.instructions.size - 1) {
+      for (i in instructionGroup.instructions.indices) {
         val instruction = instructionGroup.instructions[i]
         if (INSTRUCTION_TYPES_NOT_SHOWN.contains(instruction.turnInstruction)) {
           continue
