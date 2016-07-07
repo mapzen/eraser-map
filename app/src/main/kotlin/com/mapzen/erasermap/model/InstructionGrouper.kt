@@ -36,9 +36,9 @@ class InstructionGrouper(val instructions: ArrayList<Instruction>) {
     var currType: TravelType? = null
     var currMode: TravelMode? = null
 
-    for (i in instructions.indices) {
-      val travelType = instructions[i].getTravelType()
-      val travelMode = instructions[i].getTravelMode()
+    for (instruction in instructions) {
+      val travelType = instruction.getTravelType()
+      val travelMode = instruction.getTravelMode()
       if (currType == null) {
         currType = travelType
         currInstructions = ArrayList<Instruction>()
@@ -52,12 +52,12 @@ class InstructionGrouper(val instructions: ArrayList<Instruction>) {
         currType = travelType
         currMode = travelMode
         currInstructions = ArrayList<Instruction>()
-        if (!instructionTypesNotShown.contains(instructions[i].turnInstruction)) {
-          currInstructions.add(instructions[i])
+        if (!instructionTypesNotShown.contains(instruction.turnInstruction)) {
+          currInstructions.add(instruction)
         }
       } else {
-        if (!instructionTypesNotShown.contains(instructions[i].turnInstruction)) {
-          currInstructions?.add(instructions[i])
+        if (!instructionTypesNotShown.contains(instruction.turnInstruction)) {
+          currInstructions?.add(instruction)
         }
       }
 

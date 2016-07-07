@@ -213,8 +213,7 @@ class MultiModalDirectionListAdapter(val context: Context, val instructionGroupe
     }
     holder.instructionsContainer.removeAllViews()
     if (listItem.expanded) {
-      for (i in instructionGroup.instructions.indices) {
-        val instruction = instructionGroup.instructions[i]
+      for (instruction in instructionGroup.instructions) {
         if (INSTRUCTION_TYPES_NOT_SHOWN.contains(instruction.turnInstruction)) {
           continue
         }
@@ -277,7 +276,8 @@ class MultiModalDirectionListAdapter(val context: Context, val instructionGroupe
         instruction.getTravelType()))
     holder.instructionText.text = instructionGroup.transitInstructionSpannable(instruction)
     holder.distanceTimeText.text = instructionGroup.numberOfStops(context, instruction)
-    holder.timeView.timeInMinutes = instructionGroup.totalTime / 60
+    holder.timeView.timeInMinutes = TimeUnit.SECONDS.toMinutes(
+        instructionGroup.totalTime.toLong()).toInt()
   }
 
   fun setPrevTransitLines(holder: TransitViewHolder, listItem: ListRowItem, position: Int) {

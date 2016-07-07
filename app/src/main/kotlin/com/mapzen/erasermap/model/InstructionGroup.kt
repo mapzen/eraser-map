@@ -26,16 +26,16 @@ class InstructionGroup(val travelType: TravelType, val travelMode: TravelMode,
 
   private fun calculateTotalDistance(): Int {
     var total = 0
-    for(i in instructions.indices) {
-      total+= instructions[i].distance
+    for(instruction in instructions) {
+      total+= instruction.distance
     }
     return total
   }
 
   private fun calculateTotalTime(): Int {
     var total = 0
-    for(i in instructions.indices) {
-      total+= instructions[i].getTime()
+    for(instruction in instructions) {
+      total+= instruction.getTime()
     }
     return total
   }
