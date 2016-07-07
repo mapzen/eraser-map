@@ -20,7 +20,7 @@ abstract class DynamicChildHeightRelativeLayout : RelativeLayout {
   override fun onFinishInflate() {
     super.onFinishInflate()
     views = ArrayList<View>()
-    for (i in 0..idsForDynamicChildren().size - 1) {
+    for (i in idsForDynamicChildren().indices) {
       val viewId = idsForDynamicChildren()[i]
       (views as ArrayList<View>).add(findViewById(viewId))
     }
@@ -29,7 +29,7 @@ abstract class DynamicChildHeightRelativeLayout : RelativeLayout {
   override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
     super.onLayout(changed, l, t, r, b)
     val height = Math.abs(b - t)
-    for (i in 0..views!!.size - 1) {
+    for (i in views!!.indices) {
       val view = views!![i]
       layoutView(view, b + height)
     }

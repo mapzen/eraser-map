@@ -18,19 +18,20 @@ import com.mapzen.erasermap.model.ListRowItem
 import com.mapzen.erasermap.model.ListRowType
 import com.mapzen.erasermap.model.MultiModalHelper
 import com.mapzen.erasermap.util.DisplayHelper
+import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.TransitInfo
 import com.mapzen.valhalla.TransitStop
 import com.mapzen.valhalla.TravelMode
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.HashSet
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 class MultiModalDirectionListAdapter(val context: Context, val instructionGrouper: InstructionGrouper,
     val reverse : Boolean?, val multiModalHelper: MultiModalHelper) : BaseAdapter() {
 
   companion object {
-    const val SEC_PER_MIN = 60
     const val NUM_VIEW_TYPES = 3
     const val INSTRUCTION_TYPE_DESTINATION = 4
     const val INSTRUCTION_TYPE_DESTINATION_RIGHT = 5
@@ -193,7 +194,8 @@ class MultiModalDirectionListAdapter(val context: Context, val instructionGroupe
     val listItem = listItems[position]
     val instructionGroup = listItem.extra as InstructionGroup
     holder.totalDistanceView.distanceInMeters = instructionGroup.totalDistance
-    holder.totalTimeView.timeInMinutes = instructionGroup.totalTime / SEC_PER_MIN
+    holder.totalTimeView.timeInMinutes = TimeUnit.SECONDS.toMinutes(
+        instructionGroup.totalTime.toLong()).toInt()
     if (listItem.expanded) {
       holder.distanceTimeContainer.openArrow()
       holder.instructionsContainer.visibility = View.VISIBLE
@@ -211,8 +213,7 @@ class MultiModalDirectionListAdapter(val context: Context, val instructionGroupe
     }
     holder.instructionsContainer.removeAllViews()
     if (listItem.expanded) {
-      for (i in 0..instructionGroup.instructions.size - 1) {
-        val instruction = instructionGroup.instructions[i]
+      for (instruction in instructionGroup.instructions) {
         if (INSTRUCTION_TYPES_NOT_SHOWN.contains(instruction.turnInstruction)) {
           continue
         }
@@ -245,29 +246,9 @@ class MultiModalDirectionListAdapter(val context: Context, val instructionGroupe
     val listItem = listItems[position]
     val instructionGroup = listItem.extra as InstructionGroup
     val instruction = instructionGroup.instructions[0]
-    holder.startingStationName.text = instructionGroup.firstStationName(context, instruction)
-    holder.travelTypeIcon.setImageResource(multiModalHelper.getTransitIcon(
-        instruction.getTravelType()))
-    var turnInstruction = instruction.getHumanTurnInstruction()
-    val pattern = Pattern.compile("\\([0-9]+ stops\\)")
-    val matcher = pattern.matcher(turnInstruction)
-    turnInstruction = matcher.replaceAll("")
 
-    val spannableString = SpannableString(turnInstruction)
-    val transitInfo = instruction.getTransitInfo() as TransitInfo
-    val shortnameLoc = spannableString.indexOf(transitInfo.getShortName(), 0, true)
-    val headsignLoc = spannableString.indexOf(transitInfo.getHeadsign(), 0 , true)
-    spannableString.setSpan(StyleSpan(Typeface.BOLD), shortnameLoc,
-        shortnameLoc + transitInfo.getShortName().length, 0)
-    spannableString.setSpan(StyleSpan(Typeface.BOLD), headsignLoc,
-        headsignLoc + transitInfo.getHeadsign().length, 0)
-    holder.instructionText.text = spannableString
-    val builder = StringBuilder()
-    builder.append(instructionGroup.numberOfStops(context, instruction))
-    builder.append(context.getString(R.string.comma))
-    builder.append(" ")
-    holder.distanceTimeText.text = builder.toString()
-    holder.timeView.timeInMinutes = instructionGroup.totalTime / 60
+    setTransitRowTextViewsAndIcons(holder, instructionGroup, instruction)
+
     if (listItem.expanded) {
       holder.distanceTimeContainer.openArrow()
       holder.stationNamesContainer.visibility = View.VISIBLE
@@ -280,26 +261,31 @@ class MultiModalDirectionListAdapter(val context: Context, val instructionGroupe
       listItem.expanded = !listItem.expanded
       notifyDataSetChanged()
     }
-    val color = instruction.getTransitInfo()?.getColor() as Int
-    val hex = "#" + Integer.toString(color, 16)
-    try {
-      holder.transitLine.setBackgroundColor(Color.parseColor(hex))
-    } catch(e : IllegalArgumentException) {
-      holder.transitLine.setBackgroundColor(R.color.mz_white)
-    }
 
+    holder.transitLine.setBackgroundColor(instructionGroup.transitColor)
+    
+    setPrevTransitLines(holder, listItem, position)
+    setEndingTransitInfo(holder, listItem, instruction)
+    setTransitStationNamesContainer(holder, listItem, instruction)
+  }
+
+  fun setTransitRowTextViewsAndIcons(holder: TransitViewHolder, instructionGroup: InstructionGroup,
+      instruction: Instruction) {
+    holder.startingStationName.text = instructionGroup.firstStationName(context, instruction)
+    holder.travelTypeIcon.setImageResource(multiModalHelper.getTransitIcon(
+        instruction.getTravelType()))
+    holder.instructionText.text = instructionGroup.transitInstructionSpannable(instruction)
+    holder.distanceTimeText.text = instructionGroup.numberOfStops(context, instruction)
+    holder.timeView.timeInMinutes = TimeUnit.SECONDS.toMinutes(
+        instructionGroup.totalTime.toLong()).toInt()
+  }
+
+  fun setPrevTransitLines(holder: TransitViewHolder, listItem: ListRowItem, position: Int) {
     if (listItem.prevMode != null) {
       if (listItem.prevMode == TravelMode.TRANSIT) {
         val prevListItem = listItems[position-1]
         val prevInstructionGroup = prevListItem.extra as InstructionGroup
-        val prevInstruction = prevInstructionGroup.instructions[0]
-        val prevColor = prevInstruction.getTransitInfo()?.getColor() as Int
-        val prevHex = "#" + Integer.toString(prevColor, 16)
-        try {
-          holder.prevTransitLine.setBackgroundColor(Color.parseColor(prevHex))
-        } catch(e : IllegalArgumentException) {
-          holder.prevTransitLine.setBackgroundColor(R.color.mz_white)
-        }
+        holder.prevTransitLine.setBackgroundColor(prevInstructionGroup.transitColor)
         holder.prevTransitLine.visibility = View.VISIBLE
         holder.prevPedestrianLine.visibility = View.GONE
       } else {
@@ -309,13 +295,11 @@ class MultiModalDirectionListAdapter(val context: Context, val instructionGroupe
     } else {
       holder.prevTransitLine.visibility = View.GONE
     }
+  }
 
-    for (i in 0..holder.stationNamesContainer.childCount - 1) {
-      recycler.queueView(holder.stationNamesContainer.getChildAt(i), VIEW_TYPE_TRANSIT_ROW)
-    }
-    holder.stationNamesContainer.removeAllViews()
+  fun setEndingTransitInfo(holder: TransitViewHolder, listItem: ListRowItem,
+      instruction: Instruction) {
     val transitStops = instruction.getTransitInfo()?.getTransitStops() as ArrayList<TransitStop>
-
     // we show all stops except first and last which are shown in larger font
     var numStops = transitStops.size - 2
     if (listItem.nextItemMode != null) {
@@ -330,8 +314,21 @@ class MultiModalDirectionListAdapter(val context: Context, val instructionGroupe
         holder.pedestrianConnector.visibility = View.GONE
       }
     }
-    if (listItem.expanded) {
+    holder.endingStationName.text = transitStops[transitStops.size-1].getName()
+  }
 
+  fun setTransitStationNamesContainer(holder: TransitViewHolder, listItem: ListRowItem,
+      instruction: Instruction) {
+    val transitStops = instruction.getTransitInfo()?.getTransitStops() as ArrayList<TransitStop>
+    // we show all stops except first and last which are shown in larger font
+    var numStops = transitStops.size - 2
+
+    for (i in 0..holder.stationNamesContainer.childCount - 1) {
+      recycler.queueView(holder.stationNamesContainer.getChildAt(i), VIEW_TYPE_TRANSIT_ROW)
+    }
+    holder.stationNamesContainer.removeAllViews()
+
+    if (listItem.expanded) {
       for (i in 1..numStops) {
         var stationRow = recycler.dequeueView(VIEW_TYPE_TRANSIT_ROW)
         if (stationRow == null) {
@@ -342,7 +339,6 @@ class MultiModalDirectionListAdapter(val context: Context, val instructionGroupe
         holder.stationNamesContainer.addView(stationRow)
       }
     }
-    holder.endingStationName.text = transitStops[transitStops.size-1].getName()
   }
 
   open class ViewHolder() {
