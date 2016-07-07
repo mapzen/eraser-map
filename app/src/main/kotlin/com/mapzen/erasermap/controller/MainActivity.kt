@@ -842,7 +842,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     override fun drawRoute(route: Route) {
-        routeModeView.drawRoute(route)
+        routeModeView.drawRoute(route, routeManager.type)
     }
 
     override fun clearRoute() {
@@ -861,7 +861,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             }
         })
         updateRoutePreview()
-        routeModeView.drawRoute(route)
+        routeModeView.drawRoute(route, routeManager.type)
         routePreviewView.enableStartNavigation(routeManager.type)
         hideProgress()
     }

@@ -33,6 +33,7 @@ import com.mapzen.tangram.TouchInput
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
+import com.mapzen.valhalla.TravelMode
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -460,7 +461,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         }
     }
 
-    fun drawRoute(route: Route) {
+    fun drawRoute(route: Route, type: Router.Type) {
         val geometry: ArrayList<ValhallaLocation>? = route.getGeometry()
         val mapGeometry: ArrayList<LngLat> = ArrayList()
         if (geometry is ArrayList<ValhallaLocation>) {
@@ -470,6 +471,27 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         }
         mapzenMap?.clearRouteLine()
         mapzenMap?.drawRouteLine(mapGeometry)
+
+        mapzenMap?.clearTransitRouteLine()
+        if (type == Router.Type.MULTIMODAL) {
+            val instructions = route.getRouteInstructions()
+            if (instructions != null) {
+                for (instruction in instructions) {
+                    if (instruction.getTravelMode() == TravelMode.TRANSIT) {
+                        val points = ArrayList<LngLat>()
+                        var index = instruction.getBeginPolygonIndex()
+                        var endIndex = instruction.getEndPolygonIndex()
+                        while (index <= endIndex) {
+                            val location = route.getGeometry()[index]
+                            points.add(LngLat(location.longitude, location.latitude))
+                            index++
+                        }
+                        mapzenMap?.drawTransitRouteLine(points, null,
+                            instruction.getTransitInfoColorHex() as String)
+                    }
+                }
+            }
+        }
     }
 
     override fun hideRouteLine() {
