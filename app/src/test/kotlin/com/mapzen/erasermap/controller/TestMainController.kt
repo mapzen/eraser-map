@@ -226,4 +226,8 @@ class TestMainController : MainViewController {
 
     override fun layoutFindMeAboveOptions() {
     }
+
+    override fun restoreRoutePreviewButtons() {
+        
+    }
 }
