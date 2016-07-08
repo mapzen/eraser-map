@@ -3,32 +3,37 @@ package com.mapzen.erasermap.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.mapzen.erasermap.R
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.valhalla.Route
+import com.mapzen.valhalla.Router
+import java.util.concurrent.TimeUnit
 
 class RoutePreviewView : RelativeLayout {
-    var startView: TextView? = null
-    var destinationView: TextView? = null
-    var distancePreview: DistanceView? = null
-    var timePreview: TimeView? = null
-    var viewListButton: Button? = null
-    var startNavigationButton: Button? = null
+    val startView: TextView by lazy { findViewById(R.id.starting_point) as TextView }
+    val destinationView: TextView by lazy { findViewById(R.id.destination) as TextView }
+    val distancePreview: DistanceView by lazy { findViewById(R.id.distance_preview) as DistanceView }
+    val timePreview: TimeView by lazy { findViewById(R.id.time_preview) as TimeView }
+    val viewListButton: Button by lazy { findViewById(R.id.view_list) as Button }
+    val startNavigationButton: Button by lazy { findViewById(R.id.start_navigation) as Button }
+    val noRouteFound: TextView by lazy { findViewById(R.id.no_route_found) as TextView }
+    val tryAnotherMode: TextView by lazy { findViewById(R.id.try_another_mode) as TextView }
 
     var reverse : Boolean = false
         set (value) {
             field = value
             if (value) {
-                startView?.text = destination?.name()
-                destinationView?.setText(R.string.current_location)
-                startNavigationButton?.visibility = GONE
+                startView.text = destination?.name()
+                destinationView.setText(R.string.current_location)
+                startNavigationButton.visibility = GONE
             } else {
-                startView?.setText(R.string.current_location)
-                destinationView?.text = destination?.name()
-                startNavigationButton?.visibility = VISIBLE
+                startView.setText(R.string.current_location)
+                destinationView.text = destination?.name()
+                startNavigationButton.visibility = VISIBLE
 
             }
         }
@@ -36,18 +41,18 @@ class RoutePreviewView : RelativeLayout {
     var destination: SimpleFeature? = null
         set (value) {
             field = value
-            startView?.setText(R.string.current_location)
-            destinationView?.text = value?.name()
+            startView.setText(R.string.current_location)
+            destinationView.text = value?.name()
         }
 
     var route: Route? = null
         set (value) {
             field = value
             val distance = value?.getTotalDistance() ?: 0
-            distancePreview?.distanceInMeters = distance
+            distancePreview.distanceInMeters = distance
 
             val time = value?.getTotalTime() ?: 0
-            timePreview?.timeInMinutes = time / 60
+            timePreview.timeInMinutes = TimeUnit.SECONDS.toMinutes(time.toLong()).toInt()
         }
 
     constructor(context: Context) : super(context) {
@@ -66,23 +71,22 @@ class RoutePreviewView : RelativeLayout {
     private fun init() {
         (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_preview, this, true)
-
-        startView = findViewById(R.id.starting_point) as TextView?
-        destinationView = findViewById(R.id.destination) as TextView?
-        distancePreview = findViewById(R.id.distance_preview) as DistanceView?
-        timePreview = findViewById(R.id.time_preview) as TimeView?
-        viewListButton = findViewById(R.id.view_list) as Button?
-        startNavigationButton = findViewById(R.id.start_navigation) as Button?
     }
 
     fun disableStartNavigation() {
-        startNavigationButton?.isEnabled = false
-        viewListButton?.isEnabled = false
+        startNavigationButton.visibility = View.GONE
+        viewListButton.visibility = View.GONE
+        noRouteFound.visibility = View.VISIBLE
+        tryAnotherMode.visibility = View.VISIBLE
     }
 
-    fun enableStartNavigation() {
-        startNavigationButton?.isEnabled = true
-        viewListButton?.isEnabled = true
+    fun enableStartNavigation(type: Router.Type) {
+        if (type != Router.Type.MULTIMODAL) {
+            startNavigationButton.visibility = View.VISIBLE
+        }
+        viewListButton.visibility = View.VISIBLE
+        noRouteFound.visibility = View.GONE
+        tryAnotherMode.visibility = View.GONE
     }
 
 }

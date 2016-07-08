@@ -862,7 +862,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         })
         updateRoutePreview()
         routeModeView.drawRoute(route)
-        routePreviewView.enableStartNavigation()
+        routePreviewView.enableStartNavigation(routeManager.type)
         hideProgress()
     }
 
@@ -950,13 +950,12 @@ class MainActivity : AppCompatActivity(), MainViewController,
             if (routeModeView.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
                 routePreviewView.visibility = View.VISIBLE
-                routePreviewDistanceTimeLayout.visibility = View.INVISIBLE
+                routePreviewDistanceTimeLayout.visibility = View.GONE
                 handleRouteFailure()
             }
         })
         updateRoutePreview()
         hideProgress()
-        Toast.makeText(this@MainActivity, "No route found", Toast.LENGTH_LONG).show()
         routePreviewView.disableStartNavigation()
     }
 
