@@ -64,7 +64,21 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/dark_gray"
                     android:textSize="@dimen/font_small" />
+
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/try_another_mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/gray"
+                android:textSize="@dimen/font_small"
+                android:textAlignment="center"
+                android:text="@string/try_another_mode"
+                android:paddingTop="@dimen/padding_vertical_default"
+                android:paddingBottom="@dimen/padding_vertical_default"
+                android:visibility="gone"
+                />
 
             <RadioGroup
                 android:id="@+id/routing_mode"
@@ -151,6 +165,20 @@
                     android:singleLine="true"
                     android:ellipsize="end"
                     style="?android:attr/buttonBarButtonStyle" />
+
+                <TextView
+                    android:id="@+id/no_route_found"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/gray"
+                    android:textColor="@color/mz_white"
+                    android:textSize="@dimen/font_medium"
+                    android:textAlignment="center"
+                    android:paddingTop="@dimen/padding_vertical_default"
+                    android:paddingBottom="@dimen/padding_vertical_default"
+                    android:text="@string/no_route_found"
+                    android:visibility="gone"
+                    />
 
             </LinearLayout>
         </LinearLayout>
