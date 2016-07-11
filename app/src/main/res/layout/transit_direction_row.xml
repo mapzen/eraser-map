@@ -31,11 +31,11 @@
 
   <ImageView
       android:id="@+id/starting_dot"
-      android:layout_width="10dp"
-      android:layout_height="10dp"
-      android:background="@drawable/ic_transit_stop"
-      android:layout_marginLeft="27dp"
-      android:layout_marginTop="18dp"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@drawable/ic_stop_transfer"
+      android:layout_marginLeft="25dp"
+      android:layout_marginTop="15dp"
       />
 
   <View
@@ -102,11 +102,11 @@
 
   <ImageView
       android:id="@+id/ending_dot"
-      android:layout_width="10dp"
-      android:layout_height="10dp"
-      android:background="@drawable/ic_transit_stop"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@drawable/ic_stop_transfer"
       android:layout_marginTop="18dp"
-      android:layout_marginLeft="27dp"
+      android:layout_marginLeft="25dp"
       android:layout_below="@id/station_names_container"
       />
 

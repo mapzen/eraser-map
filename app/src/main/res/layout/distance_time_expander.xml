@@ -36,9 +36,9 @@
 
     <ImageView
         android:id="@+id/open_close_arrow"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:src="@drawable/arrow_open_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_collapse"
         android:layout_gravity="center_vertical"
         android:layout_marginRight="8dp"
         />
