@@ -1,5 +1,7 @@
 <resources>
+    <dimen name="padding_default">8dp</dimen>
     <dimen name="padding_horizontal_default">16dp</dimen>
+    <dimen name="padding_horizontal_small">8dp</dimen>
     <dimen name="padding_vertical_default">8dp</dimen>
     <dimen name="padding_vertical_big">16dp</dimen>
     <dimen name="padding_vertical_small">4dp</dimen>
@@ -15,4 +17,17 @@
     <dimen name="font_tiny">9sp</dimen>
 
     <dimen name="search_results_pager_height">75dp</dimen>
+
+    <dimen name="dashed_line_width">4dp</dimen>
+    <dimen name="dashed_line_dash_width">6dp</dimen>
+    <dimen name="dashed_line_dash_gap">4dp</dimen>
+    <dimen name="dashed_line_container_left_margin">26dp</dimen>
+
+    <dimen name="transit_line_width">8dp</dimen>
+
+    <dimen name="icon_width">24dp</dimen>
+    <dimen name="icon_height">24dp</dimen>
+
+    <dimen name="dot_margin_left">21dp</dimen>
+    <dimen name="transit_line_margin_left">24dp</dimen>
 </resources>

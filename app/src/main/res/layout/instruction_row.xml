@@ -5,9 +5,10 @@
 
   <ImageView
       android:id="@+id/icon"
-      android:layout_width="24dp"
-      android:layout_height="24dp"
-      android:drawablePadding="8dp"
+      android:layout_width="@dimen/icon_width"
+      android:layout_height="@dimen/icon_height"
+      android:layout_marginLeft="@dimen/padding_horizontal_small"
+      android:layout_marginRight="@dimen/padding_horizontal_small"
       android:layout_centerVertical="true"
       />
 
@@ -16,8 +17,8 @@
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:fontFamily="sans-serif-condensed"
-      android:textColor="@color/dark_gray"
-      android:padding="8dp"
+      android:textColor="@color/color_primary_dark"
+      android:padding="@dimen/padding_default"
       android:textSize="@dimen/font_medium"
       android:layout_toRightOf="@+id/icon"
       android:layout_toLeftOf="@+id/distance"
@@ -34,7 +35,7 @@
       android:textSize="@dimen/font_medium"
       android:layout_alignParentRight="true"
       android:layout_centerVertical="true"
-      android:paddingRight="16dp"
+      android:paddingRight="@dimen/padding_horizontal"
       />
 
   <View
@@ -42,7 +43,7 @@
       android:layout_height="1dp"
       android:background="@color/light_gray"
       android:layout_alignParentBottom="true"
-      android:layout_marginRight="8dp"
+      android:layout_marginRight="@dimen/padding_horizontal_small"
       />
 
 </RelativeLayout>

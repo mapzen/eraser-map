@@ -190,7 +190,7 @@
         android:id="@+id/bottom_content"
         android:orientation="vertical"
         android:visibility="gone"
-        android:background="@color/transparent_white">
+        android:background="@color/mz_white">
 
         <com.mapzen.erasermap.view.DistanceTitleView
             android:id="@+id/footer_wrapper"

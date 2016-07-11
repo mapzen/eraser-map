@@ -4,18 +4,18 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
+    android:paddingTop="@dimen/padding_vertical_default"
+    android:paddingBottom="@dimen/padding_vertical_default"
+    android:paddingLeft="@dimen/padding_horizontal"
+    android:paddingRight="@dimen/padding_horizontal"
     android:orientation="horizontal">
 
   <ImageView
       android:id="@+id/image_view"
-      android:layout_width="24dp"
-      android:layout_height="24dp"
+      android:layout_width="@dimen/icon_width"
+      android:layout_height="@dimen/icon_height"
       android:layout_gravity="center_vertical"
-      android:drawablePadding="8dp"
+      android:drawablePadding="@dimen/padding_horizontal_small"
       />
 
   <TextView
@@ -26,9 +26,9 @@
       android:layout_gravity="left"
       android:fontFamily="sans-serif-condensed"
       android:textColor="@color/dark_gray"
-      android:padding="8dp"
+      android:padding="@dimen/padding_default"
       android:textSize="@dimen/font_medium"
-      android:layout_marginLeft="8dp"
+      android:layout_marginLeft="@dimen/padding_horizontal_small"
       />
 
 </LinearLayout>
