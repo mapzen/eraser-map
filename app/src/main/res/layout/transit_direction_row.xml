@@ -23,8 +23,8 @@
         android:layout_height="50dp"
         android:background="@drawable/dashed_line"
         android:visibility="gone"
-        android:layout_marginTop="@dimen/dashed_line_dash_width"
-        android:layout_marginBottom="@dimen/dashed_line_dash_width"
+        android:layout_marginTop="@dimen/dashed_line_margin"
+        android:layout_marginBottom="@dimen/dashed_line_margin"
         />
 
   </FrameLayout>
@@ -139,8 +139,8 @@
         android:layout_height="match_parent"
         android:background="@drawable/dashed_line"
         android:layout_marginLeft="2dp"
-        android:layout_marginTop="-4dp"
-        android:layout_marginBottom="-4dp"
+        android:layout_marginTop="@dimen/dashed_line_margin"
+        android:layout_marginBottom="@dimen/dashed_line_margin"
         />
 
   </FrameLayout>
