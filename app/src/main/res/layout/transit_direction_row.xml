@@ -6,16 +6,16 @@
 
   <View
       android:id="@+id/prev_transit_line"
-      android:layout_width="5dp"
+      android:layout_width="@dimen/transit_line_width"
       android:layout_height="50dp"
-      android:layout_marginLeft="30dp"
+      android:layout_marginLeft="@dimen/transit_line_margin_left"
       android:visibility="gone"
       />
 
   <FrameLayout
-      android:layout_width="6dp"
+      android:layout_width="@dimen/dashed_line_width"
       android:layout_height="50dp"
-      android:layout_marginLeft="30dp">
+      android:layout_marginLeft="@dimen/dashed_line_container_left_margin">
 
     <View
         android:id="@+id/prev_pedestrian_line"
@@ -23,8 +23,8 @@
         android:layout_height="50dp"
         android:background="@drawable/dashed_line"
         android:visibility="gone"
-        android:layout_marginTop="-2dp"
-        android:layout_marginBottom="-2dp"
+        android:layout_marginTop="@dimen/dashed_line_margin"
+        android:layout_marginBottom="@dimen/dashed_line_margin"
         />
 
   </FrameLayout>
@@ -34,15 +34,15 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:src="@drawable/ic_stop_transfer"
-      android:layout_marginLeft="25dp"
+      android:layout_marginLeft="@dimen/dot_margin_left"
       android:layout_marginTop="15dp"
       />
 
   <View
       android:id="@+id/transit_line"
-      android:layout_width="5dp"
+      android:layout_width="@dimen/transit_line_width"
       android:layout_height="0dp"
-      android:layout_marginLeft="30dp"
+      android:layout_marginLeft="@dimen/transit_line_margin_left"
       android:layout_below="@+id/starting_dot"
       />
 
@@ -51,9 +51,9 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_toRightOf="@+id/travel_type_icon"
-      android:layout_marginLeft="16dp"
-      android:layout_marginTop="8dp"
-      android:layout_marginRight="8dp"
+      android:layout_marginLeft="@dimen/padding_horizontal_default"
+      android:layout_marginTop="@dimen/padding_vertical_default"
+      android:layout_marginRight="@dimen/padding_horizontal_small"
       android:textSize="@dimen/font_medium"
       android:textStyle="bold"
       android:textColor="@color/dark_gray"
@@ -61,10 +61,10 @@
 
   <ImageView
       android:id="@+id/travel_type_icon"
-      android:layout_width="30dp"
-      android:layout_height="30dp"
+      android:layout_width="@dimen/icon_width"
+      android:layout_height="@dimen/icon_height"
       android:layout_below="@+id/starting_dot"
-      android:layout_marginLeft="17dp"
+      android:layout_marginLeft="@dimen/padding_horizontal_default"
       android:layout_marginTop="10dp"
       />
 
@@ -76,8 +76,8 @@
       android:textColor="@color/dark_gray"
       android:layout_toRightOf="@+id/travel_type_icon"
       android:layout_below="@+id/starting_station_name"
-      android:layout_marginLeft="16dp"
-      android:layout_marginBottom="8dp"
+      android:layout_marginLeft="@dimen/padding_horizontal_default"
+      android:layout_marginBottom="@dimen/padding_vertical_default"
       />
 
   <com.mapzen.erasermap.view.DistanceTimeExpanderLayout
@@ -87,9 +87,9 @@
       android:layout_height="wrap_content"
       android:layout_below="@+id/instruction_text"
       android:layout_toRightOf="@+id/travel_type_icon"
-      android:layout_marginBottom="8dp"
-      android:layout_marginLeft="16dp"
-      android:layout_marginRight="8dp"
+      android:layout_marginBottom="@dimen/padding_vertical_default"
+      android:layout_marginLeft="@dimen/padding_horizontal_small"
+      android:layout_marginRight="@dimen/padding_horizontal_small"
       />
 
   <LinearLayout
@@ -106,7 +106,7 @@
       android:layout_height="wrap_content"
       android:src="@drawable/ic_stop_transfer"
       android:layout_marginTop="18dp"
-      android:layout_marginLeft="25dp"
+      android:layout_marginLeft="@dimen/dot_margin_left"
       android:layout_below="@id/station_names_container"
       />
 
@@ -116,10 +116,10 @@
       android:layout_height="wrap_content"
       android:layout_below="@+id/station_names_container"
       android:layout_toRightOf="@+id/travel_type_icon"
-      android:layout_marginLeft="16dp"
-      android:layout_marginTop="8dp"
-      android:layout_marginBottom="8dp"
-      android:layout_marginRight="8dp"
+      android:layout_marginLeft="@dimen/padding_horizontal_default"
+      android:layout_marginTop="@dimen/padding_vertical"
+      android:layout_marginBottom="@dimen/padding_vertical"
+      android:layout_marginRight="@dimen/padding_horizontal_small"
       android:textSize="@dimen/font_medium"
       android:textStyle="bold"
       android:textColor="@color/dark_gray"
@@ -127,10 +127,10 @@
 
   <FrameLayout
       android:id="@+id/pedestrian_connector"
-      android:layout_width="6dp"
+      android:layout_width="@dimen/transit_line_width"
       android:layout_height="20dp"
       android:layout_below="@+id/ending_dot"
-      android:layout_marginLeft="30dp"
+      android:layout_marginLeft="24dp"
       android:background="@color/mz_white">
 
     <View
@@ -138,8 +138,9 @@
         android:layout_width="20dp"
         android:layout_height="match_parent"
         android:background="@drawable/dashed_line"
-        android:layout_marginTop="-4dp"
-        android:layout_marginBottom="-4dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginTop="@dimen/dashed_line_margin"
+        android:layout_marginBottom="@dimen/dashed_line_margin"
         />
 
   </FrameLayout>

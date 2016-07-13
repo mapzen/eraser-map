@@ -3,9 +3,9 @@
     android:shape="rectangle">
 
   <stroke
-      android:width="2dp"
-      android:color="@color/light_gray"
-      android:dashWidth="4dp"
-      android:dashGap="4dp" />
+      android:width="@dimen/dashed_line_width"
+      android:color="@color/color_route"
+      android:dashWidth="@dimen/dashed_line_dash_width"
+      android:dashGap="@dimen/dashed_line_dash_gap" />
 
 </shape>

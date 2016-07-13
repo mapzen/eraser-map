@@ -7,13 +7,13 @@
 
   <ImageView
       android:id="@+id/pedestrian_icon"
-      android:layout_width="18dp"
-      android:layout_height="25dp"
-      android:background="@drawable/ic_pedestrian"
+      android:layout_width="@dimen/icon_width"
+      android:layout_height="@dimen/icon_height"
+      android:src="@drawable/ic_transit_type_8"
       android:layout_alignParentTop="true"
       android:layout_alignParentLeft="true"
-      android:layout_marginLeft="22dp"
-      android:layout_marginRight="20dp"
+      android:layout_marginLeft="@dimen/padding_horizontal"
+      android:layout_marginRight="@dimen/padding_horizontal_small"
       />
 
   <!--frame the dashed line because it is actually a rectangle and we hide the top,-->
@@ -21,18 +21,18 @@
   <!--arbitrary 20dp (its only important that its larger than container's 4dp) -->
   <FrameLayout
       android:id="@+id/dashed_line_container"
-      android:layout_width="4dp"
+      android:layout_width="@dimen/dashed_line_width"
       android:layout_height="0dp"
       android:layout_below="@+id/pedestrian_icon"
-      android:layout_marginLeft="30dp" >
+      android:layout_marginLeft="@dimen/dashed_line_container_left_margin" >
 
       <View
           android:id="@+id/dashed_line"
           android:layout_width="20dp"
           android:layout_height="0dp"
           android:background="@drawable/dashed_line"
-          android:layout_marginTop="-4dp"
-          android:layout_marginBottom="-4dp"
+          android:layout_marginTop="@dimen/dashed_line_margin"
+          android:layout_marginBottom="@dimen/dashed_line_margin"
           />
 
   </FrameLayout>
