@@ -36,7 +36,7 @@ import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
-import com.mapzen.erasermap.model.InstructionGrouper
+import com.mapzen.erasermap.view.InstructionGrouper
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.MultiModalHelper
 import com.mapzen.erasermap.model.PermissionManager

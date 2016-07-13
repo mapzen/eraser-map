@@ -1,4 +1,4 @@
-package com.mapzen.erasermap.model
+package com.mapzen.erasermap.view
 
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.TravelMode

@@ -1,6 +1,7 @@
-package com.mapzen.erasermap.model
+package com.mapzen.erasermap.view
 
 import com.mapzen.erasermap.TestUtils
+import com.mapzen.erasermap.view.InstructionGrouper
 import com.mapzen.valhalla.Instruction
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before

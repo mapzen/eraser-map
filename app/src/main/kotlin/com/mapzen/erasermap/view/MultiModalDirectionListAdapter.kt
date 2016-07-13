@@ -12,8 +12,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.model.InstructionGroup
-import com.mapzen.erasermap.model.InstructionGrouper
+import com.mapzen.erasermap.view.InstructionGroup
+import com.mapzen.erasermap.view.InstructionGrouper
 import com.mapzen.erasermap.model.ListRowItem
 import com.mapzen.erasermap.model.ListRowType
 import com.mapzen.erasermap.model.MultiModalHelper
