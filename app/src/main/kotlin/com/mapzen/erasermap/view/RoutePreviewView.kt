@@ -128,7 +128,7 @@ class RoutePreviewView : RelativeLayout {
         if (routeManager.type == Router.Type.MULTIMODAL) {
             val instructionGrouper = InstructionGrouper(instructions as ArrayList<Instruction>)
             previewDirectionListView.adapter = MultiModalDirectionListAdapter(this.context, instructionGrouper,
-                routeManager.reverse, MultiModalHelper(routeManager.route?.rawRoute))
+                routeManager.reverse, MultiModalHelper())
             if (divider == null) {
                 divider = previewDirectionListView.divider
                 dividerHeight = previewDirectionListView.dividerHeight
