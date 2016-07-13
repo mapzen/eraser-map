@@ -97,19 +97,25 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
     }
 
     override fun getLat(): Double {
-        if (!permissionManager.permissionsGranted()) {
+        val windowManager = application.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display = windowManager.defaultDisplay
+        val midLatLon = mapzenMap?.coordinatesAtScreenPosition(display.width.toDouble()/2,
+            display.height.toDouble()/2)
+        if (midLatLon?.latitude == null) {
             return 0.0
         }
-        connect()
-        return LocationServices.FusedLocationApi?.lastLocation?.latitude ?: 0.0
+        return midLatLon?.latitude as Double
     }
 
     override fun getLon(): Double {
-        if (!permissionManager.permissionsGranted()) {
+        val windowManager = application.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display = windowManager.defaultDisplay
+        val midLatLon = mapzenMap?.coordinatesAtScreenPosition(display.width.toDouble()/2,
+            display.height.toDouble()/2)
+        if (midLatLon?.longitude == null) {
             return 0.0
         }
-        connect()
-        return LocationServices.FusedLocationApi?.lastLocation?.longitude ?: 0.0
+        return midLatLon?.longitude as Double
     }
 
     override fun getBoundingBox(): BoundingBox? {
