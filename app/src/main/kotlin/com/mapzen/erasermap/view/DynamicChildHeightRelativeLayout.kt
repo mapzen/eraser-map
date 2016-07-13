@@ -8,10 +8,10 @@ import java.util.ArrayList
 
 abstract class DynamicChildHeightRelativeLayout : RelativeLayout {
 
-  constructor(context: Context) : super(context) {}
-  constructor(context: Context, attributes: AttributeSet) : super(context, attributes) {}
+  constructor(context: Context) : super(context)
+  constructor(context: Context, attributes: AttributeSet) : super(context, attributes)
   constructor(context: Context, attributes: AttributeSet, style: Int) : super(context, attributes,
-      style) {}
+      style)
 
   abstract fun idsForDynamicChildren(): ArrayList<Int>
 
