@@ -28,10 +28,12 @@ abstract class DynamicChildHeightRelativeLayout : RelativeLayout {
 
   override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
     super.onLayout(changed, l, t, r, b)
-    val height = Math.abs(b - t)
-    for (i in views!!.indices) {
-      val view = views!![i]
-      layoutView(view, b + height)
+    if (views != null) {
+      val height = Math.abs(b - t)
+      for (i in views!!.indices) {
+        val view = views!![i]
+        layoutView(view, b + height)
+      }
     }
   }
 
