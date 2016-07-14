@@ -31,15 +31,8 @@ class ApiKeys private constructor(val application: EraserMapApplication) {
     }
 
     private fun configureKeys() {
-        if (BuildConfig.DEBUG) {
-            tilesKey = BuildConfig.VECTOR_TILE_API_KEY
-            searchKey = BuildConfig.PELIAS_API_KEY
-            routingKey = BuildConfig.VALHALLA_API_KEY
-        } else {
-            val crypt = SimpleCrypt(application)
-            tilesKey = crypt.decode(BuildConfig.VECTOR_TILE_API_KEY)
-            searchKey = crypt.decode(BuildConfig.PELIAS_API_KEY)
-            routingKey = crypt.decode(BuildConfig.VALHALLA_API_KEY)
-        }
+        tilesKey = BuildConfig.VECTOR_TILE_API_KEY
+        searchKey = BuildConfig.PELIAS_API_KEY
+        routingKey = BuildConfig.VALHALLA_API_KEY
     }
 }
