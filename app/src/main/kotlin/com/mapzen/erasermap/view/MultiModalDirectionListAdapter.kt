@@ -1,10 +1,6 @@
 package com.mapzen.erasermap.view
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.Typeface
-import android.text.SpannableString
-import android.text.style.StyleSpan
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
@@ -12,21 +8,17 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.model.InstructionGroup
-import com.mapzen.erasermap.model.InstructionGrouper
 import com.mapzen.erasermap.model.ListRowItem
 import com.mapzen.erasermap.model.ListRowType
 import com.mapzen.erasermap.model.MultiModalHelper
 import com.mapzen.erasermap.util.DisplayHelper
 import com.mapzen.valhalla.Instruction
-import com.mapzen.valhalla.TransitInfo
 import com.mapzen.valhalla.TransitStop
 import com.mapzen.valhalla.TravelMode
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.HashSet
 import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
 
 class MultiModalDirectionListAdapter(val context: Context, val instructionGrouper: InstructionGrouper,
     val reverse : Boolean?, val multiModalHelper: MultiModalHelper) : BaseAdapter() {
