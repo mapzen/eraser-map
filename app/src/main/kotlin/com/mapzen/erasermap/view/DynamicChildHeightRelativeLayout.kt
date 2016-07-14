@@ -32,9 +32,12 @@ abstract class DynamicChildHeightRelativeLayout : RelativeLayout {
       val height = Math.abs(b - t)
       for (i in views!!.indices) {
         val view = views!![i]
-        layoutView(view, b + height)
+        val lp = view.layoutParams as MarginLayoutParams
+        val bottomMargin = lp.bottomMargin
+        layoutView(view, height - bottomMargin)
       }
     }
+
   }
 
   private fun layoutView(view: View, height: Int) {
