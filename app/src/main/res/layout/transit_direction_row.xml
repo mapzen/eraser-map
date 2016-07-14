@@ -7,7 +7,7 @@
   <View
       android:id="@+id/prev_transit_line"
       android:layout_width="@dimen/transit_line_width"
-      android:layout_height="50dp"
+      android:layout_height="@dimen/prev_line_height"
       android:layout_marginLeft="@dimen/transit_line_margin_left"
       android:visibility="gone"
       />
@@ -20,7 +20,7 @@
     <View
         android:id="@+id/prev_pedestrian_line"
         android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/prev_line_height"
         android:background="@drawable/dashed_line"
         android:visibility="gone"
         android:layout_marginTop="@dimen/dashed_line_margin"
@@ -29,6 +29,15 @@
 
   </FrameLayout>
 
+  <View
+      android:id="@+id/transit_line"
+      android:layout_width="@dimen/transit_line_width"
+      android:layout_height="0dp"
+      android:layout_marginLeft="@dimen/transit_line_margin_left"
+      android:layout_marginTop="@dimen/transit_line_margin_top"
+      android:layout_marginBottom="@dimen/transit_line_margin_bottom"
+      />
+
   <ImageView
       android:id="@+id/starting_dot"
       android:layout_width="wrap_content"
@@ -36,14 +45,6 @@
       android:src="@drawable/ic_stop_transfer"
       android:layout_marginLeft="@dimen/dot_margin_left"
       android:layout_marginTop="15dp"
-      />
-
-  <View
-      android:id="@+id/transit_line"
-      android:layout_width="@dimen/transit_line_width"
-      android:layout_height="0dp"
-      android:layout_marginLeft="@dimen/transit_line_margin_left"
-      android:layout_below="@+id/starting_dot"
       />
 
   <TextView

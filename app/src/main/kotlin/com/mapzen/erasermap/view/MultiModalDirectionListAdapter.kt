@@ -299,11 +299,16 @@ class MultiModalDirectionListAdapter(val context: Context, val instructionGroupe
         holder.endingStationDot.visibility = View.VISIBLE
         holder.endingStationName.visibility = View.VISIBLE
         holder.pedestrianConnector.visibility = View.VISIBLE
+        val lp = holder.transitLine.layoutParams as ViewGroup.MarginLayoutParams
+        lp.bottomMargin = context.resources.getDimensionPixelSize(
+            R.dimen.transit_line_margin_bottom)
       } else {
         numStops++
         holder.endingStationDot.visibility = View.GONE
         holder.endingStationName.visibility = View.GONE
         holder.pedestrianConnector.visibility = View.GONE
+        val lp = holder.transitLine.layoutParams as ViewGroup.MarginLayoutParams
+        lp.bottomMargin = 0
       }
     }
     holder.endingStationName.text = transitStops[transitStops.size-1].getName()
