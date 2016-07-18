@@ -1,5 +1,6 @@
 package com.mapzen.erasermap;
 
+import com.mapzen.android.MapzenSearch;
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.model.AppSettings;
@@ -83,8 +84,8 @@ public class TestAndroidModule {
         return new Bus();
     }
 
-    @Provides @Singleton Pelias providePelias() {
-        return Mockito.mock(Pelias.class);
+    @Provides @Singleton MapzenSearch provideMapzenSearch() {
+        return Mockito.mock(MapzenSearch.class);
     }
 
     @Provides @Singleton Speaker provideSpeakerbox() {
