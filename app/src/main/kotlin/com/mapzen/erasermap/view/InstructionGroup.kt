@@ -91,10 +91,8 @@ class InstructionGroup(val travelType: TravelType, val travelMode: TravelMode,
 
   fun calculateTransitColor(): Int {
     val instruction = instructions[0]
-    val color = instruction.getTransitInfo()?.getColor() as Int
-    val hex = "#" + Integer.toString(color, 16)
     try {
-      return Color.parseColor(hex)
+      return Color.parseColor(instruction.getTransitInfoColorHex())
     } catch(e : IllegalArgumentException) {
       return R.color.mz_white
     }
