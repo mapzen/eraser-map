@@ -2,8 +2,6 @@ package com.mapzen.erasermap.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
-import android.widget.RelativeLayout
 import com.mapzen.erasermap.R
 import java.util.ArrayList
 

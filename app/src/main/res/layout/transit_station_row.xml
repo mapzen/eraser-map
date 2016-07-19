@@ -7,7 +7,7 @@
       android:id="@+id/station_dot"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:paddingLeft="23dp"
+      android:paddingLeft="22.5dp"
       android:paddingRight="24dp"
       android:src="@drawable/ic_stop"
       android:layout_centerVertical="true"

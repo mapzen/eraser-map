@@ -150,9 +150,4 @@ dependencies {
   testCompile 'org.assertj:assertj-core:1.7.0'
   testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
   testCompile 'org.json:json:20160212'
-
-  if (flavorType == 'Prod') {
-    println("Including production only dependencies...")
-    compile 'com.mapzen.android:leyndo:0.0.1-SNAPSHOT'
-  }
 }

@@ -8,10 +8,10 @@ import java.util.ArrayList
 
 abstract class DynamicChildHeightRelativeLayout : RelativeLayout {
 
-  constructor(context: Context) : super(context) {}
-  constructor(context: Context, attributes: AttributeSet) : super(context, attributes) {}
+  constructor(context: Context) : super(context)
+  constructor(context: Context, attributes: AttributeSet) : super(context, attributes)
   constructor(context: Context, attributes: AttributeSet, style: Int) : super(context, attributes,
-      style) {}
+      style)
 
   abstract fun idsForDynamicChildren(): ArrayList<Int>
 
@@ -28,11 +28,16 @@ abstract class DynamicChildHeightRelativeLayout : RelativeLayout {
 
   override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
     super.onLayout(changed, l, t, r, b)
-    val height = Math.abs(b - t)
-    for (i in views!!.indices) {
-      val view = views!![i]
-      layoutView(view, b + height)
+    if (views != null) {
+      val height = Math.abs(b - t)
+      for (i in views!!.indices) {
+        val view = views!![i]
+        val lp = view.layoutParams as MarginLayoutParams
+        val bottomMargin = lp.bottomMargin
+        layoutView(view, height - bottomMargin)
+      }
     }
+
   }
 
   private fun layoutView(view: View, height: Int) {

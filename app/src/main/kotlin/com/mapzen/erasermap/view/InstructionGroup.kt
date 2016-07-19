@@ -1,4 +1,4 @@
-package com.mapzen.erasermap.model
+package com.mapzen.erasermap.view
 
 import android.content.Context
 import android.graphics.Color
