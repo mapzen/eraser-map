@@ -486,7 +486,15 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
                             points.add(LngLat(location.longitude, location.latitude))
                             index++
                         }
-                        mapzenMap?.drawTransitRouteLine(points, null,
+                        val stationPoints = ArrayList<LngLat>()
+                        if (instruction.getTransitInfo() != null) {
+                            val stops = instruction.getTransitInfo()!!.getTransitStops()
+                            for (transitStop in stops) {
+                                stationPoints.add(LngLat(transitStop.getLon(),
+                                    transitStop.getLat()))
+                            }
+                        }
+                        mapzenMap?.drawTransitRouteLine(points, stationPoints,
                             instruction.getTransitInfoColorHex() as String)
                     }
                 }
