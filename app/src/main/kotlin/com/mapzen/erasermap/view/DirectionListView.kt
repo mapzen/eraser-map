@@ -3,7 +3,6 @@ package com.mapzen.erasermap.view
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.ListView
-import com.mapzen.erasermap.model.MultiModalHelper
 import com.mapzen.valhalla.Instruction
 import java.util.ArrayList
 
@@ -23,8 +22,7 @@ class DirectionListView(context: Context?, attrs: AttributeSet?) : ListView(cont
             distances.add(instruction.distance)
         }
 
-        val directionAdapter = DirectionListAdapter(context, strings, types, distances, false,
-                MultiModalHelper(null))
+        val directionAdapter = DirectionListAdapter(context, strings, types, distances, false)
         directionAdapter.directionItemClickListener = directionItemClickListener
         adapter = directionAdapter
     }

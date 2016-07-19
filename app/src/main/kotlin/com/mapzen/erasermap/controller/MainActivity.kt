@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Point
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
@@ -35,6 +36,7 @@ import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
+import com.mapzen.erasermap.view.InstructionGrouper
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.MultiModalHelper
 import com.mapzen.erasermap.model.PermissionManager
@@ -52,6 +54,7 @@ import com.mapzen.erasermap.view.DistanceView
 import com.mapzen.erasermap.view.MuteView
 import com.mapzen.erasermap.view.RouteModeView
 import com.mapzen.erasermap.view.RoutePreviewView
+import com.mapzen.erasermap.view.MultiModalDirectionListAdapter
 import com.mapzen.erasermap.view.SearchResultsAdapter
 import com.mapzen.erasermap.view.SearchResultsView
 import com.mapzen.erasermap.view.SettingsActivity
@@ -71,6 +74,7 @@ import com.mapzen.pelias.widget.AutoCompleteListView
 import com.mapzen.pelias.widget.PeliasSearchView
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.TouchInput
+import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
@@ -133,13 +137,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
     val byFoot: RadioButton by lazy { findViewById(R.id.by_foot) as RadioButton }
     val byTransit: RadioButton by lazy { findViewById(R.id.by_transit) as RadioButton }
     val routePreviewCompass: CompassView by lazy { findViewById(R.id.route_preview_compass_view) as CompassView }
-    val routeTopContainer: RelativeLayout by lazy { routePreviewView.findViewById(R.id.main_content) as RelativeLayout }
-    val routeBtmContainer: LinearLayout by lazy { routePreviewView.findViewById(R.id.bottom_content) as LinearLayout }
-    val distanceView: DistanceView by lazy { routePreviewView.findViewById(R.id.destination_distance) as DistanceView }
-    val destinationNameTextView: TextView by lazy { findViewById(R.id.destination_name) as TextView }
-    val previewDirectionListView: DirectionListView by lazy { routePreviewView.findViewById(R.id.list_view) as DirectionListView }
-    val previewToggleBtn: View by lazy { routePreviewView.findViewById(R.id.map_list_toggle) }
-    val balancerView: View by lazy { routePreviewView.findViewById(R.id.balancer) }
 
     // view_route_mode
     val routeModeView: RouteModeView by lazy { findViewById(R.id.route_mode) as RouteModeView }
@@ -855,7 +852,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         })
         updateRoutePreview()
         routeModeView.drawRoute(route)
-        routePreviewView.enableStartNavigation()
+        routePreviewView.enableStartNavigation(routeManager.type)
         hideProgress()
     }
 
@@ -943,13 +940,12 @@ class MainActivity : AppCompatActivity(), MainViewController,
             if (routeModeView.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
                 routePreviewView.visibility = View.VISIBLE
-                routePreviewDistanceTimeLayout.visibility = View.INVISIBLE
+                routePreviewDistanceTimeLayout.visibility = View.GONE
                 handleRouteFailure()
             }
         })
         updateRoutePreview()
         hideProgress()
-        Toast.makeText(this@MainActivity, "No route found", Toast.LENGTH_LONG).show()
         routePreviewView.disableStartNavigation()
     }
 
@@ -1010,6 +1006,12 @@ class MainActivity : AppCompatActivity(), MainViewController,
         }
     }
 
+    override fun restoreRoutePreviewButtons() {
+        if (routeManager.type == Router.Type.MULTIMODAL) {
+            startNavigationButton.visibility = View.GONE
+        }
+    }
+
     private fun safeShowStartNavigation() {
         if (!routePreviewView.reverse) {
             startNavigationButton.visibility = View.VISIBLE
@@ -1047,77 +1049,11 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     override fun showDirectionsList() {
-        val instructionStrings = ArrayList<String>()
-        val instructionTypes = ArrayList<Int>()
-        val instructionDistances = ArrayList<Int>()
-        val instructions = routeManager.route?.getRouteInstructions()
-        if (instructions != null) {
-            for(instruction in instructions) {
-                val humanInstruction = instruction.getHumanTurnInstruction()
-                if (humanInstruction is String) {
-                    instructionStrings.add(humanInstruction)
-                }
-                instructionTypes.add(instruction.turnInstruction)
-                instructionDistances.add(instruction.distance)
-            }
-        }
-
-        val simpleFeature = SimpleFeature.fromFeature(routeManager.destination)
-        val display = windowManager.defaultDisplay
-        val size = Point()
-        display.getSize(size);
-        val height = size.y.toFloat();
-
-        previewToggleBtn.visibility = View.GONE
-        balancerView.visibility = View.GONE
-        routeBtmContainer.translationY = height
-        routeBtmContainer.visibility = View.VISIBLE
-        distanceView.distanceInMeters = routeManager.route?.getTotalDistance() as Int
-        destinationNameTextView.text = simpleFeature.name()
-        previewDirectionListView.adapter = DirectionListAdapter(this, instructionStrings,
-                instructionTypes, instructionDistances, routeManager.reverse,
-                MultiModalHelper(routeManager.route?.rawRoute))
-        val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, TRANSLATION_Y,-height)
-        val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, TRANSLATION_Y, 0f)
-        val animations = AnimatorSet()
-        animations.playTogether(topContainerAnimator, btmContainerAnimator)
-        animations.duration = DIRECTION_LIST_ANIMATION_DURATION
-        animations.interpolator = AccelerateDecelerateInterpolator()
-        animations.addListener(object: Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) {
-                compass.visibility = View.GONE
-            }
-            override fun onAnimationEnd(animation: Animator) {}
-            override fun onAnimationRepeat(animation: Animator) {}
-            override fun onAnimationCancel(animation: Animator) {}
-        })
-        animations.start()
+        routePreviewView.showDirectionsListView(routeManager, windowManager, compass)
     }
 
     override fun hideDirectionsList() {
-        val display = windowManager.defaultDisplay
-        val size = Point()
-        display.getSize(size);
-        val height = size.y.toFloat();
-
-        val topContainerAnimator = ObjectAnimator.ofFloat(routeTopContainer, TRANSLATION_Y, 0f)
-        val btmContainerAnimator = ObjectAnimator.ofFloat(routeBtmContainer, TRANSLATION_Y, height)
-        val animations = AnimatorSet()
-        animations.playTogether(topContainerAnimator, btmContainerAnimator)
-        animations.duration = DIRECTION_LIST_ANIMATION_DURATION
-        animations.interpolator = AccelerateDecelerateInterpolator()
-        animations.addListener(object: Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) {
-                compass.visibility = View.VISIBLE
-
-            }
-            override fun onAnimationEnd(animation: Animator) {
-                routeBtmContainer.visibility = View.GONE
-            }
-            override fun onAnimationRepeat(animation: Animator) {}
-            override fun onAnimationCancel(animation: Animator) {}
-        })
-        animations.start()
+        routePreviewView.hideDirectionsListView(windowManager, compass)
     }
 
     /**

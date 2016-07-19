@@ -1,0 +1,11 @@
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+  <stroke
+      android:width="@dimen/dashed_line_width"
+      android:color="@color/color_route"
+      android:dashWidth="@dimen/dashed_line_dash_width"
+      android:dashGap="@dimen/dashed_line_dash_gap" />
+
+</shape>

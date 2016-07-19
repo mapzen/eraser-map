@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.mapzen.erasermap.view.PedestrianRowRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+  <ImageView
+      android:id="@+id/pedestrian_icon"
+      android:layout_width="@dimen/icon_width"
+      android:layout_height="@dimen/icon_height"
+      android:src="@drawable/ic_transit_type_8"
+      android:layout_alignParentTop="true"
+      android:layout_alignParentLeft="true"
+      android:layout_marginLeft="@dimen/padding_horizontal"
+      android:layout_marginRight="@dimen/padding_horizontal_small"
+      />
+
+  <!--frame the dashed line because it is actually a rectangle and we hide the top,-->
+  <!--right, and bottom edges. we give it negative margins to hide corners. width is-->
+  <!--arbitrary 20dp (its only important that its larger than container's 4dp) -->
+  <FrameLayout
+      android:id="@+id/dashed_line_container"
+      android:layout_width="@dimen/dashed_line_width"
+      android:layout_height="0dp"
+      android:layout_below="@+id/pedestrian_icon"
+      android:layout_marginLeft="@dimen/dashed_line_container_left_margin" >
+
+      <View
+          android:id="@+id/dashed_line"
+          android:layout_width="20dp"
+          android:layout_height="0dp"
+          android:background="@drawable/dashed_line"
+          android:layout_marginTop="@dimen/dashed_line_margin"
+          android:layout_marginBottom="@dimen/dashed_line_margin"
+          />
+
+  </FrameLayout>
+
+  <com.mapzen.erasermap.view.DistanceTimeExpanderLayout
+      android:id="@+id/distance_time_container"
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_toRightOf="@+id/pedestrian_icon"
+      android:layout_marginRight="8dp"/>
+
+  <LinearLayout
+      android:id="@+id/instructions_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:layout_below="@+id/distance_time_container"
+      android:layout_toRightOf="@+id/pedestrian_icon"
+      >
+
+    <!--Instructions added at runtime-->
+
+  </LinearLayout>
+
+
+</com.mapzen.erasermap.view.PedestrianRowRelativeLayout>

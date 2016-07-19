@@ -55,4 +55,5 @@ interface MainViewController {
     fun cancelRouteRequest()
     fun layoutAttributionAboveOptions()
     fun layoutFindMeAboveOptions()
+    fun restoreRoutePreviewButtons()
 }

@@ -44,4 +44,10 @@
     <string name="need_permissions">Turn on location permissions in your system settings menu</string>
     <string name="search_hint">Search for place or address</string>
     <string name="edittext_tangram_version_title">Tangram Version</string>
+
+    <string name="comma">,</string>
+    <string name="stops">stops</string>
+    <string name="station">Station</string>
+    <string name="no_route_found">No route found</string>
+    <string name="try_another_mode">Try a different mode?</string>
 </resources>

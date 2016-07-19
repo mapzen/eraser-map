@@ -1,0 +1,33 @@
+{
+    begin_shape_index: 0,
+    length: 0.161,
+    end_shape_index: 1,
+    instruction: "Instruction 3",
+    street_names: [
+        "19th Street"
+    ],
+    type: 1,
+    time: 0,
+    travel_type: "metro",
+    travel_mode: "transit",
+    transit_info: {
+      transit_stops: [
+        {
+          departure_date_time: "2016-06-23T13:39",
+          name: "23 St",
+          onestop_id: "s-dr5ru3006q-23st<d18s",
+          type: "station"
+        }
+      ],
+      headsign: "CONEY ISLAND - STILLWELL AV",
+      long_name: "Queens Blvd Express/ 6 Av Local",
+      operator_url: "http://web.mta.info/",
+      onestop_id: "r-dr5r-f",
+      short_name: "F",
+      color: 16737049,
+      description: "Trains operate at all times between",
+      text_color: 0,
+      operator_onestop_id: "o-dr5r-nyct",
+      operator_name: "MTA"
+    }
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <ImageView
+      android:id="@+id/station_dot"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:paddingLeft="23dp"
+      android:paddingRight="24dp"
+      android:src="@drawable/ic_stop"
+      android:layout_centerVertical="true"
+      />
+
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textSize="@dimen/font_medium"
+      android:textColor="@color/color_primary_dark"
+      android:id="@+id/station_name"
+      android:layout_toRightOf="@+id/station_dot"
+      android:layout_marginLeft="8dp"
+      android:paddingTop="2dp"
+      android:paddingBottom="2dp"
+      />
+
+</RelativeLayout>
