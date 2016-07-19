@@ -504,6 +504,7 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
 
     override fun hideRouteLine() {
         mapzenMap?.clearRouteLine()
+        mapzenMap?.clearTransitRouteLine()
     }
 
     fun clearRoute() {
