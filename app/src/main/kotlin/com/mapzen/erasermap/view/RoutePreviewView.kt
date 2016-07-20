@@ -57,7 +57,6 @@ class RoutePreviewView : RelativeLayout {
                 startView.setText(R.string.current_location)
                 destinationView.text = destination?.name()
                 startNavigationButton.visibility = VISIBLE
-
             }
         }
 
@@ -103,9 +102,11 @@ class RoutePreviewView : RelativeLayout {
         tryAnotherMode.visibility = View.VISIBLE
     }
 
-    fun enableStartNavigation(type: Router.Type) {
-        if (type != Router.Type.MULTIMODAL) {
+    fun enableStartNavigation(type: Router.Type, reverse: Boolean) {
+        if (type != Router.Type.MULTIMODAL && !reverse) {
             startNavigationButton.visibility = View.VISIBLE
+        } else {
+            startNavigationButton.visibility = View.GONE
         }
         viewListButton.visibility = View.VISIBLE
         noRouteFound.visibility = View.GONE
@@ -199,4 +200,9 @@ class RoutePreviewView : RelativeLayout {
         animations.start()
     }
 
+    fun restore(routeManager: RouteManager) {
+        if (routeManager.type == Router.Type.MULTIMODAL || routeManager.reverse) {
+            startNavigationButton.visibility = View.GONE
+        }
+    }
 }
