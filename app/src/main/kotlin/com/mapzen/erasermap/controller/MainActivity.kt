@@ -1009,7 +1009,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     private fun reverse() {
         routeManager.toggleReverse()
-        routePreviewView.reverse = routeManager.reverse ?: false
+        routePreviewView.reverse = routeManager.reverse
         route()
     }
 

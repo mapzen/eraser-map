@@ -204,5 +204,6 @@ class RoutePreviewView : RelativeLayout {
         if (routeManager.type == Router.Type.MULTIMODAL || routeManager.reverse) {
             startNavigationButton.visibility = View.GONE
         }
+        reverse = routeManager.reverse
     }
 }
