@@ -88,8 +88,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
         SearchViewController.OnSearchResultSelectedListener {
 
     companion object {
-        @JvmStatic val MAP_DATA_PROP_SEARCHINDEX = "searchIndex"
-        @JvmStatic val MAP_DATA_PROP_ID = "id"
         @JvmStatic val MAP_DATA_PROP_NAME = "name"
         @JvmStatic val DIRECTION_LIST_ANIMATION_DURATION = 300L
         @JvmStatic val PERMISSIONS_REQUEST: Int = 1
@@ -292,13 +290,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             if (properties.contains(MAP_DATA_PROP_NAME)) {
                 poiTapName = properties[MAP_DATA_PROP_NAME];
             }
-            if (properties.contains(MAP_DATA_PROP_SEARCHINDEX)) {
-                val searchIndex = properties[MAP_DATA_PROP_SEARCHINDEX]!!.toInt()
-                presenter.onSearchResultTapped(searchIndex)
-            } else {
-                presenter.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(),
-                            poiTapPoint?.get(0)?.toFloat())
-            }
+            presenter.onFeaturePicked(properties, poiTapPoint as FloatArray)
         })
         checkPermissionAndEnableLocation()
         mapzenMap?.setFindMeOnClickListener {
