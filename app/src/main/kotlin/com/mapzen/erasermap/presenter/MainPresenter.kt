@@ -53,4 +53,5 @@ interface MainPresenter {
     fun onIntentQueryReceived(query: String?)
     fun onRouteRequest(callback: RouteCallback)
     fun generateRawFeature(): Feature
+    fun onFeaturePicked(properties: Map<String, String>, poiPoint: FloatArray)
 }

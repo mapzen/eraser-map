@@ -38,6 +38,7 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import java.util.ArrayList
+import java.util.HashMap
 
 class MainPresenterTest {
     private val mainController: TestMainController = TestMainController()
@@ -619,6 +620,15 @@ class MainPresenterTest {
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
         presenter.success(Route(JSONObject()))
         assertThat(mainController.isNew).isFalse()
+    }
+
+    @Test fun onFeaturePicked_shouldReverseGeolocate() {
+        val poiTapPoint = floatArrayOf(40.0f, 70.0f)
+        val props = HashMap<String, String>()
+        presenter.reverseGeo = true
+        presenter.onFeaturePicked(props, poiTapPoint)
+        assertThat(mainController.reverseGeolocatePoint?.longitude).isEqualTo(40.0)
+        assertThat(mainController.reverseGeolocatePoint?.latitude).isEqualTo(70.0)
     }
 
     class RouteEventSubscriber {

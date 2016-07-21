@@ -1,15 +1,11 @@
 package com.mapzen.erasermap.controller
 
-import android.graphics.PointF
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 
 class TestMainController : MainViewController {
-    override fun onCloseAllSearchResults() {
-        throw UnsupportedOperationException()
-    }
 
     var searchResults: List<Feature>? = null
     var reverseGeoCodeResults: List<Feature>? = null
@@ -20,8 +16,8 @@ class TestMainController : MainViewController {
     var rotation: Float = 0f
     var routeLine: Route? = null
     var queryText: String = ""
-    var reverseGeolocatePoint: PointF? = null
-    var placeSearchPoint: PointF? = null
+    var reverseGeolocatePoint: LngLat? = null
+    var placeSearchPoint: LngLat? = null
 
     var isProgressVisible: Boolean = false
     var isViewAllVisible: Boolean = false
@@ -170,11 +166,11 @@ class TestMainController : MainViewController {
     }
 
     override fun reverseGeolocate(screenX: Float, screenY: Float) {
-        reverseGeolocatePoint = PointF(screenX, screenY)
+        reverseGeolocatePoint = LngLat(screenX.toDouble(), screenY.toDouble())
     }
 
     override fun placeSearch(gid: String) {
-        placeSearchPoint = PointF(0.0f, 0.0f)
+        placeSearchPoint = LngLat(0.0, 0.0)
     }
  
     override fun emptyPlaceSearch() {
@@ -228,6 +224,8 @@ class TestMainController : MainViewController {
     }
 
     override fun restoreRoutePreviewButtons() {
-        
+    }
+
+    override fun onCloseAllSearchResults() {
     }
 }
