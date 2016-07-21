@@ -25,7 +25,7 @@
 
         <LinearLayout
             android:id="@+id/start_location_layout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
@@ -51,7 +51,7 @@
 
         <LinearLayout
             android:id="@+id/destination_layout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 

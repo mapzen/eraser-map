@@ -125,6 +125,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     val mapView: MapView by lazy { findViewById(R.id.map) as MapView }
     val compass: CompassView by lazy { findViewById(R.id.compass_view) as CompassView }
     val searchController: SearchViewController by lazy { findViewById(R.id.search_results) as SearchResultsView }
+    val progressContainer: RelativeLayout by lazy { findViewById(R.id.progress_container) as RelativeLayout }
 
     // view_route_preview
     val routePreviewView: RoutePreviewView by lazy { findViewById(R.id.route_preview) as RoutePreviewView }
@@ -787,11 +788,11 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     override fun showProgress() {
-        findViewById(R.id.progress)?.visibility = View.VISIBLE
+        progressContainer.visibility = View.VISIBLE
     }
 
     override fun hideProgress() {
-        findViewById(R.id.progress)?.visibility = View.GONE
+        progressContainer.visibility = View.GONE
     }
 
     override fun onSearchResultSelected(position: Int) {
@@ -852,7 +853,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         })
         updateRoutePreview()
         routeModeView.drawRoute(route, routeManager.type)
-        routePreviewView.enableStartNavigation(routeManager.type)
+        routePreviewView.enableStartNavigation(routeManager.type, routeManager.reverse)
         hideProgress()
     }
 
@@ -977,7 +978,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
             if (isChecked) {
                 routeManager.type = Router.Type.DRIVING
                 route()
-                safeShowStartNavigation()
             }
         }
 
@@ -985,7 +985,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
             if (isChecked) {
                 routeManager.type = Router.Type.BIKING
                 route()
-                safeShowStartNavigation()
             }
         }
 
@@ -993,7 +992,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
             if (isChecked) {
                 routeManager.type = Router.Type.WALKING
                 route()
-                safeShowStartNavigation()
             }
         }
 
@@ -1001,26 +999,17 @@ class MainActivity : AppCompatActivity(), MainViewController,
             if (isChecked) {
                 routeManager.type = Router.Type.MULTIMODAL
                 route()
-                startNavigationButton.visibility = View.GONE
             }
         }
     }
 
     override fun restoreRoutePreviewButtons() {
-        if (routeManager.type == Router.Type.MULTIMODAL) {
-            startNavigationButton.visibility = View.GONE
-        }
-    }
-
-    private fun safeShowStartNavigation() {
-        if (!routePreviewView.reverse) {
-            startNavigationButton.visibility = View.VISIBLE
-        }
+        routePreviewView.restore(routeManager)
     }
 
     private fun reverse() {
         routeManager.toggleReverse()
-        routePreviewView.reverse = routeManager.reverse ?: false
+        routePreviewView.reverse = routeManager.reverse
         route()
     }
 
