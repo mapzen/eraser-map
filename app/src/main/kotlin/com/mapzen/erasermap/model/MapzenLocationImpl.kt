@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.model
 
 import android.content.Context
+import android.graphics.PointF
 import android.location.Location
 import android.util.Log
 import android.view.WindowManager
@@ -99,8 +100,8 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
     override fun getLat(): Double {
         val windowManager = application.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val display = windowManager.defaultDisplay
-        val midLatLon = mapzenMap?.coordinatesAtScreenPosition(display.width.toDouble()/2,
-            display.height.toDouble()/2)
+        val midLatLon = mapzenMap?.screenPositionToLngLat(PointF(display.width.toFloat() / 2,
+            display.height.toFloat() / 2))
         if (midLatLon?.latitude == null) {
             return 0.0
         }
@@ -110,8 +111,8 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
     override fun getLon(): Double {
         val windowManager = application.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val display = windowManager.defaultDisplay
-        val midLatLon = mapzenMap?.coordinatesAtScreenPosition(display.width.toDouble()/2,
-            display.height.toDouble()/2)
+        val midLatLon = mapzenMap?.screenPositionToLngLat(PointF(display.width.toFloat()/2,
+            display.height.toFloat()/2))
         if (midLatLon?.longitude == null) {
             return 0.0
         }
@@ -121,8 +122,8 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
     override fun getBoundingBox(): BoundingBox? {
         val windowManager = application.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val display = windowManager.defaultDisplay
-        val minLatLon = mapzenMap?.coordinatesAtScreenPosition(0.0, display.height.toDouble())
-        val maxLatLon = mapzenMap?.coordinatesAtScreenPosition(display.width.toDouble(), 0.0)
+        val minLatLon = mapzenMap?.screenPositionToLngLat(PointF(0.0f, display.height.toFloat()))
+        val maxLatLon = mapzenMap?.screenPositionToLngLat(PointF(display.width.toFloat(), 0.0f))
         val boundingBox: BoundingBox = BoundingBox(
                 minLatLon?.latitude as Double,
                 minLatLon?.longitude as Double,

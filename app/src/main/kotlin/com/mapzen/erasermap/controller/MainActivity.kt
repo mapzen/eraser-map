@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Point
+import android.graphics.PointF
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
@@ -29,6 +30,7 @@ import android.widget.Toast
 import com.mapzen.android.MapView
 import com.mapzen.android.MapzenMap
 import com.mapzen.android.lost.api.LocationServices
+import com.mapzen.android.model.CameraType
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
@@ -91,9 +93,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
         @JvmStatic val MAP_DATA_PROP_NAME = "name"
         @JvmStatic val DIRECTION_LIST_ANIMATION_DURATION = 300L
         @JvmStatic val PERMISSIONS_REQUEST: Int = 1
-        @JvmStatic val SCENE_CAMERA = "cameras"
-        @JvmStatic val SCENE_CAMERA_ISOMETRIC = "{isometric: {type: isometric}}"
-        @JvmStatic val SCENE_CAMERA_PERSPECTIVE = "{perspective: {type: perspective}}"
     }
 
     @Inject lateinit var savedSearch: SavedSearch
@@ -264,7 +263,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             override fun onSingleTapUp(x: Float, y: Float): Boolean = false
             override fun onSingleTapConfirmed(x: Float, y: Float): Boolean {
                 confidenceHandler.longPressed = false
-                val coords = mapzenMap?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
+                val coords = mapzenMap?.screenPositionToLngLat(PointF(x.toFloat(), y.toFloat()))
                 presenter.reverseGeoLngLat = coords
                 poiTapPoint = floatArrayOf(x, y)
                 return true
@@ -272,7 +271,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         }
         mapzenMap?.setDoubleTapResponder({ x, y ->
             confidenceHandler.longPressed = false
-            val tappedPos = mapzenMap?.coordinatesAtScreenPosition(x.toDouble(), y.toDouble())
+            val tappedPos = mapzenMap?.screenPositionToLngLat(PointF(x.toFloat(), y.toFloat()))
             val currentPos = mapzenMap?.position
             if (tappedPos != null && currentPos != null) {
                 mapzenMap?.setZoom((mapzenMap?.zoom as Float) + 1.0f, 500)
@@ -663,9 +662,9 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
         val lngLat: LngLat?
         if (poiTapPoint != null) {
-            val x = poiTapPoint!![0].toDouble()
-            val y = poiTapPoint!![1].toDouble()
-            lngLat = mapzenMap?.coordinatesAtScreenPosition(x, y)
+            val x = poiTapPoint!![0].toFloat()
+            val y = poiTapPoint!![1].toFloat()
+            lngLat = mapzenMap?.screenPositionToLngLat(PointF(x, y))
 
             // Fallback for a failed Pelias Place Callback
             overridePlaceFeature(features.get(0))
@@ -686,10 +685,10 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
         var lngLat: LngLat? = null
 
-        val pointX = poiTapPoint?.get(0)?.toDouble()
-        val pointY = poiTapPoint?.get(1)?.toDouble()
+        val pointX = poiTapPoint?.get(0)?.toFloat()
+        val pointY = poiTapPoint?.get(1)?.toFloat()
         if (pointX != null && pointY != null) {
-            lngLat = mapzenMap?.coordinatesAtScreenPosition(pointX, pointY)
+            lngLat = mapzenMap?.screenPositionToLngLat(PointF(pointX, pointY))
         }
 
         mapzenMap?.clearDroppedPins()
@@ -756,7 +755,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     override fun reverseGeolocate(screenX: Float, screenY: Float) {
         pelias.setLocationProvider(presenter.getPeliasLocationProvider())
-        val coords = mapzenMap?.coordinatesAtScreenPosition(screenX.toDouble(), screenY.toDouble())
+        val coords = mapzenMap?.screenPositionToLngLat(PointF(screenX.toFloat(), screenY.toFloat()))
         presenter.reverseGeoLngLat = coords
         presenter.currentFeature = getGenericLocationFeature(coords?.latitude as Double,
                 coords?.longitude as Double)
@@ -878,8 +877,8 @@ class MainActivity : AppCompatActivity(), MainViewController,
         val screen = Point()
         windowManager.defaultDisplay.getSize(screen)
         // Take half of the y dimension to allow space for other UI elements
-        val viewMin = mapzenMap?.coordinatesAtScreenPosition(0.0, screen.y.toDouble() * 0.25) ?: LngLat()
-        val viewMax = mapzenMap?.coordinatesAtScreenPosition(screen.x.toDouble(), screen.y.toDouble() * 0.75) ?: LngLat()
+        val viewMin = mapzenMap?.screenPositionToLngLat(PointF(0.0f, screen.y.toFloat() * 0.25f)) ?: LngLat()
+        val viewMax = mapzenMap?.screenPositionToLngLat(PointF(screen.x.toFloat(), screen.y.toFloat() * 0.75f)) ?: LngLat()
 
         // Determine the amount of re-scaling needed to view the route
         val scaleX = routeBounds.width / Math.abs(viewMax.longitude - viewMin.longitude)
@@ -1075,14 +1074,12 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     private fun setRoutingCamera() {
         if (routeModeView.isResumeButtonHidden()) {
-            mapzenMap?.queueSceneUpdate(SCENE_CAMERA, SCENE_CAMERA_PERSPECTIVE)
-            mapzenMap?.applySceneUpdates()
+            mapzenMap?.cameraType = CameraType.PERSPECTIVE
         }
     }
 
     private fun setDefaultCamera() {
-        mapzenMap?.queueSceneUpdate(SCENE_CAMERA, SCENE_CAMERA_ISOMETRIC)
-        mapzenMap?.applySceneUpdates()
+        mapzenMap?.cameraType = CameraType.ISOMETRIC
     }
 
     private fun showRoutingMode(feature: Feature) {
@@ -1115,10 +1112,10 @@ class MainActivity : AppCompatActivity(), MainViewController,
         if (poiTapPoint != null) {
             val geometry = Geometry()
             val coordinates = ArrayList<Double>()
-            val pointX = poiTapPoint?.get(0)?.toDouble()
-            val pointY = poiTapPoint?.get(1)?.toDouble()
+            val pointX = poiTapPoint?.get(0)?.toFloat()
+            val pointY = poiTapPoint?.get(1)?.toFloat()
             if (pointX != null && pointY != null) {
-                val coords = mapzenMap?.coordinatesAtScreenPosition(pointX, pointY)
+                val coords = mapzenMap?.screenPositionToLngLat(PointF(pointX, pointY))
                 val lng = coords?.longitude
                 val lat = coords?.latitude
                 if (lng != null && lat!= null) {

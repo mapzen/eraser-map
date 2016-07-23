@@ -2,6 +2,7 @@ package com.mapzen.erasermap.view
 
 import android.content.Context
 import android.graphics.Point
+import android.graphics.PointF
 import android.location.Location
 import android.os.Handler
 import android.support.v4.view.PagerAdapter
@@ -283,13 +284,13 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
             val display = windowManager.defaultDisplay
             val point = Point()
             display.getSize(point)
-            val screenWidth = point.x.toDouble()
-            val screenHeight = point.y.toDouble()
+            val screenWidth = point.x.toFloat()
+            val screenHeight = point.y.toFloat()
 
             // Find the view that will place the current location marker in the lower quarter
             // of the window.
-            val nextPosition = mapzenMap?.coordinatesAtScreenPosition(screenWidth/2,
-                    screenHeight/3.5) ?: LngLat()
+            val nextPosition = mapzenMap?.screenPositionToLngLat(PointF(screenWidth / 2,
+                screenHeight / 3.5f)) ?: LngLat()
             val nextRotation = getBearingInRadians(location)
 
             // Return to our initial view to prepare for easing to the next view
