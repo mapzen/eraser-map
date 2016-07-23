@@ -30,6 +30,7 @@ import android.widget.Toast
 import com.mapzen.android.MapView
 import com.mapzen.android.MapzenMap
 import com.mapzen.android.lost.api.LocationServices
+import com.mapzen.android.model.CameraType
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
@@ -92,9 +93,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
         @JvmStatic val MAP_DATA_PROP_NAME = "name"
         @JvmStatic val DIRECTION_LIST_ANIMATION_DURATION = 300L
         @JvmStatic val PERMISSIONS_REQUEST: Int = 1
-        @JvmStatic val SCENE_CAMERA = "cameras"
-        @JvmStatic val SCENE_CAMERA_ISOMETRIC = "{isometric: {type: isometric}}"
-        @JvmStatic val SCENE_CAMERA_PERSPECTIVE = "{perspective: {type: perspective}}"
     }
 
     @Inject lateinit var savedSearch: SavedSearch
@@ -1076,14 +1074,12 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     private fun setRoutingCamera() {
         if (routeModeView.isResumeButtonHidden()) {
-            mapzenMap?.queueSceneUpdate(SCENE_CAMERA, SCENE_CAMERA_PERSPECTIVE)
-            mapzenMap?.applySceneUpdates()
+            mapzenMap?.cameraType = CameraType.PERSPECTIVE
         }
     }
 
     private fun setDefaultCamera() {
-        mapzenMap?.queueSceneUpdate(SCENE_CAMERA, SCENE_CAMERA_ISOMETRIC)
-        mapzenMap?.applySceneUpdates()
+        mapzenMap?.cameraType = CameraType.ISOMETRIC
     }
 
     private fun showRoutingMode(feature: Feature) {
