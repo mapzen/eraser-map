@@ -52,11 +52,9 @@ class RoutePreviewView : RelativeLayout {
             if (value) {
                 startView.text = destination?.name()
                 destinationView.setText(R.string.current_location)
-                startNavigationButton.visibility = GONE
             } else {
                 startView.setText(R.string.current_location)
                 destinationView.text = destination?.name()
-                startNavigationButton.visibility = VISIBLE
             }
         }
 
