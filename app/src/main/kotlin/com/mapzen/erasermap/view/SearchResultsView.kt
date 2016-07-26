@@ -11,6 +11,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.mapzen.android.MapzenSearch
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.controller.MainActivity
@@ -19,7 +20,6 @@ import com.mapzen.erasermap.controller.SearchViewController
 import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.presenter.MainPresenter
-import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.widget.AutoCompleteListView
@@ -35,7 +35,7 @@ open class SearchResultsView(context: Context, attrs: AttributeSet)
     override var onSearchResultsSelectedListener:
             SearchViewController.OnSearchResultSelectedListener? = null
 
-    @Inject lateinit var pelias: Pelias
+    @Inject lateinit var mapzenSearch: MapzenSearch
     @Inject lateinit var savedSearch: SavedSearch
 
     init {
@@ -54,18 +54,15 @@ open class SearchResultsView(context: Context, attrs: AttributeSet)
             callback: MainActivity.PeliasCallback) {
 
         this.searchView = searchView
-        this.autoCompleteListView = autoCompleteListView
-        autoCompleteListView.hideHeader()
 
         searchView.setRecentSearchIconResourceId(R.drawable.ic_recent)
         searchView.setAutoCompleteIconResourceId(R.drawable.ic_pin_c)
         initAutoCompleteAdapter()
         autoCompleteListView.adapter = initAutoCompleteAdapter()
-        pelias.setLocationProvider(locationProvider)
-        pelias.setApiKey(apiKeys?.searchKey)
+        mapzenSearch.setLocationProvider(locationProvider)
         searchView.setAutoCompleteListView(autoCompleteListView)
         searchView.setSavedSearch(savedSearch)
-        searchView.setPelias(pelias)
+        searchView.setPelias(mapzenSearch.pelias)
         searchView.setCallback(callback)
         searchView.setOnSubmitListener({
             presenter.reverseGeoLngLat = null

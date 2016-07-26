@@ -1,9 +1,12 @@
 package com.mapzen.erasermap;
 
+import com.mapzen.android.ApiKeyConstants;
+import com.mapzen.android.MapzenSearch;
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.AndroidAppSettings;
 import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.model.AppSettings;
+import com.mapzen.erasermap.model.Http;
 import com.mapzen.erasermap.model.IntentQueryParser;
 import com.mapzen.erasermap.model.LocationConverter;
 import com.mapzen.erasermap.model.MapzenLocation;
@@ -20,16 +23,19 @@ import com.mapzen.erasermap.util.IntentFactory;
 import com.mapzen.erasermap.view.Speaker;
 import com.mapzen.erasermap.view.SpeakerboxSpeaker;
 import com.mapzen.pelias.Pelias;
+import com.mapzen.pelias.PeliasRequestHandler;
 
 import com.squareup.otto.Bus;
 
 import android.content.Context;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit.RestAdapter;
 
 @Module
 public class AndroidModule {
@@ -84,12 +90,27 @@ public class AndroidModule {
         return new Bus();
     }
 
-    @Provides @Singleton Pelias providePelias() {
+    @Provides @Singleton MapzenSearch provideMapzenSearch(final ApiKeys apiKeys) {
         final String endpoint = BuildConfig.SEARCH_BASE_URL != null ?
-                BuildConfig.SEARCH_BASE_URL : Pelias.DEFAULT_SERVICE_ENDPOINT;
-        final RestAdapter.LogLevel logLevel = BuildConfig.DEBUG ?
-                RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE;
-        return Pelias.getPeliasWithEndpoint(endpoint, logLevel);
+                BuildConfig.SEARCH_BASE_URL : Pelias.DEFAULT_SEARCH_ENDPOINT;
+        MapzenSearch search = new MapzenSearch(application);
+        Pelias pelias = search.getPelias();
+        pelias.setEndpoint(endpoint);
+        pelias.setDebug(BuildConfig.DEBUG);
+        pelias.setRequestHandler(new PeliasRequestHandler() {
+            @Override public Map<String, String> headersForRequest() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put(Http.HEADER_DNT, Http.VALUE_HEADER_DNT);
+                return headers;
+            }
+
+            @Override public Map<String, String> queryParamsForRequest() {
+                Map<String, String> params = new HashMap<>();
+                params.put(ApiKeyConstants.API_KEY, apiKeys.getSearchKey());
+                return params;
+            }
+        });
+        return search;
     }
 
     @Provides @Singleton Speaker provideSpeaker() {
