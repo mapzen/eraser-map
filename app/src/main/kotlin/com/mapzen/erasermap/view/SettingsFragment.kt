@@ -173,8 +173,8 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
     }
 
     private fun initTangramVersionPref() {
-        findPreference(AndroidAppSettings.KEY_TANGRAM_VERSION).summary = context.getString(
-            R.string.tangram_version)
+        findPreference(AndroidAppSettings.KEY_TANGRAM_VERSION).summary =
+                getString(R.string.tangram_version)
     }
 
     private fun getSettingsActivity(): SettingsActivity {
