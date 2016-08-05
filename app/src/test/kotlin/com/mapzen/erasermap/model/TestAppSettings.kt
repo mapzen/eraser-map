@@ -2,14 +2,13 @@ package com.mapzen.erasermap.model
 
 import android.content.Context
 import android.location.Location
-import com.mapzen.android.MapzenMap
-import com.mapzen.android.MapzenRouter
+import com.mapzen.android.graphics.MapzenMap
+import com.mapzen.android.routing.MapzenRouter
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.pelias.SavedSearch
-import com.mapzen.valhalla.Router
 import java.io.File
 
-public class TestAppSettings : AppSettings {
+class TestAppSettings : AppSettings {
     override var distanceUnits: MapzenRouter.DistanceUnits = MapzenRouter.DistanceUnits.MILES
     override var isMockLocationEnabled: Boolean = false
     override var mockLocation: Location = TestHelper.getTestAndroidLocation()

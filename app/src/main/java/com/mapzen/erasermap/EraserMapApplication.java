@@ -1,7 +1,6 @@
 package com.mapzen.erasermap;
 
 import com.mapzen.erasermap.controller.MainActivity;
-import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.receiver.MockLocationReceiver;
 import com.mapzen.erasermap.view.DistanceView;
 import com.mapzen.erasermap.view.InitActivity;
@@ -11,9 +10,6 @@ import com.mapzen.erasermap.view.SearchResultsView;
 import com.mapzen.erasermap.view.SettingsActivity;
 import com.mapzen.erasermap.view.ViewAboutPreference;
 import com.mapzen.erasermap.view.VoiceNavigationController;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import android.app.Application;
 

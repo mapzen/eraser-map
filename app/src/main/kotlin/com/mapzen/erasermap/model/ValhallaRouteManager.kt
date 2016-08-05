@@ -1,7 +1,7 @@
 package com.mapzen.erasermap.model
 
 import android.content.Context
-import com.mapzen.android.MapzenRouter
+import com.mapzen.android.routing.MapzenRouter
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.SimpleFeature

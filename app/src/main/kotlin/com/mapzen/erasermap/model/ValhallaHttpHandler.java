@@ -1,7 +1,6 @@
 package com.mapzen.erasermap.model;
 
-import com.mapzen.android.TurnByTurnHttpHandler;
-import com.mapzen.valhalla.HttpHandler;
+import com.mapzen.android.routing.TurnByTurnHttpHandler;
 
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;

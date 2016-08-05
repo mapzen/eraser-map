@@ -5,7 +5,7 @@ import android.graphics.PointF
 import android.location.Location
 import android.util.Log
 import android.view.WindowManager
-import com.mapzen.android.MapzenMap
+import com.mapzen.android.graphics.MapzenMap
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.LostApiClient

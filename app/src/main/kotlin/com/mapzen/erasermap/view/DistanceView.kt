@@ -3,7 +3,7 @@ package com.mapzen.erasermap.view
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.TextView
-import com.mapzen.android.MapzenDistanceFormatter
+import com.mapzen.android.routing.MapzenDistanceFormatter
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.model.AppSettings
 import javax.inject.Inject

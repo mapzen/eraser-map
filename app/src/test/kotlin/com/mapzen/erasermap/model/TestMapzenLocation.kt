@@ -1,12 +1,12 @@
 package com.mapzen.erasermap.model
 
 import android.location.Location
-import com.mapzen.android.MapzenMap
+import com.mapzen.android.graphics.MapzenMap
 import com.mapzen.pelias.BoundingBox
 import org.mockito.Mockito
 
-public class TestMapzenLocation : MapzenLocation {
-    public var connected = false
+class TestMapzenLocation : MapzenLocation {
+    var connected = false
 
     override var mapzenMap: MapzenMap? = null
 
