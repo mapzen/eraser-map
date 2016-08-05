@@ -1,6 +1,6 @@
 package com.mapzen.erasermap;
 
-import com.mapzen.android.MapzenSearch;
+import com.mapzen.android.search.MapzenSearch;
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.model.AppSettings;
@@ -20,7 +20,6 @@ import com.mapzen.erasermap.util.IntentFactory;
 import com.mapzen.erasermap.util.MockIntentFactory;
 import com.mapzen.erasermap.view.Speaker;
 import com.mapzen.erasermap.view.TestSpeakerbox;
-import com.mapzen.pelias.Pelias;
 
 import com.squareup.otto.Bus;
 

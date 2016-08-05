@@ -1,7 +1,7 @@
 package com.mapzen.erasermap;
 
-import com.mapzen.android.ApiKeyConstants;
-import com.mapzen.android.MapzenSearch;
+import com.mapzen.android.core.ApiKeyConstants;
+import com.mapzen.android.search.MapzenSearch;
 import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.AndroidAppSettings;
 import com.mapzen.erasermap.model.ApiKeys;

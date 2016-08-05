@@ -1,9 +1,9 @@
 package com.mapzen.erasermap.model
 
 import android.content.Context
-import com.mapzen.android.MapzenRouter
+import com.mapzen.android.routing.MapzenRouter
 
-public class TestRouterFactory : RouterFactory {
+class TestRouterFactory : RouterFactory {
 
     companion object {
         var router: TestRouter? = null

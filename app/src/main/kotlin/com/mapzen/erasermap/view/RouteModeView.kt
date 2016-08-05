@@ -15,8 +15,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.mapzen.android.MapzenMap
-import com.mapzen.android.model.EaseType
+import com.mapzen.android.graphics.MapzenMap
+import com.mapzen.android.graphics.model.EaseType
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AppSettings

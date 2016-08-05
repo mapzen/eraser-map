@@ -1,16 +1,16 @@
 package com.mapzen.erasermap.model
 
 import android.content.Context
-import com.mapzen.android.MapzenRouter
+import com.mapzen.android.routing.MapzenRouter
 import com.mapzen.valhalla.RouteCallback
 import java.util.ArrayList
 
-public class TestRouter(context: Context) : MapzenRouter(context) {
-    public var locations: ArrayList<DoubleArray> = ArrayList()
-    public var isFetching: Boolean = false
-    public var units: MapzenRouter.DistanceUnits = MapzenRouter.DistanceUnits.MILES
-    public var bearing: Float = 0f
-    public var name: String? = null
+class TestRouter(context: Context) : MapzenRouter(context) {
+    var locations: ArrayList<DoubleArray> = ArrayList()
+    var isFetching: Boolean = false
+    var units: MapzenRouter.DistanceUnits = MapzenRouter.DistanceUnits.MILES
+    var bearing: Float = 0f
+    var name: String? = null
 
     override fun clearLocations(): MapzenRouter {
         locations.clear()

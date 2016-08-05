@@ -1,7 +1,7 @@
 package com.mapzen.erasermap.model
 
 import android.location.Location
-import com.mapzen.android.MapzenMap
+import com.mapzen.android.graphics.MapzenMap
 import com.mapzen.pelias.PeliasLocationProvider
 
 interface MapzenLocation : PeliasLocationProvider {

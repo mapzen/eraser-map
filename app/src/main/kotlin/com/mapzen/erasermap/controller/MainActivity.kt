@@ -20,11 +20,11 @@ import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RelativeLayout
 import android.widget.Toast
-import com.mapzen.android.MapView
-import com.mapzen.android.MapzenMap
-import com.mapzen.android.MapzenSearch
+import com.mapzen.android.graphics.MapView
+import com.mapzen.android.graphics.MapzenMap
+import com.mapzen.android.search.MapzenSearch
 import com.mapzen.android.lost.api.LocationServices
-import com.mapzen.android.model.CameraType
+import com.mapzen.android.graphics.model.CameraType
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
@@ -241,6 +241,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     private fun configureMapzenMap() {
+        mapzenMap?.setPersistMapData(true)
         mapzenMap?.setLongPressResponder({
             x, y ->
             confidenceHandler.longPressed = true

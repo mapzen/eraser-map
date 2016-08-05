@@ -11,7 +11,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.mapzen.android.MapzenSearch
+import com.mapzen.android.search.MapzenSearch
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.controller.MainActivity

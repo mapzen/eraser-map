@@ -6,7 +6,7 @@
     android:background="@color/color_primary"
     tools:context=".MainActivity">
 
-    <com.mapzen.android.MapView
+    <com.mapzen.android.graphics.MapView
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
