@@ -7,7 +7,9 @@ import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
 import com.mapzen.erasermap.model.IntentQuery
 import com.mapzen.erasermap.model.IntentQueryParser
+import com.mapzen.erasermap.model.LocationClientManager
 import com.mapzen.erasermap.model.LocationConverter
+import com.mapzen.erasermap.model.LostClientManager
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.event.LocationChangeEvent
@@ -40,7 +42,8 @@ import java.util.ArrayList
 
 open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     val routeManager: RouteManager, val settings: AppSettings, val vsm: ViewStateManager,
-    val intentQueryParser: IntentQueryParser, val converter: LocationConverter)
+    val intentQueryParser: IntentQueryParser, val converter: LocationConverter,
+    val locationClientManager: LocationClientManager)
 : MainPresenter, RouteCallback {
 
   companion object {
@@ -222,6 +225,14 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   @Subscribe fun onRoutePreviewEvent(event: RoutePreviewEvent) {
+    if (locationClientManager.getClient() == null) {
+      locationClientManager.connect()
+      locationClientManager.addRunnableToRunOnConnect(
+          Runnable { onRoutePreviewEvent(event) }
+      )
+      return
+    }
+
     vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
     if (reverseGeo) {
       restoreReverseGeoOnBack = true
@@ -240,6 +251,14 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun updateLocation() {
+    if (locationClientManager.getClient() == null) {
+      locationClientManager.connect()
+      locationClientManager.addRunnableToRunOnConnect(
+          Runnable { updateLocation() }
+      )
+      return
+    }
+
     val location = mapzenLocation.getLastLocation()
     if (location != null) {
       routeViewController?.onLocationChanged(location)
@@ -409,6 +428,14 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   private fun generateRoutePreview() {
+    if (locationClientManager.getClient() == null) {
+      locationClientManager.connect()
+      locationClientManager.addRunnableToRunOnConnect(
+          Runnable { generateRoutePreview() }
+      )
+      return
+    }
+
     val location = mapzenLocation.getLastLocation()
     val feature = destination
     if (location is Location && feature is Feature) {
@@ -466,6 +493,14 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun configureMapzenMap() {
+    if (locationClientManager.getClient() == null) {
+      locationClientManager.connect()
+      locationClientManager.addRunnableToRunOnConnect(
+          Runnable { configureMapzenMap() }
+      )
+      return
+    }
+
     val currentLocation = mapzenLocation.getLastLocation()
     if (currentLocation is Location) {
       if (!initialized) {

@@ -50,8 +50,9 @@ class MainPresenterTest {
     private val vsm: ViewStateManager = ViewStateManager()
     private val iqp: IntentQueryParser = Mockito.mock(IntentQueryParser::class.java)
     private val converter: LocationConverter = LocationConverter()
+    private val clientManager: TestLostClientManager = TestLostClientManager()
     private val presenter = MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm, iqp,
-        converter)
+        converter, clientManager)
 
     @Before fun setUp() {
         presenter.mainViewController = mainController

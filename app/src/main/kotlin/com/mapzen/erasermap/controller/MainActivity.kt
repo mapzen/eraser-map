@@ -32,6 +32,7 @@ import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
+import com.mapzen.erasermap.model.LostClientManager
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.PermissionManager
 import com.mapzen.erasermap.model.RouteManager
@@ -51,7 +52,6 @@ import com.mapzen.erasermap.view.SettingsActivity
 import com.mapzen.erasermap.view.Speaker
 import com.mapzen.erasermap.view.VoiceNavigationController
 import com.mapzen.model.ValhallaLocation
-import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
@@ -93,6 +93,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     @Inject lateinit var speaker: Speaker
     @Inject lateinit var permissionManager: PermissionManager
     @Inject lateinit var apiKeys: ApiKeys
+    @Inject lateinit var lostClientManager: LostClientManager
 
     lateinit var app: EraserMapApplication
     var mapzenMap : MapzenMap? = null
@@ -1185,8 +1186,16 @@ class MainActivity : AppCompatActivity(), MainViewController,
         if (permissionManager.granted && !presenter.routingEnabled) {
             mapzenMap?.isMyLocationEnabled = true
             if (settings.isMockLocationEnabled) {
-                LocationServices.FusedLocationApi?.setMockMode(true)
-                LocationServices.FusedLocationApi?.setMockLocation(settings.mockLocation)
+                if (lostClientManager.getClient() == null) {
+                    lostClientManager.connect()
+                    lostClientManager.addRunnableToRunOnConnect(
+                        Runnable { checkPermissionAndEnableLocation() }
+                    )
+                    return
+                }
+                val client = lostClientManager.getClient()
+                LocationServices.FusedLocationApi?.setMockMode(client, true)
+                LocationServices.FusedLocationApi?.setMockLocation(client, settings.mockLocation)
             }
         }
     }
