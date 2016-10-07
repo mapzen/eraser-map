@@ -7,6 +7,7 @@ import com.mapzen.erasermap.model.IntentQueryParser;
 import com.mapzen.erasermap.model.LocationConverter;
 import com.mapzen.erasermap.model.LocationSettingsChecker;
 import com.mapzen.erasermap.model.LostClientManager;
+import com.mapzen.erasermap.model.LostFactory;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
 import com.mapzen.erasermap.model.PermissionManager;
@@ -47,7 +48,7 @@ public class TestAndroidModule {
     }
 
     @Provides @Singleton LostClientManager provideLocationClientManager() {
-        return new LostClientManager(application);
+        return new LostClientManager(application, new LostFactory());
     }
 
     @Provides @Singleton CrashReportService provideCrashReportService() {

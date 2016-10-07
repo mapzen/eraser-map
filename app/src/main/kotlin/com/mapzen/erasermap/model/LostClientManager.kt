@@ -7,7 +7,7 @@ import java.util.ArrayList
 /**
  * Manages [LostApiClient] and its [ConnectionCallback] flow
  */
-class LostClientManager(val application: Application): LocationClientManager {
+class LostClientManager(val application: Application, locationFactory: LocationFactory): LocationClientManager {
 
   private var connecting = false
   private var connected = false
@@ -32,9 +32,7 @@ class LostClientManager(val application: Application): LocationClientManager {
   private var runnables = ArrayList<Runnable>()
 
   init {
-    lostClient = LostApiClient.Builder(application)
-        .addConnectionCallbacks(connectionCallbacks)
-        .build();
+    lostClient = locationFactory.createClient(application, connectionCallbacks)
   }
 
   override fun getClient(): LostApiClient? {
