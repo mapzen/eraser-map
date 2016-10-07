@@ -1,5 +1,6 @@
 package com.mapzen.erasermap.controller
 
+import com.mapzen.android.lost.api.Status
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
@@ -227,5 +228,8 @@ class TestMainController : MainViewController {
     }
 
     override fun onCloseAllSearchResults() {
+    }
+
+    override fun handleLocationResolutionRequired(status: Status) {
     }
 }

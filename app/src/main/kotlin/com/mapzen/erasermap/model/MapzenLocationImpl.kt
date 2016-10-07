@@ -25,6 +25,12 @@ public class MapzenLocationImpl(val locationClientManager: LocationClientManager
         private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT: Float = 3f
     }
 
+    private val request = LocationRequest.create()
+        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        .setInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
+        .setFastestInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
+        .setSmallestDisplacement(LOCATION_UPDATE_SMALLEST_DISPLACEMENT)
+
     init {
         bus.register(this)
     }
@@ -62,13 +68,8 @@ public class MapzenLocationImpl(val locationClientManager: LocationClientManager
             return
         }
         connect()
-        val locationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
-                .setFastestInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
-                .setSmallestDisplacement(LOCATION_UPDATE_SMALLEST_DISPLACEMENT)
         val client = locationClientManager.getClient()
-        LocationServices.FusedLocationApi?.requestLocationUpdates(client, locationRequest,
+        LocationServices.FusedLocationApi?.requestLocationUpdates(client, request,
             object: com.mapzen.android.lost.api.LocationListener {
                 override fun onLocationChanged(location: Location) {
                     onLocationUpdate(location)
@@ -140,5 +141,9 @@ public class MapzenLocationImpl(val locationClientManager: LocationClientManager
                 maxLatLon?.latitude as Double,
                 maxLatLon?.longitude as Double)
         return boundingBox
+    }
+
+    override fun getLocationRequest(): LocationRequest {
+        return request
     }
 }

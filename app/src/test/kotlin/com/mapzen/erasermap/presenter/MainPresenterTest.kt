@@ -9,6 +9,7 @@ import com.mapzen.erasermap.model.IntentQuery
 import com.mapzen.erasermap.model.IntentQueryParser
 import com.mapzen.erasermap.model.LocationConverter
 import com.mapzen.erasermap.model.TestAppSettings
+import com.mapzen.erasermap.model.TestLostSettingsChecker
 import com.mapzen.erasermap.model.TestMapzenLocation
 import com.mapzen.erasermap.model.TestRouteManager
 import com.mapzen.erasermap.model.ValhallaRouteManagerTest.TestRouteCallback
@@ -51,8 +52,9 @@ class MainPresenterTest {
     private val iqp: IntentQueryParser = Mockito.mock(IntentQueryParser::class.java)
     private val converter: LocationConverter = LocationConverter()
     private val clientManager: TestLostClientManager = TestLostClientManager()
+    private val locationSettingsChecker = TestLostSettingsChecker()
     private val presenter = MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm, iqp,
-        converter, clientManager)
+        converter, clientManager, locationSettingsChecker)
 
     @Before fun setUp() {
         presenter.mainViewController = mainController

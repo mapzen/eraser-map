@@ -1,5 +1,6 @@
 package com.mapzen.erasermap.controller
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -9,6 +10,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
 import android.support.v7.app.ActionBar
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
@@ -25,6 +27,7 @@ import com.mapzen.android.graphics.MapzenMap
 import com.mapzen.android.search.MapzenSearch
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.graphics.model.CameraType
+import com.mapzen.android.lost.api.Status
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
@@ -1210,6 +1213,18 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     override fun deactivateFindMeTracking() {
         mapView.findMe.isActivated = false
+    }
+
+    override fun handleLocationResolutionRequired(status: Status) {
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.location_required_title)
+            .setMessage(R.string.location_required_msg)
+            .setNegativeButton(R.string.no, null)
+            .setPositiveButton(R.string.yes) { dialog, which ->
+                status.startResolutionForResult(this, 0)
+            }
+            .create()
+        dialog.show()
     }
 
     inner class CancelableRouteCallback : RouteCallback {

@@ -2,6 +2,9 @@ package com.mapzen.erasermap.presenter
 
 import android.location.Location
 import android.util.Log
+import com.mapzen.android.lost.api.LocationServices
+import com.mapzen.android.lost.api.LocationSettingsRequest
+import com.mapzen.android.lost.api.Status
 import com.mapzen.erasermap.controller.MainViewController
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
@@ -9,7 +12,7 @@ import com.mapzen.erasermap.model.IntentQuery
 import com.mapzen.erasermap.model.IntentQueryParser
 import com.mapzen.erasermap.model.LocationClientManager
 import com.mapzen.erasermap.model.LocationConverter
-import com.mapzen.erasermap.model.LostClientManager
+import com.mapzen.erasermap.model.LocationSettingsChecker
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.event.LocationChangeEvent
@@ -43,7 +46,8 @@ import java.util.ArrayList
 open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     val routeManager: RouteManager, val settings: AppSettings, val vsm: ViewStateManager,
     val intentQueryParser: IntentQueryParser, val converter: LocationConverter,
-    val locationClientManager: LocationClientManager)
+    val locationClientManager: LocationClientManager,
+    val locationSettingsChecker: LocationSettingsChecker)
 : MainPresenter, RouteCallback {
 
   companion object {
@@ -231,6 +235,17 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
           Runnable { onRoutePreviewEvent(event) }
       )
       return
+    }
+
+    val locationStatusCode = locationSettingsChecker.getLocationStatusCode(mapzenLocation,
+        locationClientManager)
+    when (locationStatusCode) {
+      Status.RESOLUTION_REQUIRED -> {
+        val locationStatus = locationSettingsChecker.getLocationStatus(mapzenLocation,
+            locationClientManager)
+        mainViewController?.handleLocationResolutionRequired(locationStatus)
+        return
+      }
     }
 
     vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW

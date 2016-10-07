@@ -5,12 +5,14 @@ import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.model.AppSettings;
 import com.mapzen.erasermap.model.IntentQueryParser;
 import com.mapzen.erasermap.model.LocationConverter;
+import com.mapzen.erasermap.model.LocationSettingsChecker;
 import com.mapzen.erasermap.model.LostClientManager;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
 import com.mapzen.erasermap.model.PermissionManager;
 import com.mapzen.erasermap.model.RouteManager;
 import com.mapzen.erasermap.model.TestAppSettings;
+import com.mapzen.erasermap.model.TestLostSettingsChecker;
 import com.mapzen.erasermap.model.TestRouteManager;
 import com.mapzen.erasermap.model.TileHttpHandler;
 import com.mapzen.erasermap.presenter.MainPresenter;
@@ -66,9 +68,9 @@ public class TestAndroidModule {
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation, Bus bus,
             RouteManager routeManager, AppSettings settings, ViewStateManager vsm,
             IntentQueryParser intentQueryParser, LocationConverter converter,
-        LostClientManager lostClientManager) {
+        LostClientManager lostClientManager, LocationSettingsChecker locationSettingsChecker) {
         return new MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm,
-                intentQueryParser, converter, lostClientManager);
+                intentQueryParser, converter, lostClientManager, locationSettingsChecker);
     }
 
     @Provides @Singleton RouteManager provideRouteManager() {
@@ -107,5 +109,9 @@ public class TestAndroidModule {
 
     @Provides @Singleton LocationConverter provideLocationConverter() {
         return new LocationConverter();
+    }
+
+    @Provides @Singleton LocationSettingsChecker provideLocationSettingsChecker() {
+        return new TestLostSettingsChecker();
     }
 }
