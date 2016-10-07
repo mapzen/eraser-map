@@ -36,6 +36,8 @@ class TestMainController : MainViewController {
     var routeRequestCanceled: Boolean = false
     var isNew: Boolean = false
 
+    var settingsApiTriggered: Boolean = false
+
     override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
     }
@@ -231,5 +233,6 @@ class TestMainController : MainViewController {
     }
 
     override fun handleLocationResolutionRequired(status: Status) {
+        settingsApiTriggered = true
     }
 }
