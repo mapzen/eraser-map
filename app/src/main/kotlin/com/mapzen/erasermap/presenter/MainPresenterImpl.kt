@@ -367,6 +367,14 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun onClickStartNavigation() {
+    if (locationClientManager.getClient() == null) {
+      locationClientManager.connect()
+      locationClientManager.addRunnableToRunOnConnect(
+          Runnable { onClickStartNavigation() }
+      )
+      return
+    }
+
     bus.post(RouteEvent())
     mainViewController?.resetMute() //must call before generateRoutingMode()
     generateRoutingMode(true)
