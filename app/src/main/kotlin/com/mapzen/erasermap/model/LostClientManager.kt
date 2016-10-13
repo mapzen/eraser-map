@@ -9,15 +9,17 @@ import java.util.ArrayList
  */
 class LostClientManager(val application: Application, locationFactory: LocationFactory): LocationClientManager {
 
-  private var connecting = false
-  private var connected = false
+  private enum class State {
+    CONNECTING, CONNECTED, IDLE
+  }
+
+  private var state = State.IDLE
   private lateinit var lostClient: LostApiClient
   private val connectionCallbacks: LostApiClient.ConnectionCallbacks =
       object: LostApiClient.ConnectionCallbacks {
 
         override fun onConnected() {
-          connected = true
-          connecting = false
+          state = State.CONNECTED
           for (runnable in runnables) {
             runnable.run()
           }
@@ -25,8 +27,7 @@ class LostClientManager(val application: Application, locationFactory: LocationF
         }
 
         override fun onConnectionSuspended() {
-          connected = false
-          connecting = false
+          state = State.IDLE
         }
   }
   private var runnables = ArrayList<Runnable>()
@@ -36,17 +37,17 @@ class LostClientManager(val application: Application, locationFactory: LocationF
   }
 
   override fun getClient(): LostApiClient? {
-    if (!connected) {
+    if (state != State.CONNECTED) {
       return null
     }
     return lostClient
   }
 
   override fun connect() {
-    if (connecting) {
+    if (state == State.CONNECTING) {
       return
     }
-    connecting = true
+    state = State.CONNECTING
     lostClient.connect()
   }
 
