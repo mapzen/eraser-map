@@ -1,6 +1,5 @@
 package com.mapzen.erasermap.controller
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
