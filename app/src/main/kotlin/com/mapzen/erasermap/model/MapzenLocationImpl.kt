@@ -51,7 +51,7 @@ public class MapzenLocationImpl(val locationClientManager: LocationClientManager
     }
 
     private fun disconnect() {
-        locationClientManager.getClient()?.disconnect()
+        locationClientManager.disconnect()
     }
 
     override fun getLastLocation(): Location? {

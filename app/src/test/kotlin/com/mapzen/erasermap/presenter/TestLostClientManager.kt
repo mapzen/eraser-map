@@ -14,6 +14,10 @@ class TestLostClientManager: LocationClientManager {
 
   }
 
+  override fun disconnect() {
+
+  }
+  
   override fun addRunnableToRunOnConnect(runnable: Runnable) {
 
   }

@@ -6,5 +6,6 @@ interface LocationClientManager {
 
   fun getClient(): LostApiClient?
   fun connect()
+  fun disconnect()
   fun addRunnableToRunOnConnect(runnable: Runnable)
 }

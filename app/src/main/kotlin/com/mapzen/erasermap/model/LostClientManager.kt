@@ -51,6 +51,11 @@ class LostClientManager(val application: Application, locationFactory: LocationF
     lostClient.connect()
   }
 
+  override fun disconnect() {
+    lostClient.disconnect()
+    state = State.IDLE
+  }
+
   override fun addRunnableToRunOnConnect(runnable: Runnable) {
     runnables.add(runnable)
   }
