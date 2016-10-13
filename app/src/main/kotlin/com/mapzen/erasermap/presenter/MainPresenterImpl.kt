@@ -2,8 +2,6 @@ package com.mapzen.erasermap.presenter
 
 import android.location.Location
 import android.util.Log
-import com.mapzen.android.lost.api.LocationServices
-import com.mapzen.android.lost.api.LocationSettingsRequest
 import com.mapzen.android.lost.api.Status
 import com.mapzen.erasermap.controller.MainViewController
 import com.mapzen.erasermap.model.AppSettings
