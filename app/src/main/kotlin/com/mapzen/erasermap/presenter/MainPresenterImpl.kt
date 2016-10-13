@@ -226,12 +226,14 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     mainViewController?.showAllSearchResults(searchResults?.features)
   }
 
+  private fun connectAndPostRunnable(run: () -> Unit) {
+    locationClientManager.connect()
+    locationClientManager.addRunnableToRunOnConnect(Runnable { run })
+  }
+
   @Subscribe fun onRoutePreviewEvent(event: RoutePreviewEvent) {
     if (locationClientManager.getClient() == null) {
-      locationClientManager.connect()
-      locationClientManager.addRunnableToRunOnConnect(
-          Runnable { onRoutePreviewEvent(event) }
-      )
+      connectAndPostRunnable { onRoutePreviewEvent(event) }
       return
     }
 
@@ -263,10 +265,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
   override fun updateLocation() {
     if (locationClientManager.getClient() == null) {
-      locationClientManager.connect()
-      locationClientManager.addRunnableToRunOnConnect(
-          Runnable { updateLocation() }
-      )
+      connectAndPostRunnable { updateLocation() }
       return
     }
 
@@ -364,10 +363,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
   override fun onClickStartNavigation() {
     if (locationClientManager.getClient() == null) {
-      locationClientManager.connect()
-      locationClientManager.addRunnableToRunOnConnect(
-          Runnable { onClickStartNavigation() }
-      )
+      connectAndPostRunnable { onClickStartNavigation() }
       return
     }
 
@@ -448,10 +444,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
   private fun generateRoutePreview() {
     if (locationClientManager.getClient() == null) {
-      locationClientManager.connect()
-      locationClientManager.addRunnableToRunOnConnect(
-          Runnable { generateRoutePreview() }
-      )
+      connectAndPostRunnable { generateRoutePreview() }
       return
     }
 
@@ -513,10 +506,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
   override fun configureMapzenMap() {
     if (locationClientManager.getClient() == null) {
-      locationClientManager.connect()
-      locationClientManager.addRunnableToRunOnConnect(
-          Runnable { configureMapzenMap() }
-      )
+      connectAndPostRunnable { configureMapzenMap() }
       return
     }
 
