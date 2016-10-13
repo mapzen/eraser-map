@@ -237,13 +237,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
     val locationStatusCode = locationSettingsChecker.getLocationStatusCode(mapzenLocation,
         locationClientManager)
-    when (locationStatusCode) {
-      Status.RESOLUTION_REQUIRED -> {
+    if (locationStatusCode == Status.RESOLUTION_REQUIRED) {
         val locationStatus = locationSettingsChecker.getLocationStatus(mapzenLocation,
             locationClientManager)
         mainViewController?.handleLocationResolutionRequired(locationStatus)
         return
-      }
     }
 
     vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
