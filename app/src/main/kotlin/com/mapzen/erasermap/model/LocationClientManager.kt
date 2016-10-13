@@ -4,7 +4,7 @@ import com.mapzen.android.lost.api.LostApiClient
 
 interface LocationClientManager {
 
-  abstract fun getClient(): LostApiClient?
-  abstract fun connect()
-  abstract fun addRunnableToRunOnConnect(runnable: Runnable)
+  fun getClient(): LostApiClient?
+  fun connect()
+  fun addRunnableToRunOnConnect(runnable: Runnable)
 }
