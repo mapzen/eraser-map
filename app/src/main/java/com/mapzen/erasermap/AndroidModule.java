@@ -83,13 +83,13 @@ public class AndroidModule {
     @Provides @Singleton RouteManager provideRouteManager(AppSettings settings, ApiKeys apiKeys) {
         final ValhallaRouteManager manager = new ValhallaRouteManager(settings,
                 new ValhallaRouterFactory(), application.getApplicationContext());
-        manager.setApiKey(apiKeys.getRoutingKey());
+        manager.setApiKey(apiKeys.getApiKey());
         return manager;
     }
 
     @Provides @Singleton TileHttpHandler provideTileHttpHandler(ApiKeys apiKeys) {
         final TileHttpHandler handler = new TileHttpHandler(application);
-        handler.setApiKey(apiKeys.getTilesKey());
+        handler.setApiKey(apiKeys.getApiKey());
         return handler;
     }
 
@@ -113,7 +113,7 @@ public class AndroidModule {
 
             @Override public Map<String, String> queryParamsForRequest() {
                 Map<String, String> params = new HashMap<>();
-                params.put(ApiKeyConstants.API_KEY, apiKeys.getSearchKey());
+                params.put(ApiKeyConstants.API_KEY, apiKeys.getApiKey());
                 return params;
             }
         });
