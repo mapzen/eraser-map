@@ -6,7 +6,8 @@ machine:
     JAVA_OPTS: "-Xmx256m -XX:MaxPermSize=256m"
     GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx256m -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError"'
     TEST_OPTS: "-PmintApiKey=mint_test_key -PapiKey=test_api_key -PbuildNumber=test_build_number"
-
+  java:
+    version: oraclejdk8
 dependencies:
   pre:
     - echo y | android update sdk --all --no-ui --force --filter "build-tools-23.0.3,extra-android-m2repository"
