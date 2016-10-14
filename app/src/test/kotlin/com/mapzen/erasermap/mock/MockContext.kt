@@ -29,9 +29,38 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
 
-public class MockContext : Context() {
+class MockContext : Context() {
+    override fun deleteSharedPreferences(p0: String?): Boolean {
+        throw UnsupportedOperationException(
+            "not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
-    public var startedActivity: Intent? = null
+    override fun getDataDir(): File {
+        throw UnsupportedOperationException(
+            "not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun isDeviceProtectedStorage(): Boolean {
+        throw UnsupportedOperationException(
+            "not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun createDeviceProtectedStorageContext(): Context {
+        throw UnsupportedOperationException(
+            "not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun moveDatabaseFrom(p0: Context?, p1: String?): Boolean {
+        throw UnsupportedOperationException(
+            "not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun moveSharedPreferencesFrom(p0: Context?, p1: String?): Boolean {
+        throw UnsupportedOperationException(
+            "not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    var startedActivity: Intent? = null
 
     override fun getPackageCodePath(): String? {
         throw UnsupportedOperationException()
