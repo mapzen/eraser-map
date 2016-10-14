@@ -50,4 +50,9 @@
     <string name="station">Station</string>
     <string name="no_route_found">No route found</string>
     <string name="try_another_mode">Try a different mode?</string>
+
+    <string name="location_required_title">Location Required</string>
+    <string name="location_required_msg">Location must be enabled to load the route preview. Would you like to update your location settings?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

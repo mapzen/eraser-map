@@ -9,6 +9,10 @@ import com.mapzen.erasermap.model.AppSettings;
 import com.mapzen.erasermap.model.Http;
 import com.mapzen.erasermap.model.IntentQueryParser;
 import com.mapzen.erasermap.model.LocationConverter;
+import com.mapzen.erasermap.model.LocationSettingsChecker;
+import com.mapzen.erasermap.model.LostClientManager;
+import com.mapzen.erasermap.model.LostFactory;
+import com.mapzen.erasermap.model.LostSettingsChecker;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
 import com.mapzen.erasermap.model.PermissionManager;
@@ -49,17 +53,19 @@ public class AndroidModule {
         return application;
     }
 
-    @Provides @Singleton LostApiClient provideLocationClient() {
-        return new LostApiClient.Builder(application).build();
+    @Provides @Singleton LostClientManager provideLocationClientManager() {
+        return new LostClientManager(application, new LostFactory());
     }
 
     @Provides @Singleton CrashReportService provideCrashReportService() {
         return new CrashReportService();
     }
 
-    @Provides @Singleton MapzenLocation provideMapzenLocation(LostApiClient locationClient,
-            AppSettings settings, Bus bus, PermissionManager permissionManager) {
-        return new MapzenLocationImpl(locationClient, settings, bus, application, permissionManager);
+    @Provides @Singleton MapzenLocation provideMapzenLocation(
+        LostClientManager locationClientManager, AppSettings settings, Bus bus,
+        PermissionManager permissionManager) {
+        return new MapzenLocationImpl(locationClientManager, settings, bus, application,
+            permissionManager);
     }
 
     @Provides @Singleton AppSettings provideAppSettings() {
@@ -68,9 +74,10 @@ public class AndroidModule {
 
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation, Bus bus,
             RouteManager routeManager, AppSettings settings, ViewStateManager vsm,
-            IntentQueryParser intentQueryParser, LocationConverter converter) {
+            IntentQueryParser intentQueryParser, LocationConverter converter,
+            LostClientManager clientManager, LocationSettingsChecker locationSettingsChecker) {
         return new MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm,
-                intentQueryParser, converter);
+                intentQueryParser, converter, clientManager, locationSettingsChecker);
     }
 
     @Provides @Singleton RouteManager provideRouteManager(AppSettings settings, ApiKeys apiKeys) {
@@ -133,4 +140,7 @@ public class AndroidModule {
         return new LocationConverter();
     }
 
+    @Provides @Singleton LocationSettingsChecker provideLocationSettingsChecker() {
+        return new LostSettingsChecker();
+    }
 }

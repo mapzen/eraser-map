@@ -10,6 +10,7 @@ import android.util.Log
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.model.AppSettings
+import com.mapzen.erasermap.model.LostClientManager
 import com.mapzen.erasermap.model.event.LocationChangeEvent
 import com.squareup.otto.Bus
 import javax.inject.Inject
@@ -25,6 +26,7 @@ public class MockLocationReceiver : BroadcastReceiver() {
 
     @Inject lateinit var settings: AppSettings
     @Inject lateinit var bus: Bus
+    @Inject lateinit var lostClientManager: LostClientManager
 
     companion object {
         const val LAT = "lat"
@@ -47,8 +49,9 @@ public class MockLocationReceiver : BroadcastReceiver() {
             location.latitude = lat.toDouble()
             location.longitude = lng.toDouble()
             settings.mockLocation = location
-            LocationServices.FusedLocationApi?.setMockMode(true)
-            LocationServices.FusedLocationApi?.setMockLocation(location)
+            val lostClient = lostClientManager.getClient()
+            LocationServices.FusedLocationApi?.setMockMode(lostClient, true)
+            LocationServices.FusedLocationApi?.setMockLocation(lostClient, location)
             bus.post(LocationChangeEvent(location))
             Log.d(TAG, "[mock location set] ($lat, $lng)")
         }

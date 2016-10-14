@@ -2,12 +2,15 @@ package com.mapzen.erasermap.presenter
 
 import android.location.Location
 import android.util.Log
+import com.mapzen.android.lost.api.Status
 import com.mapzen.erasermap.controller.MainViewController
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
 import com.mapzen.erasermap.model.IntentQuery
 import com.mapzen.erasermap.model.IntentQueryParser
+import com.mapzen.erasermap.model.LocationClientManager
 import com.mapzen.erasermap.model.LocationConverter
+import com.mapzen.erasermap.model.LocationSettingsChecker
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.event.LocationChangeEvent
@@ -40,7 +43,9 @@ import java.util.ArrayList
 
 open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     val routeManager: RouteManager, val settings: AppSettings, val vsm: ViewStateManager,
-    val intentQueryParser: IntentQueryParser, val converter: LocationConverter)
+    val intentQueryParser: IntentQueryParser, val converter: LocationConverter,
+    val locationClientManager: LocationClientManager,
+    val locationSettingsChecker: LocationSettingsChecker)
 : MainPresenter, RouteCallback {
 
   companion object {
@@ -221,7 +226,26 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     mainViewController?.showAllSearchResults(searchResults?.features)
   }
 
+  private fun connectAndPostRunnable(run: () -> Unit) {
+    locationClientManager.connect()
+    locationClientManager.addRunnableToRunOnConnect(Runnable { run })
+  }
+
   @Subscribe fun onRoutePreviewEvent(event: RoutePreviewEvent) {
+    if (locationClientManager.getClient() == null) {
+      connectAndPostRunnable { onRoutePreviewEvent(event) }
+      return
+    }
+
+    val locationStatusCode = locationSettingsChecker.getLocationStatusCode(mapzenLocation,
+        locationClientManager)
+    if (locationStatusCode == Status.RESOLUTION_REQUIRED) {
+        val locationStatus = locationSettingsChecker.getLocationStatus(mapzenLocation,
+            locationClientManager)
+        mainViewController?.handleLocationResolutionRequired(locationStatus)
+        return
+    }
+
     vsm.viewState = ViewStateManager.ViewState.ROUTE_PREVIEW
     if (reverseGeo) {
       restoreReverseGeoOnBack = true
@@ -240,6 +264,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun updateLocation() {
+    if (locationClientManager.getClient() == null) {
+      connectAndPostRunnable { updateLocation() }
+      return
+    }
+
     val location = mapzenLocation.getLastLocation()
     if (location != null) {
       routeViewController?.onLocationChanged(location)
@@ -333,6 +362,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun onClickStartNavigation() {
+    if (locationClientManager.getClient() == null) {
+      connectAndPostRunnable { onClickStartNavigation() }
+      return
+    }
+
     bus.post(RouteEvent())
     mainViewController?.resetMute() //must call before generateRoutingMode()
     generateRoutingMode(true)
@@ -409,6 +443,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   private fun generateRoutePreview() {
+    if (locationClientManager.getClient() == null) {
+      connectAndPostRunnable { generateRoutePreview() }
+      return
+    }
+
     val location = mapzenLocation.getLastLocation()
     val feature = destination
     if (location is Location && feature is Feature) {
@@ -466,6 +505,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun configureMapzenMap() {
+    if (locationClientManager.getClient() == null) {
+      connectAndPostRunnable { configureMapzenMap() }
+      return
+    }
+
     val currentLocation = mapzenLocation.getLastLocation()
     if (currentLocation is Location) {
       if (!initialized) {

@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
 import android.support.v7.app.ActionBar
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
@@ -25,6 +26,7 @@ import com.mapzen.android.graphics.MapzenMap
 import com.mapzen.android.search.MapzenSearch
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.graphics.model.CameraType
+import com.mapzen.android.lost.api.Status
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
@@ -32,6 +34,7 @@ import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
+import com.mapzen.erasermap.model.LostClientManager
 import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.PermissionManager
 import com.mapzen.erasermap.model.RouteManager
@@ -51,7 +54,6 @@ import com.mapzen.erasermap.view.SettingsActivity
 import com.mapzen.erasermap.view.Speaker
 import com.mapzen.erasermap.view.VoiceNavigationController
 import com.mapzen.model.ValhallaLocation
-import com.mapzen.pelias.Pelias
 import com.mapzen.pelias.SavedSearch
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
@@ -93,6 +95,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     @Inject lateinit var speaker: Speaker
     @Inject lateinit var permissionManager: PermissionManager
     @Inject lateinit var apiKeys: ApiKeys
+    @Inject lateinit var lostClientManager: LostClientManager
 
     lateinit var app: EraserMapApplication
     var mapzenMap : MapzenMap? = null
@@ -1185,8 +1188,16 @@ class MainActivity : AppCompatActivity(), MainViewController,
         if (permissionManager.granted && !presenter.routingEnabled) {
             mapzenMap?.isMyLocationEnabled = true
             if (settings.isMockLocationEnabled) {
-                LocationServices.FusedLocationApi?.setMockMode(true)
-                LocationServices.FusedLocationApi?.setMockLocation(settings.mockLocation)
+                if (lostClientManager.getClient() == null) {
+                    lostClientManager.connect()
+                    lostClientManager.addRunnableToRunOnConnect(
+                        Runnable { checkPermissionAndEnableLocation() }
+                    )
+                    return
+                }
+                val client = lostClientManager.getClient()
+                LocationServices.FusedLocationApi?.setMockMode(client, true)
+                LocationServices.FusedLocationApi?.setMockLocation(client, settings.mockLocation)
             }
         }
     }
@@ -1201,6 +1212,18 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     override fun deactivateFindMeTracking() {
         mapView.findMe.isActivated = false
+    }
+
+    override fun handleLocationResolutionRequired(status: Status) {
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.location_required_title)
+            .setMessage(R.string.location_required_msg)
+            .setNegativeButton(R.string.no, null)
+            .setPositiveButton(R.string.yes) { dialog, which ->
+                status.startResolutionForResult(this, 0)
+            }
+            .create()
+        dialog.show()
     }
 
     inner class CancelableRouteCallback : RouteCallback {

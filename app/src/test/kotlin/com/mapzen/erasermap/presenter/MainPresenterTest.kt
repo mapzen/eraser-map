@@ -1,5 +1,6 @@
 package com.mapzen.erasermap.presenter
 
+import com.mapzen.android.lost.api.Status
 import com.mapzen.erasermap.controller.TestMainController
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getTestAndroidLocation
@@ -7,8 +8,12 @@ import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
 import com.mapzen.erasermap.model.IntentQuery
 import com.mapzen.erasermap.model.IntentQueryParser
+import com.mapzen.erasermap.model.LocationClientManager
 import com.mapzen.erasermap.model.LocationConverter
+import com.mapzen.erasermap.model.LocationSettingsChecker
+import com.mapzen.erasermap.model.MapzenLocation
 import com.mapzen.erasermap.model.TestAppSettings
+import com.mapzen.erasermap.model.TestLostSettingsChecker
 import com.mapzen.erasermap.model.TestMapzenLocation
 import com.mapzen.erasermap.model.TestRouteManager
 import com.mapzen.erasermap.model.ValhallaRouteManagerTest.TestRouteCallback
@@ -50,8 +55,10 @@ class MainPresenterTest {
     private val vsm: ViewStateManager = ViewStateManager()
     private val iqp: IntentQueryParser = Mockito.mock(IntentQueryParser::class.java)
     private val converter: LocationConverter = LocationConverter()
+    private val clientManager: TestLostClientManager = TestLostClientManager()
+    private val locationSettingsChecker = TestLostSettingsChecker()
     private val presenter = MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm, iqp,
-        converter)
+        converter, clientManager, locationSettingsChecker)
 
     @Before fun setUp() {
         presenter.mainViewController = mainController
@@ -275,6 +282,16 @@ class MainPresenterTest {
         mainController.isFindMeTrackingEnabled = true
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
         assertThat(mainController.isFindMeTrackingEnabled).isFalse()
+    }
+
+    @Test fun onRoutePreviewEvent_shouldTriggerSettingsApi() {
+        val resolutionSettingsChecker = ResolutionLocationSettingsChecker()
+        val testPresenter = MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm, iqp,
+            converter, clientManager, resolutionSettingsChecker)
+        testPresenter.mainViewController = mainController
+
+        testPresenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        assertThat(mainController.settingsApiTriggered).isTrue()
     }
 
     @Test fun onBackPressed_shouldHideRoutePreview() {
@@ -637,5 +654,18 @@ class MainPresenterTest {
         @Subscribe fun onRouteEvent(event: RouteEvent) {
             this.event = event
         }
+    }
+
+    class ResolutionLocationSettingsChecker: LocationSettingsChecker {
+        override fun getLocationStatus(mapzenLocation: MapzenLocation,
+            locationClientManager: LocationClientManager): Status {
+            return Status(Status.RESOLUTION_REQUIRED)
+        }
+
+        override fun getLocationStatusCode(mapzenLocation: MapzenLocation,
+            locationClientManager: LocationClientManager): Int {
+            return getLocationStatus(mapzenLocation, locationClientManager).statusCode
+        }
+
     }
 }

@@ -1,16 +1,19 @@
 package com.mapzen.erasermap;
 
 import com.mapzen.android.search.MapzenSearch;
-import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.model.AppSettings;
 import com.mapzen.erasermap.model.IntentQueryParser;
 import com.mapzen.erasermap.model.LocationConverter;
+import com.mapzen.erasermap.model.LocationSettingsChecker;
+import com.mapzen.erasermap.model.LostClientManager;
+import com.mapzen.erasermap.model.LostFactory;
 import com.mapzen.erasermap.model.MapzenLocation;
 import com.mapzen.erasermap.model.MapzenLocationImpl;
 import com.mapzen.erasermap.model.PermissionManager;
 import com.mapzen.erasermap.model.RouteManager;
 import com.mapzen.erasermap.model.TestAppSettings;
+import com.mapzen.erasermap.model.TestLostSettingsChecker;
 import com.mapzen.erasermap.model.TestRouteManager;
 import com.mapzen.erasermap.model.TileHttpHandler;
 import com.mapzen.erasermap.presenter.MainPresenter;
@@ -44,17 +47,18 @@ public class TestAndroidModule {
         return application;
     }
 
-    @Provides @Singleton LostApiClient provideLocationClient() {
-        return new LostApiClient.Builder(application).build();
+    @Provides @Singleton LostClientManager provideLocationClientManager() {
+        return new LostClientManager(application, new LostFactory());
     }
 
     @Provides @Singleton CrashReportService provideCrashReportService() {
         return Mockito.mock(CrashReportService.class);
     }
 
-    @Provides @Singleton MapzenLocation provideMapzenLocation(LostApiClient locationClient,
-            AppSettings settings, Bus bus, PermissionManager permissionsManager) {
-        return new MapzenLocationImpl(locationClient, settings, bus, application,
+    @Provides @Singleton MapzenLocation provideMapzenLocation(
+        LostClientManager locationClientManager, AppSettings settings, Bus bus,
+        PermissionManager permissionsManager) {
+        return new MapzenLocationImpl(locationClientManager, settings, bus, application,
                 permissionsManager);
     }
 
@@ -64,9 +68,10 @@ public class TestAndroidModule {
 
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation, Bus bus,
             RouteManager routeManager, AppSettings settings, ViewStateManager vsm,
-            IntentQueryParser intentQueryParser, LocationConverter converter) {
+            IntentQueryParser intentQueryParser, LocationConverter converter,
+        LostClientManager lostClientManager, LocationSettingsChecker locationSettingsChecker) {
         return new MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm,
-                intentQueryParser, converter);
+                intentQueryParser, converter, lostClientManager, locationSettingsChecker);
     }
 
     @Provides @Singleton RouteManager provideRouteManager() {
@@ -105,5 +110,9 @@ public class TestAndroidModule {
 
     @Provides @Singleton LocationConverter provideLocationConverter() {
         return new LocationConverter();
+    }
+
+    @Provides @Singleton LocationSettingsChecker provideLocationSettingsChecker() {
+        return new TestLostSettingsChecker();
     }
 }

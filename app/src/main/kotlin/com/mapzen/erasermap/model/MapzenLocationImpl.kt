@@ -8,14 +8,13 @@ import android.view.WindowManager
 import com.mapzen.android.graphics.MapzenMap
 import com.mapzen.android.lost.api.LocationRequest
 import com.mapzen.android.lost.api.LocationServices
-import com.mapzen.android.lost.api.LostApiClient
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.model.event.LocationChangeEvent
 import com.mapzen.pelias.BoundingBox
 import com.squareup.otto.Bus
 
-public class MapzenLocationImpl(val locationClient: LostApiClient,
+public class MapzenLocationImpl(val locationClientManager: LocationClientManager,
         val settings: AppSettings,
         val bus: Bus,
         val application: EraserMapApplication,
@@ -26,6 +25,12 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
         private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT: Float = 3f
     }
 
+    private val request = LocationRequest.create()
+        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        .setInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
+        .setFastestInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
+        .setSmallestDisplacement(LOCATION_UPDATE_SMALLEST_DISPLACEMENT)
+
     init {
         bus.register(this)
     }
@@ -35,20 +40,18 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
     private var previousLocation: Location? = null
 
     private fun connect() {
-        if (!locationClient.isConnected) {
-            locationClient.connect()
-        }
+        val locationClient = locationClientManager.getClient()
         if (settings.isMockLocationEnabled) {
-            LocationServices.FusedLocationApi?.setMockMode(true)
-            LocationServices.FusedLocationApi?.setMockLocation(settings.mockLocation)
+            LocationServices.FusedLocationApi?.setMockMode(locationClient, true)
+            LocationServices.FusedLocationApi?.setMockLocation(locationClient, settings.mockLocation)
         }
         if (settings.isMockRouteEnabled) {
-            LocationServices.FusedLocationApi?.setMockTrace(settings.mockRoute)
+            LocationServices.FusedLocationApi?.setMockTrace(locationClient, settings.mockRoute)
         }
     }
 
     private fun disconnect() {
-        locationClient.disconnect()
+        locationClientManager.disconnect()
     }
 
     override fun getLastLocation(): Location? {
@@ -56,7 +59,8 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
             return null
         }
         connect()
-        return LocationServices.FusedLocationApi?.lastLocation
+        val client = locationClientManager.getClient()
+        return LocationServices.FusedLocationApi?.getLastLocation(client)
     }
 
     override fun startLocationUpdates() {
@@ -64,15 +68,22 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
             return
         }
         connect()
-        val locationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
-                .setFastestInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
-                .setSmallestDisplacement(LOCATION_UPDATE_SMALLEST_DISPLACEMENT)
+        val client = locationClientManager.getClient()
+        LocationServices.FusedLocationApi?.requestLocationUpdates(client, request,
+            object: com.mapzen.android.lost.api.LocationListener {
+                override fun onLocationChanged(location: Location) {
+                    onLocationUpdate(location)
+                }
 
-        LocationServices.FusedLocationApi?.requestLocationUpdates(locationRequest) {
-            location -> onLocationUpdate(location)
-        }
+                override fun onProviderDisabled(provider: String) {
+
+                }
+
+                override fun onProviderEnabled(provider: String) {
+
+                }
+            }
+        )
     }
 
     fun onLocationUpdate(location: Location) {
@@ -130,5 +141,9 @@ public class MapzenLocationImpl(val locationClient: LostApiClient,
                 maxLatLon?.latitude as Double,
                 maxLatLon?.longitude as Double)
         return boundingBox
+    }
+
+    override fun getLocationRequest(): LocationRequest {
+        return request
     }
 }
