@@ -16,21 +16,9 @@ class ApiKeysTest {
         assertThat(apiKeys).isNotNull()
     }
 
-    @Test(expected = IllegalArgumentException::class) fun shouldNotAcceptEmptyTilesKey() {
+    @Test(expected = IllegalArgumentException::class) fun shouldNotAcceptEmptyApiKey() {
         PowerMockito.mockStatic(BuildConfig::class.java)
-        Mockito.doReturn(null).`when`(BuildConfig.VECTOR_TILE_API_KEY)
-        ApiKeys.Companion.sharedInstance(application)
-    }
-
-    @Test(expected = IllegalArgumentException::class) fun shouldNotAcceptEmptySearchKey() {
-        PowerMockito.mockStatic(BuildConfig::class.java)
-        Mockito.doReturn(null).`when`(BuildConfig.PELIAS_API_KEY)
-        ApiKeys.Companion.sharedInstance(application)
-    }
-
-    @Test(expected = IllegalArgumentException::class) fun shouldNotAcceptEmptyRoutingKey() {
-        PowerMockito.mockStatic(BuildConfig::class.java)
-        Mockito.doReturn(null).`when`(BuildConfig.VALHALLA_API_KEY)
+        Mockito.doReturn(null).`when`(BuildConfig.API_KEY)
         ApiKeys.Companion.sharedInstance(application)
     }
 }
