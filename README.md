@@ -7,7 +7,7 @@ Privacy-focused mapping application for Android
 ## API Keys
 1. Go to https://mapzen.com/developers/ and auth with Github
 2. Create a Mapzen API key
-3. Add keys to `~/.gradle/gradle.properties` or use as command line arguments
+3. Add key to `~/.gradle/gradle.properties` or use as command line argument
 
 
 **gradle.properties**
