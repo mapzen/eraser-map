@@ -5,7 +5,7 @@ machine:
     ANDROID_HOME: /usr/local/android-sdk-linux
     JAVA_OPTS: "-Xmx256m -XX:MaxPermSize=256m"
     GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx256m -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError"'
-    TEST_OPTS: "-PmintApiKey=mint_test_key -PvectorTileApiKey=tile_test_key -PpeliasApiKey=search_test_key -PvalhallaApiKey=route_test_key -PbuildNumber=test_build_number"
+    TEST_OPTS: "-PmintApiKey=mint_test_key -PapiKey=test_api_key -PbuildNumber=test_build_number"
 
 dependencies:
   pre:

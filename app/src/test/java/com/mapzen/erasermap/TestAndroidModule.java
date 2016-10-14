@@ -80,7 +80,7 @@ public class TestAndroidModule {
 
     @Provides @Singleton TileHttpHandler provideTileHttpHandler() {
         TileHttpHandler handler = new TileHttpHandler(application);
-        handler.setApiKey(BuildConfig.VECTOR_TILE_API_KEY);
+        handler.setApiKey(BuildConfig.API_KEY);
         return handler;
     }
 

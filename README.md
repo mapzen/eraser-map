@@ -6,24 +6,20 @@ Privacy-focused mapping application for Android
 
 ## API Keys
 1. Go to https://mapzen.com/developers/ and auth with Github
-2. Create Mapzen Search, Turn By Turn, and Vector Tiles keys
-3. Add keys to `~/.gradle/gradle.properties` or use as command line arguments
+2. Create a Mapzen API key
+3. Add key to `~/.gradle/gradle.properties` or use as command line argument
 
 
 **gradle.properties**
 
 ```bash
-vectorTileApiKey=vector-tiles-???
-peliasApiKey=search-???
-valhallaApiKey=valhalla-???
+apiKey=mapzen-???
 ```
 
 **Command-line arguments**
 
 ```bash
-./gradlew clean installDebug -PvectorTileApiKey=$VECTOR_TILE_API_KEY \
-    -PpeliasApiKey=$PELIAS_API_KEY \
-    -PvalhallaApiKey=$VALHALLA_API_KEY
+./gradlew clean installDebug -PapiKey=$API_KEY
 ```
 
 

@@ -17,9 +17,7 @@ apply plugin: 'checkstyle'
 def SEARCH_BASE_URL = hasProperty('searchBaseUrl') ? '"' + searchBaseUrl + '"' : "null";
 def ROUTE_BASE_URL = hasProperty('routeBaseUrl') ? '"' + routeBaseUrl + '"' : "null";
 
-def VECTOR_TILE_API_KEY = hasProperty('vectorTileApiKey') ? '"' + vectorTileApiKey + '"' : "null";
-def PELIAS_API_KEY = hasProperty('peliasApiKey') ? '"' + peliasApiKey + '"' : "null";
-def VALHALLA_API_KEY = hasProperty('valhallaApiKey') ? '"' + valhallaApiKey + '"' : "null";
+def API_KEY = hasProperty('apiKey') ? '"' + apiKey + '"' : "null";
 def MINT_API_KEY = hasProperty('mintApiKey') ? '"' + mintApiKey + '"' : "null";
 def BUILD_NUMBER = hasProperty('buildNumber') ? '"' + buildNumber + '"' : '"DEV"';
 
@@ -40,9 +38,7 @@ android {
     versionName version
     buildConfigField "String", "SEARCH_BASE_URL", SEARCH_BASE_URL
     buildConfigField "String", "ROUTE_BASE_URL", ROUTE_BASE_URL
-    buildConfigField "String", "VECTOR_TILE_API_KEY", VECTOR_TILE_API_KEY
-    buildConfigField "String", "PELIAS_API_KEY", PELIAS_API_KEY
-    buildConfigField "String", "VALHALLA_API_KEY", VALHALLA_API_KEY
+    buildConfigField "String", "API_KEY", API_KEY
     buildConfigField "String", "MINT_API_KEY", MINT_API_KEY
     buildConfigField "String", "BUILD_NUMBER", BUILD_NUMBER
   }
