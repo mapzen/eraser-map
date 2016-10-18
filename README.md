@@ -19,7 +19,7 @@ apiKey=mapzen-???
 **Command-line arguments**
 
 ```bash
-./gradlew clean installDebug -PapiKey=$API_KEY
+./gradlew clean installDevDebug -PapiKey=$API_KEY
 ```
 
 
