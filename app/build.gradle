@@ -1,5 +1,5 @@
 buildscript {
-  ext.kotlin_version = '1.0.2'
+  ext.kotlin_version = '1.0.4'
   ext.dagger_version = '2.0'
   repositories {
     mavenCentral()
@@ -11,7 +11,6 @@ buildscript {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'checkstyle'
 
 def SEARCH_BASE_URL = hasProperty('searchBaseUrl') ? '"' + searchBaseUrl + '"' : "null";
@@ -27,13 +26,13 @@ def RELEASE_KEY_ALIAS = hasProperty('releaseKeyAlias') ? releaseKeyAlias : "null
 def RELEASE_KEY_PASSWORD = hasProperty('releaseStoreFile') ? releaseKeyPassword : "null";
 
 android {
-  compileSdkVersion 23
-  buildToolsVersion "23.0.3"
+  compileSdkVersion 24
+  buildToolsVersion "24.0.3"
 
   defaultConfig {
     applicationId "com.mapzen.erasermap"
     minSdkVersion 15
-    targetSdkVersion 23
+    targetSdkVersion 24
     versionCode buildVersionCode()
     versionName version
     buildConfigField "String", "SEARCH_BASE_URL", SEARCH_BASE_URL
@@ -123,8 +122,8 @@ gradle.startParameter.getTaskNames().each { task ->
 }
 
 dependencies {
-  compile 'com.android.support:appcompat-v7:23.4.0'
-  compile 'com.android.support:support-v4:23.4.0'
+  compile 'com.android.support:appcompat-v7:24.2.1'
+  compile 'com.android.support:support-v4:24.2.1'
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   compile 'com.mapzen:mapzen-android-sdk:1.1.1-SNAPSHOT'
   compile "com.google.dagger:dagger:$dagger_version"
@@ -132,7 +131,7 @@ dependencies {
   compile 'com.splunk.mint:mint:4.2.1'
   compile 'com.mapzen.android:speakerbox:1.4.1'
 
-  apt "com.google.dagger:dagger-compiler:$dagger_version"
+  annotationProcessor "com.google.dagger:dagger-compiler:$dagger_version"
 
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-core:1.9.5'

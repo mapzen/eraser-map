@@ -6,10 +6,13 @@ machine:
     JAVA_OPTS: "-Xmx256m -XX:MaxPermSize=256m"
     GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx256m -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError"'
     TEST_OPTS: "-PmintApiKey=mint_test_key -PapiKey=test_api_key -PbuildNumber=test_build_number"
-
+  java:
+    version: oraclejdk8
 dependencies:
   pre:
-    - echo y | android update sdk --all --no-ui --force --filter "build-tools-23.0.3,extra-android-m2repository"
+    - echo y | android update sdk --all --no-ui --force --filter "build-tools-24.0.3"
+    - echo y | android update sdk --all --no-ui --force --filter "android-24"
+    - echo y | android update sdk --all --no-ui --force --filter "extra-android-m2repository"
     - sudo apt-get update; sudo apt-get install s3cmd
     - printf "[default]\naccess_key = $S3_ACCESS_KEY\n secret_key = $S3_SECRET_KEY" > ~/.s3cfg
 
