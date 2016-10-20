@@ -214,6 +214,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
                 && !presenter.routingEnabled) {
             enableLocation = true
             mapzenMap?.isMyLocationEnabled = false
+            lostClientManager.disconnect()
         }
     }
 
@@ -229,6 +230,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         super.onDestroy()
         saveCurrentSearchTerm()
         mapzenMap?.isMyLocationEnabled = false
+        lostClientManager.disconnect()
         killNotifications()
         voiceNavigationController?.shutdown()
     }
