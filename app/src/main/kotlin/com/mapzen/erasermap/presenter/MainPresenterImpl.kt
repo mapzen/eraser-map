@@ -228,7 +228,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
   private fun connectAndPostRunnable(run: () -> Unit) {
     locationClientManager.connect()
-    locationClientManager.addRunnableToRunOnConnect(Runnable { run })
+    locationClientManager.addRunnableToRunOnConnect(Runnable { run() })
   }
 
   @Subscribe fun onRoutePreviewEvent(event: RoutePreviewEvent) {
