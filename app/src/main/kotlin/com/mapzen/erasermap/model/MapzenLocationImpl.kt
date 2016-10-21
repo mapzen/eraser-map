@@ -25,6 +25,20 @@ public class MapzenLocationImpl(val locationClientManager: LocationClientManager
         private val LOCATION_UPDATE_SMALLEST_DISPLACEMENT: Float = 3f
     }
 
+    private val locationListener = object: com.mapzen.android.lost.api.LocationListener {
+        override fun onLocationChanged(location: Location) {
+            onLocationUpdate(location)
+        }
+
+        override fun onProviderDisabled(provider: String) {
+
+        }
+
+        override fun onProviderEnabled(provider: String) {
+
+        }
+    }
+
     private val request = LocationRequest.create()
         .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
         .setInterval(LOCATION_UPDATE_INTERVAL_IN_MS)
@@ -50,10 +64,6 @@ public class MapzenLocationImpl(val locationClientManager: LocationClientManager
         }
     }
 
-    private fun disconnect() {
-        locationClientManager.disconnect()
-    }
-
     override fun getLastLocation(): Location? {
         if (!permissionManager.permissionsGranted()) {
             return null
@@ -69,21 +79,7 @@ public class MapzenLocationImpl(val locationClientManager: LocationClientManager
         }
         connect()
         val client = locationClientManager.getClient()
-        LocationServices.FusedLocationApi?.requestLocationUpdates(client, request,
-            object: com.mapzen.android.lost.api.LocationListener {
-                override fun onLocationChanged(location: Location) {
-                    onLocationUpdate(location)
-                }
-
-                override fun onProviderDisabled(provider: String) {
-
-                }
-
-                override fun onProviderEnabled(provider: String) {
-
-                }
-            }
-        )
+        LocationServices.FusedLocationApi?.requestLocationUpdates(client, request, locationListener)
     }
 
     fun onLocationUpdate(location: Location) {
@@ -105,7 +101,8 @@ public class MapzenLocationImpl(val locationClientManager: LocationClientManager
     }
 
     override fun stopLocationUpdates() {
-        disconnect()
+        val client = locationClientManager.getClient()
+        LocationServices.FusedLocationApi?.removeLocationUpdates(client, locationListener)
     }
 
     override fun getLat(): Double {
