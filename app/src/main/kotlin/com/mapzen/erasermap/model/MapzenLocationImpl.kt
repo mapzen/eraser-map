@@ -53,7 +53,7 @@ public class MapzenLocationImpl(val locationClientManager: LocationClientManager
 
     private var previousLocation: Location? = null
 
-    private fun connect() {
+    private fun configureMockSettings() {
         val locationClient = locationClientManager.getClient()
         if (settings.isMockLocationEnabled) {
             LocationServices.FusedLocationApi?.setMockMode(locationClient, true)
@@ -68,7 +68,7 @@ public class MapzenLocationImpl(val locationClientManager: LocationClientManager
         if (!permissionManager.permissionsGranted()) {
             return null
         }
-        connect()
+        configureMockSettings()
         val client = locationClientManager.getClient()
         return LocationServices.FusedLocationApi?.getLastLocation(client)
     }
@@ -77,7 +77,7 @@ public class MapzenLocationImpl(val locationClientManager: LocationClientManager
         if (!permissionManager.permissionsGranted()) {
             return
         }
-        connect()
+        configureMockSettings()
         val client = locationClientManager.getClient()
         LocationServices.FusedLocationApi?.requestLocationUpdates(client, request, locationListener)
     }
