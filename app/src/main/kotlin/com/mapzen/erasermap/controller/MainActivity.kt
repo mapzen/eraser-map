@@ -229,8 +229,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
     override public fun onDestroy() {
         super.onDestroy()
         saveCurrentSearchTerm()
-        mapzenMap?.isMyLocationEnabled = false
-        lostClientManager.disconnect()
         killNotifications()
         voiceNavigationController?.shutdown()
     }
