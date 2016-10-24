@@ -7,19 +7,13 @@ import java.util.ArrayList
 /**
  * Manages [LostApiClient] and its [ConnectionCallback] flow
  */
-class LostClientManager(val application: Application, locationFactory: LocationFactory): LocationClientManager {
+class LostClientManager(val application: Application, locationFactory: LocationFactory):
+    LocationClientManager {
 
-  private enum class State {
-    CONNECTING, CONNECTED, IDLE
-  }
-
-  private var state = State.IDLE
-  private lateinit var lostClient: LostApiClient
+  private var lostClient: LostApiClient
   private val connectionCallbacks: LostApiClient.ConnectionCallbacks =
       object: LostApiClient.ConnectionCallbacks {
-
         override fun onConnected() {
-          state = State.CONNECTED
           for (runnable in runnables) {
             runnable.run()
           }
@@ -27,7 +21,6 @@ class LostClientManager(val application: Application, locationFactory: LocationF
         }
 
         override fun onConnectionSuspended() {
-          state = State.IDLE
         }
   }
   private var runnables = ArrayList<Runnable>()
@@ -36,25 +29,11 @@ class LostClientManager(val application: Application, locationFactory: LocationF
     lostClient = locationFactory.createClient(application, connectionCallbacks)
   }
 
-  override fun getClient(): LostApiClient? {
-    if (state != State.CONNECTED) {
-      return null
-    }
-    return lostClient
-  }
+  override fun getClient() = lostClient
 
-  override fun connect() {
-    if (state == State.CONNECTING) {
-      return
-    }
-    state = State.CONNECTING
-    lostClient.connect()
-  }
+  override fun connect()  = lostClient.connect()
 
-  override fun disconnect() {
-    lostClient.disconnect()
-    state = State.IDLE
-  }
+  override fun disconnect() = lostClient.disconnect()
 
   override fun addRunnableToRunOnConnect(runnable: Runnable) {
     runnables.add(runnable)

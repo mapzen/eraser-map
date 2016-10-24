@@ -1189,7 +1189,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             mapzenMap?.isMyLocationEnabled = true
             lostClientManager.connect()
             if (settings.isMockLocationEnabled) {
-                if (lostClientManager.getClient() == null) {
+                if (!lostClientManager.getClient().isConnected) {
                     lostClientManager.connect()
                     lostClientManager.addRunnableToRunOnConnect(
                         Runnable { checkPermissionAndEnableLocation() }

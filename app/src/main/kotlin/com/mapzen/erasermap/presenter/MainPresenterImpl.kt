@@ -232,7 +232,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   @Subscribe fun onRoutePreviewEvent(event: RoutePreviewEvent) {
-    if (locationClientManager.getClient() == null) {
+    if (!locationClientManager.getClient().isConnected) {
       connectAndPostRunnable { onRoutePreviewEvent(event) }
       return
     }
@@ -264,7 +264,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun updateLocation() {
-    if (locationClientManager.getClient() == null) {
+    if (!locationClientManager.getClient().isConnected) {
       connectAndPostRunnable { updateLocation() }
       return
     }
@@ -362,7 +362,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun onClickStartNavigation() {
-    if (locationClientManager.getClient() == null) {
+    if (!locationClientManager.getClient().isConnected) {
       connectAndPostRunnable { onClickStartNavigation() }
       return
     }
@@ -443,7 +443,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   private fun generateRoutePreview() {
-    if (locationClientManager.getClient() == null) {
+    if (!locationClientManager.getClient().isConnected) {
       connectAndPostRunnable { generateRoutePreview() }
       return
     }
@@ -505,7 +505,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun configureMapzenMap() {
-    if (locationClientManager.getClient() == null) {
+    if (!locationClientManager.getClient().isConnected) {
       connectAndPostRunnable { configureMapzenMap() }
       return
     }
