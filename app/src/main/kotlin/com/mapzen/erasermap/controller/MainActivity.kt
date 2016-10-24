@@ -229,8 +229,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
     override public fun onDestroy() {
         super.onDestroy()
         saveCurrentSearchTerm()
-        mapzenMap?.isMyLocationEnabled = false
-        lostClientManager.disconnect()
         killNotifications()
         voiceNavigationController?.shutdown()
     }
@@ -1189,6 +1187,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     override fun checkPermissionAndEnableLocation() {
         if (permissionManager.granted && !presenter.routingEnabled) {
             mapzenMap?.isMyLocationEnabled = true
+            lostClientManager.connect()
             if (settings.isMockLocationEnabled) {
                 if (lostClientManager.getClient() == null) {
                     lostClientManager.connect()
