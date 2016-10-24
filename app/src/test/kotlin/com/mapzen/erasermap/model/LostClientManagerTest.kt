@@ -31,6 +31,12 @@ class LostClientManagerTest {
     assertThat(testLostFactory.lostClient.connected).isTrue()
   }
 
+  @Test fun connect_shouldNotInvokeClientConnectWhenAlreadyConnected() {
+    clientManager?.connect()
+    clientManager?.connect()
+    assertThat(testLostFactory.lostClient.connectCount).isEqualTo(1)
+  }
+
   @Test fun addRunnableToRunOnConnect_shouldRunRunnable() {
     val testRunnable = TestRunnable()
     clientManager?.addRunnableToRunOnConnect(
@@ -58,6 +64,7 @@ class LostClientManagerTest {
 
     var connected = false
     var callbacks: LostApiClient.ConnectionCallbacks? = null
+    var connectCount = 0
 
     override fun disconnect() {
       connected = false
@@ -66,6 +73,7 @@ class LostClientManagerTest {
 
     override fun connect() {
       connected = true
+      connectCount++
       callbacks?.onConnected()
     }
 
