@@ -1190,7 +1190,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
             lostClientManager.connect()
             if (settings.isMockLocationEnabled) {
                 if (lostClientManager.getClient() == null) {
-                    lostClientManager.connect()
                     lostClientManager.addRunnableToRunOnConnect(
                         Runnable { checkPermissionAndEnableLocation() }
                     )
