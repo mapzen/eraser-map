@@ -44,7 +44,7 @@ class LostClientManager(val application: Application, locationFactory: LocationF
   }
 
   override fun connect() {
-    if (state == State.CONNECTING) {
+    if (state == State.CONNECTING || state == State.CONNECTED) {
       return
     }
     state = State.CONNECTING
