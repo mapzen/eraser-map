@@ -1189,6 +1189,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     override fun checkPermissionAndEnableLocation() {
         if (permissionManager.granted && !presenter.routingEnabled) {
             mapzenMap?.isMyLocationEnabled = true
+            lostClientManager.connect()
             if (settings.isMockLocationEnabled) {
                 if (lostClientManager.getClient() == null) {
                     lostClientManager.connect()
