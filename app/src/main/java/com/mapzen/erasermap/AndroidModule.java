@@ -2,7 +2,6 @@ package com.mapzen.erasermap;
 
 import com.mapzen.android.core.ApiKeyConstants;
 import com.mapzen.android.search.MapzenSearch;
-import com.mapzen.android.lost.api.LostApiClient;
 import com.mapzen.erasermap.model.AndroidAppSettings;
 import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.model.AppSettings;
@@ -75,9 +74,11 @@ public class AndroidModule {
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation, Bus bus,
             RouteManager routeManager, AppSettings settings, ViewStateManager vsm,
             IntentQueryParser intentQueryParser, LocationConverter converter,
-            LostClientManager clientManager, LocationSettingsChecker locationSettingsChecker) {
+            LostClientManager clientManager, LocationSettingsChecker locationSettingsChecker,
+            PermissionManager permissionManager) {
         return new MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm,
-                intentQueryParser, converter, clientManager, locationSettingsChecker);
+                intentQueryParser, converter, clientManager, locationSettingsChecker,
+                permissionManager);
     }
 
     @Provides @Singleton RouteManager provideRouteManager(AppSettings settings, ApiKeys apiKeys) {

@@ -54,4 +54,5 @@ interface MainPresenter {
     fun onRouteRequest(callback: RouteCallback)
     fun generateRawFeature(): Feature
     fun onFeaturePicked(properties: Map<String, String>, poiPoint: FloatArray)
+    fun checkPermissionAndEnableLocation()
 }

@@ -1173,8 +1173,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             grantResults: IntArray) {
         when (requestCode) {
             PERMISSIONS_REQUEST -> {
-                if (grantResults.size > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     permissionManager.grantPermissions()
                     checkPermissionAndEnableLocation()
                     val findMe = mapView.findViewById(R.id.mz_find_me);
@@ -1185,22 +1184,11 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     override fun checkPermissionAndEnableLocation() {
-        if (permissionManager.granted && !presenter.routingEnabled) {
-            mapzenMap?.isMyLocationEnabled = true
-            lostClientManager.connect()
-            if (settings.isMockLocationEnabled) {
-                if (!lostClientManager.getClient().isConnected) {
-                    lostClientManager.connect()
-                    lostClientManager.addRunnableToRunOnConnect(
-                        Runnable { checkPermissionAndEnableLocation() }
-                    )
-                    return
-                }
-                val client = lostClientManager.getClient()
-                LocationServices.FusedLocationApi?.setMockMode(client, true)
-                LocationServices.FusedLocationApi?.setMockLocation(client, settings.mockLocation)
-            }
-        }
+        presenter.checkPermissionAndEnableLocation()
+    }
+
+    override fun setMyLocationEnabled(enabled: Boolean) {
+        mapzenMap?.isMyLocationEnabled = enabled
     }
 
     override fun executeSearch(query: String) {

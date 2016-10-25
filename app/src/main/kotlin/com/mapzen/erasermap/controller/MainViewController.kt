@@ -58,4 +58,5 @@ interface MainViewController {
     fun layoutFindMeAboveOptions()
     fun restoreRoutePreviewButtons()
     fun handleLocationResolutionRequired(status: Status)
+    fun setMyLocationEnabled(enabled: Boolean)
 }
