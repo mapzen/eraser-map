@@ -17,10 +17,6 @@ class LostClientManagerTest {
     clientManager = LostClientManager(application, testLostFactory)
   }
 
-  @Test fun getClient_shouldReturnNull() {
-    assertThat(clientManager?.getClient()).isNull()
-  }
-
   @Test fun getClient_shouldReturnClient() {
     testLostFactory.callbacks?.onConnected()
     assertThat(clientManager?.getClient()).isNotNull()

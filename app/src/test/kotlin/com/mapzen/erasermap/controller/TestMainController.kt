@@ -35,6 +35,7 @@ class TestMainController : MainViewController {
     var popBackStack: Boolean = false
     var routeRequestCanceled: Boolean = false
     var isNew: Boolean = false
+    var isCurrentLocationEnabled: Boolean = false
 
     var settingsApiTriggered: Boolean = false
 
@@ -234,5 +235,9 @@ class TestMainController : MainViewController {
 
     override fun handleLocationResolutionRequired(status: Status) {
         settingsApiTriggered = true
+    }
+
+    override fun setMyLocationEnabled(enabled: Boolean) {
+        isCurrentLocationEnabled = enabled
     }
 }

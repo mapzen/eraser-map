@@ -2,6 +2,7 @@ package com.mapzen.erasermap.presenter
 
 import android.location.Location
 import android.util.Log
+import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.Status
 import com.mapzen.erasermap.controller.MainViewController
 import com.mapzen.erasermap.model.AppSettings
@@ -12,6 +13,7 @@ import com.mapzen.erasermap.model.LocationClientManager
 import com.mapzen.erasermap.model.LocationConverter
 import com.mapzen.erasermap.model.LocationSettingsChecker
 import com.mapzen.erasermap.model.MapzenLocation
+import com.mapzen.erasermap.model.PermissionManager
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.event.LocationChangeEvent
 import com.mapzen.erasermap.model.event.RouteCancelEvent
@@ -45,8 +47,8 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     val routeManager: RouteManager, val settings: AppSettings, val vsm: ViewStateManager,
     val intentQueryParser: IntentQueryParser, val converter: LocationConverter,
     val locationClientManager: LocationClientManager,
-    val locationSettingsChecker: LocationSettingsChecker)
-: MainPresenter, RouteCallback {
+    val locationSettingsChecker: LocationSettingsChecker, val permissionManager: PermissionManager):
+    MainPresenter, RouteCallback {
 
   companion object {
     private val TAG = MainPresenterImpl::class.java.simpleName
@@ -232,7 +234,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   @Subscribe fun onRoutePreviewEvent(event: RoutePreviewEvent) {
-    if (locationClientManager.getClient() == null) {
+    if (!locationClientManager.getClient().isConnected) {
       connectAndPostRunnable { onRoutePreviewEvent(event) }
       return
     }
@@ -264,7 +266,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun updateLocation() {
-    if (locationClientManager.getClient() == null) {
+    if (!locationClientManager.getClient().isConnected) {
       connectAndPostRunnable { updateLocation() }
       return
     }
@@ -362,7 +364,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun onClickStartNavigation() {
-    if (locationClientManager.getClient() == null) {
+    if (!locationClientManager.getClient().isConnected) {
       connectAndPostRunnable { onClickStartNavigation() }
       return
     }
@@ -443,7 +445,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   private fun generateRoutePreview() {
-    if (locationClientManager.getClient() == null) {
+    if (!locationClientManager.getClient().isConnected) {
       connectAndPostRunnable { generateRoutePreview() }
       return
     }
@@ -505,7 +507,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun configureMapzenMap() {
-    if (locationClientManager.getClient() == null) {
+    if (!locationClientManager.getClient().isConnected) {
       connectAndPostRunnable { configureMapzenMap() }
       return
     }
@@ -593,13 +595,32 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     return rawFeature
   }
 
-  override fun onFeaturePicked(properties: Map<String, String>, poiTapPoint: FloatArray) {
+  override fun onFeaturePicked(properties: Map<String, String>, poiPoint: FloatArray) {
     if (properties.contains(MAP_DATA_PROP_SEARCHINDEX)) {
       val searchIndex = properties[MAP_DATA_PROP_SEARCHINDEX]!!.toInt()
       onSearchResultTapped(searchIndex)
     } else {
-      onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(),
-          poiTapPoint?.get(1)?.toFloat())
+      onReverseGeoRequested(poiPoint.get(0).toFloat(), poiPoint.get(1).toFloat())
+    }
+  }
+
+  override fun checkPermissionAndEnableLocation() {
+    if (permissionManager.granted && !routingEnabled) {
+      mainViewController?.setMyLocationEnabled(true)
+      if (!locationClientManager.getClient().isConnected) {
+        locationClientManager.connect()
+        locationClientManager.addRunnableToRunOnConnect(Runnable { initMockMode() })
+      } else {
+        initMockMode()
+      }
+    }
+  }
+
+  private fun initMockMode() {
+    if (settings.isMockLocationEnabled) {
+      val client = locationClientManager.getClient()
+      LocationServices.FusedLocationApi?.setMockMode(client, true)
+      LocationServices.FusedLocationApi?.setMockLocation(client, settings.mockLocation)
     }
   }
 }

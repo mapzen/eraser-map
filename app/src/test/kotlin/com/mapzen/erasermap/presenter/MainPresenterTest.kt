@@ -12,6 +12,7 @@ import com.mapzen.erasermap.model.LocationClientManager
 import com.mapzen.erasermap.model.LocationConverter
 import com.mapzen.erasermap.model.LocationSettingsChecker
 import com.mapzen.erasermap.model.MapzenLocation
+import com.mapzen.erasermap.model.PermissionManager
 import com.mapzen.erasermap.model.TestAppSettings
 import com.mapzen.erasermap.model.TestLostSettingsChecker
 import com.mapzen.erasermap.model.TestMapzenLocation
@@ -57,8 +58,9 @@ class MainPresenterTest {
     private val converter: LocationConverter = LocationConverter()
     private val clientManager: TestLostClientManager = TestLostClientManager()
     private val locationSettingsChecker = TestLostSettingsChecker()
+    private val permissionManager = PermissionManager()
     private val presenter = MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm, iqp,
-        converter, clientManager, locationSettingsChecker)
+        converter, clientManager, locationSettingsChecker, permissionManager)
 
     @Before fun setUp() {
         presenter.mainViewController = mainController
@@ -287,7 +289,7 @@ class MainPresenterTest {
     @Test fun onRoutePreviewEvent_shouldTriggerSettingsApi() {
         val resolutionSettingsChecker = ResolutionLocationSettingsChecker()
         val testPresenter = MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm, iqp,
-            converter, clientManager, resolutionSettingsChecker)
+            converter, clientManager, resolutionSettingsChecker, permissionManager)
         testPresenter.mainViewController = mainController
 
         testPresenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
@@ -648,6 +650,18 @@ class MainPresenterTest {
         assertThat(mainController.reverseGeolocatePoint?.latitude).isEqualTo(70.0)
     }
 
+    @Test fun checkPermissionAndEnableLocation_shouldSetMyLocationEnabledIfPermissionsGranted() {
+        permissionManager.granted = true
+        presenter.checkPermissionAndEnableLocation()
+        assertThat(mainController.isCurrentLocationEnabled).isTrue()
+    }
+
+    @Test fun checkPermissionAndEnableLocation_shouldNotEnableMyLocationIfPermissionsNotGranted() {
+        permissionManager.granted = false
+        presenter.checkPermissionAndEnableLocation()
+        assertThat(mainController.isCurrentLocationEnabled).isFalse()
+    }
+
     class RouteEventSubscriber {
         var event: RouteEvent? = null
 
@@ -656,7 +670,7 @@ class MainPresenterTest {
         }
     }
 
-    class ResolutionLocationSettingsChecker: LocationSettingsChecker {
+    class ResolutionLocationSettingsChecker : LocationSettingsChecker {
         override fun getLocationStatus(mapzenLocation: MapzenLocation,
             locationClientManager: LocationClientManager): Status {
             return Status(Status.RESOLUTION_REQUIRED)

@@ -69,9 +69,11 @@ public class TestAndroidModule {
     @Provides @Singleton MainPresenter provideMainPresenter(MapzenLocation mapzenLocation, Bus bus,
             RouteManager routeManager, AppSettings settings, ViewStateManager vsm,
             IntentQueryParser intentQueryParser, LocationConverter converter,
-        LostClientManager lostClientManager, LocationSettingsChecker locationSettingsChecker) {
+            LostClientManager lostClientManager, LocationSettingsChecker locationSettingsChecker,
+            PermissionManager permissionManager) {
         return new MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm,
-                intentQueryParser, converter, lostClientManager, locationSettingsChecker);
+                intentQueryParser, converter, lostClientManager, locationSettingsChecker,
+            permissionManager);
     }
 
     @Provides @Singleton RouteManager provideRouteManager() {
