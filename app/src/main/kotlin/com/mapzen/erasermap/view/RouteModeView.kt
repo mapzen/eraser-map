@@ -432,6 +432,10 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
         initInstructionAdapter()
         this.visibility = View.VISIBLE
         routePresenter.onRouteResume(route)
+    }
+
+    fun resumeRouteForMap() {
+        routePresenter.onRouteResumeForMap(route)
         Handler().postDelayed( {
             val currentSnapLocation = routePresenter.currentSnapLocation
             if (currentSnapLocation != null) {

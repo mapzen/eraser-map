@@ -17,6 +17,7 @@ public class TestRouteController : RouteViewController {
     public var post: Int = -1
     public var mapZoom: Float = 0f
     public var displayIndex: Int = 0
+    var routeLocationMarkerPos: ValhallaLocation? = null
 
     override fun onLocationChanged(location: Location) {
         this.location = location
@@ -35,6 +36,7 @@ public class TestRouteController : RouteViewController {
     }
 
     override fun showRouteIcon(location: ValhallaLocation) {
+        routeLocationMarkerPos = location
     }
 
     override fun centerMapOnCurrentLocation() {

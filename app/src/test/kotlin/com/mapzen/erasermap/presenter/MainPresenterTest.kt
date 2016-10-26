@@ -124,7 +124,7 @@ class MainPresenterTest {
         assertThat(mainController.isPlaceResultOverridden).isTrue()
     }
 
-    @Test fun onRestoreViewState_shouldRestorePreviousSearchResults() {
+    @Test fun onRestoreMapState_shouldRestorePreviousSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
         result.features = features
@@ -132,8 +132,50 @@ class MainPresenterTest {
 
         val newController = TestMainController()
         presenter.mainViewController = newController
-        presenter.onRestoreViewState()
+        presenter.onRestoreMapState()
         assertThat(newController.searchResults).isEqualTo(features)
+    }
+
+    @Test fun onRestoreMapState_shouldAdjustAttributionRoutePreview() {
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.onRestoreMapState()
+        assertThat(mainController.isAttributionAboveOptions).isTrue()
+    }
+
+    @Test fun onRestoreMapState_shouldAdjustFindMeRoutePreview() {
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.onRestoreMapState()
+        assertThat(mainController.isFindMeAboveOptions).isTrue()
+    }
+
+    @Test fun onRestoreMapState_shouldRouteRoutePreview() {
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.onRestoreMapState()
+        assertThat(mainController.isRouting).isTrue()
+    }
+
+    @Test fun onRestoreMapState_shouldAdjustAttributionRoutePreviewList() {
+        presenter.onClickViewList()
+        presenter.onRestoreMapState()
+        assertThat(mainController.isAttributionAboveOptions).isTrue()
+    }
+
+    @Test fun onRestoreMapState_shouldAdjustFindMeRoutePreviewList() {
+        presenter.onClickViewList()
+        presenter.onRestoreMapState()
+        assertThat(mainController.isFindMeAboveOptions).isTrue()
+    }
+
+    @Test fun onRestoreMapState_shouldRouteRoutePreviewList() {
+        presenter.onClickViewList()
+        presenter.onRestoreMapState()
+        assertThat(mainController.isRouting).isTrue()
+    }
+
+    @Test fun onRestoreMapState_shouldShowRouteBtnAndCenterMapRouting() {
+        presenter.onClickStartNavigation()
+        presenter.onRestoreMapState()
+        assertThat(mainController.isRouteBtnVisibleAndMapCentered).isTrue()
     }
 
     @Test fun onRestoreViewState_shouldHideSettingsButtonWhileShowingSearchResults() {

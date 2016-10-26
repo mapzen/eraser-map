@@ -1,6 +1,5 @@
 package com.mapzen.erasermap.presenter
 
-import android.location.Location
 import com.mapzen.erasermap.model.event.RouteCancelEvent
 import com.mapzen.erasermap.view.MapListToggleButton
 import com.mapzen.erasermap.view.RouteViewController
@@ -46,6 +45,9 @@ class RoutePresenterImpl(private val routeEngine: RouteEngine,
         if (!isTrackingCurrentLocation) {
             routeController?.showResumeButton()
         }
+    }
+
+    override fun onRouteResumeForMap(route: Route?) {
         val location = route?.getRouteInstructions()?.get(currentInstructionIndex)?.location
         if (location != null) {
             routeController?.showRouteIcon(location)
