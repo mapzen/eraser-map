@@ -54,6 +54,7 @@ open class SearchResultsView(context: Context, attrs: AttributeSet)
             callback: MainActivity.PeliasCallback) {
 
         this.searchView = searchView
+        this.autoCompleteListView = autoCompleteListView
 
         searchView.setRecentSearchIconResourceId(R.drawable.ic_recent)
         searchView.setAutoCompleteIconResourceId(R.drawable.ic_pin_c)
