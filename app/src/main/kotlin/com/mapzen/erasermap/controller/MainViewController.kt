@@ -60,4 +60,5 @@ interface MainViewController {
     fun restoreRoutePreviewButtons()
     fun handleLocationResolutionRequired(status: Status)
     fun setMyLocationEnabled(enabled: Boolean)
+    fun setOptionsMenuIconToList()
 }

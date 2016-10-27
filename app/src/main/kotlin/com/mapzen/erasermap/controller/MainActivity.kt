@@ -372,6 +372,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         menuInflater.inflate(R.menu.menu_main, menu)
         optionsMenu = menu
         initSearchView()
+        presenter.onRestoreOptionsMenu()
         return true
     }
 
@@ -480,13 +481,17 @@ class MainActivity : AppCompatActivity(), MainViewController,
         presenter.currentSearchTerm = searchController.searchView?.query.toString()
     }
 
+    override fun setOptionsMenuIconToList() {
+        optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
+    }
+
     inner class PeliasCallback : Callback<Result> {
         private val TAG: String = "PeliasCallback"
 
         override fun success(result: Result?, response: Response?) {
             presenter.reverseGeoLngLat = null
             presenter.onSearchResultsAvailable(result)
-            optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
+            setOptionsMenuIconToList()
         }
 
         override fun failure(error: RetrofitError?) {
@@ -809,8 +814,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     override fun hideSettingsBtn() {
-        Handler().postDelayed( { optionsMenu?.findItem(R.id.action_settings)?.isVisible = false },
-                100)
+        optionsMenu?.findItem(R.id.action_settings)?.isVisible = false
     }
 
     override fun showSettingsBtn() {

@@ -89,6 +89,10 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     mainViewController?.showSearchResults(result?.features)
     mainViewController?.hideProgress()
     mainViewController?.deactivateFindMeTracking()
+    updateViewAllAction(result)
+  }
+
+  private fun updateViewAllAction(result: Result?) {
     val featureCount = result?.features?.size
     if (featureCount != null && featureCount > 1) {
       mainViewController?.showActionViewAll()
@@ -156,7 +160,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   private fun onRestoreViewStateSearchResults() {
-    mainViewController?.hideSettingsBtn()
+    // Do nothing.
   }
 
   private fun onRestoreViewStateRoutePreview() {
@@ -178,6 +182,18 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     routeViewController?.showRouteDirectionList()
   }
 
+  override fun onRestoreOptionsMenu() {
+    if (vsm.viewState == SEARCH_RESULTS) {
+      onRestoreOptionsMenuStateSearchResults()
+    }
+  }
+
+  private fun onRestoreOptionsMenuStateSearchResults() {
+    mainViewController?.hideSettingsBtn()
+    mainViewController?.setOptionsMenuIconToList()
+    updateViewAllAction(searchResults)
+  }
+
   override fun onRestoreMapState() {
     when (vsm.viewState) {
       DEFAULT -> onRestoreMapStateDefault()
@@ -195,7 +211,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   private fun onRestoreMapStateSearch() {
-
+    // Do nothing
   }
 
   private fun onRestoreMapStateSearchResults() {

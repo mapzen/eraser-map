@@ -40,6 +40,7 @@ class TestMainController : MainViewController {
     var isFindMeAboveOptions = false
     var isRouting = false
     var isRouteBtnVisibleAndMapCentered = false
+    var isOptionsMenuIconList = false
 
     var settingsApiTriggered: Boolean = false
 
@@ -250,5 +251,9 @@ class TestMainController : MainViewController {
 
     override fun setMyLocationEnabled(enabled: Boolean) {
         isCurrentLocationEnabled = enabled
+    }
+
+    override fun setOptionsMenuIconToList() {
+        isOptionsMenuIconList = true
     }
 }

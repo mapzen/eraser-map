@@ -40,6 +40,7 @@ interface MainPresenter {
     fun updateLocation()
     fun onBackPressed()
     fun onRestoreViewState()
+    fun onRestoreOptionsMenu()
     fun onRestoreMapState()
     fun onResume()
     fun onMuteClick()
