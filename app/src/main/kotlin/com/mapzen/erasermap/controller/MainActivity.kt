@@ -127,7 +127,14 @@ class MainActivity : AppCompatActivity(), MainViewController,
     val routePreviewCompass: CompassView by lazy { findViewById(R.id.route_preview_compass_view) as CompassView }
 
     // view_route_mode
-    val routeModeView: RouteModeView by lazy { findViewById(R.id.route_mode) as RouteModeView }
+    val routeModeView: RouteModeView by lazy {
+        val view = findViewById(R.id.route_mode) as RouteModeView
+        view.mainPresenter = presenter
+        presenter.routeViewController = view
+        view.voiceNavigationController = voiceNavigationController
+        view.notificationCreator = notificationCreator
+        view
+    }
     val routeModeCompass: CompassView by lazy { findViewById(R.id.route_mode_compass_view) as CompassView }
     val muteView: MuteView by lazy { findViewById(R.id.route_mode_mute_view) as MuteView }
 
@@ -140,24 +147,23 @@ class MainActivity : AppCompatActivity(), MainViewController,
         initCrashReportService()
         setContentView(R.layout.activity_main)
         presenter.mainViewController = this
-        initMapzenMap()
         initVoiceNavigationController() // must initialize this before calling initMute
+        initConfidenceHandler()
+        initNotificationCreator()
+        presenter.onRestoreViewState()
+        initMapzenMap()
         initMute()
         initCompass()
         initReverseButton()
-        initConfidenceHandler()
         permissionManager.activity = this
         if (permissionManager.permissionsRequired()) {
             permissionManager.requestPermissions()
         } else {
             permissionManager.grantPermissions()
         }
-        presenter.onRestoreViewState()
         supportActionBar?.setDisplayShowTitleEnabled(false)
         settings.initTangramDebugFlags()
         settings.initSearchResultVersion(this, savedSearch)
-        initVoiceNavigationController()
-        initNotificationCreator()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -237,9 +243,9 @@ class MainActivity : AppCompatActivity(), MainViewController,
         mapView.getMapAsync(apiKeys.apiKey, {
             this.mapzenMap = it
             configureMapzenMap()
+            presenter.onRestoreMapState()
             presenter.configureMapzenMap()
             presenter.onIntentQueryReceived(intent?.data?.query)
-            initMapRotateListener()
         })
     }
 
@@ -289,6 +295,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
                 permissionManager.showPermissionRequired()
             }
         }
+        initMapRotateListener()
         mapzenMap?.mapController?.setHttpHandler(tileHttpHandler)
         mapzenLocation.mapzenMap = mapzenMap
         routeModeView.mapzenMap = mapzenMap
@@ -1063,6 +1070,10 @@ class MainActivity : AppCompatActivity(), MainViewController,
         routeModeView.resumeRoute(feature, routeManager.route)
     }
 
+    override fun resumeRoutingModeForMap() {
+        routeModeView.resumeRouteForMap()
+    }
+
     private fun setRoutingCamera() {
         if (routeModeView.isResumeButtonHidden()) {
             mapzenMap?.cameraType = CameraType.PERSPECTIVE
@@ -1080,11 +1091,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
         routeManager.destination = feature
         routeManager.reverse = false
         routePreviewView.visibility = View.GONE
-        routeModeView.mainPresenter = presenter
-        routeModeView.mapzenMap = mapzenMap
-        presenter.routeViewController = routeModeView
-        routeModeView.voiceNavigationController = voiceNavigationController
-        routeModeView.notificationCreator = notificationCreator
     }
 
     override fun hideRoutingMode() {

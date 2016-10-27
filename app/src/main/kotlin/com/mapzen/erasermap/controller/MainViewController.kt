@@ -31,6 +31,7 @@ interface MainViewController {
     fun hideRoutingMode()
     fun startRoutingMode(feature: Feature, isNew: Boolean)
     fun resumeRoutingMode(feature: Feature)
+    fun resumeRoutingModeForMap()
     fun shutDown()
     fun centerMapOnLocation(lngLat: LngLat, zoom: Float)
     fun setMapTilt(radians: Float)

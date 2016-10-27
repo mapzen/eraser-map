@@ -36,6 +36,10 @@ class TestMainController : MainViewController {
     var routeRequestCanceled: Boolean = false
     var isNew: Boolean = false
     var isCurrentLocationEnabled: Boolean = false
+    var isAttributionAboveOptions = false
+    var isFindMeAboveOptions = false
+    var isRouting = false
+    var isRouteBtnVisibleAndMapCentered = false
 
     var settingsApiTriggered: Boolean = false
 
@@ -98,6 +102,7 @@ class TestMainController : MainViewController {
     }
 
     override fun route() {
+        isRouting = true
     }
 
     override fun hideRoutePreview() {
@@ -126,6 +131,10 @@ class TestMainController : MainViewController {
 
     override fun resumeRoutingMode(feature: Feature) {
         isRoutingModeVisible = true
+    }
+
+    override fun resumeRoutingModeForMap() {
+        isRouteBtnVisibleAndMapCentered = true
     }
 
     override fun centerMapOnLocation(lngLat: LngLat, zoom: Float) {
@@ -222,9 +231,11 @@ class TestMainController : MainViewController {
     }
 
     override fun layoutAttributionAboveOptions() {
+        isAttributionAboveOptions = true
     }
 
     override fun layoutFindMeAboveOptions() {
+        isFindMeAboveOptions = true
     }
 
     override fun restoreRoutePreviewButtons() {

@@ -7,6 +7,7 @@ import com.mapzen.erasermap.view.MapListToggleButton
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.helpers.RouteEngine
 import com.mapzen.model.ValhallaLocation
+import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
@@ -56,6 +57,14 @@ class RoutePresenterTest {
         routeEngine.route = route1
         routePresenter.onRouteResume(route2)
         assertThat(routeEngine.route).isEqualTo(route1)
+    }
+
+    @Test fun onRouteResumeForMap_shouldDrawRouteLocationMarker() {
+        val route = Route(getFixture("valhalla_route"))
+        routePresenter.onRouteResumeForMap(route)
+        val location = route.getRouteInstructions()?.get(0)?.location
+        assertThat(routeController.routeLocationMarkerPos?.latitude).isEqualTo(location?.latitude)
+        assertThat(routeController.routeLocationMarkerPos?.longitude).isEqualTo(location?.longitude)
     }
 
     @Test fun onMapPan_shouldShowResumeButton() {

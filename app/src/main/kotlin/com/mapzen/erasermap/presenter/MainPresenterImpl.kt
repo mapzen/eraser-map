@@ -157,23 +157,15 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
   private fun onRestoreViewStateSearchResults() {
     mainViewController?.hideSettingsBtn()
-    if (searchResults?.features != null) {
-      if (!reverseGeo) {
-        mainViewController?.showSearchResults(searchResults?.features)
-      } else {
-        mainViewController?.showReverseGeocodeFeature(searchResults?.features)
-        mainViewController?.centerOnCurrentFeature(searchResults?.features)
-      }
-    }
   }
 
   private fun onRestoreViewStateRoutePreview() {
-    generateRoutePreview()
+    generateRoutePreview(false)
     mainViewController?.restoreRoutePreviewButtons()
   }
 
   private fun onRestoreViewStateRoutePreviewList() {
-    generateRoutePreview()
+    generateRoutePreview(false)
     onClickViewList()
   }
 
@@ -184,6 +176,59 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   private fun onRestoreViewStateRouteDirectionList() {
     resumeRoutingMode()
     routeViewController?.showRouteDirectionList()
+  }
+
+  override fun onRestoreMapState() {
+    when (vsm.viewState) {
+      DEFAULT -> onRestoreMapStateDefault()
+      SEARCH -> onRestoreMapStateSearch()
+      SEARCH_RESULTS -> onRestoreMapStateSearchResults()
+      ROUTE_PREVIEW -> onRestoreMapStateRoutePreview()
+      ROUTE_PREVIEW_LIST -> onRestoreMapStateRoutePreviewList()
+      ROUTING -> onRestoreMapStateRouting()
+      ROUTE_DIRECTION_LIST -> onRestoreMapStateRouteDirectionList()
+    }
+  }
+
+  private fun onRestoreMapStateDefault() {
+    // Do nothing
+  }
+
+  private fun onRestoreMapStateSearch() {
+
+  }
+
+  private fun onRestoreMapStateSearchResults() {
+    if (searchResults?.features != null) {
+      if (!reverseGeo) {
+        mainViewController?.showSearchResults(searchResults?.features)
+      } else {
+        mainViewController?.showReverseGeocodeFeature(searchResults?.features)
+        mainViewController?.centerOnCurrentFeature(searchResults?.features)
+      }
+    }
+  }
+
+  private fun onRestoreMapStateRoutePreview() {
+    adjustLayoutAndRoute()
+  }
+
+  private fun onRestoreMapStateRoutePreviewList() {
+    adjustLayoutAndRoute()
+  }
+
+  private fun onRestoreMapStateRouting() {
+    mainViewController?.resumeRoutingModeForMap()
+  }
+
+  private fun onRestoreMapStateRouteDirectionList() {
+    mainViewController?.resumeRoutingModeForMap()
+  }
+
+  private fun adjustLayoutAndRoute() {
+    mainViewController?.layoutAttributionAboveOptions()
+    mainViewController?.layoutFindMeAboveOptions()
+    mainViewController?.route()
   }
 
   override fun onExpandSearchView() {
@@ -445,8 +490,12 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   private fun generateRoutePreview() {
+    generateRoutePreview(true)
+  }
+
+  private fun generateRoutePreview(updateMap: Boolean) {
     if (!locationClientManager.getClient().isConnected) {
-      connectAndPostRunnable { generateRoutePreview() }
+      connectAndPostRunnable { generateRoutePreview(updateMap) }
       return
     }
 
@@ -454,7 +503,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     val feature = destination
     if (location is Location && feature is Feature) {
       val mapzenLocation = converter.mapzenLocation(location)
-      showRoutePreview(mapzenLocation, feature)
+      showRoutePreview(mapzenLocation, feature, updateMap)
     }
   }
 
@@ -555,8 +604,15 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   private fun showRoutePreview(location: ValhallaLocation, feature: Feature) {
-    mainViewController?.layoutAttributionAboveOptions()
-    mainViewController?.layoutFindMeAboveOptions()
+    showRoutePreview(location, feature, true)
+  }
+
+  private fun showRoutePreview(location: ValhallaLocation, feature: Feature,
+       updateMap: Boolean) {
+    if (updateMap) {
+      mainViewController?.layoutAttributionAboveOptions()
+      mainViewController?.layoutFindMeAboveOptions()
+    }
     routeManager.origin = location
 
     if (location.hasBearing()) {
@@ -575,7 +631,9 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
       routeManager.destination = rawFeature
     }
 
-    mainViewController?.route()
+    if (updateMap) {
+      mainViewController?.route()
+    }
   }
 
   override fun generateRawFeature(): Feature {

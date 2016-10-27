@@ -19,6 +19,7 @@ interface RoutePresenter {
     fun onLocationChanged(location: ValhallaLocation)
     fun onRouteStart(route: Route?)
     fun onRouteResume(route: Route?)
+    fun onRouteResumeForMap(route: Route?)
     fun onMapPan(deltaX: Float, deltaY: Float)
     fun onResumeButtonClick()
     fun onInstructionPagerTouch()
