@@ -183,9 +183,23 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun onRestoreOptionsMenu() {
-    if (vsm.viewState == SEARCH_RESULTS) {
-      onRestoreOptionsMenuStateSearchResults()
+    when (vsm.viewState) {
+      DEFAULT -> onRestoreOptionsMenuStateDefault()
+      SEARCH -> onRestoreOptionsMenuStateSearch()
+      SEARCH_RESULTS -> onRestoreOptionsMenuStateSearchResults()
+      ROUTE_PREVIEW -> onRestoreOptionsMenuStateRoutePreview()
+      ROUTE_PREVIEW_LIST -> onRestoreOptionsMenuStateRoutePreviewList()
+      ROUTING -> onRestoreOptionsMenuStateRouting()
+      ROUTE_DIRECTION_LIST -> onRestoreOptionsMenuStateRouteDirectionList()
     }
+  }
+
+  private fun onRestoreOptionsMenuStateDefault() {
+    // Do nothing
+  }
+
+  private fun onRestoreOptionsMenuStateSearch() {
+    // Do nothing
   }
 
   private fun onRestoreOptionsMenuStateSearchResults() {
@@ -196,6 +210,22 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
       val features = searchResults?.features as List<Feature>
       mainViewController?.onShowAllSearchResultsList(features)
     }
+  }
+
+  private fun onRestoreOptionsMenuStateRoutePreview() {
+    mainViewController?.hideSettingsBtn()
+  }
+
+  private fun onRestoreOptionsMenuStateRoutePreviewList() {
+    mainViewController?.hideSettingsBtn()
+  }
+
+  private fun onRestoreOptionsMenuStateRouting() {
+    mainViewController?.hideSettingsBtn()
+  }
+
+  private fun onRestoreOptionsMenuStateRouteDirectionList() {
+    mainViewController?.hideSettingsBtn()
   }
 
   override fun onRestoreMapState() {
