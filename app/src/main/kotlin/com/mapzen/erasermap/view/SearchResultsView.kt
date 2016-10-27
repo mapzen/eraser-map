@@ -58,7 +58,6 @@ open class SearchResultsView(context: Context, attrs: AttributeSet)
 
         searchView.setRecentSearchIconResourceId(R.drawable.ic_recent)
         searchView.setAutoCompleteIconResourceId(R.drawable.ic_pin_c)
-        initAutoCompleteAdapter()
         autoCompleteListView.adapter = initAutoCompleteAdapter()
         mapzenSearch.setLocationProvider(locationProvider)
         searchView.setAutoCompleteListView(autoCompleteListView)
