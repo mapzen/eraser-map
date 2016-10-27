@@ -192,6 +192,10 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     mainViewController?.hideSettingsBtn()
     mainViewController?.setOptionsMenuIconToList()
     updateViewAllAction(searchResults)
+    if (resultListVisible && searchResults?.features != null) {
+      val features = searchResults?.features as List<Feature>
+      mainViewController?.onShowAllSearchResultsList(features)
+    }
   }
 
   override fun onRestoreMapState() {
@@ -285,8 +289,8 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     }
   }
 
-  override fun onViewAllSearchResults() {
-    mainViewController?.showAllSearchResults(searchResults?.features)
+  override fun onViewAllSearchResultsList() {
+    mainViewController?.toggleShowAllSearchResultsList(searchResults?.features)
   }
 
   private fun connectAndPostRunnable(run: () -> Unit) {

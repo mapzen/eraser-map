@@ -13,7 +13,7 @@ interface MainViewController {
     fun hideDirectionsList()
     fun centerOnCurrentFeature(features: List<Feature>?)
     fun centerOnFeature(features: List<Feature>?, position: Int)
-    fun showAllSearchResults(features: List<Feature>?)
+    fun toggleShowAllSearchResultsList(features: List<Feature>?)
     fun hideSearchResults()
     fun hideReverseGeolocateResult()
     fun showReverseGeocodeFeature(features: List<Feature>?)
@@ -52,7 +52,7 @@ interface MainViewController {
     fun stopSpeaker()
     fun checkPermissionAndEnableLocation()
     fun executeSearch(query: String)
-    fun onCloseAllSearchResults()
+    fun onCloseAllSearchResultsList()
     fun deactivateFindMeTracking()
     fun cancelRouteRequest()
     fun layoutAttributionAboveOptions()
@@ -61,4 +61,5 @@ interface MainViewController {
     fun handleLocationResolutionRequired(status: Status)
     fun setMyLocationEnabled(enabled: Boolean)
     fun setOptionsMenuIconToList()
+    fun onShowAllSearchResultsList(features: List<Feature>)
 }

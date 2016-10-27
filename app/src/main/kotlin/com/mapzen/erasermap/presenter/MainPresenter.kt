@@ -36,7 +36,7 @@ interface MainPresenter {
     fun onClickViewList()
     fun onClickStartNavigation()
     fun onQuerySubmit()
-    fun onViewAllSearchResults()
+    fun onViewAllSearchResultsList()
     fun updateLocation()
     fun onBackPressed()
     fun onRestoreViewState()

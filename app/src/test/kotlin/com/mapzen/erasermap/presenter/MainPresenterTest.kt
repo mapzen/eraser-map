@@ -138,6 +138,18 @@ class MainPresenterTest {
         assertThat(mainController.isViewAllVisible).isTrue()
     }
 
+    @Test fun onRestoreOptionsMenuState_shouldShowListForSearchListVisible() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        presenter.resultListVisible = true
+        presenter.onRestoreOptionsMenu()
+        assertThat(mainController.isShowingSearchResultsList).isTrue()
+    }
+
     @Test fun onRestoreMapState_shouldRestorePreviousSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()

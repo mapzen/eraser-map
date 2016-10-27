@@ -422,44 +422,48 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     private fun onActionViewAll() {
-        presenter.onViewAllSearchResults()
+        presenter.onViewAllSearchResultsList()
     }
 
-    override fun showAllSearchResults(features: List<Feature>?) {
+    override fun toggleShowAllSearchResultsList(features: List<Feature>?) {
         if (features == null) {
             return
         }
 
         if (presenter.resultListVisible) {
-            onCloseAllSearchResults()
+            onCloseAllSearchResultsList()
             searchController.enableSearch()
         } else {
-            saveCurrentSearchTerm()
-            presenter.resultListVisible = true
-            optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_map)
-
-            val simpleFeatures: ArrayList<AutoCompleteItem> = ArrayList()
-            for (feature in features) {
-                simpleFeatures.add(AutoCompleteItem(SimpleFeature.fromFeature(feature)))
-            }
-            searchController.searchView?.disableAutoKeyboardShow()
-            searchController.searchView?.disableAutoComplete()
-            searchController.searchView?.onActionViewExpanded()
-            searchController.searchView?.setQuery(presenter.currentSearchTerm, false)
-            val autoCompleteAdapter = searchController.autoCompleteListView?.adapter as AutoCompleteAdapter
-            autoCompleteAdapter.clear();
-            autoCompleteAdapter.addAll(simpleFeatures);
-            autoCompleteAdapter.notifyDataSetChanged();
-            searchController.autoCompleteListView?.setOnItemClickListener { parent, view, position, id ->
-                        (findViewById(R.id.search_results) as SearchResultsView).setCurrentItem(position)
-                        onCloseAllSearchResults()
-
-            }
-            searchController.disableSearch()
+            onShowAllSearchResultsList(features)
         }
     }
 
-    override fun onCloseAllSearchResults() {
+    override fun onShowAllSearchResultsList(features: List<Feature>) {
+        saveCurrentSearchTerm()
+        presenter.resultListVisible = true
+        optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_map)
+
+        val simpleFeatures: ArrayList<AutoCompleteItem> = ArrayList()
+        for (feature in features) {
+            simpleFeatures.add(AutoCompleteItem(SimpleFeature.fromFeature(feature)))
+        }
+        searchController.searchView?.disableAutoKeyboardShow()
+        searchController.searchView?.disableAutoComplete()
+        searchController.searchView?.onActionViewExpanded()
+        searchController.searchView?.setQuery(presenter.currentSearchTerm, false)
+        val autoCompleteAdapter = searchController.autoCompleteListView?.adapter as AutoCompleteAdapter
+        autoCompleteAdapter.clear()
+        autoCompleteAdapter.addAll(simpleFeatures)
+        autoCompleteAdapter.notifyDataSetChanged()
+        searchController.autoCompleteListView?.setOnItemClickListener { parent, view, position, id ->
+            (findViewById(R.id.search_results) as SearchResultsView).setCurrentItem(position)
+            onCloseAllSearchResultsList()
+
+        }
+        searchController.disableSearch()
+    }
+
+    override fun onCloseAllSearchResultsList() {
         searchController.autoCompleteListView?.onItemClickListener = searchController.searchView?.OnItemClickHandler()?.invoke()
         presenter.resultListVisible = false
         optionsMenu?.findItem(R.id.action_view_all)?.setIcon(R.drawable.ic_list)
