@@ -89,6 +89,10 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     mainViewController?.showSearchResults(result?.features)
     mainViewController?.hideProgress()
     mainViewController?.deactivateFindMeTracking()
+    updateViewAllAction(result)
+  }
+
+  private fun updateViewAllAction(result: Result?) {
     val featureCount = result?.features?.size
     if (featureCount != null && featureCount > 1) {
       mainViewController?.showActionViewAll()
@@ -137,26 +141,12 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
   override fun onRestoreViewState() {
     when (vsm.viewState) {
-      DEFAULT -> onRestoreViewStateDefault()
-      SEARCH -> onRestoreViewStateSearch()
-      SEARCH_RESULTS -> onRestoreViewStateSearchResults()
+      DEFAULT, SEARCH, SEARCH_RESULTS -> {}
       ROUTE_PREVIEW -> onRestoreViewStateRoutePreview()
       ROUTE_PREVIEW_LIST -> onRestoreViewStateRoutePreviewList()
       ROUTING -> onRestoreViewStateRouting()
       ROUTE_DIRECTION_LIST -> onRestoreViewStateRouteDirectionList()
     }
-  }
-
-  private fun onRestoreViewStateDefault() {
-    // Do nothing.
-  }
-
-  private fun onRestoreViewStateSearch() {
-    // Do nothing.
-  }
-
-  private fun onRestoreViewStateSearchResults() {
-    mainViewController?.hideSettingsBtn()
   }
 
   private fun onRestoreViewStateRoutePreview() {
@@ -178,24 +168,33 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     routeViewController?.showRouteDirectionList()
   }
 
-  override fun onRestoreMapState() {
+  override fun onRestoreOptionsMenu() {
     when (vsm.viewState) {
-      DEFAULT -> onRestoreMapStateDefault()
-      SEARCH -> onRestoreMapStateSearch()
-      SEARCH_RESULTS -> onRestoreMapStateSearchResults()
-      ROUTE_PREVIEW -> onRestoreMapStateRoutePreview()
-      ROUTE_PREVIEW_LIST -> onRestoreMapStateRoutePreviewList()
-      ROUTING -> onRestoreMapStateRouting()
-      ROUTE_DIRECTION_LIST -> onRestoreMapStateRouteDirectionList()
+      DEFAULT, SEARCH -> {}
+      SEARCH_RESULTS -> onRestoreOptionsMenuStateSearchResults()
+      ROUTE_PREVIEW, ROUTE_PREVIEW_LIST, ROUTING, ROUTE_DIRECTION_LIST -> {
+        mainViewController?.hideSettingsBtn()
+      }
     }
   }
 
-  private fun onRestoreMapStateDefault() {
-    // Do nothing
+  private fun onRestoreOptionsMenuStateSearchResults() {
+    mainViewController?.hideSettingsBtn()
+    mainViewController?.setOptionsMenuIconToList()
+    updateViewAllAction(searchResults)
+    if (resultListVisible && searchResults?.features != null) {
+      val features = searchResults?.features as List<Feature>
+      mainViewController?.onShowAllSearchResultsList(features)
+    }
   }
 
-  private fun onRestoreMapStateSearch() {
-
+  override fun onRestoreMapState() {
+    when (vsm.viewState) {
+      DEFAULT, SEARCH -> {}
+      SEARCH_RESULTS -> onRestoreMapStateSearchResults()
+      ROUTE_PREVIEW, ROUTE_PREVIEW_LIST -> adjustLayoutAndRoute()
+      ROUTING, ROUTE_DIRECTION_LIST -> mainViewController?.resumeRoutingModeForMap()
+    }
   }
 
   private fun onRestoreMapStateSearchResults() {
@@ -207,22 +206,6 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         mainViewController?.centerOnCurrentFeature(searchResults?.features)
       }
     }
-  }
-
-  private fun onRestoreMapStateRoutePreview() {
-    adjustLayoutAndRoute()
-  }
-
-  private fun onRestoreMapStateRoutePreviewList() {
-    adjustLayoutAndRoute()
-  }
-
-  private fun onRestoreMapStateRouting() {
-    mainViewController?.resumeRoutingModeForMap()
-  }
-
-  private fun onRestoreMapStateRouteDirectionList() {
-    mainViewController?.resumeRoutingModeForMap()
   }
 
   private fun adjustLayoutAndRoute() {
@@ -269,8 +252,8 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     }
   }
 
-  override fun onViewAllSearchResults() {
-    mainViewController?.showAllSearchResults(searchResults?.features)
+  override fun onViewAllSearchResultsList() {
+    mainViewController?.toggleShowAllSearchResultsList(searchResults?.features)
   }
 
   private fun connectAndPostRunnable(run: () -> Unit) {

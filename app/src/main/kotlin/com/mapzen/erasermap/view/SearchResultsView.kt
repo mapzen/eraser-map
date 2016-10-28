@@ -78,7 +78,7 @@ open class SearchResultsView(context: Context, attrs: AttributeSet)
             if (b) {
                 mainController?.expandSearchView()
             } else if (presenter.resultListVisible) {
-                mainController?.onCloseAllSearchResults()
+                mainController?.onCloseAllSearchResultsList()
                 enableSearch()
             } else {
                 searchView.setQuery(presenter.currentSearchTerm, false)

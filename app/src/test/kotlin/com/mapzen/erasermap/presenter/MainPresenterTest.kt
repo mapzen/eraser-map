@@ -124,6 +124,56 @@ class MainPresenterTest {
         assertThat(mainController.isPlaceResultOverridden).isTrue()
     }
 
+    @Test fun onRestoreOptionsMenu_shouldRestoreSettingsBtnAndViewAllForSearchResults() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+
+        presenter.onRestoreOptionsMenu()
+        assertThat(mainController.isSettingsVisible).isFalse()
+        assertThat(mainController.isOptionsMenuIconList).isTrue()
+        assertThat(mainController.isViewAllVisible).isTrue()
+    }
+
+    @Test fun onRestoreOptionsMenu_shouldShowListForSearchListVisible() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        presenter.resultListVisible = true
+        presenter.onRestoreOptionsMenu()
+        assertThat(mainController.isShowingSearchResultsList).isTrue()
+    }
+
+    @Test fun onRestoreOptionsMenu_shouldHideSettingsBtnRoutePreview() {
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.onRestoreOptionsMenu()
+        assertThat(mainController.isSettingsVisible).isFalse()
+    }
+
+    @Test fun onRestoreOptionsMenu_shouldHideSettingsBtnRouteList() {
+        presenter.onClickViewList()
+        presenter.onRestoreOptionsMenu()
+        assertThat(mainController.isSettingsVisible).isFalse()
+    }
+
+    @Test fun onRestoreOptionsMenu_shouldHideSettingsBtnRouting() {
+        presenter.onClickStartNavigation()
+        presenter.onRestoreOptionsMenu()
+        assertThat(mainController.isSettingsVisible).isFalse()
+    }
+
+    @Test fun onRestoreOptionsMenu_shouldHideSettingsBtnRouteDirectionsList() {
+        vsm.viewState = ROUTE_DIRECTION_LIST
+        presenter.onRestoreOptionsMenu()
+        assertThat(mainController.isSettingsVisible).isFalse()
+    }
+
     @Test fun onRestoreMapState_shouldRestorePreviousSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
@@ -176,15 +226,6 @@ class MainPresenterTest {
         presenter.onClickStartNavigation()
         presenter.onRestoreMapState()
         assertThat(mainController.isRouteBtnVisibleAndMapCentered).isTrue()
-    }
-
-    @Test fun onRestoreViewState_shouldHideSettingsButtonWhileShowingSearchResults() {
-        val result = Result()
-        result.features = ArrayList<Feature>()
-        presenter.onSearchResultsAvailable(result)
-        mainController.isSettingsVisible = true
-        presenter.onRestoreViewState()
-        assertThat(mainController.isSettingsVisible).isFalse()
     }
 
     @Test fun onRestoreViewState_shouldRestoreRoutePreview() {

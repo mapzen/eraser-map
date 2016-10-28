@@ -40,6 +40,8 @@ class TestMainController : MainViewController {
     var isFindMeAboveOptions = false
     var isRouting = false
     var isRouteBtnVisibleAndMapCentered = false
+    var isOptionsMenuIconList = false
+    var isShowingSearchResultsList = false
 
     var settingsApiTriggered: Boolean = false
 
@@ -83,7 +85,7 @@ class TestMainController : MainViewController {
         isViewAllVisible = false
     }
 
-    override fun showAllSearchResults(features: List<Feature>?) {
+    override fun toggleShowAllSearchResultsList(features: List<Feature>?) {
     }
 
     override fun collapseSearchView() {
@@ -241,7 +243,7 @@ class TestMainController : MainViewController {
     override fun restoreRoutePreviewButtons() {
     }
 
-    override fun onCloseAllSearchResults() {
+    override fun onCloseAllSearchResultsList() {
     }
 
     override fun handleLocationResolutionRequired(status: Status) {
@@ -250,5 +252,13 @@ class TestMainController : MainViewController {
 
     override fun setMyLocationEnabled(enabled: Boolean) {
         isCurrentLocationEnabled = enabled
+    }
+
+    override fun setOptionsMenuIconToList() {
+        isOptionsMenuIconList = true
+    }
+
+    override fun onShowAllSearchResultsList(features: List<Feature>) {
+        isShowingSearchResultsList = true
     }
 }
