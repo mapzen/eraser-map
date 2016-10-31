@@ -24,7 +24,6 @@ import android.widget.Toast
 import com.mapzen.android.graphics.MapView
 import com.mapzen.android.graphics.MapzenMap
 import com.mapzen.android.search.MapzenSearch
-import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.graphics.model.CameraType
 import com.mapzen.android.lost.api.Status
 import com.mapzen.erasermap.CrashReportService
@@ -155,6 +154,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         initMute()
         initCompass()
         initReverseButton()
+        initRoutePreviewModeBtns()
         permissionManager.activity = this
         if (permissionManager.permissionsRequired()) {
             permissionManager.requestPermissions()
@@ -851,17 +851,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     private fun onRouteSuccess(route: Route) {
-        routeManager.route = route
-        routePreviewView.route = route
-        supportActionBar?.hide()
-        routePreviewView.visibility = View.VISIBLE
-        routePreviewDistanceTimeLayout.visibility = View.VISIBLE
-        zoomToShowRoute(route.getGeometry().toTypedArray())
-
-        updateRoutePreview()
-        routeModeView.drawRoute(route, routeManager.type)
-        routePreviewView.enableStartNavigation(routeManager.type, routeManager.reverse)
-        hideProgress()
+        presenter.onRouteSuccess(route)
     }
 
     private fun zoomToShowRoute(route: Array<ValhallaLocation>) {
@@ -952,7 +942,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
                 handleRouteFailure()
             }
         })
-        updateRoutePreview()
         hideProgress()
         routePreviewView.disableStartNavigation()
     }
@@ -980,7 +969,26 @@ class MainActivity : AppCompatActivity(), MainViewController,
         }
     }
 
-    private fun updateRoutePreview() {
+    override fun restoreRoutePreviewButtons() {
+        routePreviewView.restore(routeManager)
+    }
+
+    private fun reverse() {
+        routeManager.toggleReverse()
+        routePreviewView.reverse = routeManager.reverse
+        route()
+    }
+
+    private fun initReverseButton() {
+        reverseButton.setOnClickListener({ reverse() })
+        viewListButton.setOnClickListener({ presenter.onClickViewList() })
+        startNavigationButton.setOnClickListener({
+            layoutAttributionAlignBottom()
+            presenter.onClickStartNavigation()
+        })
+    }
+
+    private fun initRoutePreviewModeBtns() {
         byCar.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 routeManager.type = Router.Type.DRIVING
@@ -1008,25 +1016,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
                 route()
             }
         }
-    }
-
-    override fun restoreRoutePreviewButtons() {
-        routePreviewView.restore(routeManager)
-    }
-
-    private fun reverse() {
-        routeManager.toggleReverse()
-        routePreviewView.reverse = routeManager.reverse
-        route()
-    }
-
-    private fun initReverseButton() {
-        reverseButton.setOnClickListener({ reverse() })
-        viewListButton.setOnClickListener({ presenter.onClickViewList() })
-        startNavigationButton.setOnClickListener({
-            layoutAttributionAlignBottom()
-            presenter.onClickStartNavigation()
-        })
     }
 
     private fun killNotifications() {
@@ -1237,6 +1226,18 @@ class MainActivity : AppCompatActivity(), MainViewController,
             }
             .create()
         dialog.show()
+    }
+
+    override fun updateRoutePreviewStartNavigation() {
+        routePreviewView.enableStartNavigation(routeManager.type, routeManager.reverse)
+    }
+
+    override fun setRoutePreviewViewRoute(route: Route) {
+        routePreviewView.route = route
+    }
+
+    override fun showRoutePinsOnMap(locations: Array<ValhallaLocation>) {
+        zoomToShowRoute(locations)
     }
 
     inner class CancelableRouteCallback : RouteCallback {

@@ -592,6 +592,18 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     routeManager.fetchRoute(callback)
   }
 
+  override fun onRouteSuccess(route: Route) {
+    routeManager.route = route
+    mainViewController?.setRoutePreviewViewRoute(route)
+    mainViewController?.hideActionBar()
+    mainViewController?.showRoutePreviewView()
+    mainViewController?.showRoutePreviewDistanceTimeLayout()
+    mainViewController?.showRoutePinsOnMap(route.getGeometry().toTypedArray())
+    mainViewController?.drawRoute(route)
+    mainViewController?.updateRoutePreviewStartNavigation()
+    mainViewController?.hideProgress()
+  }
+
   private fun showRoutePreview(location: ValhallaLocation, feature: Feature) {
     showRoutePreview(location, feature, true)
   }

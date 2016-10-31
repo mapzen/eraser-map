@@ -3,6 +3,7 @@ package com.mapzen.erasermap.presenter
 import com.mapzen.android.lost.api.Status
 import com.mapzen.erasermap.controller.TestMainController
 import com.mapzen.erasermap.dummy.TestHelper
+import com.mapzen.erasermap.dummy.TestHelper.getFixture
 import com.mapzen.erasermap.dummy.TestHelper.getTestAndroidLocation
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
@@ -586,7 +587,7 @@ class MainPresenterTest {
         assertThat(mainController.isProgressVisible).isFalse()
     }
 
-    @Test fun onRouteSuccess_shouldHideProgress() {
+    @Test fun success_shouldHideProgress() {
         mainController.isProgressVisible = true
         presenter.success(Route(JSONObject()))
         assertThat(mainController.isProgressVisible).isFalse()
@@ -723,6 +724,64 @@ class MainPresenterTest {
         mainController.routeRequestCanceled = false
         presenter.onRouteRequest(TestRouteCallback())
         assertThat(mainController.routeRequestCanceled).isTrue()
+    }
+
+    @Test fun onRouteSuccess_shouldSetRouteManagerRoute() {
+        routeManager.route = null
+        val route = Route(JSONObject())
+        presenter.onRouteSuccess(route)
+        assertThat(routeManager.route as Route).isEqualTo(route)
+    }
+
+    @Test fun onRouteSuccess_shouldSetRoutePreviewRoute() {
+        mainController.routePreviewRoute = null
+        val route = Route(JSONObject())
+        presenter.onRouteSuccess(route)
+        assertThat(mainController.routePreviewRoute as Route).isEqualTo(route)
+    }
+
+    @Test fun onRouteSuccess_shouldHideActionBar() {
+        mainController.isActionBarHidden = false
+        val route = Route(JSONObject())
+        presenter.onRouteSuccess(route)
+        assertThat(mainController.isActionBarHidden).isTrue()
+    }
+
+    @Test fun onRouteSuccess_shouldShowRoutePreview() {
+        mainController.isRoutePreviewVisible = false
+        val route = Route(JSONObject())
+        presenter.onRouteSuccess(route)
+        assertThat(mainController.isRoutePreviewVisible).isTrue()
+    }
+
+    @Test fun onRouteSuccess_shouldShowRoutePreviewDistanceTimeLayout() {
+        mainController.isRoutePreviewDistanceTieVisible = false
+        val route = Route(JSONObject())
+        presenter.onRouteSuccess(route)
+        assertThat(mainController.isRoutePreviewDistanceTieVisible).isTrue()
+    }
+
+    @Test fun onRouteSuccess_shouldShowRoutePreviewPins() {
+        mainController.routePinLocations = null
+        val routeJson = getFixture("valhalla_route")
+        val route = Route(routeJson)
+        presenter.onRouteSuccess(route)
+        assertThat(mainController.routePinLocations?.get(0)?.latitude)?.isEqualTo(52.503028)
+        assertThat(mainController.routePinLocations?.get(0)?.longitude)?.isEqualTo(13.42053)
+    }
+
+    @Test fun onRouteSuccess_shouldDrawRouteOnRoutePreview() {
+        mainController.routeLine = null
+        val route = Route(JSONObject())
+        presenter.onRouteSuccess(route)
+        assertThat(mainController.routeLine as Route).isEqualTo(route)
+    }
+
+    @Test fun onRouteSuccess_shouldHideProgress() {
+        mainController.isProgressVisible = true
+        val route = Route(JSONObject())
+        presenter.onRouteSuccess(route)
+        assertThat(mainController.isProgressVisible).isFalse()
     }
 
     @Test fun onRouteRequest_shouldFetchRoute() {

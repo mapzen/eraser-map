@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.controller
 
 import com.mapzen.android.lost.api.Status
+import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
@@ -46,6 +47,8 @@ class TestMainController : MainViewController {
     var isActionBarHidden = false
     var isRoutePreviewVisible: Boolean = false
     var isRoutePreviewDistanceTieVisible = false
+    var routePreviewRoute: Route? = null
+    var routePinLocations: Array<ValhallaLocation>? = null
 
     override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
@@ -274,5 +277,17 @@ class TestMainController : MainViewController {
 
     override fun showRoutePreviewDistanceTimeLayout() {
         isRoutePreviewDistanceTieVisible = true
+    }
+
+    override fun setRoutePreviewViewRoute(route: Route) {
+        routePreviewRoute = route
+    }
+
+    override fun showRoutePinsOnMap(locations: Array<ValhallaLocation>) {
+        routePinLocations = locations
+    }
+
+    override fun updateRoutePreviewStartNavigation() {
+
     }
 }
