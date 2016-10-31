@@ -826,7 +826,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         optionsMenu?.findItem(R.id.action_settings)?.setVisible(true)
     }
 
-    override fun showRoutePreview(destination: SimpleFeature) {
+    override fun showRoutePreviewDestination(destination: SimpleFeature) {
         routePreviewView.destination = destination
     }
 
@@ -838,17 +838,26 @@ class MainActivity : AppCompatActivity(), MainViewController,
         routeModeView.clearRoute()
     }
 
+    override fun hideActionBar() {
+        supportActionBar?.hide()
+    }
+
+    override fun showRoutePreviewView() {
+        routePreviewView.visibility = View.VISIBLE
+    }
+
+    override fun showRoutePreviewDistanceTimeLayout() {
+        routePreviewDistanceTimeLayout.visibility = View.VISIBLE
+    }
+
     private fun onRouteSuccess(route: Route) {
         routeManager.route = route
         routePreviewView.route = route
-        runOnUiThread ({
-            if (routeModeView.visibility != View.VISIBLE) {
-                supportActionBar?.hide()
-                routePreviewView.visibility = View.VISIBLE
-                routePreviewDistanceTimeLayout.visibility = View.VISIBLE
-                zoomToShowRoute(route.getGeometry().toTypedArray())
-            }
-        })
+        supportActionBar?.hide()
+        routePreviewView.visibility = View.VISIBLE
+        routePreviewDistanceTimeLayout.visibility = View.VISIBLE
+        zoomToShowRoute(route.getGeometry().toTypedArray())
+
         updateRoutePreview()
         routeModeView.drawRoute(route, routeManager.type)
         routePreviewView.enableStartNavigation(routeManager.type, routeManager.reverse)

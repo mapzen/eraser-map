@@ -150,6 +150,8 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   private fun onRestoreViewStateRoutePreview() {
+    mainViewController?.showRoutePreviewView()
+    mainViewController?.showRoutePreviewDistanceTimeLayout()
     generateRoutePreview(false)
     mainViewController?.restoreRoutePreviewButtons()
   }
@@ -172,7 +174,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     when (vsm.viewState) {
       DEFAULT, SEARCH -> {}
       SEARCH_RESULTS -> onRestoreOptionsMenuStateSearchResults()
-      ROUTE_PREVIEW, ROUTE_PREVIEW_LIST, ROUTING, ROUTE_DIRECTION_LIST -> {
+      ROUTE_PREVIEW -> {
+        mainViewController?.hideActionBar()
+        mainViewController?.hideSettingsBtn()
+      }
+      ROUTE_PREVIEW_LIST, ROUTING, ROUTE_DIRECTION_LIST -> {
         mainViewController?.hideSettingsBtn()
       }
     }
@@ -606,11 +612,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
     val confidenceHandler = ConfidenceHandler(this)
     if (!confidenceHandler.useRawLatLng(feature.properties.confidence)) {
-      mainViewController?.showRoutePreview(SimpleFeature.fromFeature(feature))
+      mainViewController?.showRoutePreviewDestination(SimpleFeature.fromFeature(feature))
       routeManager.destination = feature
     } else {
       val rawFeature = generateRawFeature()
-      mainViewController?.showRoutePreview(SimpleFeature.fromFeature(rawFeature))
+      mainViewController?.showRoutePreviewDestination(SimpleFeature.fromFeature(rawFeature))
       routeManager.destination = rawFeature
     }
 

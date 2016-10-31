@@ -25,7 +25,7 @@ interface MainViewController {
     fun collapseSearchView()
     fun expandSearchView()
     fun clearQuery()
-    fun showRoutePreview(destination: SimpleFeature)
+    fun showRoutePreviewDestination(destination: SimpleFeature)
     fun route()
     fun hideRoutePreview()
     fun hideRoutingMode()
@@ -62,4 +62,7 @@ interface MainViewController {
     fun setMyLocationEnabled(enabled: Boolean)
     fun setOptionsMenuIconToList()
     fun onShowAllSearchResultsList(features: List<Feature>)
+    fun hideActionBar()
+    fun showRoutePreviewView()
+    fun showRoutePreviewDistanceTimeLayout()
 }

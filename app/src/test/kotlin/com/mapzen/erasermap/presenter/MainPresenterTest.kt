@@ -156,6 +156,13 @@ class MainPresenterTest {
         assertThat(mainController.isSettingsVisible).isFalse()
     }
 
+    @Test fun onRestoreOptionsMenu_shouldHideActionBar() {
+        mainController.isActionBarHidden = false
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.onRestoreOptionsMenu()
+        assertThat(mainController.isActionBarHidden).isTrue()
+    }
+
     @Test fun onRestoreOptionsMenu_shouldHideSettingsBtnRouteList() {
         presenter.onClickViewList()
         presenter.onRestoreOptionsMenu()
@@ -228,12 +235,25 @@ class MainPresenterTest {
         assertThat(mainController.isRouteBtnVisibleAndMapCentered).isTrue()
     }
 
-    @Test fun onRestoreViewState_shouldRestoreRoutePreview() {
+    @Test fun onRestoreViewState_shouldRestoreRoutePreviewDestination() {
+        mainController.isRoutePreviewDestinationVisible = false
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
-        val newController = TestMainController()
-        presenter.mainViewController = newController
         presenter.onRestoreViewState()
-        assertThat(newController.isRoutePreviewVisible).isTrue()
+        assertThat(mainController.isRoutePreviewDestinationVisible).isTrue()
+    }
+
+    @Test fun onRestoreViewState_shouldShowRoutePreview() {
+        mainController.isRoutePreviewVisible = false
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.onRestoreViewState()
+        assertThat(mainController.isRoutePreviewVisible).isTrue()
+    }
+
+    @Test fun onRestoreViewState_shouldShowRoutePreviewDistanceTimeLayout() {
+        mainController.isRoutePreviewDistanceTieVisible = false
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.onRestoreViewState()
+        assertThat(mainController.isRoutePreviewDistanceTieVisible).isTrue()
     }
 
     @Test fun onRestoreViewState_shouldRestoreRoutePreviewList() {
@@ -351,10 +371,10 @@ class MainPresenterTest {
         assertThat(mainController.searchResults).isNull()
     }
 
-    @Test fun onRoutePreviewEvent_shouldShowRoutePreview() {
-        mainController.isRoutePreviewVisible = false
+    @Test fun onRoutePreviewEvent_shouldShowRoutePreviewDestination() {
+        mainController.isRoutePreviewDestinationVisible = false
         presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
-        assertThat(mainController.isRoutePreviewVisible).isTrue()
+        assertThat(mainController.isRoutePreviewDestinationVisible).isTrue()
     }
 
     @Test fun onRoutePreviewEvent_shouldDisableReverseGeocode() {

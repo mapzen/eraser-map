@@ -23,7 +23,7 @@ class TestMainController : MainViewController {
     var isProgressVisible: Boolean = false
     var isViewAllVisible: Boolean = false
     var isSearchVisible: Boolean = false
-    var isRoutePreviewVisible: Boolean = false
+    var isRoutePreviewDestinationVisible: Boolean = false
     var isDirectionListVisible: Boolean = false
     var isRoutingModeVisible: Boolean = false
     var isCenteredOnCurrentFeature: Boolean = false
@@ -42,8 +42,10 @@ class TestMainController : MainViewController {
     var isRouteBtnVisibleAndMapCentered = false
     var isOptionsMenuIconList = false
     var isShowingSearchResultsList = false
-
     var settingsApiTriggered: Boolean = false
+    var isActionBarHidden = false
+    var isRoutePreviewVisible: Boolean = false
+    var isRoutePreviewDistanceTieVisible = false
 
     override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
@@ -99,8 +101,8 @@ class TestMainController : MainViewController {
         queryText = ""
     }
 
-    override fun showRoutePreview(destination: SimpleFeature) {
-        isRoutePreviewVisible = true
+    override fun showRoutePreviewDestination(destination: SimpleFeature) {
+        isRoutePreviewDestinationVisible = true
     }
 
     override fun route() {
@@ -260,5 +262,17 @@ class TestMainController : MainViewController {
 
     override fun onShowAllSearchResultsList(features: List<Feature>) {
         isShowingSearchResultsList = true
+    }
+
+    override fun hideActionBar() {
+        isActionBarHidden = true
+    }
+
+    override fun showRoutePreviewView() {
+        isRoutePreviewVisible = true
+    }
+
+    override fun showRoutePreviewDistanceTimeLayout() {
+        isRoutePreviewDistanceTieVisible = true
     }
 }
