@@ -294,6 +294,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             if (!permissionManager.permissionsGranted()) {
                 permissionManager.showPermissionRequired()
             }
+            presenter.onClickFindMe()
         }
         initMapRotateListener()
         mapzenMap?.mapController?.setHttpHandler(tileHttpHandler)
