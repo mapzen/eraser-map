@@ -471,10 +471,8 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun success(route: Route) {
-    mainViewController?.hideProgress()
-    routeManager.route = route
+    handleRouteRetrieved(route)
     generateRoutingMode(false)
-    mainViewController?.drawRoute(route)
     waitingForRoute = false
   }
 
@@ -593,15 +591,13 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun onRouteSuccess(route: Route) {
-    routeManager.route = route
+    handleRouteRetrieved(route)
     mainViewController?.setRoutePreviewViewRoute(route)
     mainViewController?.hideActionBar()
     mainViewController?.showRoutePreviewView()
     mainViewController?.showRoutePreviewDistanceTimeLayout()
     mainViewController?.showRoutePinsOnMap(route.getGeometry().toTypedArray())
-    mainViewController?.drawRoute(route)
     mainViewController?.updateRoutePreviewStartNavigation()
-    mainViewController?.hideProgress()
   }
 
   private fun showRoutePreview(location: ValhallaLocation, feature: Feature) {
@@ -685,5 +681,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
       LocationServices.FusedLocationApi?.setMockMode(client, true)
       LocationServices.FusedLocationApi?.setMockLocation(client, settings.mockLocation)
     }
+  }
+
+  private fun handleRouteRetrieved(route: Route) {
+    routeManager.route = route
+    mainViewController?.drawRoute(route)
+    mainViewController?.hideProgress()
   }
 }
