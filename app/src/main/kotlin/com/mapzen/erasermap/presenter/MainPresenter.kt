@@ -57,4 +57,5 @@ interface MainPresenter {
     fun generateRawFeature(): Feature
     fun onFeaturePicked(properties: Map<String, String>, poiPoint: FloatArray)
     fun checkPermissionAndEnableLocation()
+    fun onClickFindMe()
 }

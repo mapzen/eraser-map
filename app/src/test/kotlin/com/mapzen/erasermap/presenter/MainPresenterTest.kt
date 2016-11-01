@@ -745,6 +745,12 @@ class MainPresenterTest {
         assertThat(mainController.isCurrentLocationEnabled).isFalse()
     }
 
+    @Test fun onClickFindMe_shouldResetTilt() {
+        mainController.tilt = 30f
+        presenter.onClickFindMe()
+        assertThat(mainController.tilt).isEqualTo(0f)
+    }
+
     class RouteEventSubscriber {
         var event: RouteEvent? = null
 

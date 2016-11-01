@@ -657,6 +657,10 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     }
   }
 
+  override fun onClickFindMe() {
+    mainViewController?.setMapTilt(0f)
+  }
+
   private fun initMockMode() {
     if (settings.isMockLocationEnabled) {
       val client = locationClientManager.getClient()
