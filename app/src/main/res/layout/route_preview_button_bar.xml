@@ -1,0 +1,53 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/route_preview_button_bar_height"
+    android:layout_marginBottom="@dimen/route_preview_button_bar_margin_vertical"
+    android:layout_marginLeft="@dimen/route_preview_button_bar_margin_horizontal"
+    android:layout_marginRight="@dimen/route_preview_button_bar_margin_horizontal"
+    android:layout_marginTop="@dimen/route_preview_button_bar_margin_vertical"
+    android:orientation="horizontal"
+    style="?android:attr/buttonBarStyle"
+    >
+
+  <Button
+      android:id="@+id/view_list"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginRight="4dp"
+      android:layout_weight="0.5"
+      android:background="@drawable/bg_black_gray_border"
+      android:ellipsize="end"
+      android:maxLines="1"
+      android:text="@string/view_list"
+      android:textColor="@color/color_accent"
+      style="?android:attr/buttonBarButtonStyle"
+      />
+
+  <Button
+      android:id="@+id/start_navigation"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="4dp"
+      android:layout_weight="0.5"
+      android:background="@drawable/bg_blue_gray_border"
+      android:ellipsize="end"
+      android:maxLines="1"
+      android:text="@string/start_navigation"
+      android:textColor="@color/color_primary"
+      style="?android:attr/buttonBarButtonStyle"
+      />
+
+  <Button
+      android:id="@+id/no_route_found"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@color/gray"
+      android:clickable="false"
+      android:text="@string/no_route_found"
+      android:textAlignment="center"
+      android:textColor="@color/mz_white"
+      android:visibility="gone"
+      style="?android:attr/buttonBarButtonStyle"
+      />
+
+</LinearLayout>

@@ -119,7 +119,9 @@ class MainActivity : AppCompatActivity(), MainViewController,
     // view_route_preview
     val routePreviewView: RoutePreviewView by lazy { findViewById(R.id.route_preview) as RoutePreviewView }
     val reverseButton: ImageButton by lazy { findViewById(R.id.route_reverse) as ImageButton }
-    val routePreviewDistanceTimeLayout: LinearLayout by lazy { findViewById(R.id.route_preview_distance_time_view) as LinearLayout }
+    val routePreviewDistanceTimeLayout: View? by lazy { findViewById(R.id.route_preview_distance_time_view) }
+    val distanceView: View? by lazy { findViewById(R.id.distance_preview) }
+    val timeView: View? by lazy { findViewById(R.id.time_preview) }
     val viewListButton: Button by lazy { findViewById(R.id.view_list) as Button }
     val startNavigationButton: Button by lazy { findViewById(R.id.start_navigation) as Button }
     val byCar: RadioButton by lazy { findViewById(R.id.by_car) as RadioButton }
@@ -562,7 +564,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     private fun layoutAttributionAlignBottom() {
         val layoutParams = baseAttributionParams()
-        val margin = resources.getDimensionPixelSize(R.dimen.mz_attribution_margin_bottom)
+        val margin = resources.getDimensionPixelSize(R.dimen.em_attribution_margin_bottom)
         layoutParams.bottomMargin = margin
         mapView.attribution.layoutParams = layoutParams
     }
@@ -581,7 +583,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     private fun layoutFindMeAlignBottom() {
         val layoutParams = baseFindMeParams()
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-        val margin = resources.getDimensionPixelSize(R.dimen.mz_find_me_button_margin_bottom)
+        val margin = resources.getDimensionPixelSize(R.dimen.em_find_me_button_margin_bottom)
         layoutParams.bottomMargin = margin
         mapView.findMe.layoutParams = layoutParams
     }
@@ -589,7 +591,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     private fun layoutAttributionAboveSearchResults(features: List<Feature>) {
         if (features.count() == 0) return
         val layoutParams = baseAttributionParams()
-        val bottomMargin = resources.getDimensionPixelSize(R.dimen.mz_attribution_margin_bottom)
+        val bottomMargin = resources.getDimensionPixelSize(R.dimen.em_attribution_margin_bottom)
         val searchHeight = resources.getDimensionPixelSize(R.dimen.search_results_pager_height)
         val indicator = findViewById(R.id.indicator)
         if (features.count() > 1) {
@@ -611,7 +613,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         optionsView?.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop,
                                                  oldRight, oldBottom ->
             val optionsHeight = bottom - top
-            val padding = resources.getDimensionPixelSize(R.dimen.mz_attribution_margin_bottom)
+            val padding = resources.getDimensionPixelSize(R.dimen.em_attribution_margin_bottom)
             layoutParams.bottomMargin = optionsHeight + padding
             mapView.attribution.layoutParams = layoutParams
         }
@@ -620,7 +622,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     private fun layoutFindMeAboveSearchResults(features: List<Feature>) {
         if (features.count() == 0) return
         val layoutParams = baseFindMeParams()
-        val bottomMargin = resources.getDimensionPixelSize(R.dimen.mz_find_me_button_margin_bottom)
+        val bottomMargin = resources.getDimensionPixelSize(R.dimen.em_find_me_button_margin_bottom)
         val searchHeight = resources.getDimensionPixelSize(R.dimen.search_results_pager_height)
         layoutParams.bottomMargin = searchHeight + bottomMargin
         mapView.findMe.layoutParams = layoutParams
@@ -632,7 +634,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         optionsView?.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop,
                                                  oldRight, oldBottom ->
             val optionsHeight = bottom - top
-            val padding = resources.getDimensionPixelSize(R.dimen.mz_find_me_button_margin_bottom)
+            val padding = resources.getDimensionPixelSize(R.dimen.em_find_me_button_margin_bottom)
             layoutParams.bottomMargin = optionsHeight + padding
             mapView.findMe.layoutParams = layoutParams
         }
@@ -845,7 +847,9 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     override fun showRoutePreviewDistanceTimeLayout() {
-        routePreviewDistanceTimeLayout.visibility = View.VISIBLE
+        routePreviewDistanceTimeLayout?.visibility = View.VISIBLE
+        distanceView?.visibility = View.VISIBLE
+        timeView?.visibility = View.VISIBLE
     }
 
     private fun onRouteSuccess(route: Route) {
@@ -936,7 +940,9 @@ class MainActivity : AppCompatActivity(), MainViewController,
             if (routeModeView.visibility != View.VISIBLE) {
                 supportActionBar?.hide()
                 routePreviewView.visibility = View.VISIBLE
-                routePreviewDistanceTimeLayout.visibility = View.GONE
+                routePreviewDistanceTimeLayout?.visibility = View.GONE
+                distanceView?.visibility = View.GONE
+                timeView?.visibility = View.GONE
                 handleRouteFailure()
             }
         })

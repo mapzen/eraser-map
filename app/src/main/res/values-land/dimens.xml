@@ -1,3 +1,8 @@
 <resources>
     <dimen name="pager_height">60dp</dimen>
+    <dimen name="route_preview_button_bar_height">36dp</dimen>
+    <dimen name="route_preview_button_bar_margin_vertical">8dp</dimen>
+    <dimen name="route_preview_header_font_size">18sp</dimen>
+    <dimen name="em_attribution_margin_bottom">8dp</dimen>
+    <dimen name="em_find_me_button_margin_bottom">8dp</dimen>
 </resources>
