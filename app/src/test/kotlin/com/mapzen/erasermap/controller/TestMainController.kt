@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.controller
 
 import com.mapzen.android.lost.api.Status
+import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
@@ -23,7 +24,7 @@ class TestMainController : MainViewController {
     var isProgressVisible: Boolean = false
     var isViewAllVisible: Boolean = false
     var isSearchVisible: Boolean = false
-    var isRoutePreviewVisible: Boolean = false
+    var isRoutePreviewDestinationVisible: Boolean = false
     var isDirectionListVisible: Boolean = false
     var isRoutingModeVisible: Boolean = false
     var isCenteredOnCurrentFeature: Boolean = false
@@ -42,8 +43,12 @@ class TestMainController : MainViewController {
     var isRouteBtnVisibleAndMapCentered = false
     var isOptionsMenuIconList = false
     var isShowingSearchResultsList = false
-
     var settingsApiTriggered: Boolean = false
+    var isActionBarHidden = false
+    var isRoutePreviewVisible: Boolean = false
+    var isRoutePreviewDistanceTieVisible = false
+    var routePreviewRoute: Route? = null
+    var routePinLocations: Array<ValhallaLocation>? = null
 
     override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
@@ -99,8 +104,8 @@ class TestMainController : MainViewController {
         queryText = ""
     }
 
-    override fun showRoutePreview(destination: SimpleFeature) {
-        isRoutePreviewVisible = true
+    override fun showRoutePreviewDestination(destination: SimpleFeature) {
+        isRoutePreviewDestinationVisible = true
     }
 
     override fun route() {
@@ -260,5 +265,29 @@ class TestMainController : MainViewController {
 
     override fun onShowAllSearchResultsList(features: List<Feature>) {
         isShowingSearchResultsList = true
+    }
+
+    override fun hideActionBar() {
+        isActionBarHidden = true
+    }
+
+    override fun showRoutePreviewView() {
+        isRoutePreviewVisible = true
+    }
+
+    override fun showRoutePreviewDistanceTimeLayout() {
+        isRoutePreviewDistanceTieVisible = true
+    }
+
+    override fun setRoutePreviewViewRoute(route: Route) {
+        routePreviewRoute = route
+    }
+
+    override fun showRoutePinsOnMap(locations: Array<ValhallaLocation>) {
+        routePinLocations = locations
+    }
+
+    override fun updateRoutePreviewStartNavigation() {
+
     }
 }

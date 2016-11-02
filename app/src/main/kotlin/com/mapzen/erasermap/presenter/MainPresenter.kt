@@ -7,6 +7,7 @@ import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.tangram.LngLat
+import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 
 interface MainPresenter {
@@ -58,4 +59,5 @@ interface MainPresenter {
     fun onFeaturePicked(properties: Map<String, String>, poiPoint: FloatArray)
     fun checkPermissionAndEnableLocation()
     fun onClickFindMe()
+    fun onRouteSuccess(route: Route)
 }

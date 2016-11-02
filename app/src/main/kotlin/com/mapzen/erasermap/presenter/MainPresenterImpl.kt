@@ -150,6 +150,8 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   private fun onRestoreViewStateRoutePreview() {
+    mainViewController?.showRoutePreviewView()
+    mainViewController?.showRoutePreviewDistanceTimeLayout()
     generateRoutePreview(false)
     mainViewController?.restoreRoutePreviewButtons()
   }
@@ -172,7 +174,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     when (vsm.viewState) {
       DEFAULT, SEARCH -> {}
       SEARCH_RESULTS -> onRestoreOptionsMenuStateSearchResults()
-      ROUTE_PREVIEW, ROUTE_PREVIEW_LIST, ROUTING, ROUTE_DIRECTION_LIST -> {
+      ROUTE_PREVIEW -> {
+        mainViewController?.hideActionBar()
+        mainViewController?.hideSettingsBtn()
+      }
+      ROUTE_PREVIEW_LIST, ROUTING, ROUTE_DIRECTION_LIST -> {
         mainViewController?.hideSettingsBtn()
       }
     }
@@ -465,10 +471,8 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun success(route: Route) {
-    mainViewController?.hideProgress()
-    routeManager.route = route
+    handleRouteRetrieved(route)
     generateRoutingMode(false)
-    mainViewController?.drawRoute(route)
     waitingForRoute = false
   }
 
@@ -586,6 +590,16 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     routeManager.fetchRoute(callback)
   }
 
+  override fun onRouteSuccess(route: Route) {
+    handleRouteRetrieved(route)
+    mainViewController?.setRoutePreviewViewRoute(route)
+    mainViewController?.hideActionBar()
+    mainViewController?.showRoutePreviewView()
+    mainViewController?.showRoutePreviewDistanceTimeLayout()
+    mainViewController?.showRoutePinsOnMap(route.getGeometry().toTypedArray())
+    mainViewController?.updateRoutePreviewStartNavigation()
+  }
+
   private fun showRoutePreview(location: ValhallaLocation, feature: Feature) {
     showRoutePreview(location, feature, true)
   }
@@ -606,11 +620,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
     val confidenceHandler = ConfidenceHandler(this)
     if (!confidenceHandler.useRawLatLng(feature.properties.confidence)) {
-      mainViewController?.showRoutePreview(SimpleFeature.fromFeature(feature))
+      mainViewController?.showRoutePreviewDestination(SimpleFeature.fromFeature(feature))
       routeManager.destination = feature
     } else {
       val rawFeature = generateRawFeature()
-      mainViewController?.showRoutePreview(SimpleFeature.fromFeature(rawFeature))
+      mainViewController?.showRoutePreviewDestination(SimpleFeature.fromFeature(rawFeature))
       routeManager.destination = rawFeature
     }
 
@@ -667,5 +681,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
       LocationServices.FusedLocationApi?.setMockMode(client, true)
       LocationServices.FusedLocationApi?.setMockLocation(client, settings.mockLocation)
     }
+  }
+
+  private fun handleRouteRetrieved(route: Route) {
+    routeManager.route = route
+    mainViewController?.drawRoute(route)
+    mainViewController?.hideProgress()
   }
 }

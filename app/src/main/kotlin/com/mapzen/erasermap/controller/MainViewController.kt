@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.controller
 
 import com.mapzen.android.lost.api.Status
+import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
@@ -25,7 +26,7 @@ interface MainViewController {
     fun collapseSearchView()
     fun expandSearchView()
     fun clearQuery()
-    fun showRoutePreview(destination: SimpleFeature)
+    fun showRoutePreviewDestination(destination: SimpleFeature)
     fun route()
     fun hideRoutePreview()
     fun hideRoutingMode()
@@ -62,4 +63,10 @@ interface MainViewController {
     fun setMyLocationEnabled(enabled: Boolean)
     fun setOptionsMenuIconToList()
     fun onShowAllSearchResultsList(features: List<Feature>)
+    fun hideActionBar()
+    fun showRoutePreviewView()
+    fun showRoutePreviewDistanceTimeLayout()
+    fun setRoutePreviewViewRoute(route: Route)
+    fun showRoutePinsOnMap(locations: Array<ValhallaLocation>)
+    fun updateRoutePreviewStartNavigation()
 }
