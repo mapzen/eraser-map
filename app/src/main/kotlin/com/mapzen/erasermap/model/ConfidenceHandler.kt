@@ -4,7 +4,7 @@ import com.mapzen.erasermap.presenter.MainPresenter
 
 class ConfidenceHandler(val presenter: MainPresenter) {
 
-    var longPressed = false;
+    var longPressed = false
 
     companion object {
         const val CONFIDENCE_THRESHOLD = 0.8
@@ -13,7 +13,7 @@ class ConfidenceHandler(val presenter: MainPresenter) {
 
     fun useRawLatLng(confidence: Double): Boolean {
         if (confidence == CONFIDENCE_MISSING || !longPressed) {
-            return false;
+            return false
         }
         return confidence < CONFIDENCE_THRESHOLD
                 && presenter.reverseGeoLngLat != null

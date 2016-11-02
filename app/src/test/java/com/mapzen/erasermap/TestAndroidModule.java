@@ -3,6 +3,7 @@ package com.mapzen.erasermap;
 import com.mapzen.android.search.MapzenSearch;
 import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.model.AppSettings;
+import com.mapzen.erasermap.model.ConfidenceHandler;
 import com.mapzen.erasermap.model.IntentQueryParser;
 import com.mapzen.erasermap.model.LocationConverter;
 import com.mapzen.erasermap.model.LocationSettingsChecker;
@@ -19,6 +20,7 @@ import com.mapzen.erasermap.model.TileHttpHandler;
 import com.mapzen.erasermap.presenter.MainPresenter;
 import com.mapzen.erasermap.presenter.MainPresenterImpl;
 import com.mapzen.erasermap.presenter.ViewStateManager;
+import com.mapzen.erasermap.util.FeatureDisplayHelper;
 import com.mapzen.erasermap.util.IntentFactory;
 import com.mapzen.erasermap.util.MockIntentFactory;
 import com.mapzen.erasermap.view.Speaker;
@@ -116,5 +118,13 @@ public class TestAndroidModule {
 
     @Provides @Singleton LocationSettingsChecker provideLocationSettingsChecker() {
         return new TestLostSettingsChecker();
+    }
+
+    @Provides @Singleton ConfidenceHandler provideConfidenceHandler(MainPresenter presenter) {
+        return new ConfidenceHandler(presenter);
+    }
+
+    @Provides @Singleton FeatureDisplayHelper provideDisplayHelper(ConfidenceHandler confidenceHandler) {
+        return new FeatureDisplayHelper(application, confidenceHandler);
     }
 }

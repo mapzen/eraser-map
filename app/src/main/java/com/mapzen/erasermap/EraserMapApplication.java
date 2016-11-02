@@ -5,6 +5,7 @@ import com.mapzen.erasermap.receiver.MockLocationReceiver;
 import com.mapzen.erasermap.view.DistanceView;
 import com.mapzen.erasermap.view.InitActivity;
 import com.mapzen.erasermap.view.RouteModeView;
+import com.mapzen.erasermap.view.RoutePreviewView;
 import com.mapzen.erasermap.view.SearchResultsAdapter;
 import com.mapzen.erasermap.view.SearchResultsView;
 import com.mapzen.erasermap.view.SettingsActivity;
@@ -31,6 +32,7 @@ public class EraserMapApplication extends Application {
         void inject(MockLocationReceiver receiver);
         void inject(ViewAboutPreference viewAboutPreference);
         void inject(SearchResultsView searchResultsView);
+        void inject(RoutePreviewView routePreviewView);
     }
 
     private ApplicationComponent component;

@@ -41,6 +41,7 @@ import com.mapzen.erasermap.model.TileHttpHandler
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.util.AxisAlignedBoundingBox
 import com.mapzen.erasermap.util.AxisAlignedBoundingBox.PointD
+import com.mapzen.erasermap.util.FeatureDisplayHelper
 import com.mapzen.erasermap.util.NotificationBroadcastReceiver
 import com.mapzen.erasermap.util.NotificationCreator
 import com.mapzen.erasermap.view.CompassView
@@ -95,6 +96,8 @@ class MainActivity : AppCompatActivity(), MainViewController,
     @Inject lateinit var permissionManager: PermissionManager
     @Inject lateinit var apiKeys: ApiKeys
     @Inject lateinit var lostClientManager: LostClientManager
+    @Inject lateinit var confidenceHandler: ConfidenceHandler
+    @Inject lateinit var displayHelper: FeatureDisplayHelper
 
     lateinit var app: EraserMapApplication
     var mapzenMap : MapzenMap? = null
@@ -104,7 +107,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     var poiTapName: String? = null
     var voiceNavigationController: VoiceNavigationController? = null
     var notificationCreator: NotificationCreator? = null
-    lateinit var confidenceHandler: ConfidenceHandler
+
     var enableLocation: Boolean = false
 
     // activity_main
@@ -147,7 +150,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
         setContentView(R.layout.activity_main)
         presenter.mainViewController = this
         initVoiceNavigationController() // must initialize this before calling initMute
-        initConfidenceHandler()
         initNotificationCreator()
         presenter.onRestoreViewState()
         initMapzenMap()
@@ -336,10 +338,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     private fun initNotificationCreator() {
         notificationCreator = NotificationCreator(this)
-    }
-
-    private fun initConfidenceHandler() {
-        confidenceHandler = ConfidenceHandler(presenter)
     }
 
     override fun centerMapOnLocation(lngLat: LngLat, zoom: Float) {
@@ -547,7 +545,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     private fun showSearchResultsView(features: List<Feature>) {
-        searchController.setSearchResultsAdapter(SearchResultsAdapter(this, features, confidenceHandler,
+        searchController.setSearchResultsAdapter(SearchResultsAdapter(this, features, displayHelper,
                 permissionManager))
         searchController.showSearchResults()
         searchController.onSearchResultsSelectedListener = this
@@ -705,7 +703,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     override fun showPlaceSearchFeature(features: List<Feature>) {
         searchController.setSearchResultsAdapter(SearchResultsAdapter(this, features.subList(0, 1),
-                confidenceHandler, permissionManager))
+                displayHelper, permissionManager))
         searchController.showSearchResults()
         searchController.onSearchResultsSelectedListener = this
     }

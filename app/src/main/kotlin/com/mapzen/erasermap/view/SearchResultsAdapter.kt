@@ -8,16 +8,16 @@ import android.widget.ImageButton
 import android.widget.TextView
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.model.ConfidenceHandler
 import com.mapzen.erasermap.model.PermissionManager
 import com.mapzen.erasermap.model.event.RoutePreviewEvent
+import com.mapzen.erasermap.util.FeatureDisplayHelper
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.squareup.otto.Bus
 import javax.inject.Inject
 
 class SearchResultsAdapter(val context: Context, val features: List<Feature>,
-                            val confidenceHandler: ConfidenceHandler,
+                            val displayHelper: FeatureDisplayHelper,
                            val permissionManager: PermissionManager)
         : PagerAdapter() {
 
@@ -34,12 +34,7 @@ class SearchResultsAdapter(val context: Context, val features: List<Feature>,
         val title = view.findViewById(R.id.title) as TextView
         val address = view.findViewById(R.id.address) as TextView
         val start = view.findViewById(R.id.preview) as ImageButton
-        if (confidenceHandler.useRawLatLng(simpleFeature.confidence())
-            || simpleFeature.name().isBlank()) {
-            title.text = context.getString(R.string.dropped_pin)
-        } else {
-            title.text = simpleFeature.name()
-        }
+        title.text = displayHelper.getDisplayName(simpleFeature)
         address.text = simpleFeature.address()
         start.setOnClickListener {
             if (permissionManager.permissionsGranted()) {
