@@ -15,18 +15,24 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.controller.MainActivity
 import com.mapzen.erasermap.model.MultiModalHelper
 import com.mapzen.erasermap.model.RouteManager
+import com.mapzen.erasermap.util.FeatureDisplayHelper
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.Router
 import java.util.ArrayList
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class RoutePreviewView : RelativeLayout {
+
+    @Inject lateinit var displayHelper: FeatureDisplayHelper
+
     val startView: TextView by lazy { findViewById(R.id.starting_point) as TextView }
     val destinationView: TextView by lazy { findViewById(R.id.destination) as TextView }
     val distancePreview: DistanceView by lazy { findViewById(R.id.distance_preview) as DistanceView }
@@ -50,11 +56,17 @@ class RoutePreviewView : RelativeLayout {
         set (value) {
             field = value
             if (value) {
-                startView.text = destination?.name()
+                if (destination != null) {
+                    startView.text = displayHelper.getDisplayName(
+                        destination as SimpleFeature)
+                }
                 destinationView.setText(R.string.current_location)
             } else {
                 startView.setText(R.string.current_location)
-                destinationView.text = destination?.name()
+                if (destination != null) {
+                    destinationView.text = displayHelper.getDisplayName(
+                        destination as SimpleFeature)
+                }
             }
         }
 
@@ -62,7 +74,9 @@ class RoutePreviewView : RelativeLayout {
         set (value) {
             field = value
             startView.setText(R.string.current_location)
-            destinationView.text = value?.name()
+            if (value != null) {
+                destinationView.text = displayHelper.getDisplayName(value)
+            }
         }
 
     var route: Route? = null
@@ -91,6 +105,7 @@ class RoutePreviewView : RelativeLayout {
     private fun init() {
         (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
                 .inflate(R.layout.view_route_preview, this, true)
+        (context.applicationContext as EraserMapApplication).component().inject(this)
     }
 
     fun disableStartNavigation() {
