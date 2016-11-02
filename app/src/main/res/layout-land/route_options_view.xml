@@ -1,0 +1,49 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/options"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:background="@android:color/white"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    >
+
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:gravity="center_horizontal"
+      >
+
+    <include
+        layout="@layout/route_mode_radio_group"
+        android:id="@+id/routing_mode"
+        />
+
+    <com.mapzen.erasermap.view.DistanceView
+        android:id="@+id/distance_preview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="16dp"
+        android:layout_toLeftOf="@+id/routing_mode"
+        android:textColor="@color/dark_gray"
+        android:textSize="@dimen/font_small"
+        />
+
+    <com.mapzen.erasermap.view.TimeView
+        android:id="@+id/time_preview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@+id/routing_mode"
+        android:textColor="@color/dark_gray"
+        android:textSize="@dimen/font_small"
+        />
+
+  </RelativeLayout>
+
+  <include layout="@layout/route_preview_button_bar"/>
+
+</LinearLayout>

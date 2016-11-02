@@ -1,0 +1,55 @@
+<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/routing_mode"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:background="@android:color/transparent"
+    android:orientation="horizontal"
+    >
+
+  <RadioButton
+      android:id="@+id/by_car"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:layout_weight="1"
+      android:background="@drawable/radio_button_car"
+      android:button="@android:color/transparent"
+      android:checked="true"
+      android:gravity="center_horizontal"
+      />
+
+  <RadioButton
+      android:id="@+id/by_bike"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:layout_weight="1"
+      android:background="@drawable/radio_button_bike"
+      android:button="@android:color/transparent"
+      android:gravity="center_horizontal"
+      />
+
+  <RadioButton
+      android:id="@+id/by_foot"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:layout_weight="1"
+      android:background="@drawable/radio_button_walk"
+      android:button="@android:color/transparent"
+      android:gravity="center_horizontal"
+      />
+
+  <RadioButton
+      android:id="@+id/by_transit"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:layout_weight="1"
+      android:background="@drawable/radio_button_transit"
+      android:button="@android:color/transparent"
+      android:gravity="center_horizontal"
+      />
+
+</RadioGroup>

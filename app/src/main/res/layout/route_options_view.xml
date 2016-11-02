@@ -1,0 +1,66 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:background="@android:color/white"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    >
+
+  <LinearLayout
+      android:id="@+id/route_preview_distance_time_view"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:gravity="center"
+      android:orientation="horizontal"
+      android:padding="8dp"
+      >
+
+    <com.mapzen.erasermap.view.DistanceView
+        android:id="@+id/distance_preview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/dark_gray"
+        android:textSize="@dimen/font_small"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/diamond_separator"
+        android:textColor="@color/dark_gray"
+        android:textSize="@dimen/font_tiny"
+        />
+
+    <com.mapzen.erasermap.view.TimeView
+        android:id="@+id/time_preview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/dark_gray"
+        android:textSize="@dimen/font_small"
+        />
+
+  </LinearLayout>
+
+  <TextView
+      android:id="@+id/try_another_mode"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingBottom="@dimen/padding_vertical_default"
+      android:paddingTop="@dimen/padding_vertical_default"
+      android:text="@string/try_another_mode"
+      android:textAlignment="center"
+      android:textColor="@color/gray"
+      android:textSize="@dimen/font_small"
+      android:visibility="gone"
+      />
+
+  <include
+      layout="@layout/route_mode_radio_group"
+      android:id="@+id/routing_mode"
+      />
+
+  <include layout="@layout/route_preview_button_bar"/>
+
+</LinearLayout>
