@@ -133,9 +133,12 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="@dimen/route_preview_button_bar_height"
                 android:orientation="horizontal"
-                android:layout_margin="16dp"
+                android:layout_marginTop="@dimen/route_preview_button_bar_margin_vertical"
+                android:layout_marginBottom="@dimen/route_preview_button_bar_margin_vertical"
+                android:layout_marginLeft="@dimen/route_preview_button_bar_margin_horizontal"
+                android:layout_marginRight="@dimen/route_preview_button_bar_margin_horizontal"
                 style="?android:attr/buttonBarStyle">
 
                 <Button
@@ -148,7 +151,6 @@
                     android:background="@drawable/bg_black_gray_border"
                     android:textColor="@color/color_accent"
                     android:maxLines="1"
-                    android:singleLine="true"
                     android:ellipsize="end"
                     style="?android:attr/buttonBarButtonStyle" />
 
@@ -162,23 +164,20 @@
                     android:background="@drawable/bg_blue_gray_border"
                     android:textColor="@color/color_primary"
                     android:maxLines="1"
-                    android:singleLine="true"
                     android:ellipsize="end"
                     style="?android:attr/buttonBarButtonStyle" />
 
-                <TextView
+                <Button
                     android:id="@+id/no_route_found"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/gray"
                     android:textColor="@color/mz_white"
-                    android:textSize="@dimen/font_medium"
                     android:textAlignment="center"
-                    android:paddingTop="@dimen/padding_vertical_default"
-                    android:paddingBottom="@dimen/padding_vertical_default"
                     android:text="@string/no_route_found"
                     android:visibility="gone"
-                    />
+                    android:clickable="false"
+                    style="?android:attr/buttonBarButtonStyle" />
 
             </LinearLayout>
 

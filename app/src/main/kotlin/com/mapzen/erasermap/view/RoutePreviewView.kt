@@ -34,7 +34,7 @@ class RoutePreviewView : RelativeLayout {
     val viewListButton: Button by lazy { findViewById(R.id.view_list) as Button }
     val startNavigationButton: Button by lazy { findViewById(R.id.start_navigation) as Button }
     val noRouteFound: TextView by lazy { findViewById(R.id.no_route_found) as TextView }
-    val tryAnotherMode: TextView by lazy { findViewById(R.id.try_another_mode) as TextView }
+    val tryAnotherMode: TextView? by lazy { findViewById(R.id.try_another_mode) as TextView? }
     val routeTopContainer: RelativeLayout by lazy { findViewById(R.id.main_content) as RelativeLayout }
     val routeBtmContainer: LinearLayout by lazy { findViewById(R.id.bottom_content) as LinearLayout }
     val previewDirectionListView: DirectionListView by lazy { findViewById(R.id.list_view) as DirectionListView }
@@ -97,7 +97,7 @@ class RoutePreviewView : RelativeLayout {
         startNavigationButton.visibility = View.GONE
         viewListButton.visibility = View.GONE
         noRouteFound.visibility = View.VISIBLE
-        tryAnotherMode.visibility = View.VISIBLE
+        tryAnotherMode?.visibility = View.VISIBLE
     }
 
     fun enableStartNavigation(type: Router.Type, reverse: Boolean) {
@@ -108,7 +108,7 @@ class RoutePreviewView : RelativeLayout {
         }
         viewListButton.visibility = View.VISIBLE
         noRouteFound.visibility = View.GONE
-        tryAnotherMode.visibility = View.GONE
+        tryAnotherMode?.visibility = View.GONE
     }
 
     fun showDirectionsListView(routeManager: RouteManager, windowManager: WindowManager, compass: View) {

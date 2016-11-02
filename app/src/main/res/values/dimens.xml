@@ -34,5 +34,11 @@
     <dimen name="transit_line_margin_top">25dp</dimen>
     <dimen name="transit_line_margin_bottom">25dp</dimen>
     <dimen name="prev_line_height">20dp</dimen>
+    <dimen name="route_preview_button_bar_height">48dp</dimen>
+    <dimen name="route_preview_button_bar_margin_vertical">16dp</dimen>
+    <dimen name="route_preview_button_bar_margin_horizontal">16dp</dimen>
+    <dimen name="route_preview_header_font_size">21sp</dimen>
+    <dimen name="em_attribution_margin_bottom">16dp</dimen>
+    <dimen name="em_find_me_button_margin_bottom">16dp</dimen>
 
 </resources>
