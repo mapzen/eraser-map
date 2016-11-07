@@ -28,7 +28,6 @@ interface MainViewController {
     fun clearQuery()
     fun showRoutePreviewDestination(destination: SimpleFeature)
     fun route()
-    fun hideRoutePreview()
     fun hideRoutingMode()
     fun startRoutingMode(feature: Feature, isNew: Boolean)
     fun resumeRoutingMode(feature: Feature)
@@ -77,4 +76,7 @@ interface MainViewController {
     fun resetMapPanResponder()
     fun setDefaultCamera()
     fun layoutFindMeAlignBottom()
+    fun hideMapRoutePins()
+    fun layoutAttributionAboveSearchResults(features: List<Feature>)
+    fun layoutFindMeAboveSearchResults(features: List<Feature>)
 }

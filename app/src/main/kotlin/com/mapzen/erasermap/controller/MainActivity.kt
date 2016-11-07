@@ -588,7 +588,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         mapView.findMe.layoutParams = layoutParams
     }
 
-    private fun layoutAttributionAboveSearchResults(features: List<Feature>) {
+    override fun layoutAttributionAboveSearchResults(features: List<Feature>) {
         if (features.count() == 0) return
         val layoutParams = baseAttributionParams()
         val bottomMargin = resources.getDimensionPixelSize(R.dimen.em_attribution_margin_bottom)
@@ -619,7 +619,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         }
     }
 
-    private fun layoutFindMeAboveSearchResults(features: List<Feature>) {
+    override fun layoutFindMeAboveSearchResults(features: List<Feature>) {
         if (features.count() == 0) return
         val layoutParams = baseFindMeParams()
         val bottomMargin = resources.getDimensionPixelSize(R.dimen.em_find_me_button_margin_bottom)
@@ -906,7 +906,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             }
         }
 
-        hideRoutePins()
+        hideMapRoutePins()
         showRoutePins(LngLat(start.longitude, start.latitude),
                 LngLat(finish.longitude, finish.latitude))
     }
@@ -916,7 +916,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     private fun handleRouteFailure() {
-        hideRoutePins()
+        hideMapRoutePins()
         routeModeView.hideRouteLine()
 
         val origin = routeManager.origin
@@ -948,18 +948,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
         })
         hideProgress()
         routePreviewView.disableStartNavigation()
-    }
-
-    override fun hideRoutePreview() {
-        if((findViewById(R.id.route_mode) as RouteModeView).visibility != View.VISIBLE) {
-            showActionBar()
-            routeManager.reverse = false
-            hideRoutePreviewView()
-            hideRoutePins()
-            val features = arrayListOf(presenter.currentFeature) as List<Feature>
-            layoutAttributionAboveSearchResults(features)
-            layoutFindMeAboveSearchResults(features)
-        }
     }
 
     override fun hideRoutePreviewView() {
@@ -1076,7 +1064,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             showRoutingMode(feature)
             routeModeView.startRoute(feature, routeManager.route)
         }
-        hideRoutePins()
+        hideMapRoutePins()
     }
 
     override fun resetMute() {
@@ -1183,7 +1171,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         mapzenMap?.isMyLocationEnabled = false
     }
 
-    private fun hideRoutePins() {
+    override fun hideMapRoutePins() {
         mapzenMap?.clearRoutePins()
     }
 

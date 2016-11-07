@@ -56,6 +56,9 @@ class TestMainController : MainViewController {
     var isRoutePreviewViewVisible = true
     var mapHasPanResponder = true
     var mapCameraType = MapController.CameraType.PERSPECTIVE
+    var routePinsVisible = true
+    var isAttributionAboveSearchResults = false
+    var isFindMeAboveSearchResults = false
 
     override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
@@ -117,10 +120,6 @@ class TestMainController : MainViewController {
 
     override fun route() {
         isRouting = true
-    }
-
-    override fun hideRoutePreview() {
-        isRoutePreviewVisible = false
     }
 
     override fun shutDown() {
@@ -330,4 +329,15 @@ class TestMainController : MainViewController {
         isFindMeAboveOptions = false
     }
 
+    override fun hideMapRoutePins() {
+        routePinsVisible = false
+    }
+
+    override fun layoutAttributionAboveSearchResults(features: List<Feature>) {
+        isAttributionAboveSearchResults = true
+    }
+
+    override fun layoutFindMeAboveSearchResults(features: List<Feature>) {
+        isFindMeAboveSearchResults = true
+    }
 }

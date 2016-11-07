@@ -537,6 +537,48 @@ class MainPresenterTest {
         assertThat(mainController.routeRequestCanceled).isTrue()
     }
 
+    @Test fun onBackPressed_shouldShowActionBarInStateRoutePreview() {
+        vsm.viewState = ROUTE_PREVIEW
+        mainController.isActionBarHidden = false
+        presenter.onBackPressed()
+        assertThat(mainController.isActionBarHidden).isFalse()
+    }
+
+    @Test fun onBackPressed_shouldUpdateReverseToFalseInStateRoutePreview() {
+        vsm.viewState = ROUTE_PREVIEW
+        routeManager.reverse = true
+        presenter.onBackPressed()
+        assertThat(routeManager.reverse).isFalse()
+    }
+
+    @Test fun onBackPressed_shouldHideRoutePreviewViewInStateRoutePreview() {
+        vsm.viewState = ROUTE_PREVIEW
+        mainController.isRoutePreviewViewVisible = true
+        presenter.onBackPressed()
+        assertThat(mainController.isRoutePreviewViewVisible).isFalse()
+    }
+
+    @Test fun onBackPressed_shouldHideMapRoutePinsInStateRoutePreview() {
+        vsm.viewState = ROUTE_PREVIEW
+        mainController.routePinsVisible = true
+        presenter.onBackPressed()
+        assertThat(mainController.routePinsVisible).isFalse()
+    }
+
+    @Test fun onBackPressed_shouldLayoutAttributionAboveSearchResultsInStateRoutePreview() {
+        vsm.viewState = ROUTE_PREVIEW
+        mainController.isAttributionAboveSearchResults = false
+        presenter.onBackPressed()
+        assertThat(mainController.isAttributionAboveSearchResults).isTrue()
+    }
+
+    @Test fun onBackPressed_shouldLayoutFindMeAboveSearchResultsInStateRoutePreview() {
+        vsm.viewState = ROUTE_PREVIEW
+        mainController.isFindMeAboveSearchResults = false
+        presenter.onBackPressed()
+        assertThat(mainController.isFindMeAboveSearchResults).isTrue()
+    }
+
     @Test fun configureMapzenMap_shouldSetMapLocationFirstTimeInvoked() {
         presenter.configureMapzenMap()
         assertThat(mainController.lngLat).isNotNull()

@@ -353,7 +353,13 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
     mainViewController?.hideProgress()
     mainViewController?.cancelRouteRequest()
-    mainViewController?.hideRoutePreview()
+    mainViewController?.showActionBar()
+    routeManager.reverse = false
+    mainViewController?.hideRoutePreviewView()
+    mainViewController?.hideMapRoutePins()
+    val features = arrayListOf(currentFeature) as List<Feature>
+    mainViewController?.layoutAttributionAboveSearchResults(features)
+    mainViewController?.layoutFindMeAboveSearchResults(features)
     mainViewController?.clearRoute()
     if (searchResults != null) {
       if (reverseGeo) {
