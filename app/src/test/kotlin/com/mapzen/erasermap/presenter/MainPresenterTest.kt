@@ -910,6 +910,12 @@ class MainPresenterTest {
         assertThat(mainController.isFindMeAboveOptions).isFalse()
     }
 
+    @Test fun onExitNavigation_shouldResetMapTilt() {
+        mainController.tilt = 30f
+        presenter.onExitNavigation()
+        assertThat(mainController.tilt).isEqualTo(0f)
+    }
+
     class RouteEventSubscriber {
         var event: RouteEvent? = null
 

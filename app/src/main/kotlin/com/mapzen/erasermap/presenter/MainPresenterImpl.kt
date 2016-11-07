@@ -524,6 +524,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     mainViewController?.resetMapPanResponder()
     mainViewController?.setDefaultCamera()
     mainViewController?.layoutFindMeAlignBottom()
+    mainViewController?.setMapTilt(0f)
   }
 
   override fun onMapMotionEvent(): Boolean {
