@@ -33,6 +33,7 @@ import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.tangram.LngLat
+import com.mapzen.tangram.MapController
 import com.mapzen.valhalla.Route
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
@@ -828,6 +829,85 @@ class MainPresenterTest {
         mainController.tilt = 30f
         presenter.onClickFindMe()
         assertThat(mainController.tilt).isEqualTo(0f)
+    }
+
+    @Test fun onExitNavigation_shouldSetViewStateDefault() {
+        vsm.viewState = ROUTING
+        presenter.onExitNavigation()
+        assertThat(vsm.viewState).isEqualTo(DEFAULT)
+    }
+
+    @Test fun onExitNavigation_shouldDisableRouting() {
+        presenter.routingEnabled = true
+        presenter.onExitNavigation()
+        assertThat(presenter.routingEnabled).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldResetReverse() {
+        routeManager.reverse = true
+        presenter.onExitNavigation()
+        assertThat(routeManager.reverse).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldEnableLocation() {
+        permissionManager.granted = true
+        mainController.isCurrentLocationEnabled = false
+        presenter.onExitNavigation()
+        assertThat(mainController.isCurrentLocationEnabled).isTrue()
+    }
+
+    @Test fun onExitNavigation_shouldStopVoiceNavigationController() {
+        mainController.isVoiceNavigationStopped = false
+        presenter.onExitNavigation()
+        assertThat(mainController.isVoiceNavigationStopped).isTrue()
+    }
+
+    @Test fun onExitNavigation_shouldClearRoute() {
+        mainController.routeLine = Route(JSONObject())
+        presenter.onExitNavigation()
+        assertThat(mainController.routeLine).isNull()
+    }
+
+    @Test fun onExitNavigation_shouldHideRouteIcon() {
+        mainController.isRouteIconVisible = true
+        presenter.onExitNavigation()
+        assertThat(mainController.isRouteIconVisible).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldHideRouteModeView() {
+        mainController.isRouteModeViewVisible = true
+        presenter.onExitNavigation()
+        assertThat(mainController.isRouteModeViewVisible).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldShowActionBar() {
+        mainController.isActionBarHidden = true
+        presenter.onExitNavigation()
+        assertThat(mainController.isActionBarHidden).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldHideRoutePreviewView() {
+        mainController.isRoutePreviewViewVisible = true
+        presenter.onExitNavigation()
+        assertThat(mainController.isRoutePreviewViewVisible).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldResetMapResponder() {
+        mainController.mapHasPanResponder = true
+        presenter.onExitNavigation()
+        assertThat(mainController.mapHasPanResponder).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldSetDefaultCamera() {
+        mainController.mapCameraType = MapController.CameraType.PERSPECTIVE
+        presenter.onExitNavigation()
+        assertThat(mainController.mapCameraType).isEqualTo(MapController.CameraType.ISOMETRIC)
+    }
+
+    @Test fun onExitNavigation_shouldAlignFindMeToBottom() {
+        mainController.isFindMeAboveOptions = true
+        presenter.onExitNavigation()
+        assertThat(mainController.isFindMeAboveOptions).isFalse()
     }
 
     class RouteEventSubscriber {

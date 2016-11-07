@@ -172,7 +172,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     override fun onNewIntent(intent: Intent?) {
         if (intent?.getBooleanExtra(NotificationCreator.EXIT_NAVIGATION, false) as Boolean) {
-            exitNavigation()
+            presenter.onExitNavigation()
             if((intent?.getBooleanExtra(NotificationBroadcastReceiver.VISIBILITY, false)
                     as Boolean).not()) {
                 moveTaskToBack(true)
@@ -580,7 +580,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         return layoutParams
     }
 
-    private fun layoutFindMeAlignBottom() {
+    override fun layoutFindMeAlignBottom() {
         val layoutParams = baseFindMeParams()
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
         val margin = resources.getDimensionPixelSize(R.dimen.em_find_me_button_margin_bottom)
@@ -952,14 +952,22 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     override fun hideRoutePreview() {
         if((findViewById(R.id.route_mode) as RouteModeView).visibility != View.VISIBLE) {
-            supportActionBar?.show()
+            showActionBar()
             routeManager.reverse = false
-            findViewById(R.id.route_preview)?.visibility = View.GONE
+            hideRoutePreviewView()
             hideRoutePins()
             val features = arrayListOf(presenter.currentFeature) as List<Feature>
             layoutAttributionAboveSearchResults(features)
             layoutFindMeAboveSearchResults(features)
         }
+    }
+
+    override fun hideRoutePreviewView() {
+        routePreviewView.visibility = View.GONE
+    }
+
+    override fun showActionBar() {
+        supportActionBar?.show()
     }
 
     override fun route() {
@@ -1091,7 +1099,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         }
     }
 
-    private fun setDefaultCamera() {
+    override fun setDefaultCamera() {
         mapzenMap?.cameraType = CameraType.ISOMETRIC
     }
 
@@ -1108,12 +1116,20 @@ class MainActivity : AppCompatActivity(), MainViewController,
         presenter.routingEnabled = false
         setDefaultCamera()
         checkPermissionAndEnableLocation()
-        routeModeView.visibility = View.GONE
+        hideRouteModeView()
         supportActionBar?.hide()
         routeModeView.route = null
-        routeModeView.hideRouteIcon()
+        hideRouteIcon()
         routeModeView.hideResumeButton()
         hideReverseGeolocateResult()
+    }
+
+    override fun hideRouteIcon() {
+        routeModeView.hideRouteIcon()
+    }
+
+    override fun hideRouteModeView() {
+        routeModeView.visibility = View.GONE
     }
 
     override fun overridePlaceFeature(feature: Feature) {
@@ -1143,21 +1159,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     override fun stopSpeaker() {
         voiceNavigationController?.stop()
-    }
-
-    private fun exitNavigation() {
-        checkPermissionAndEnableLocation()
-        routeModeView.voiceNavigationController?.stop()
-        routeModeView.clearRoute()
-        routeModeView.route = null
-        routeModeView.hideRouteIcon()
-        routeModeView.visibility = View.GONE
-        supportActionBar?.show()
-        findViewById(R.id.route_preview)?.visibility = View.GONE
-        presenter.onExitNavigation()
-        mapzenMap?.setPanResponder(null)
-        setDefaultCamera()
-        layoutFindMeAlignBottom()
     }
 
     private fun getGenericLocationFeature(lat: Double, lon: Double) : Feature {
@@ -1258,5 +1259,13 @@ class MainActivity : AppCompatActivity(), MainViewController,
                 onRouteFailure(statusCode)
             }
         }
+    }
+
+    override fun stopVoiceNavigationController() {
+        routeModeView.voiceNavigationController?.stop()
+    }
+
+    override fun resetMapPanResponder() {
+        mapzenMap?.setPanResponder(null)
     }
 }

@@ -5,6 +5,7 @@ import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
+import com.mapzen.tangram.MapController
 import com.mapzen.valhalla.Route
 
 class TestMainController : MainViewController {
@@ -49,6 +50,12 @@ class TestMainController : MainViewController {
     var isRoutePreviewDistanceTieVisible = false
     var routePreviewRoute: Route? = null
     var routePinLocations: Array<ValhallaLocation>? = null
+    var isVoiceNavigationStopped = false
+    var isRouteIconVisible = true
+    var isRouteModeViewVisible = true
+    var isRoutePreviewViewVisible = true
+    var mapHasPanResponder = true
+    var mapCameraType = MapController.CameraType.PERSPECTIVE
 
     override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
@@ -290,4 +297,37 @@ class TestMainController : MainViewController {
     override fun updateRoutePreviewStartNavigation() {
 
     }
+
+    override fun stopVoiceNavigationController() {
+        isVoiceNavigationStopped = true
+    }
+
+    override fun hideRouteIcon() {
+        isRouteIconVisible = false
+    }
+
+    override fun hideRouteModeView() {
+        isRouteModeViewVisible = false
+    }
+
+    override fun showActionBar() {
+        isActionBarHidden = false
+    }
+
+    override fun hideRoutePreviewView() {
+        isRoutePreviewViewVisible = false
+    }
+
+    override fun resetMapPanResponder() {
+        mapHasPanResponder = false
+    }
+
+    override fun setDefaultCamera() {
+        mapCameraType = MapController.CameraType.ISOMETRIC
+    }
+
+    override fun layoutFindMeAlignBottom() {
+        isFindMeAboveOptions = false
+    }
+
 }

@@ -512,8 +512,18 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
   override fun onExitNavigation() {
     vsm.viewState = ViewStateManager.ViewState.DEFAULT
-    routingEnabled = false;
+    routingEnabled = false
     routeManager.reverse = false
+    checkPermissionAndEnableLocation()
+    mainViewController?.stopVoiceNavigationController()
+    mainViewController?.clearRoute()
+    mainViewController?.hideRouteIcon()
+    mainViewController?.hideRouteModeView()
+    mainViewController?.showActionBar()
+    mainViewController?.hideRoutePreviewView()
+    mainViewController?.resetMapPanResponder()
+    mainViewController?.setDefaultCamera()
+    mainViewController?.layoutFindMeAlignBottom()
   }
 
   override fun onMapMotionEvent(): Boolean {

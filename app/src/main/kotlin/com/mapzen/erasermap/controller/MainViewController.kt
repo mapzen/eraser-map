@@ -69,4 +69,12 @@ interface MainViewController {
     fun setRoutePreviewViewRoute(route: Route)
     fun showRoutePinsOnMap(locations: Array<ValhallaLocation>)
     fun updateRoutePreviewStartNavigation()
+    fun stopVoiceNavigationController()
+    fun hideRouteIcon()
+    fun hideRouteModeView()
+    fun showActionBar()
+    fun hideRoutePreviewView()
+    fun resetMapPanResponder()
+    fun setDefaultCamera()
+    fun layoutFindMeAlignBottom()
 }
