@@ -12,8 +12,6 @@ interface MainViewController {
     fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int)
     fun showDirectionsList()
     fun hideDirectionsList()
-    fun centerOnCurrentFeature(features: List<Feature>?)
-    fun centerOnFeature(features: List<Feature>?, position: Int)
     fun toggleShowAllSearchResultsList(features: List<Feature>?)
     fun hideSearchResults()
     fun hideReverseGeolocateResult()
@@ -79,4 +77,8 @@ interface MainViewController {
     fun hideMapRoutePins()
     fun layoutAttributionAboveSearchResults(features: List<Feature>)
     fun layoutFindMeAboveSearchResults(features: List<Feature>)
+    fun setCurrentSearchItem(position: Int)
+    fun setMapPosition(lngLat: LngLat, duration: Int)
+    fun setMapZoom(zoom: Float)
+    fun getCurrentSearchPosition(): Int
 }

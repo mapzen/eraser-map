@@ -209,7 +209,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         mainViewController?.showSearchResults(searchResults?.features)
       } else {
         mainViewController?.showReverseGeocodeFeature(searchResults?.features)
-        mainViewController?.centerOnCurrentFeature(searchResults?.features)
+        centerOnCurrentFeature(searchResults?.features)
       }
     }
   }
@@ -247,14 +247,14 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   override fun onSearchResultSelected(position: Int) {
     if (searchResults != null) {
       mainViewController?.addSearchResultsToMap(searchResults?.features, position)
-      mainViewController?.centerOnCurrentFeature(searchResults?.features)
+      centerOnCurrentFeature(searchResults?.features)
     }
   }
 
   override fun onSearchResultTapped(position: Int) {
     if (searchResults != null) {
       mainViewController?.addSearchResultsToMap(searchResults?.features, position)
-      mainViewController?.centerOnFeature(searchResults?.features, position)
+      centerOnFeature(searchResults?.features, position)
     }
   }
 
@@ -704,5 +704,28 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     routeManager.route = route
     mainViewController?.drawRoute(route)
     mainViewController?.hideProgress()
+  }
+
+  private fun featuresExist(features: List<Feature>?): Boolean {
+    return features != null || features!!.size > 0
+  }
+
+  private fun centerOnCurrentFeature(features: List<Feature>?) {
+    if (!featuresExist(features)) {
+      return
+    }
+    val position = mainViewController?.getCurrentSearchPosition()
+    centerOnFeature(features, position as Int)
+  }
+
+  private fun centerOnFeature(features: List<Feature>?, position: Int) {
+    if (!featuresExist(features)) {
+      return
+    }
+
+    mainViewController?.setCurrentSearchItem(position)
+    val feature = SimpleFeature.fromFeature(features!![position])
+    mainViewController?.setMapPosition(LngLat(feature.lng(), feature.lat()), 1000)
+    mainViewController?.setMapZoom(MainPresenter.DEFAULT_ZOOM)
   }
 }

@@ -28,8 +28,6 @@ class TestMainController : MainViewController {
     var isRoutePreviewDestinationVisible: Boolean = false
     var isDirectionListVisible: Boolean = false
     var isRoutingModeVisible: Boolean = false
-    var isCenteredOnCurrentFeature: Boolean = false
-    var isCenteredOnTappedFeature: Boolean = false
     var isReverseGeocodeVisible: Boolean = false
     var isPlaceResultOverridden: Boolean = false
     var isSettingsVisible: Boolean = false
@@ -59,6 +57,7 @@ class TestMainController : MainViewController {
     var routePinsVisible = true
     var isAttributionAboveSearchResults = false
     var isFindMeAboveSearchResults = false
+    var currentSearchItemPosition = 0
 
     override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
@@ -66,14 +65,6 @@ class TestMainController : MainViewController {
 
     override fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int) {
         searchResults = features;
-    }
-
-    override fun centerOnCurrentFeature(features: List<Feature>?) {
-        isCenteredOnCurrentFeature = true
-    }
-
-    override fun centerOnFeature(features: List<Feature>?, position: Int) {
-        isCenteredOnTappedFeature = true
     }
 
     override fun hideSearchResults() {
@@ -339,5 +330,21 @@ class TestMainController : MainViewController {
 
     override fun layoutFindMeAboveSearchResults(features: List<Feature>) {
         isFindMeAboveSearchResults = true
+    }
+
+    override fun setCurrentSearchItem(position: Int) {
+        currentSearchItemPosition = position
+    }
+
+    override fun setMapPosition(lngLat: LngLat, duration: Int) {
+        this.lngLat = lngLat
+    }
+
+    override fun setMapZoom(zoom: Float) {
+        this.zoom = zoom
+    }
+
+    override fun getCurrentSearchPosition(): Int {
+        return currentSearchItemPosition
     }
 }

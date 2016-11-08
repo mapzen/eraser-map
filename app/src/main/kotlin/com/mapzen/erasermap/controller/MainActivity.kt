@@ -715,7 +715,11 @@ class MainActivity : AppCompatActivity(), MainViewController,
             return
         }
 
-        centerOnCurrentFeature(features)
+        val position = getCurrentSearchPosition()
+        setCurrentSearchItem(position)
+        val feature = SimpleFeature.fromFeature(features[position])
+        setMapPosition(LngLat(feature.lng(), feature.lat()), 1000)
+        setMapZoom(MainPresenter.DEFAULT_ZOOM)
 
         mapzenMap?.clearSearchResults()
         val points: ArrayList<LngLat> = ArrayList()
@@ -727,28 +731,22 @@ class MainActivity : AppCompatActivity(), MainViewController,
         mapzenMap?.drawSearchResults(points, activeIndex)
     }
 
-    override fun centerOnCurrentFeature(features: List<Feature>?) {
-        if (features == null) {
-            return
-        }
-
-        centerOnFeature(features, searchController.getCurrentItem())
+    override fun getCurrentSearchPosition(): Int {
+        return searchController.getCurrentItem()
     }
 
-    override fun centerOnFeature(features: List<Feature>?, position: Int) {
-        if (features == null) {
-            return
-        }
-
-        if(features.size > 0) {
-            searchController.setCurrentItem(position)
-            val feature = SimpleFeature.fromFeature(features[position])
-            Handler().postDelayed({
-                mapzenMap?.setPosition(LngLat(feature.lng(), feature.lat()), 1000)
-                mapzenMap?.zoom = MainPresenter.DEFAULT_ZOOM
-            }, 100)
-        }
+    override fun setCurrentSearchItem(position: Int) {
+        searchController.setCurrentItem(position)
     }
+
+    override fun setMapPosition(lngLat: LngLat, duration: Int) {
+        mapzenMap?.setPosition(lngLat, duration)
+    }
+
+    override fun setMapZoom(zoom: Float) {
+        mapzenMap?.zoom = zoom
+    }
+
 
     override fun placeSearch(gid: String) {
         mapzenSearch.setLocationProvider(presenter.getPeliasLocationProvider())

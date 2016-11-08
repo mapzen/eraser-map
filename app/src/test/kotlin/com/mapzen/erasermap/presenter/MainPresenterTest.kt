@@ -30,6 +30,7 @@ import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTING
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
 import com.mapzen.erasermap.view.TestRouteController
+import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.tangram.LngLat
@@ -467,19 +468,88 @@ class MainPresenterTest {
     @Test fun onSearchResultSelected_shouldCenterOnCurrentFeature() {
         val result = Result()
         val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        val feature = SimpleFeature.create("1", "1", "", "",
+            "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0)
+        features.add(feature.toFeature())
         result.features = features
+        mainController.currentSearchItemPosition = 2
         presenter.onSearchResultsAvailable(result)
         presenter.onSearchResultSelected(0)
-        assertThat(mainController.isCenteredOnCurrentFeature).isTrue()
+        assertThat(mainController.currentSearchItemPosition).isEqualTo(2)
+    }
+
+    @Test fun onSearchResultSelected_shouldSetMapPositionForCurrentFeature() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        val feature = SimpleFeature.create("1", "1", "", "",
+            "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0)
+        features.add(feature.toFeature())
+        result.features = features
+        mainController.currentSearchItemPosition = 2
+        presenter.onSearchResultsAvailable(result)
+        presenter.onSearchResultSelected(0)
+        assertThat(mainController.lngLat?.longitude).isEqualTo(70.0)
+        assertThat(mainController.lngLat?.latitude).isEqualTo(40.0)
+    }
+
+    @Test fun onSearchResultSelected_shouldSetMapZoomDefaultZoom() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        val feature = SimpleFeature.create("1", "1", "", "",
+            "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0)
+        features.add(feature.toFeature())
+        result.features = features
+        mainController.currentSearchItemPosition = 2
+        presenter.onSearchResultsAvailable(result)
+        presenter.onSearchResultSelected(0)
+        assertThat(mainController.zoom).isEqualTo(16f)
     }
 
     @Test fun onSearchResultTapped_shouldCenterOnCurrentFeature() {
         val result = Result()
         val features = ArrayList<Feature>()
+        val feature = SimpleFeature.create("1", "1", "", "",
+            "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0)
+        features.add(feature.toFeature())
         result.features = features
+        mainController.currentSearchItemPosition = 2
         presenter.onSearchResultsAvailable(result)
         presenter.onSearchResultTapped(0)
-        assertThat(mainController.isCenteredOnTappedFeature).isTrue()
+        assertThat(mainController.currentSearchItemPosition).isEqualTo(0)
+    }
+
+    @Test fun onSearchResultTapped_shouldSetMapPositionOfCurrentFeature() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        val feature = SimpleFeature.create("1", "1", "", "",
+            "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0)
+        features.add(feature.toFeature())
+        result.features = features
+        mainController.currentSearchItemPosition = 2
+        presenter.onSearchResultsAvailable(result)
+        presenter.onSearchResultTapped(0)
+        assertThat(mainController.lngLat?.longitude).isEqualTo(70.0)
+        assertThat(mainController.lngLat?.latitude).isEqualTo(40.0)
+    }
+
+    @Test fun onSearchResultTapped_shouldSetMapZoomDefaultZoom() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        val feature = SimpleFeature.create("1", "1", "", "",
+            "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0)
+        features.add(feature.toFeature())
+        result.features = features
+        mainController.currentSearchItemPosition = 2
+        presenter.onSearchResultsAvailable(result)
+        presenter.onSearchResultTapped(0)
+        assertThat(mainController.lngLat?.longitude).isEqualTo(70.0)
+        assertThat(mainController.lngLat?.latitude).isEqualTo(40.0)
     }
 
     @Test fun onBackPressed_shouldDisconnectLocationUpdates() {
