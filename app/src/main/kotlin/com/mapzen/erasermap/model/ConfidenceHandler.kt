@@ -5,8 +5,8 @@ import com.mapzen.tangram.LngLat
 /**
  * Uses the following criteria to determine if raw lat/lng should be used for reverse geocode:
  *
- * * Pelias confidence score<
- * * Whether the reverse geocode was initiated by a long press
+ * * Pelias confidence score.
+ * * Whether the reverse geocode was initiated by a long press.
  * * Lat/lng coordinates returned in the reverse geocode result.
  */
 class ConfidenceHandler() {
