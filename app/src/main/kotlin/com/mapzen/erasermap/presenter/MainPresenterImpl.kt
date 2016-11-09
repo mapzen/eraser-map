@@ -68,6 +68,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     set(value) {
       confidenceHandler.reverseGeoLngLat = value
     }
+  override var currentSearchIndex: Int = 0
 
   private var searchResults: Result? = null
   private var destination: Feature? = null
@@ -210,7 +211,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   private fun onRestoreMapStateSearchResults() {
     if (searchResults?.features != null) {
       if (!reverseGeo) {
-        mainViewController?.showSearchResults(searchResults?.features)
+        mainViewController?.showSearchResults(searchResults?.features, currentSearchIndex)
       } else {
         mainViewController?.showReverseGeocodeFeature(searchResults?.features)
         centerOnCurrentFeature(searchResults?.features)
@@ -249,6 +250,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun onSearchResultSelected(position: Int) {
+    currentSearchIndex = position
     if (searchResults != null) {
       mainViewController?.addSearchResultsToMap(searchResults?.features, position)
       centerOnCurrentFeature(searchResults?.features)
@@ -369,7 +371,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
       if (reverseGeo) {
         mainViewController?.showReverseGeocodeFeature(searchResults?.features)
       } else {
-        mainViewController?.showSearchResults(searchResults?.features)
+        mainViewController?.showSearchResults(searchResults?.features, currentSearchIndex)
         var numFeatures = 0
         numFeatures = (searchResults?.features?.size as Int)
         if (numFeatures > 1) {

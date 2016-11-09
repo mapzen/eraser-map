@@ -58,8 +58,14 @@ class TestMainController : MainViewController {
     var isAttributionAboveSearchResults = false
     var isFindMeAboveSearchResults = false
     var currentSearchItemPosition = 0
+    var currentSearchIndex = 0
 
     override fun showSearchResults(features: List<Feature>?) {
+        searchResults = features
+    }
+
+    override fun showSearchResults(features: List<Feature>?, currentIndex: Int) {
+        currentSearchIndex = currentIndex
         searchResults = features
     }
 

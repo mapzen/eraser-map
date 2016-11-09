@@ -26,6 +26,7 @@ interface MainPresenter {
     var resultListVisible: Boolean
     var reverseGeo: Boolean
     var reverseGeoLngLat: LngLat?
+    var currentSearchIndex: Int
 
     fun onSearchResultsAvailable(result: Result?)
     fun onReverseGeocodeResultsAvailable(searchResults: Result?)

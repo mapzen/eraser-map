@@ -534,13 +534,17 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     override fun showSearchResults(features: List<Feature>?) {
+        showSearchResults(features, 0)
+    }
+
+    override fun showSearchResults(features: List<Feature>?, activeIndex: Int) {
         if (features == null) {
             return
         }
 
         hideReverseGeolocateResult()
         showSearchResultsView(features)
-        addSearchResultsToMap(features, 0)
+        addSearchResultsToMap(features, activeIndex)
         layoutAttributionAboveSearchResults(features)
         layoutFindMeAboveSearchResults(features)
         toggleShowDebugSettings()
