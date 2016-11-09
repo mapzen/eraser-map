@@ -711,7 +711,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     override fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int) {
-        if (features == null) {
+        if (features == null || features.size == 0) {
             return
         }
 
