@@ -1,10 +1,11 @@
 package com.mapzen.erasermap.model
 
-import com.mapzen.erasermap.presenter.MainPresenter
+import com.mapzen.tangram.LngLat
 
-class ConfidenceHandler(val presenter: MainPresenter) {
+class ConfidenceHandler() {
 
     var longPressed = false
+    var reverseGeoLngLat: LngLat? = null
 
     companion object {
         const val CONFIDENCE_THRESHOLD = 0.8
@@ -15,8 +16,8 @@ class ConfidenceHandler(val presenter: MainPresenter) {
         if (confidence == CONFIDENCE_MISSING || !longPressed) {
             return false
         }
-        return confidence < CONFIDENCE_THRESHOLD
-                && presenter.reverseGeoLngLat != null
+
+        return confidence < CONFIDENCE_THRESHOLD && reverseGeoLngLat != null
     }
 
 }

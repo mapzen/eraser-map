@@ -72,10 +72,10 @@ public class TestAndroidModule {
             RouteManager routeManager, AppSettings settings, ViewStateManager vsm,
             IntentQueryParser intentQueryParser, LocationConverter converter,
             LostClientManager lostClientManager, LocationSettingsChecker locationSettingsChecker,
-            PermissionManager permissionManager) {
+            PermissionManager permissionManager, ConfidenceHandler confidenceHandler) {
         return new MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm,
                 intentQueryParser, converter, lostClientManager, locationSettingsChecker,
-            permissionManager);
+            permissionManager, confidenceHandler);
     }
 
     @Provides @Singleton RouteManager provideRouteManager() {
@@ -120,8 +120,8 @@ public class TestAndroidModule {
         return new TestLostSettingsChecker();
     }
 
-    @Provides @Singleton ConfidenceHandler provideConfidenceHandler(MainPresenter presenter) {
-        return new ConfidenceHandler(presenter);
+    @Provides @Singleton ConfidenceHandler provideConfidenceHandler() {
+        return new ConfidenceHandler();
     }
 
     @Provides @Singleton FeatureDisplayHelper provideDisplayHelper(ConfidenceHandler confidenceHandler) {

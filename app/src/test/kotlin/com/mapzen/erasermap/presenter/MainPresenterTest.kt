@@ -7,6 +7,7 @@ import com.mapzen.erasermap.dummy.TestHelper.getFixture
 import com.mapzen.erasermap.dummy.TestHelper.getTestAndroidLocation
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
+import com.mapzen.erasermap.model.ConfidenceHandler
 import com.mapzen.erasermap.model.IntentQuery
 import com.mapzen.erasermap.model.IntentQueryParser
 import com.mapzen.erasermap.model.LocationClientManager
@@ -60,8 +61,9 @@ class MainPresenterTest {
     private val clientManager: TestLostClientManager = TestLostClientManager()
     private val locationSettingsChecker = TestLostSettingsChecker()
     private val permissionManager = PermissionManager()
+    private val confidenceHandler = ConfidenceHandler()
     private val presenter = MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm, iqp,
-        converter, clientManager, locationSettingsChecker, permissionManager)
+        converter, clientManager, locationSettingsChecker, permissionManager, confidenceHandler)
 
     @Before fun setUp() {
         presenter.mainViewController = mainController
@@ -393,7 +395,8 @@ class MainPresenterTest {
     @Test fun onRoutePreviewEvent_shouldTriggerSettingsApi() {
         val resolutionSettingsChecker = ResolutionLocationSettingsChecker()
         val testPresenter = MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm, iqp,
-            converter, clientManager, resolutionSettingsChecker, permissionManager)
+            converter, clientManager, resolutionSettingsChecker, permissionManager,
+            confidenceHandler)
         testPresenter.mainViewController = mainController
 
         testPresenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
