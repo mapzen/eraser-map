@@ -707,7 +707,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   private fun featuresExist(features: List<Feature>?): Boolean {
-    return features != null || features!!.size > 0
+    return features != null && features!!.size > 0
   }
 
   private fun centerOnCurrentFeature(features: List<Feature>?) {

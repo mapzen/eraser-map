@@ -609,7 +609,7 @@ class MainPresenterTest {
 
     @Test fun onBackPressed_shouldShowActionBarInStateRoutePreview() {
         vsm.viewState = ROUTE_PREVIEW
-        mainController.isActionBarHidden = false
+        mainController.isActionBarHidden = true
         presenter.onBackPressed()
         assertThat(mainController.isActionBarHidden).isFalse()
     }
@@ -1026,6 +1026,32 @@ class MainPresenterTest {
         mainController.tilt = 30f
         presenter.onExitNavigation()
         assertThat(mainController.tilt).isEqualTo(0f)
+    }
+
+    @Test fun centerOnCurrentFeature_shouldDoNothingForNoFeatures() {
+        val result = Result()
+        presenter.onSearchResultsAvailable(result)
+        mainController.currentSearchItemPosition = 3
+        val pos = LngLat(70.0, 40.0)
+        mainController.lngLat = pos
+        mainController.zoom = MainPresenter.ROUTING_ZOOM
+        presenter.onSearchResultSelected(0)
+        assertThat(mainController.currentSearchItemPosition).isEqualTo(3)
+        assertThat(mainController.lngLat).isEqualTo(pos)
+        assertThat(mainController.zoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
+    }
+
+    @Test fun centerOnFeature_shouldDoNothingForNoFeatures() {
+        val result = Result()
+        presenter.onSearchResultsAvailable(result)
+        mainController.currentSearchItemPosition = 3
+        val pos = LngLat(70.0, 40.0)
+        mainController.lngLat = pos
+        mainController.zoom = MainPresenter.ROUTING_ZOOM
+        presenter.onSearchResultTapped(0)
+        assertThat(mainController.currentSearchItemPosition).isEqualTo(3)
+        assertThat(mainController.lngLat).isEqualTo(pos)
+        assertThat(mainController.zoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
     }
 
     class RouteEventSubscriber {
