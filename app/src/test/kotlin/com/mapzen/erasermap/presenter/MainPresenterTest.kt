@@ -93,6 +93,15 @@ class MainPresenterTest {
         assertThat(mainController.isFindMeTrackingEnabled).isFalse()
     }
 
+    @Test fun onSearchResultsAvailable_shouldResetCurrentSearchIndex() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.features = features
+        presenter.currentSearchIndex = 3
+        presenter.onSearchResultsAvailable(result)
+        assertThat(presenter.currentSearchIndex).isEqualTo(0)
+    }
+
     @Test fun onReverseGeocodeResultsAvailable_shouldShowSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()

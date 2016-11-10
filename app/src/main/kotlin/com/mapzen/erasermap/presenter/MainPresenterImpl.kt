@@ -91,6 +91,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
     reverseGeo = false
     this.searchResults = result
+    this.currentSearchIndex = 0
     mainViewController?.showSearchResults(result?.features)
     mainViewController?.hideProgress()
     mainViewController?.deactivateFindMeTracking()
