@@ -47,8 +47,8 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     val routeManager: RouteManager, val settings: AppSettings, val vsm: ViewStateManager,
     val intentQueryParser: IntentQueryParser, val converter: LocationConverter,
     val locationClientManager: LocationClientManager,
-    val locationSettingsChecker: LocationSettingsChecker, val permissionManager: PermissionManager):
-    MainPresenter, RouteCallback {
+    val locationSettingsChecker: LocationSettingsChecker, val permissionManager: PermissionManager,
+    val confidenceHandler: ConfidenceHandler) : MainPresenter, RouteCallback {
 
   companion object {
     private val TAG = MainPresenterImpl::class.java.simpleName
@@ -63,7 +63,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   override var currentSearchTerm: String? = null
   override var resultListVisible = false
   override var reverseGeo = false
-  override var reverseGeoLngLat: LngLat? = null
+  override var reverseGeoLngLat: LngLat?
+    get() = confidenceHandler.reverseGeoLngLat
+    set(value) {
+      confidenceHandler.reverseGeoLngLat = value
+    }
 
   private var searchResults: Result? = null
   private var destination: Feature? = null
@@ -618,7 +622,6 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
       routeManager.bearing = null
     }
 
-    val confidenceHandler = ConfidenceHandler(this)
     if (!confidenceHandler.useRawLatLng(feature.properties.confidence)) {
       mainViewController?.showRoutePreviewDestination(SimpleFeature.fromFeature(feature))
       routeManager.destination = feature

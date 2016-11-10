@@ -77,10 +77,10 @@ public class AndroidModule {
             RouteManager routeManager, AppSettings settings, ViewStateManager vsm,
             IntentQueryParser intentQueryParser, LocationConverter converter,
             LostClientManager clientManager, LocationSettingsChecker locationSettingsChecker,
-            PermissionManager permissionManager) {
+            PermissionManager permissionManager, ConfidenceHandler confidenceHandler) {
         return new MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm,
                 intentQueryParser, converter, clientManager, locationSettingsChecker,
-                permissionManager);
+                permissionManager, confidenceHandler);
     }
 
     @Provides @Singleton RouteManager provideRouteManager(AppSettings settings, ApiKeys apiKeys) {
@@ -147,8 +147,8 @@ public class AndroidModule {
         return new LostSettingsChecker();
     }
 
-    @Provides @Singleton ConfidenceHandler provideConfidenceHandler(MainPresenter mainPresenter) {
-        return new ConfidenceHandler(mainPresenter);
+    @Provides @Singleton ConfidenceHandler provideConfidenceHandler() {
+        return new ConfidenceHandler();
     }
 
     @Provides @Singleton FeatureDisplayHelper provideDisplayHelper(

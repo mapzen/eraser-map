@@ -42,9 +42,9 @@ class FeatureDisplayHelperTest {
     val clientManager: TestLostClientManager = TestLostClientManager()
     val locationSettingsChecker = TestLostSettingsChecker()
     val permissionManager = PermissionManager()
+    confidenceHandler = ConfidenceHandler()
     presenter = MainPresenterImpl(mapzenLocation, bus, routeManager, settings, vsm, iqp,
-        converter, clientManager, locationSettingsChecker, permissionManager)
-    confidenceHandler = ConfidenceHandler(presenter)
+        converter, clientManager, locationSettingsChecker, permissionManager, confidenceHandler)
     context = Mockito.spy(Context::class.java)
     `when`(context.getString(R.string.dropped_pin)).thenReturn(droppedPin)
     helper = FeatureDisplayHelper(context, confidenceHandler)
