@@ -476,7 +476,7 @@ class MainPresenterTest {
         result.features = features
         mainController.currentSearchItemPosition = 2
         presenter.onSearchResultsAvailable(result)
-        presenter.onSearchResultSelected(0)
+        presenter.onSearchResultSelected(2)
         assertThat(mainController.currentSearchItemPosition).isEqualTo(2)
     }
 
@@ -491,7 +491,7 @@ class MainPresenterTest {
         result.features = features
         mainController.currentSearchItemPosition = 2
         presenter.onSearchResultsAvailable(result)
-        presenter.onSearchResultSelected(0)
+        presenter.onSearchResultSelected(2)
         assertThat(mainController.lngLat?.longitude).isEqualTo(70.0)
         assertThat(mainController.lngLat?.latitude).isEqualTo(40.0)
     }
