@@ -31,9 +31,11 @@ import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTING
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
 import com.mapzen.erasermap.view.TestRouteController
+import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
 import com.mapzen.tangram.LngLat
+import com.mapzen.tangram.MapController
 import com.mapzen.valhalla.Route
 import com.squareup.otto.Bus
 import com.squareup.otto.Subscribe
@@ -469,19 +471,88 @@ class MainPresenterTest {
     @Test fun onSearchResultSelected_shouldCenterOnCurrentFeature() {
         val result = Result()
         val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        val feature = SimpleFeature.create("1", "1", "", "",
+            "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0)
+        features.add(feature.toFeature())
         result.features = features
+        mainController.currentSearchItemPosition = 2
+        presenter.onSearchResultsAvailable(result)
+        presenter.onSearchResultSelected(2)
+        assertThat(mainController.currentSearchItemPosition).isEqualTo(2)
+    }
+
+    @Test fun onSearchResultSelected_shouldSetMapPositionForCurrentFeature() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        val feature = SimpleFeature.create("1", "1", "", "",
+            "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0)
+        features.add(feature.toFeature())
+        result.features = features
+        mainController.currentSearchItemPosition = 2
+        presenter.onSearchResultsAvailable(result)
+        presenter.onSearchResultSelected(2)
+        assertThat(mainController.lngLat?.longitude).isEqualTo(70.0)
+        assertThat(mainController.lngLat?.latitude).isEqualTo(40.0)
+    }
+
+    @Test fun onSearchResultSelected_shouldSetMapZoomDefaultZoom() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        val feature = SimpleFeature.create("1", "1", "", "",
+            "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0)
+        features.add(feature.toFeature())
+        result.features = features
+        mainController.currentSearchItemPosition = 2
         presenter.onSearchResultsAvailable(result)
         presenter.onSearchResultSelected(0)
-        assertThat(mainController.isCenteredOnCurrentFeature).isTrue()
+        assertThat(mainController.zoom).isEqualTo(16f)
     }
 
     @Test fun onSearchResultTapped_shouldCenterOnCurrentFeature() {
         val result = Result()
         val features = ArrayList<Feature>()
+        val feature = SimpleFeature.create("1", "1", "", "",
+            "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0)
+        features.add(feature.toFeature())
         result.features = features
+        mainController.currentSearchItemPosition = 2
         presenter.onSearchResultsAvailable(result)
         presenter.onSearchResultTapped(0)
-        assertThat(mainController.isCenteredOnTappedFeature).isTrue()
+        assertThat(mainController.currentSearchItemPosition).isEqualTo(0)
+    }
+
+    @Test fun onSearchResultTapped_shouldSetMapPositionOfCurrentFeature() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        val feature = SimpleFeature.create("1", "1", "", "",
+            "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0)
+        features.add(feature.toFeature())
+        result.features = features
+        mainController.currentSearchItemPosition = 2
+        presenter.onSearchResultsAvailable(result)
+        presenter.onSearchResultTapped(0)
+        assertThat(mainController.lngLat?.longitude).isEqualTo(70.0)
+        assertThat(mainController.lngLat?.latitude).isEqualTo(40.0)
+    }
+
+    @Test fun onSearchResultTapped_shouldSetMapZoomDefaultZoom() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        val feature = SimpleFeature.create("1", "1", "", "",
+            "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0)
+        features.add(feature.toFeature())
+        result.features = features
+        mainController.currentSearchItemPosition = 2
+        presenter.onSearchResultsAvailable(result)
+        presenter.onSearchResultTapped(0)
+        assertThat(mainController.lngLat?.longitude).isEqualTo(70.0)
+        assertThat(mainController.lngLat?.latitude).isEqualTo(40.0)
     }
 
     @Test fun onBackPressed_shouldDisconnectLocationUpdates() {
@@ -537,6 +608,48 @@ class MainPresenterTest {
         mainController.routeRequestCanceled = false
         presenter.onBackPressed()
         assertThat(mainController.routeRequestCanceled).isTrue()
+    }
+
+    @Test fun onBackPressed_shouldShowActionBarInStateRoutePreview() {
+        vsm.viewState = ROUTE_PREVIEW
+        mainController.isActionBarHidden = true
+        presenter.onBackPressed()
+        assertThat(mainController.isActionBarHidden).isFalse()
+    }
+
+    @Test fun onBackPressed_shouldUpdateReverseToFalseInStateRoutePreview() {
+        vsm.viewState = ROUTE_PREVIEW
+        routeManager.reverse = true
+        presenter.onBackPressed()
+        assertThat(routeManager.reverse).isFalse()
+    }
+
+    @Test fun onBackPressed_shouldHideRoutePreviewViewInStateRoutePreview() {
+        vsm.viewState = ROUTE_PREVIEW
+        mainController.isRoutePreviewViewVisible = true
+        presenter.onBackPressed()
+        assertThat(mainController.isRoutePreviewViewVisible).isFalse()
+    }
+
+    @Test fun onBackPressed_shouldHideMapRoutePinsInStateRoutePreview() {
+        vsm.viewState = ROUTE_PREVIEW
+        mainController.routePinsVisible = true
+        presenter.onBackPressed()
+        assertThat(mainController.routePinsVisible).isFalse()
+    }
+
+    @Test fun onBackPressed_shouldLayoutAttributionAboveSearchResultsInStateRoutePreview() {
+        vsm.viewState = ROUTE_PREVIEW
+        mainController.isAttributionAboveSearchResults = false
+        presenter.onBackPressed()
+        assertThat(mainController.isAttributionAboveSearchResults).isTrue()
+    }
+
+    @Test fun onBackPressed_shouldLayoutFindMeAboveSearchResultsInStateRoutePreview() {
+        vsm.viewState = ROUTE_PREVIEW
+        mainController.isFindMeAboveSearchResults = false
+        presenter.onBackPressed()
+        assertThat(mainController.isFindMeAboveSearchResults).isTrue()
     }
 
     @Test fun configureMapzenMap_shouldSetMapLocationFirstTimeInvoked() {
@@ -831,6 +944,117 @@ class MainPresenterTest {
         mainController.tilt = 30f
         presenter.onClickFindMe()
         assertThat(mainController.tilt).isEqualTo(0f)
+    }
+
+    @Test fun onExitNavigation_shouldSetViewStateDefault() {
+        vsm.viewState = ROUTING
+        presenter.onExitNavigation()
+        assertThat(vsm.viewState).isEqualTo(DEFAULT)
+    }
+
+    @Test fun onExitNavigation_shouldDisableRouting() {
+        presenter.routingEnabled = true
+        presenter.onExitNavigation()
+        assertThat(presenter.routingEnabled).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldResetReverse() {
+        routeManager.reverse = true
+        presenter.onExitNavigation()
+        assertThat(routeManager.reverse).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldEnableLocation() {
+        permissionManager.granted = true
+        mainController.isCurrentLocationEnabled = false
+        presenter.onExitNavigation()
+        assertThat(mainController.isCurrentLocationEnabled).isTrue()
+    }
+
+    @Test fun onExitNavigation_shouldStopVoiceNavigationController() {
+        mainController.isVoiceNavigationStopped = false
+        presenter.onExitNavigation()
+        assertThat(mainController.isVoiceNavigationStopped).isTrue()
+    }
+
+    @Test fun onExitNavigation_shouldClearRoute() {
+        mainController.routeLine = Route(JSONObject())
+        presenter.onExitNavigation()
+        assertThat(mainController.routeLine).isNull()
+    }
+
+    @Test fun onExitNavigation_shouldHideRouteIcon() {
+        mainController.isRouteIconVisible = true
+        presenter.onExitNavigation()
+        assertThat(mainController.isRouteIconVisible).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldHideRouteModeView() {
+        mainController.isRouteModeViewVisible = true
+        presenter.onExitNavigation()
+        assertThat(mainController.isRouteModeViewVisible).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldShowActionBar() {
+        mainController.isActionBarHidden = true
+        presenter.onExitNavigation()
+        assertThat(mainController.isActionBarHidden).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldHideRoutePreviewView() {
+        mainController.isRoutePreviewViewVisible = true
+        presenter.onExitNavigation()
+        assertThat(mainController.isRoutePreviewViewVisible).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldResetMapResponder() {
+        mainController.mapHasPanResponder = true
+        presenter.onExitNavigation()
+        assertThat(mainController.mapHasPanResponder).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldSetDefaultCamera() {
+        mainController.mapCameraType = MapController.CameraType.PERSPECTIVE
+        presenter.onExitNavigation()
+        assertThat(mainController.mapCameraType).isEqualTo(MapController.CameraType.ISOMETRIC)
+    }
+
+    @Test fun onExitNavigation_shouldAlignFindMeToBottom() {
+        mainController.isFindMeAboveOptions = true
+        presenter.onExitNavigation()
+        assertThat(mainController.isFindMeAboveOptions).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldResetMapTilt() {
+        mainController.tilt = 30f
+        presenter.onExitNavigation()
+        assertThat(mainController.tilt).isEqualTo(0f)
+    }
+
+    @Test fun centerOnCurrentFeature_shouldDoNothingForNoFeatures() {
+        val result = Result()
+        presenter.onSearchResultsAvailable(result)
+        mainController.currentSearchItemPosition = 3
+        val pos = LngLat(70.0, 40.0)
+        mainController.lngLat = pos
+        mainController.zoom = MainPresenter.ROUTING_ZOOM
+        presenter.onSearchResultSelected(0)
+        assertThat(mainController.currentSearchItemPosition).isEqualTo(3)
+        assertThat(mainController.lngLat).isEqualTo(pos)
+        assertThat(mainController.zoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
+    }
+
+    @Test fun centerOnFeature_shouldDoNothingForNoFeatures() {
+        val result = Result()
+        presenter.onSearchResultsAvailable(result)
+        mainController.currentSearchItemPosition = 3
+        val pos = LngLat(70.0, 40.0)
+        mainController.lngLat = pos
+        mainController.zoom = MainPresenter.ROUTING_ZOOM
+        presenter.onSearchResultTapped(0)
+        assertThat(mainController.currentSearchItemPosition).isEqualTo(3)
+        assertThat(mainController.lngLat).isEqualTo(pos)
+        assertThat(mainController.zoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
     }
 
     class RouteEventSubscriber {

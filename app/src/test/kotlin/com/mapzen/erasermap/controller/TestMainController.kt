@@ -5,6 +5,7 @@ import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.tangram.LngLat
+import com.mapzen.tangram.MapController
 import com.mapzen.valhalla.Route
 
 class TestMainController : MainViewController {
@@ -27,8 +28,6 @@ class TestMainController : MainViewController {
     var isRoutePreviewDestinationVisible: Boolean = false
     var isDirectionListVisible: Boolean = false
     var isRoutingModeVisible: Boolean = false
-    var isCenteredOnCurrentFeature: Boolean = false
-    var isCenteredOnTappedFeature: Boolean = false
     var isReverseGeocodeVisible: Boolean = false
     var isPlaceResultOverridden: Boolean = false
     var isSettingsVisible: Boolean = false
@@ -49,6 +48,16 @@ class TestMainController : MainViewController {
     var isRoutePreviewDistanceTieVisible = false
     var routePreviewRoute: Route? = null
     var routePinLocations: Array<ValhallaLocation>? = null
+    var isVoiceNavigationStopped = false
+    var isRouteIconVisible = true
+    var isRouteModeViewVisible = true
+    var isRoutePreviewViewVisible = true
+    var mapHasPanResponder = true
+    var mapCameraType = MapController.CameraType.PERSPECTIVE
+    var routePinsVisible = true
+    var isAttributionAboveSearchResults = false
+    var isFindMeAboveSearchResults = false
+    var currentSearchItemPosition = 0
 
     override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
@@ -56,14 +65,6 @@ class TestMainController : MainViewController {
 
     override fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int) {
         searchResults = features;
-    }
-
-    override fun centerOnCurrentFeature(features: List<Feature>?) {
-        isCenteredOnCurrentFeature = true
-    }
-
-    override fun centerOnFeature(features: List<Feature>?, position: Int) {
-        isCenteredOnTappedFeature = true
     }
 
     override fun hideSearchResults() {
@@ -110,10 +111,6 @@ class TestMainController : MainViewController {
 
     override fun route() {
         isRouting = true
-    }
-
-    override fun hideRoutePreview() {
-        isRoutePreviewVisible = false
     }
 
     override fun shutDown() {
@@ -289,5 +286,65 @@ class TestMainController : MainViewController {
 
     override fun updateRoutePreviewStartNavigation() {
 
+    }
+
+    override fun stopVoiceNavigationController() {
+        isVoiceNavigationStopped = true
+    }
+
+    override fun hideRouteIcon() {
+        isRouteIconVisible = false
+    }
+
+    override fun hideRouteModeView() {
+        isRouteModeViewVisible = false
+    }
+
+    override fun showActionBar() {
+        isActionBarHidden = false
+    }
+
+    override fun hideRoutePreviewView() {
+        isRoutePreviewViewVisible = false
+    }
+
+    override fun resetMapPanResponder() {
+        mapHasPanResponder = false
+    }
+
+    override fun setDefaultCamera() {
+        mapCameraType = MapController.CameraType.ISOMETRIC
+    }
+
+    override fun layoutFindMeAlignBottom() {
+        isFindMeAboveOptions = false
+    }
+
+    override fun hideMapRoutePins() {
+        routePinsVisible = false
+    }
+
+    override fun layoutAttributionAboveSearchResults(features: List<Feature>) {
+        isAttributionAboveSearchResults = true
+    }
+
+    override fun layoutFindMeAboveSearchResults(features: List<Feature>) {
+        isFindMeAboveSearchResults = true
+    }
+
+    override fun setCurrentSearchItem(position: Int) {
+        currentSearchItemPosition = position
+    }
+
+    override fun setMapPosition(lngLat: LngLat, duration: Int) {
+        this.lngLat = lngLat
+    }
+
+    override fun setMapZoom(zoom: Float) {
+        this.zoom = zoom
+    }
+
+    override fun getCurrentSearchPosition(): Int {
+        return currentSearchItemPosition
     }
 }
