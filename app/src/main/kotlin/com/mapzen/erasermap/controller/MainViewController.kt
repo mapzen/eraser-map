@@ -82,4 +82,7 @@ interface MainViewController {
     fun setMapPosition(lngLat: LngLat, duration: Int)
     fun setMapZoom(zoom: Float)
     fun getCurrentSearchPosition(): Int
+    fun toastify(resId: Int)
+    fun focusSearchView()
+    fun toggleShowDebugSettings()
 }

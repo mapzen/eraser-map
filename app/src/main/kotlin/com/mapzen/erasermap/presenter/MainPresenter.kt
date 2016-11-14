@@ -37,7 +37,7 @@ interface MainPresenter {
     fun onCollapseSearchView()
     fun onClickViewList()
     fun onClickStartNavigation()
-    fun onQuerySubmit()
+    fun onQuerySubmit(query: String)
     fun onViewAllSearchResultsList()
     fun updateLocation()
     fun onBackPressed()

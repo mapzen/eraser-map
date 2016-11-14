@@ -4,7 +4,9 @@ import android.location.Location
 import android.util.Log
 import com.mapzen.android.lost.api.LocationServices
 import com.mapzen.android.lost.api.Status
+import com.mapzen.erasermap.R
 import com.mapzen.erasermap.controller.MainViewController
+import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
 import com.mapzen.erasermap.model.IntentQuery
@@ -88,14 +90,29 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun onSearchResultsAvailable(result: Result?) {
-    vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
-    reverseGeo = false
-    this.searchResults = result
     this.currentSearchIndex = 0
-    mainViewController?.showSearchResults(result?.features)
     mainViewController?.hideProgress()
+    if (currentSearchTerm != AndroidAppSettings.SHOW_DEBUG_SETTINGS_QUERY) {
+      if (result != null && featuresExist(result.features)) {
+        handleValidSearchResults(result)
+      } else {
+        handleEmptySearchResults()
+      }
+    }
+  }
+
+  private fun handleValidSearchResults(result: Result) {
+    vsm.viewState = SEARCH_RESULTS
+    reverseGeo = false
+    searchResults = result
+    mainViewController?.showSearchResults(result.features)
     mainViewController?.deactivateFindMeTracking()
     updateViewAllAction(result)
+  }
+
+  private fun handleEmptySearchResults() {
+    mainViewController?.toastify(R.string.no_results_found)
+    mainViewController?.focusSearchView()
   }
 
   private fun updateViewAllAction(result: Result?) {
@@ -246,8 +263,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     }
   }
 
-  override fun onQuerySubmit() {
+  override fun onQuerySubmit(query: String) {
     mainViewController?.showProgress()
+    if (AndroidAppSettings.SHOW_DEBUG_SETTINGS_QUERY == query) {
+      mainViewController?.toggleShowDebugSettings()
+    }
   }
 
   override fun onSearchResultSelected(position: Int) {
@@ -678,7 +698,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
       val searchIndex = properties[MAP_DATA_PROP_SEARCHINDEX]!!.toInt()
       onSearchResultTapped(searchIndex)
     } else {
-      onReverseGeoRequested(poiPoint.get(0).toFloat(), poiPoint.get(1).toFloat())
+      onReverseGeoRequested(poiPoint[0], poiPoint[1])
     }
   }
 
@@ -713,7 +733,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   private fun featuresExist(features: List<Feature>?): Boolean {
-    return features != null && features!!.size > 0
+    return features != null && features.isNotEmpty()
   }
 
   private fun centerOnCurrentFeature(features: List<Feature>?) {

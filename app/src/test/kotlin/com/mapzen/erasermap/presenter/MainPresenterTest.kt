@@ -1,12 +1,14 @@
 package com.mapzen.erasermap.presenter
 
 import com.mapzen.android.lost.api.Status
+import com.mapzen.erasermap.R
 import com.mapzen.erasermap.controller.TestMainController
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getFixture
 import com.mapzen.erasermap.dummy.TestHelper.getTestAndroidLocation
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
+import com.mapzen.erasermap.model.AndroidAppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
 import com.mapzen.erasermap.model.IntentQuery
 import com.mapzen.erasermap.model.IntentQueryParser
@@ -79,6 +81,7 @@ class MainPresenterTest {
     @Test fun onSearchResultsAvailable_shouldShowSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
+        features.add(Feature())
         result.features = features
         presenter.onSearchResultsAvailable(result)
         assertThat(mainController.searchResults).isEqualTo(features)
@@ -87,6 +90,7 @@ class MainPresenterTest {
     @Test fun onSearchResultsAvailable_shouldDeactivateFindMeTracking() {
         val result = Result()
         val features = ArrayList<Feature>()
+        features.add(Feature())
         result.features = features
         mainController.isFindMeTrackingEnabled = true
         presenter.onSearchResultsAvailable(result)
@@ -100,6 +104,22 @@ class MainPresenterTest {
         presenter.currentSearchIndex = 3
         presenter.onSearchResultsAvailable(result)
         assertThat(presenter.currentSearchIndex).isEqualTo(0)
+    }
+
+    @Test fun onSearchResultsAvailable_shouldToastErrorMessageIfResultsAreEmpty() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.toastifyResId).isEqualTo(R.string.no_results_found)
+    }
+
+    @Test fun onSearchResultsAvailable_shouldFocusSearchViewIfResultsAreEmpty() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.focusSearchView).isTrue()
     }
 
     @Test fun onReverseGeocodeResultsAvailable_shouldShowSearchResults() {
@@ -198,6 +218,7 @@ class MainPresenterTest {
     @Test fun onRestoreMapState_shouldRestorePreviousSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
+        features.add(Feature())
         result.features = features
         presenter.onSearchResultsAvailable(result)
 
@@ -210,6 +231,9 @@ class MainPresenterTest {
     @Test fun onRestoreMapState_shouldRestorePreviousSearchResultsCurrentIndex() {
         val result = Result()
         val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        features.add(Feature())
         result.features = features
         presenter.onSearchResultsAvailable(result)
         presenter.currentSearchIndex = 2
@@ -321,13 +345,25 @@ class MainPresenterTest {
     }
 
     @Test fun onQuerySubmit_shouldShowProgress() {
-        presenter.onQuerySubmit()
+        presenter.onQuerySubmit("")
         assertThat(mainController.isProgressVisible).isTrue()
     }
 
+    @Test fun onQuerySubmit_shouldToggleDebugModeForCorrectSearchTerm() {
+        presenter.onQuerySubmit("")
+        assertThat(mainController.debugSettingsEnabled).isFalse()
+
+        presenter.onQuerySubmit(AndroidAppSettings.SHOW_DEBUG_SETTINGS_QUERY)
+        assertThat(mainController.debugSettingsEnabled).isTrue()
+    }
+
     @Test fun onSearchResultsAvailable_shouldHideProgress() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        result.features = features
         mainController.showProgress()
-        presenter.onSearchResultsAvailable(Result())
+        presenter.onSearchResultsAvailable(result)
         assertThat(mainController.isProgressVisible).isFalse()
     }
 
@@ -341,6 +377,19 @@ class MainPresenterTest {
         result.features = features
         presenter.onSearchResultsAvailable(result)
         assertThat(mainController.isViewAllVisible).isTrue()
+    }
+
+    @Test fun onSearchResultsAvailable_shouldDoNothingIfCurrentQueryIsDebugToggle() {
+        presenter.currentSearchTerm = AndroidAppSettings.SHOW_DEBUG_SETTINGS_QUERY
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        features.add(Feature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.searchResults).isNull()
+        assertThat(mainController.focusSearchView).isFalse()
     }
 
     @Test fun onCollapseSearchView_shouldHideActionViewAll() {
@@ -430,6 +479,9 @@ class MainPresenterTest {
     @Test fun onBackPressed_shouldRestoreSearchResultsSearchIndex() {
         val result = Result()
         val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        features.add(Feature())
         result.features = features
         presenter.onSearchResultsAvailable(result)
         presenter.currentSearchIndex = 2
@@ -442,6 +494,9 @@ class MainPresenterTest {
     @Test fun onBackPressed_shouldRestoreSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        features.add(Feature())
         result.features = features
         presenter.onSearchResultsAvailable(result)
         presenter.currentSearchIndex = 2
