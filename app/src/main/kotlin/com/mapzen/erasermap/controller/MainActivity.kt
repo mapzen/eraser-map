@@ -719,9 +719,8 @@ class MainActivity : AppCompatActivity(), MainViewController,
             return
         }
 
-        val position = getCurrentSearchPosition()
-        setCurrentSearchItem(position)
-        val feature = SimpleFeature.fromFeature(features[position])
+        setCurrentSearchItem(activeIndex)
+        val feature = SimpleFeature.fromFeature(features[activeIndex])
         setMapPosition(LngLat(feature.lng(), feature.lat()), 1000)
         setMapZoom(MainPresenter.DEFAULT_ZOOM)
 
