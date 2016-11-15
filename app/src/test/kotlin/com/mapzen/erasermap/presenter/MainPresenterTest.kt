@@ -519,6 +519,27 @@ class MainPresenterTest {
         assertThat(mainController.routeLine).isNull()
     }
 
+    @Test fun onBackPressed_reverseGeo_shouldRestoreMapPosition() {
+        presenter.onSearchResultsAvailable(Result())
+        presenter.reverseGeo = true
+        mainController.lngLat = LngLat(40.0, 70.0)
+        mainController.zoom = 16f
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.onBackPressed()
+        assertThat(mainController.lngLat?.latitude).isEqualTo(70.0)
+        assertThat(mainController.lngLat?.longitude).isEqualTo(40.0)
+    }
+
+    @Test fun onBackPressed_reverseGeo_shouldRestoreMapZoom() {
+        presenter.onSearchResultsAvailable(Result())
+        presenter.reverseGeo = true
+        mainController.lngLat = LngLat(40.0, 70.0)
+        mainController.zoom = 16f
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+        presenter.onBackPressed()
+        assertThat(mainController.zoom).isEqualTo(16f)
+    }
+
     @Test fun onClickViewList_shouldMakeDirectionsVisible() {
         presenter.onClickViewList()
         assertThat(mainController.isDirectionListVisible).isTrue()

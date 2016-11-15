@@ -71,6 +71,8 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
       confidenceHandler.reverseGeoLngLat = value
     }
   override var currentSearchIndex: Int = 0
+  override var mapPosition: LngLat? = null
+  override var mapZoom: Float? = null
 
   private var searchResults: Result? = null
   private var destination: Feature? = null
@@ -315,6 +317,8 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     }
     reverseGeo = false
     destination = event.destination
+    mapPosition = mainViewController?.getMapPosition()
+    mapZoom = mainViewController?.getMapZoom()
     mainViewController?.collapseSearchView()
     mainViewController?.hideSearchResults()
     mainViewController?.hideReverseGeolocateResult()
@@ -391,6 +395,8 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     if (searchResults != null) {
       if (reverseGeo) {
         mainViewController?.showReverseGeocodeFeature(searchResults?.features)
+        mainViewController?.setMapPosition(mapPosition as LngLat, 0)
+        mainViewController?.setMapZoom(mapZoom as Float)
       } else {
         mainViewController?.showSearchResults(searchResults?.features, currentSearchIndex)
         var numFeatures = 0
