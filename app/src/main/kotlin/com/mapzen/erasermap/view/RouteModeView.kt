@@ -231,7 +231,6 @@ class RouteModeView : LinearLayout, RouteViewController, ViewPager.OnPageChangeL
 
     private fun onMapPan(deltaX: Float, deltaY: Float): Boolean {
         routePresenter.onMapPan(deltaX, deltaY)
-        mainPresenter?.onMapMotionEvent()
         return false
     }
 
