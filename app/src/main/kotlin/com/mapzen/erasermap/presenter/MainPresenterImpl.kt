@@ -561,6 +561,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun onMapMotionEvent(): Boolean {
+    mainViewController?.showCompass()
     mainViewController?.rotateCompass()
     return false
   }

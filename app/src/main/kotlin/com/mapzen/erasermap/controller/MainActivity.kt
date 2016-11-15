@@ -185,6 +185,10 @@ class MainActivity : AppCompatActivity(), MainViewController,
         mapzenMap?.setRotateResponder({ x, y, rotation -> presenter.onMapMotionEvent() })
     }
 
+    override fun showCompass() {
+        compass.visibility = View.VISIBLE
+    }
+
     override fun rotateCompass() {
         val radians: Float = mapzenMap?.rotation as Float
         val degrees = Math.toDegrees(radians.toDouble()).toFloat()
@@ -318,6 +322,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     private fun initCompass() {
+        compass.visibility = View.GONE
         compass.setOnClickListener({
             presenter.onCompassClick()
         })

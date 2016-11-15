@@ -39,6 +39,7 @@ interface MainViewController {
     fun setMapRotation(radians: Float)
     fun drawRoute(route: Route)
     fun clearRoute()
+    fun showCompass()
     fun rotateCompass()
     fun reverseGeolocate(screenX: Float, screenY: Float)
     fun placeSearch(gid: String)
