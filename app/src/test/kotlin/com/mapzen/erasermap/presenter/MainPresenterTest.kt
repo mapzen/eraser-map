@@ -1158,13 +1158,13 @@ class MainPresenterTest {
         assertThat(mainController.zoom).isEqualTo(MainPresenter.ROUTING_ZOOM)
     }
 
-    @Test fun onMapMotionEvent_shouldShowCompass() {
-        presenter.onMapMotionEvent()
+    @Test fun onMapRotateEvent_shouldShowCompass() {
+        presenter.onMapRotateEvent()
         assertThat(mainController.compassShowing)
     }
 
-    @Test fun onMapMotionEvent_shouldRotateCompass() {
-        presenter.onMapMotionEvent()
+    @Test fun onMapRotateEvent_shouldRotateCompass() {
+        presenter.onMapRotateEvent()
         assertThat(mainController.compassRotated)
     }
 

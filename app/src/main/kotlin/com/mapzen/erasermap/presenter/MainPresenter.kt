@@ -49,7 +49,7 @@ interface MainPresenter {
     fun onCompassClick()
     fun getPeliasLocationProvider(): PeliasLocationProvider
     fun onReroute(location: ValhallaLocation)
-    fun onMapMotionEvent(): Boolean
+    fun onMapRotateEvent(): Boolean
     fun onReverseGeoRequested(screenX: Float?, screenY: Float?): Boolean
     fun onPlaceSearchRequested(gid: String): Boolean
     fun onExitNavigation()

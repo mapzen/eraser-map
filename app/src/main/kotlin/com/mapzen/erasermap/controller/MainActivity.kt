@@ -182,7 +182,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     private fun initMapRotateListener() {
-        mapzenMap?.setRotateResponder({ x, y, rotation -> presenter.onMapMotionEvent() })
+        mapzenMap?.setRotateResponder({ x, y, rotation -> presenter.onMapRotateEvent() })
     }
 
     override fun showCompass() {
