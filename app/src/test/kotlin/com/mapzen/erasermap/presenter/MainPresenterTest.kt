@@ -35,6 +35,8 @@ import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
+import com.mapzen.pelias.gson.Geometry
+import com.mapzen.pelias.gson.Properties
 import com.mapzen.pelias.gson.Result
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
@@ -122,41 +124,92 @@ class MainPresenterTest {
         assertThat(mainController.focusSearchView).isTrue()
     }
 
-    @Test fun onReverseGeocodeResultsAvailable_shouldShowSearchResults() {
-        val result = Result()
-        val features = ArrayList<Feature>()
-        result.features = features
-        presenter.onReverseGeocodeResultsAvailable(result)
-        assertThat(mainController.isReverseGeocodeVisible).isTrue()
-    }
-
-    @Test fun onPlaceSearchResultsAvailable_shouldShowSearchResults() {
-        val result = Result()
-        val features = ArrayList<Feature>()
-        result.features = features
-        presenter.onPlaceSearchResultsAvailable(result)
-        assertThat(mainController.isReverseGeocodeVisible).isTrue()
-    }
-
-    @Test fun onPlaceSearchRequested_shouldShowNonEmptyResults() {
+    @Test fun onReverseGeocodeResultsAvailable_shouldShowPointOnMap() {
+        mainController.screenPosLngLat = LngLat(40.0, 70.0)
+        presenter.poiTapPoint = floatArrayOf(40f, 70f)
         val result = Result()
         val features = ArrayList<Feature>()
         val feature = Feature()
+        feature.properties = Properties()
+        features.add(feature)
+        result.features = features
+        presenter.onReverseGeocodeResultsAvailable(result)
+        assertThat(mainController.reverseGeoPointOnMap?.longitude).isEqualTo(40.0)
+        assertThat(mainController.reverseGeoPointOnMap?.latitude).isEqualTo(70.0)
+    }
+
+    @Test fun onPlaceSearchResultsAvailable_shouldShowPlaceSearchResults() {
+        presenter.poiTapPoint = floatArrayOf(40f, 70f)
+        val result = Result()
+        val features = ArrayList<Feature>()
+        val feature = Feature()
+        feature.properties = Properties()
         features.add(feature)
         result.features = features
         presenter.onPlaceSearchResultsAvailable(result)
-        assertThat(mainController.isReverseGeocodeVisible).isTrue()
+        assertThat(mainController.placeSearchResults).isEqualTo(features)
     }
 
     @Test fun onPlaceSearchRequested_shouldOverridePlaceResult() {
+        mainController.screenPosLngLat = LngLat(40.0, 70.0)
+        presenter.poiTapPoint = floatArrayOf(40f, 70f)
+        presenter.poiTapName = "Test Name"
         val result = Result()
         val features = ArrayList<Feature>()
         val feature = Feature()
+        feature.properties = Properties()
         features.add(feature)
         result.features = features
         presenter.onPlaceSearchResultsAvailable(result)
-        assertThat(mainController.isPlaceResultOverridden).isTrue()
+        assertThat(feature.geometry.coordinates[0]).isEqualTo(40.0)
+        assertThat(feature.geometry.coordinates[1]).isEqualTo(70.0)
+        assertThat(feature.properties.name).isEqualTo("Test Name")
     }
+
+//
+//    if (poiTapPoint != null) {
+//        val geometry = Geometry()
+//        val coordinates = ArrayList<Double>()
+//        val pointX = poiTapPoint?.get(0)?.toFloat()
+//        val pointY = poiTapPoint?.get(1)?.toFloat()
+//        if (pointX != null && pointY != null) {
+//            val coords = mainViewController?.screenPositionToLngLat(pointX, pointY)
+//            val lng = coords?.longitude
+//            val lat = coords?.latitude
+//            if (lng != null && lat!= null) {
+//                coordinates.add(lng)
+//                coordinates.add(lat)
+//                geometry.coordinates = coordinates
+//                feature.geometry = geometry
+//            }
+//        }
+//    }
+//    if (poiTapName != null) {
+//        feature.properties.name = poiTapName
+//    }
+//
+//    mainViewController?.hideSearchResults()
+//    mainViewController?.layoutAttributionAboveSearchResults(features)
+//    mainViewController?.layoutFindMeAboveSearchResults(features)
+//
+//    val lngLat: LngLat?
+//    if (poiTapPoint != null) {
+//        val x = poiTapPoint!![0].toFloat()
+//        val y = poiTapPoint!![1].toFloat()
+//        lngLat = mainViewController?.screenPositionToLngLat(x, y)
+//
+//        // Fallback for a failed Pelias Place Callback
+//        overridePlaceFeature(features[0])
+//    } else {
+//        lngLat = reverseGeoLngLat
+//    }
+//
+//    mainViewController?.showPlaceSearchFeature(features)
+//
+//    mainViewController?.hideReverseGeolocateResult()
+//    mainViewController?.showReverseGeoResult(lngLat)
+//
+
 
     @Test fun onRestoreOptionsMenu_shouldRestoreSettingsBtnAndViewAllForSearchResults() {
         val result = Result()
@@ -1042,10 +1095,9 @@ class MainPresenterTest {
     }
 
     @Test fun onFeaturePicked_shouldReverseGeolocate() {
-        val poiTapPoint = floatArrayOf(40.0f, 70.0f)
         val props = HashMap<String, String>()
         presenter.reverseGeo = true
-        presenter.onFeaturePicked(props, poiTapPoint)
+        presenter.onFeaturePicked(props, 40.0f, 70.0f)
         assertThat(mainController.reverseGeolocatePoint?.longitude).isEqualTo(40.0)
         assertThat(mainController.reverseGeolocatePoint?.latitude).isEqualTo(70.0)
     }

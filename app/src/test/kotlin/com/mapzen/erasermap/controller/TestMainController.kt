@@ -28,8 +28,6 @@ class TestMainController : MainViewController {
     var isRoutePreviewDestinationVisible: Boolean = false
     var isDirectionListVisible: Boolean = false
     var isRoutingModeVisible: Boolean = false
-    var isReverseGeocodeVisible: Boolean = false
-    var isPlaceResultOverridden: Boolean = false
     var isSettingsVisible: Boolean = false
     var isFindMeTrackingEnabled: Boolean = false
     var popBackStack: Boolean = false
@@ -64,6 +62,12 @@ class TestMainController : MainViewController {
     var debugSettingsEnabled = false
     var compassRotated = false
     var compassShowing = false
+    var reverseGeoPointOnMap: LngLat? = null
+    var searchResultsViewHidden = false
+    var attributionAlignedBottom = false
+    var placeSearchResults: List<Feature>? = null
+
+    var screenPosLngLat: LngLat? = null
 
     override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
@@ -75,7 +79,7 @@ class TestMainController : MainViewController {
     }
 
     override fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int) {
-        searchResults = features;
+        searchResults = features
     }
 
     override fun hideSearchResults() {
@@ -173,13 +177,14 @@ class TestMainController : MainViewController {
         rotation = radians
     }
 
-    override fun showReverseGeocodeFeature(features: List<Feature>?) {
-        isReverseGeocodeVisible = true
-        reverseGeoCodeResults = features;
-    }
+//    override fun showReverseGeocodeFeature(features: List<Feature>?) {
+//        isReverseGeocodeVisible = true
+//        reverseGeoCodeResults = features;
+//    }
 
     override fun showPlaceSearchFeature(features: List<Feature>) {
-        showReverseGeocodeFeature(features)
+        placeSearchResults = features
+//        showReverseGeocodeFeature(features)
     }
 
     override fun drawRoute(route: Route) {
@@ -206,17 +211,17 @@ class TestMainController : MainViewController {
         placeSearchPoint = LngLat(0.0, 0.0)
     }
  
-    override fun emptyPlaceSearch() {
-        isReverseGeocodeVisible = true
-    }
+//    override fun emptyPlaceSearch() {
+//        isReverseGeocodeVisible = true
+//    }
 
-    override fun overridePlaceFeature(feature: Feature) {
-        isPlaceResultOverridden = true
-    }
+//    override fun overridePlaceFeature(feature: Feature) {
+//        isPlaceResultOverridden = true
+//    }
 
-    override fun drawTappedPoiPin() {
-        //empty
-    }
+//    override fun drawTappedPoiPin() {
+//        //empty
+//    }
 
     override fun hideSettingsBtn() {
         isSettingsVisible = false
@@ -382,5 +387,28 @@ class TestMainController : MainViewController {
 
     override fun getMapZoom(): Float? {
         return zoom
+    }
+
+    override fun showReverseGeoResult(lngLat: LngLat?) {
+        reverseGeoPointOnMap = lngLat
+    }
+
+    override fun screenPositionToLngLat(x: Float, y: Float): LngLat? {
+        if (screenPosLngLat != null) {
+            return screenPosLngLat
+        }
+        return LngLat(0.0, 0.0)
+    }
+
+    override fun hideSearchResultsView() {
+        searchResultsViewHidden = true
+    }
+
+    override fun layoutAttributionAlignBottom() {
+        attributionAlignedBottom = true
+    }
+
+    override fun setMapZoom(zoom: Float, duration: Int) {
+        this.zoom = zoom
     }
 }

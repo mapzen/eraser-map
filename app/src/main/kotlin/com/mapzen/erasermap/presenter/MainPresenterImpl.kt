@@ -55,6 +55,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   companion object {
     private val TAG = MainPresenterImpl::class.java.simpleName
 
+    @JvmStatic val MAP_DATA_PROP_NAME = "name"
     @JvmStatic val MAP_DATA_PROP_SEARCHINDEX = "searchIndex"
   }
 
@@ -73,6 +74,8 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   override var currentSearchIndex: Int = 0
   override var mapPosition: LngLat? = null
   override var mapZoom: Float? = null
+  override var poiTapPoint: FloatArray? = null
+  override var poiTapName: String? = null
 
   private var searchResults: Result? = null
   private var destination: Feature? = null
@@ -130,21 +133,17 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     vsm.viewState = ViewStateManager.ViewState.SEARCH_RESULTS
     var features = ArrayList<Feature>()
     this.searchResults = searchResults
+    val feature: Feature?
     if (searchResults?.features?.isEmpty() as Boolean) {
-      val current = currentFeature
-      if (current is Feature) {
-        features.add(current)
-      }
-      mainViewController?.showReverseGeocodeFeature(features)
-      searchResults?.setFeatures(features)
+      feature = currentFeature
     } else {
-      val current = searchResults?.features?.get(0)
-      if (current is Feature) {
-        features.add(current)
-      }
-      searchResults?.features = features
-      mainViewController?.showReverseGeocodeFeature(features)
+      feature = searchResults?.features?.get(0)
     }
+    if (feature is Feature) {
+      features.add(feature)
+    }
+    showReverseGeocodeFeature(features)
+    searchResults?.features = features
   }
 
   override fun onPlaceSearchResultsAvailable(searchResults: Result?) {
@@ -152,15 +151,39 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     var features = ArrayList<Feature>()
     this.searchResults = searchResults
     if (searchResults?.features?.isEmpty() as Boolean) {
-      mainViewController?.emptyPlaceSearch()
+      emptyPlaceSearch()
     } else {
       val current = searchResults?.features?.get(0)
       if (current is Feature) {
         features.add(current)
-        mainViewController?.overridePlaceFeature(features[0])
+        overridePlaceFeature(features[0])
       }
       searchResults?.features = features
       mainViewController?.showPlaceSearchFeature(features)
+    }
+  }
+
+  override fun onMapPressed(x: Float, y: Float) {
+    val coords = mainViewController?.screenPositionToLngLat(x, y)
+    reverseGeoLngLat = coords
+    poiTapPoint = floatArrayOf(x, y)
+  }
+
+  override fun onMapDoubleTapped(x: Float, y: Float) {
+    val tappedPos = mainViewController?.screenPositionToLngLat(x, y)
+    val currentPos = mainViewController?.getMapPosition()
+    if (tappedPos != null && currentPos != null) {
+      val zoom = mainViewController?.getMapZoom() as Float + 1.0f
+      mainViewController?.setMapZoom(zoom, 500)
+      val lngLat = LngLat(0.5f * (tappedPos.longitude + currentPos.longitude),
+          0.5f * (tappedPos.latitude + currentPos.latitude))
+      mainViewController?.setMapPosition(lngLat, 500)
+    }
+  }
+
+  private fun emptyPlaceSearch() {
+    if (poiTapPoint != null) {
+      onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(), poiTapPoint?.get(1)?.toFloat())
     }
   }
 
@@ -233,10 +256,62 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
       if (!reverseGeo) {
         mainViewController?.showSearchResults(searchResults?.features, currentSearchIndex)
       } else {
-        mainViewController?.showReverseGeocodeFeature(searchResults?.features)
+        showReverseGeocodeFeature(searchResults?.features)
         centerOnCurrentFeature(searchResults?.features)
       }
     }
+  }
+
+  private fun showReverseGeocodeFeature(features: List<Feature>?) {
+    if (features == null) {
+      return
+    }
+
+    mainViewController?.hideSearchResults()
+    mainViewController?.layoutAttributionAboveSearchResults(features)
+    mainViewController?.layoutFindMeAboveSearchResults(features)
+
+    val lngLat: LngLat?
+    if (poiTapPoint != null) {
+      val x = poiTapPoint!![0].toFloat()
+      val y = poiTapPoint!![1].toFloat()
+      lngLat = mainViewController?.screenPositionToLngLat(x, y)
+
+      // Fallback for a failed Pelias Place Callback
+      overridePlaceFeature(features[0])
+    } else {
+      lngLat = reverseGeoLngLat
+    }
+
+    mainViewController?.showPlaceSearchFeature(features)
+
+    mainViewController?.hideReverseGeolocateResult()
+    mainViewController?.showReverseGeoResult(lngLat)
+  }
+
+  private fun overridePlaceFeature(feature: Feature) {
+    if (poiTapPoint != null) {
+      val geometry = Geometry()
+      val coordinates = ArrayList<Double>()
+      val pointX = poiTapPoint?.get(0)?.toFloat()
+      val pointY = poiTapPoint?.get(1)?.toFloat()
+      if (pointX != null && pointY != null) {
+        val coords = mainViewController?.screenPositionToLngLat(pointX, pointY)
+        val lng = coords?.longitude
+        val lat = coords?.latitude
+        if (lng != null && lat!= null) {
+          coordinates.add(lng)
+          coordinates.add(lat)
+          geometry.coordinates = coordinates
+          feature.geometry = geometry
+        }
+      }
+    }
+    if (poiTapName != null) {
+      feature.properties.name = poiTapName
+    }
+    poiTapName = null
+    poiTapPoint = null
   }
 
   private fun adjustLayoutAndRoute() {
@@ -394,7 +469,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     mainViewController?.clearRoute()
     if (searchResults != null) {
       if (reverseGeo) {
-        mainViewController?.showReverseGeocodeFeature(searchResults?.features)
+        showReverseGeocodeFeature(searchResults?.features)
         if (mapPosition != null) {
           mainViewController?.setMapPosition(mapPosition as LngLat, 0)
         }
@@ -589,12 +664,29 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
   override fun onPlaceSearchRequested(gid: String): Boolean {
     if (reverseGeo || vsm.viewState == ViewStateManager.ViewState.DEFAULT) {
-      mainViewController?.drawTappedPoiPin()
+      drawTappedPoiPin()
       mainViewController?.placeSearch(gid)
       reverseGeo = true
       return true
     }
     return false
+  }
+
+  private fun drawTappedPoiPin() {
+    mainViewController?.hideSearchResultsView()
+    mainViewController?.layoutAttributionAlignBottom()
+    mainViewController?.layoutFindMeAlignBottom()
+
+    var lngLat: LngLat? = null
+
+    val pointX = poiTapPoint?.get(0)?.toFloat()
+    val pointY = poiTapPoint?.get(1)?.toFloat()
+    if (pointX != null && pointY != null) {
+      lngLat = mainViewController?.screenPositionToLngLat(pointX, pointY)
+    }
+
+    mainViewController?.hideReverseGeolocateResult()
+    mainViewController?.showReverseGeoResult(lngLat)
   }
 
   override fun configureMapzenMap() {
@@ -704,12 +796,18 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     return rawFeature
   }
 
-  override fun onFeaturePicked(properties: Map<String, String>, poiPoint: FloatArray) {
+  override fun onFeaturePicked(properties: Map<String, String>, x: Float, y: Float) {
+    // Reassign tapPoint to center of the feature tapped
+    // Also used in placing the pin
+    poiTapPoint = floatArrayOf(x, y)
+    if (properties.contains(MAP_DATA_PROP_NAME)) {
+      poiTapName = properties[MAP_DATA_PROP_NAME]
+    }
     if (properties.contains(MAP_DATA_PROP_SEARCHINDEX)) {
       val searchIndex = properties[MAP_DATA_PROP_SEARCHINDEX]!!.toInt()
       onSearchResultTapped(searchIndex)
     } else {
-      onReverseGeoRequested(poiPoint[0], poiPoint[1])
+      onReverseGeoRequested(x, y)
     }
   }
 
