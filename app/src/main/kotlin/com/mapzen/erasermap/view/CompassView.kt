@@ -4,14 +4,14 @@ import android.content.Context
 import android.util.AttributeSet
 import com.mapzen.erasermap.R
 
-public class CompassView(context: Context, attrs: AttributeSet) : ButtonView(context, attrs) {
+class CompassView(context: Context, attrs: AttributeSet) : ButtonView(context, attrs) {
 
     override fun idForLayout():Int {
-        return R.layout.view_compass;
+        return R.layout.view_compass
     }
 
     override fun idForImage():Int {
-        return R.id.compass;
+        return R.id.compass
     }
 
     override fun setRotation(rotation: Float) {
@@ -21,9 +21,9 @@ public class CompassView(context: Context, attrs: AttributeSet) : ButtonView(con
         }
     }
 
-    public fun reset() {
+    fun reset() {
         val newRotation = if (image.rotation < 180) 0f else 360f
         image.animate().setDuration(1000).rotation(newRotation)
-        animate().setDuration(1000).alpha(0f).setStartDelay(1000)
+        animate().setDuration(1000).alpha(0f).startDelay = 1000
     }
 }

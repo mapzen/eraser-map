@@ -182,7 +182,11 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     private fun initMapRotateListener() {
-        mapzenMap?.setRotateResponder({ x, y, rotation -> presenter.onMapMotionEvent() })
+        mapzenMap?.setRotateResponder({ x, y, rotation -> presenter.onMapRotateEvent() })
+    }
+
+    override fun showCompass() {
+        compass.visibility = View.VISIBLE
     }
 
     override fun rotateCompass() {
@@ -318,6 +322,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     private fun initCompass() {
+        compass.visibility = View.GONE
         compass.setOnClickListener({
             presenter.onCompassClick()
         })

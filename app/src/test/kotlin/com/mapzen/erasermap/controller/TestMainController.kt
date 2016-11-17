@@ -62,6 +62,8 @@ class TestMainController : MainViewController {
     var toastifyResId = 0
     var focusSearchView = false
     var debugSettingsEnabled = false
+    var compassRotated = false
+    var compassShowing = false
 
     override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
@@ -189,6 +191,11 @@ class TestMainController : MainViewController {
     }
 
     override fun rotateCompass() {
+        compassRotated = true
+    }
+
+    override fun showCompass() {
+        compassShowing = true
     }
 
     override fun reverseGeolocate(screenX: Float, screenY: Float) {
