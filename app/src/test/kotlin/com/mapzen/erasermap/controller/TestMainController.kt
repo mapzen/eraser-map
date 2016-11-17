@@ -59,6 +59,9 @@ class TestMainController : MainViewController {
     var isFindMeAboveSearchResults = false
     var currentSearchItemPosition = 0
     var currentSearchIndex = 0
+    var toastifyResId = 0
+    var focusSearchView = false
+    var debugSettingsEnabled = false
 
     override fun showSearchResults(features: List<Feature>?) {
         searchResults = features
@@ -352,5 +355,17 @@ class TestMainController : MainViewController {
 
     override fun getCurrentSearchPosition(): Int {
         return currentSearchItemPosition
+    }
+
+    override fun toastify(resId: Int) {
+        toastifyResId = resId
+    }
+
+    override fun focusSearchView() {
+        focusSearchView = true
+    }
+
+    override fun toggleShowDebugSettings() {
+        debugSettingsEnabled = !debugSettingsEnabled
     }
 }

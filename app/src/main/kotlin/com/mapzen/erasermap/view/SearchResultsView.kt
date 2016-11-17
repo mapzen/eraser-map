@@ -67,7 +67,7 @@ open class SearchResultsView(context: Context, attrs: AttributeSet)
         searchView.setOnSubmitListener({
             presenter.reverseGeoLngLat = null
             presenter.currentSearchTerm = searchView.query.toString()
-            presenter.onQuerySubmit()
+            presenter.onQuerySubmit(searchView.query.toString())
         })
         searchView.setIconifiedByDefault(false)
         searchView.imeOptions += EditorInfo.IME_FLAG_NO_EXTRACT_UI

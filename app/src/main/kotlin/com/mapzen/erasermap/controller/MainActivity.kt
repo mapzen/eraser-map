@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.graphics.Point
 import android.graphics.PointF
 import android.os.Bundle
-import android.os.Handler
 import android.preference.PreferenceManager
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AlertDialog
@@ -16,16 +15,16 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RelativeLayout
 import android.widget.Toast
 import com.mapzen.android.graphics.MapView
 import com.mapzen.android.graphics.MapzenMap
-import com.mapzen.android.search.MapzenSearch
 import com.mapzen.android.graphics.model.CameraType
 import com.mapzen.android.lost.api.Status
+import com.mapzen.android.search.MapzenSearch
 import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
@@ -264,7 +263,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             override fun onSingleTapUp(x: Float, y: Float): Boolean = false
             override fun onSingleTapConfirmed(x: Float, y: Float): Boolean {
                 confidenceHandler.longPressed = false
-                val coords = mapzenMap?.screenPositionToLngLat(PointF(x.toFloat(), y.toFloat()))
+                val coords = mapzenMap?.screenPositionToLngLat(PointF(x, y))
                 presenter.reverseGeoLngLat = coords
                 poiTapPoint = floatArrayOf(x, y)
                 return true
@@ -272,15 +271,15 @@ class MainActivity : AppCompatActivity(), MainViewController,
         }
         mapzenMap?.setDoubleTapResponder({ x, y ->
             confidenceHandler.longPressed = false
-            val tappedPos = mapzenMap?.screenPositionToLngLat(PointF(x.toFloat(), y.toFloat()))
+            val tappedPos = mapzenMap?.screenPositionToLngLat(PointF(x, y))
             val currentPos = mapzenMap?.position
             if (tappedPos != null && currentPos != null) {
                 mapzenMap?.setZoom((mapzenMap?.zoom as Float) + 1.0f, 500)
                 val lngLat = LngLat(0.5f * (tappedPos.longitude + currentPos.longitude),
-                        0.5f * (tappedPos.latitude + currentPos.latitude));
-                mapzenMap?.setPosition(lngLat, 500);
+                        0.5f * (tappedPos.latitude + currentPos.latitude))
+                mapzenMap?.setPosition(lngLat, 500)
             }
-            true;
+            true
         })
         mapzenMap?.setFeaturePickListener({
             properties, positionX, positionY ->
@@ -289,7 +288,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             // Also used in placing the pin
             poiTapPoint = floatArrayOf(positionX, positionY)
             if (properties.contains(MAP_DATA_PROP_NAME)) {
-                poiTapName = properties[MAP_DATA_PROP_NAME];
+                poiTapName = properties[MAP_DATA_PROP_NAME]
             }
             presenter.onFeaturePicked(properties, poiTapPoint as FloatArray)
         })
@@ -380,7 +379,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     private fun initSearchView() {
         val searchView = PeliasSearchView(this)
         val listView = findViewById(R.id.auto_complete) as AutoCompleteListView
-        val emptyView = findViewById(android.R.id.empty) as View
+        val emptyView = findViewById(android.R.id.empty)
         val locationProvider = presenter.getPeliasLocationProvider()
         val apiKeys = apiKeys
         val callback = PeliasCallback()
@@ -547,7 +546,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
         addSearchResultsToMap(features, activeIndex)
         layoutAttributionAboveSearchResults(features)
         layoutFindMeAboveSearchResults(features)
-        toggleShowDebugSettings()
     }
 
     private fun showSearchResultsView(features: List<Feature>) {
@@ -574,7 +572,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     private fun baseFindMeParams(): RelativeLayout.LayoutParams {
-        val scale = resources.displayMetrics.density;
+        val scale = resources.displayMetrics.density
         val size = (44 * scale).toInt()
         val layoutParams = RelativeLayout.LayoutParams(size, size)
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
@@ -648,10 +646,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
      * If the current query in search view is equal to special query, toggle shared preferences
      * to show or hide debug settings in settings fragment
      */
-    private fun toggleShowDebugSettings() {
-        if (!AndroidAppSettings.SHOW_DEBUG_SETTINGS_QUERY.equals(searchController.searchView?.query.toString())) {
-            return;
-        }
+    override fun toggleShowDebugSettings() {
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         val editor = preferences.edit()
         val prev = preferences.getBoolean(AndroidAppSettings.KEY_SHOW_DEBUG_SETTINGS, false)
@@ -660,7 +655,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
         val status = resources.getString(if (prev) R.string.disabled else R.string.enabled)
         val debugToastTitle = resources.getString(R.string.debug_settings_toast_title, status)
-        Toast.makeText(this, debugToastTitle, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, debugToastTitle, Toast.LENGTH_SHORT).show()
     }
 
     override fun showReverseGeocodeFeature(features: List<Feature>?) {
@@ -674,12 +669,12 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
         val lngLat: LngLat?
         if (poiTapPoint != null) {
-            val x = poiTapPoint!![0].toFloat()
-            val y = poiTapPoint!![1].toFloat()
+            val x = poiTapPoint!![0]
+            val y = poiTapPoint!![1]
             lngLat = mapzenMap?.screenPositionToLngLat(PointF(x, y))
 
             // Fallback for a failed Pelias Place Callback
-            overridePlaceFeature(features.get(0))
+            overridePlaceFeature(features[0])
         } else {
             lngLat = presenter.reverseGeoLngLat
         }
@@ -697,8 +692,8 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
         var lngLat: LngLat? = null
 
-        val pointX = poiTapPoint?.get(0)?.toFloat()
-        val pointY = poiTapPoint?.get(1)?.toFloat()
+        val pointX = poiTapPoint?.get(0)
+        val pointY = poiTapPoint?.get(1)
         if (pointX != null && pointY != null) {
             lngLat = mapzenMap?.screenPositionToLngLat(PointF(pointX, pointY))
         }
@@ -715,7 +710,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     override fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int) {
-        if (features == null || features.size == 0) {
+        if (features == null || features.isEmpty()) {
             return
         }
 
@@ -758,13 +753,13 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     override fun emptyPlaceSearch() {
         if (poiTapPoint != null) {
-            presenter.onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(), poiTapPoint?.get(1)?.toFloat())
+            presenter.onReverseGeoRequested(poiTapPoint?.get(0), poiTapPoint?.get(1))
         }
     }
 
     override fun reverseGeolocate(screenX: Float, screenY: Float) {
         mapzenSearch.setLocationProvider(presenter.getPeliasLocationProvider())
-        val coords = mapzenMap?.screenPositionToLngLat(PointF(screenX.toFloat(), screenY.toFloat()))
+        val coords = mapzenMap?.screenPositionToLngLat(PointF(screenX, screenY))
         presenter.reverseGeoLngLat = coords
         presenter.currentFeature = getGenericLocationFeature(coords?.latitude as Double,
                 coords?.longitude as Double)
@@ -1125,8 +1120,8 @@ class MainActivity : AppCompatActivity(), MainViewController,
         if (poiTapPoint != null) {
             val geometry = Geometry()
             val coordinates = ArrayList<Double>()
-            val pointX = poiTapPoint?.get(0)?.toFloat()
-            val pointY = poiTapPoint?.get(1)?.toFloat()
+            val pointX = poiTapPoint?.get(0)
+            val pointY = poiTapPoint?.get(1)
             if (pointX != null && pointY != null) {
                 val coords = mapzenMap?.screenPositionToLngLat(PointF(pointX, pointY))
                 val lng = coords?.longitude
@@ -1180,11 +1175,12 @@ class MainActivity : AppCompatActivity(), MainViewController,
             grantResults: IntArray) {
         when (requestCode) {
             PERMISSIONS_REQUEST -> {
-                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty() &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     permissionManager.grantPermissions()
                     checkPermissionAndEnableLocation()
-                    val findMe = mapView.findViewById(R.id.mz_find_me);
-                    findMe.callOnClick();
+                    val findMe = mapView.findViewById(R.id.mz_find_me)
+                    findMe.callOnClick()
                 }
             }
         }
@@ -1255,6 +1251,25 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     override fun resetMapPanResponder() {
-        mapzenMap?.setPanResponder(null)
+        mapzenMap?.panResponder = null
+    }
+
+    /**
+     * Displays a [Toast] message with the given string ID.
+     */
+    override fun toastify(resId: Int) {
+        Toast.makeText(this, resId, Toast.LENGTH_LONG).show()
+    }
+
+    /**
+     * Requests focus on the [PeliasSearchView] and sets the cursor position to the end of the text.
+     */
+    override fun focusSearchView() {
+        searchController.searchView?.requestFocus()
+
+        // PeliasSearchView should allow cursor position to be set without performing a lookup on
+        // the EditText. See https://github.com/pelias/pelias-android-sdk/issues/52
+        val editText = searchController.searchView?.findViewById(R.id.search_src_text) as EditText?
+        editText?.setSelection(editText.text.length)
     }
 }
