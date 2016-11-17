@@ -93,6 +93,15 @@ class MainPresenterTest {
         assertThat(mainController.isFindMeTrackingEnabled).isFalse()
     }
 
+    @Test fun onSearchResultsAvailable_shouldResetCurrentSearchIndex() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.features = features
+        presenter.currentSearchIndex = 3
+        presenter.onSearchResultsAvailable(result)
+        assertThat(presenter.currentSearchIndex).isEqualTo(0)
+    }
+
     @Test fun onReverseGeocodeResultsAvailable_shouldShowSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
@@ -196,6 +205,19 @@ class MainPresenterTest {
         presenter.mainViewController = newController
         presenter.onRestoreMapState()
         assertThat(newController.searchResults).isEqualTo(features)
+    }
+
+    @Test fun onRestoreMapState_shouldRestorePreviousSearchResultsCurrentIndex() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        presenter.currentSearchIndex = 2
+
+        val newController = TestMainController()
+        presenter.mainViewController = newController
+        presenter.onRestoreMapState()
+        assertThat(newController.currentSearchIndex).isEqualTo(2)
     }
 
     @Test fun onRestoreMapState_shouldAdjustAttributionRoutePreview() {
@@ -403,6 +425,30 @@ class MainPresenterTest {
 
         testPresenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
         assertThat(mainController.settingsApiTriggered).isTrue()
+    }
+
+    @Test fun onBackPressed_shouldRestoreSearchResultsSearchIndex() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        presenter.currentSearchIndex = 2
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+
+        presenter.onBackPressed()
+        assertThat(mainController.currentSearchIndex).isEqualTo(2)
+    }
+
+    @Test fun onBackPressed_shouldRestoreSearchResults() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        presenter.currentSearchIndex = 2
+        presenter.onRoutePreviewEvent(RoutePreviewEvent(getTestFeature()))
+
+        presenter.onBackPressed()
+        assertThat(mainController.searchResults).isEqualTo(features)
     }
 
     @Test fun onBackPressed_shouldHideRoutePreview() {

@@ -9,6 +9,7 @@ import com.mapzen.valhalla.Route
 
 interface MainViewController {
     fun showSearchResults(features: List<Feature>?)
+    fun showSearchResults(features: List<Feature>?, currentIndex: Int)
     fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int)
     fun showDirectionsList()
     fun hideDirectionsList()

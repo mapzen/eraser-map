@@ -534,13 +534,17 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     override fun showSearchResults(features: List<Feature>?) {
+        showSearchResults(features, 0)
+    }
+
+    override fun showSearchResults(features: List<Feature>?, activeIndex: Int) {
         if (features == null) {
             return
         }
 
         hideReverseGeolocateResult()
         showSearchResultsView(features)
-        addSearchResultsToMap(features, 0)
+        addSearchResultsToMap(features, activeIndex)
         layoutAttributionAboveSearchResults(features)
         layoutFindMeAboveSearchResults(features)
         toggleShowDebugSettings()
@@ -715,9 +719,8 @@ class MainActivity : AppCompatActivity(), MainViewController,
             return
         }
 
-        val position = getCurrentSearchPosition()
-        setCurrentSearchItem(position)
-        val feature = SimpleFeature.fromFeature(features[position])
+        setCurrentSearchItem(activeIndex)
+        val feature = SimpleFeature.fromFeature(features[activeIndex])
         setMapPosition(LngLat(feature.lng(), feature.lat()), 1000)
         setMapZoom(MainPresenter.DEFAULT_ZOOM)
 
