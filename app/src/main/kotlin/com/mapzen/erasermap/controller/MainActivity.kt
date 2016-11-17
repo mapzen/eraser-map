@@ -546,7 +546,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
         addSearchResultsToMap(features, activeIndex)
         layoutAttributionAboveSearchResults(features)
         layoutFindMeAboveSearchResults(features)
-        toggleShowDebugSettings()
     }
 
     private fun showSearchResultsView(features: List<Feature>) {
