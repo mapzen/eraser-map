@@ -1277,4 +1277,12 @@ class MainActivity : AppCompatActivity(), MainViewController,
         val editText = searchController.searchView?.findViewById(R.id.search_src_text) as EditText?
         editText?.setSelection(editText.text.length)
     }
+
+    override fun getMapPosition(): LngLat? {
+        return mapzenMap?.position
+    }
+
+    override fun getMapZoom(): Float? {
+        return mapzenMap?.zoom
+    }
 }

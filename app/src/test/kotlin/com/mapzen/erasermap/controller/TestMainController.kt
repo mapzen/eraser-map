@@ -375,4 +375,12 @@ class TestMainController : MainViewController {
     override fun toggleShowDebugSettings() {
         debugSettingsEnabled = !debugSettingsEnabled
     }
+
+    override fun getMapPosition(): LngLat? {
+        return lngLat
+    }
+
+    override fun getMapZoom(): Float? {
+        return zoom
+    }
 }

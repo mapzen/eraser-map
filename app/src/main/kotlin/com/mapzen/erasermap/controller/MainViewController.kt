@@ -86,4 +86,6 @@ interface MainViewController {
     fun toastify(resId: Int)
     fun focusSearchView()
     fun toggleShowDebugSettings()
+    fun getMapPosition(): LngLat?
+    fun getMapZoom(): Float?
 }
