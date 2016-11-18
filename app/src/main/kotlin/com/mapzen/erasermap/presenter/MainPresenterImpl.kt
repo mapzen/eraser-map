@@ -395,8 +395,12 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     if (searchResults != null) {
       if (reverseGeo) {
         mainViewController?.showReverseGeocodeFeature(searchResults?.features)
-        mainViewController?.setMapPosition(mapPosition as LngLat, 0)
-        mainViewController?.setMapZoom(mapZoom as Float)
+        if (mapPosition != null) {
+          mainViewController?.setMapPosition(mapPosition as LngLat, 0)
+        }
+        if (mapZoom != null) {
+          mainViewController?.setMapZoom(mapZoom as Float)
+        }
       } else {
         mainViewController?.showSearchResults(searchResults?.features, currentSearchIndex)
         var numFeatures = 0
