@@ -636,31 +636,19 @@ class MainActivity : AppCompatActivity(), MainViewController,
         Toast.makeText(this, debugToastTitle, Toast.LENGTH_SHORT).show()
     }
 
+    override fun clearSearchResults() {
+        mapzenMap?.clearSearchResults()
+    }
+
+    override fun drawSearchResults(points: List<LngLat>, activeIndex: Int) {
+        mapzenMap?.drawSearchResults(points, activeIndex)
+    }
+
     override fun showPlaceSearchFeature(features: List<Feature>) {
         searchController.setSearchResultsAdapter(SearchResultsAdapter(this, features.subList(0, 1),
                 displayHelper, permissionManager))
         searchController.showSearchResults()
         searchController.onSearchResultsSelectedListener = this
-    }
-
-    override fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int) {
-        if (features == null || features.isEmpty()) {
-            return
-        }
-
-        setCurrentSearchItem(activeIndex)
-        val feature = SimpleFeature.fromFeature(features[activeIndex])
-        setMapPosition(LngLat(feature.lng(), feature.lat()), 1000)
-        setMapZoom(MainPresenter.DEFAULT_ZOOM)
-
-        mapzenMap?.clearSearchResults()
-        val points: ArrayList<LngLat> = ArrayList()
-        for (feature in features) {
-            val simpleFeature = SimpleFeature.fromFeature(feature)
-            val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
-            points.add(lngLat)
-        }
-        mapzenMap?.drawSearchResults(points, activeIndex)
     }
 
     override fun getCurrentSearchPosition(): Int {
@@ -681,7 +669,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
     override fun setMapZoom(zoom: Float, duration: Int) {
         mapzenMap?.setZoom(zoom, duration)
     }
-
 
     override fun placeSearch(gid: String) {
         mapzenSearch.setLocationProvider(presenter.getPeliasLocationProvider())
@@ -710,7 +697,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         hideSearchResultsView()
         layoutAttributionAlignBottom()
         layoutFindMeAlignBottom()
-        mapzenMap?.clearSearchResults()
+        clearSearchResults()
     }
 
     override fun hideSearchResultsView() {

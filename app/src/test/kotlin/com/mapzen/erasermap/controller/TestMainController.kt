@@ -66,6 +66,8 @@ class TestMainController : MainViewController {
     var searchResultsViewHidden = false
     var attributionAlignedBottom = false
     var placeSearchResults: List<Feature>? = null
+    var searchResultsPoints: List<LngLat>? = null
+    var searchResultsCleared = false
 
     var screenPosLngLat: LngLat? = null
 
@@ -74,8 +76,13 @@ class TestMainController : MainViewController {
         searchResults = features
     }
 
-    override fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int) {
-        searchResults = features
+    override fun clearSearchResults() {
+        searchResultsCleared = true
+        searchResultsPoints = null
+    }
+
+    override fun drawSearchResults(points: List<LngLat>, activeIndex: Int) {
+        searchResultsPoints = points
         currentSearchIndex = activeIndex
     }
 

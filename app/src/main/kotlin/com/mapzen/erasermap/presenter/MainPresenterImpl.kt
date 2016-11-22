@@ -350,14 +350,14 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   override fun onSearchResultSelected(position: Int) {
     currentSearchIndex = position
     if (searchResults != null) {
-      mainViewController?.addSearchResultsToMap(searchResults?.features, position)
+      addSearchResultsToMap(searchResults?.features, position)
       centerOnCurrentFeature(searchResults?.features)
     }
   }
 
   override fun onSearchResultTapped(position: Int) {
     if (searchResults != null) {
-      mainViewController?.addSearchResultsToMap(searchResults?.features, position)
+      addSearchResultsToMap(searchResults?.features, position)
       centerOnFeature(searchResults?.features, position)
     }
   }
@@ -498,10 +498,30 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
     mainViewController?.hideReverseGeolocateResult()
     mainViewController?.showSearchResultsView(features)
-    mainViewController?.addSearchResultsToMap(features, activeIndex)
+    addSearchResultsToMap(features, activeIndex)
     mainViewController?.layoutAttributionAboveSearchResults(features)
     mainViewController?.layoutFindMeAboveSearchResults(features)
     mainViewController?.toggleShowDebugSettings()
+  }
+
+  private fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int) {
+    if (features == null || features.size == 0) {
+      return
+    }
+
+    mainViewController?.setCurrentSearchItem(activeIndex)
+    val feature = SimpleFeature.fromFeature(features[activeIndex])
+    mainViewController?.setMapPosition(LngLat(feature.lng(), feature.lat()), 1000)
+    mainViewController?.setMapZoom(MainPresenter.DEFAULT_ZOOM)
+
+    mainViewController?.clearSearchResults()
+    val points: ArrayList<LngLat> = ArrayList()
+    for (feature in features) {
+      val simpleFeature = SimpleFeature.fromFeature(feature)
+      val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
+      points.add(lngLat)
+    }
+    mainViewController?.drawSearchResults(points, activeIndex)
   }
 
   private fun onBackPressedStateRoutePreviewList() {
