@@ -466,6 +466,92 @@ class MainPresenterTest {
         assertThat(mainController.focusSearchView).isFalse()
     }
 
+    @Test fun onSearchResultsAvailable_shouldHideReverseGeoResult() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        features.add(Feature())
+        result.features = features
+        mainController.reverseGeoCodeResults = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.reverseGeoCodeResults).isNull()
+    }
+
+    @Test fun onSearchResultsAvailable_shouldShowSearchResultsView() {
+        mainController.searchResultsViewHidden = true
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        features.add(Feature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.searchResultsViewHidden).isFalse()
+    }
+
+    @Test fun onSearchResultsAvailable_shouldAddResultsToMap() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        features.add(Feature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.searchResults).isEqualTo(features)
+    }
+
+    @Test fun onSearchResultsAvailable_shouldHaveCorrectActiveIndex() {
+        mainController.currentSearchIndex = 3
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        features.add(Feature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.currentSearchIndex).isEqualTo(0)
+    }
+
+    @Test fun onSearchResultsAvailable_shouldLayoutAttributionAboveSearchResults() {
+        mainController.isAttributionAboveSearchResults = false
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        features.add(Feature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.isAttributionAboveSearchResults).isTrue()
+    }
+
+    @Test fun onSearchResultsAvailable_shouldLayoutFindMeAboveSearchResults() {
+        mainController.isFindMeAboveSearchResults = false
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        features.add(Feature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.isFindMeAboveSearchResults).isTrue()
+    }
+
+    @Test fun onSearchResultsAvailable_shouldToggleShowDebugSettings() {
+        mainController.debugSettingsEnabled = false
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(Feature())
+        features.add(Feature())
+        features.add(Feature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.debugSettingsEnabled).isTrue()
+
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.debugSettingsEnabled).isFalse()
+    }
+
     @Test fun onCollapseSearchView_shouldHideActionViewAll() {
         mainController.isViewAllVisible = true
         presenter.onCollapseSearchView()

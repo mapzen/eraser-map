@@ -78,7 +78,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
         SearchViewController.OnSearchResultSelectedListener {
 
     companion object {
-        @JvmStatic val MAP_DATA_PROP_NAME = "name"
         @JvmStatic val DIRECTION_LIST_ANIMATION_DURATION = 300L
         @JvmStatic val PERMISSIONS_REQUEST: Int = 1
     }
@@ -524,23 +523,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         }
     }
 
-    override fun showSearchResults(features: List<Feature>?) {
-        showSearchResults(features, 0)
-    }
-
-    override fun showSearchResults(features: List<Feature>?, activeIndex: Int) {
-        if (features == null) {
-            return
-        }
-
-        hideReverseGeolocateResult()
-        showSearchResultsView(features)
-        addSearchResultsToMap(features, activeIndex)
-        layoutAttributionAboveSearchResults(features)
-        layoutFindMeAboveSearchResults(features)
-    }
-
-    private fun showSearchResultsView(features: List<Feature>) {
+    override fun showSearchResultsView(features: List<Feature>) {
         searchController.setSearchResultsAdapter(SearchResultsAdapter(this, features, displayHelper,
                 permissionManager))
         searchController.showSearchResults()
@@ -639,6 +622,9 @@ class MainActivity : AppCompatActivity(), MainViewController,
      * to show or hide debug settings in settings fragment
      */
     override fun toggleShowDebugSettings() {
+        if (!AndroidAppSettings.SHOW_DEBUG_SETTINGS_QUERY.equals(searchController.searchView?.query.toString())) {
+            return
+        }
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         val editor = preferences.edit()
         val prev = preferences.getBoolean(AndroidAppSettings.KEY_SHOW_DEBUG_SETTINGS, false)

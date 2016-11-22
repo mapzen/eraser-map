@@ -110,7 +110,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     vsm.viewState = SEARCH_RESULTS
     reverseGeo = false
     searchResults = result
-    mainViewController?.showSearchResults(result.features)
+    showSearchResults(result.features)
     mainViewController?.deactivateFindMeTracking()
     updateViewAllAction(result)
   }
@@ -254,7 +254,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   private fun onRestoreMapStateSearchResults() {
     if (searchResults?.features != null) {
       if (!reverseGeo) {
-        mainViewController?.showSearchResults(searchResults?.features, currentSearchIndex)
+        showSearchResults(searchResults?.features, currentSearchIndex)
       } else {
         showReverseGeocodeFeature(searchResults?.features)
         centerOnCurrentFeature(searchResults?.features)
@@ -477,7 +477,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
           mainViewController?.setMapZoom(mapZoom as Float)
         }
       } else {
-        mainViewController?.showSearchResults(searchResults?.features, currentSearchIndex)
+        showSearchResults(searchResults?.features, currentSearchIndex)
         var numFeatures = 0
         numFeatures = (searchResults?.features?.size as Int)
         if (numFeatures > 1) {
@@ -485,6 +485,23 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
         }
       }
     }
+  }
+
+  private fun showSearchResults(features: List<Feature>?) {
+    showSearchResults(features, 0)
+  }
+
+  private fun showSearchResults(features: List<Feature>?, activeIndex: Int) {
+    if (features == null) {
+      return
+    }
+
+    mainViewController?.hideReverseGeolocateResult()
+    mainViewController?.showSearchResultsView(features)
+    mainViewController?.addSearchResultsToMap(features, activeIndex)
+    mainViewController?.layoutAttributionAboveSearchResults(features)
+    mainViewController?.layoutFindMeAboveSearchResults(features)
+    mainViewController?.toggleShowDebugSettings()
   }
 
   private fun onBackPressedStateRoutePreviewList() {

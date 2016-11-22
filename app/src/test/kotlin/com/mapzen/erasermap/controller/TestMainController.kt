@@ -69,17 +69,14 @@ class TestMainController : MainViewController {
 
     var screenPosLngLat: LngLat? = null
 
-    override fun showSearchResults(features: List<Feature>?) {
-        searchResults = features
-    }
-
-    override fun showSearchResults(features: List<Feature>?, currentIndex: Int) {
-        currentSearchIndex = currentIndex
+    override fun showSearchResultsView(features: List<Feature>) {
+        searchResultsViewHidden = false
         searchResults = features
     }
 
     override fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int) {
         searchResults = features
+        currentSearchIndex = activeIndex
     }
 
     override fun hideSearchResults() {
