@@ -287,6 +287,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         })
         mapzenMap?.setFeaturePickListener({
             properties, positionX, positionY ->
+            Toast.makeText(this, properties.toString(), Toast.LENGTH_LONG).show()
             confidenceHandler.longPressed = false
             // Reassign tapPoint to center of the feature tapped
             // Also used in placing the pin
