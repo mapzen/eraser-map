@@ -110,7 +110,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     vsm.viewState = SEARCH_RESULTS
     reverseGeo = false
     searchResults = result
-    showSearchResults(result.features)
+    prepareAndShowSearchResultsViews(result.features)
     mainViewController?.deactivateFindMeTracking()
     updateViewAllAction(result)
   }
@@ -254,7 +254,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   private fun onRestoreMapStateSearchResults() {
     if (searchResults?.features != null) {
       if (!reverseGeo) {
-        showSearchResults(searchResults?.features, currentSearchIndex)
+        prepareAndShowSearchResultsViews(searchResults?.features, currentSearchIndex)
       } else {
         showReverseGeocodeFeature(searchResults?.features)
         centerOnCurrentFeature(searchResults?.features)
@@ -477,7 +477,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
           mainViewController?.setMapZoom(mapZoom as Float)
         }
       } else {
-        showSearchResults(searchResults?.features, currentSearchIndex)
+        prepareAndShowSearchResultsViews(searchResults?.features, currentSearchIndex)
         var numFeatures = 0
         numFeatures = (searchResults?.features?.size as Int)
         if (numFeatures > 1) {
@@ -487,11 +487,16 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     }
   }
 
-  private fun showSearchResults(features: List<Feature>?) {
-    showSearchResults(features, 0)
+  private fun prepareAndShowSearchResultsViews(features: List<Feature>?) {
+    prepareAndShowSearchResultsViews(features, 0)
   }
 
-  private fun showSearchResults(features: List<Feature>?, activeIndex: Int) {
+  /**
+   * When search results are selected this method handles adjusting all the views on the screen
+   * needed to properly display results. It makes the search results view visible, adjusts the
+   * attribution & find me btn as well as adds the search result pins to the map.
+   */
+  private fun prepareAndShowSearchResultsViews(features: List<Feature>?, activeIndex: Int) {
     if (features == null) {
       return
     }
@@ -504,6 +509,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     mainViewController?.toggleShowDebugSettings()
   }
 
+  /**
+   * Handles updating the map for given search results. This method adjusts the map's pins,
+   * position, and zoom. It is called when search results are initially selected as well as when the
+   * search results pager is paged.
+   */
   private fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int) {
     if (features == null || features.size == 0) {
       return
