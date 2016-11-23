@@ -622,9 +622,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
      * to show or hide debug settings in settings fragment
      */
     override fun toggleShowDebugSettings() {
-        if (!AndroidAppSettings.SHOW_DEBUG_SETTINGS_QUERY.equals(searchController.searchView?.query.toString())) {
-            return
-        }
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         val editor = preferences.edit()
         val prev = preferences.getBoolean(AndroidAppSettings.KEY_SHOW_DEBUG_SETTINGS, false)
