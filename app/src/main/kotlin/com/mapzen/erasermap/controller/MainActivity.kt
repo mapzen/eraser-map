@@ -78,7 +78,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
         SearchViewController.OnSearchResultSelectedListener {
 
     companion object {
-        @JvmStatic val MAP_DATA_PROP_NAME = "name"
         @JvmStatic val DIRECTION_LIST_ANIMATION_DURATION = 300L
         @JvmStatic val PERMISSIONS_REQUEST: Int = 1
     }
@@ -102,8 +101,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
     var mapzenMap : MapzenMap? = null
     var autoCompleteAdapter: AutoCompleteAdapter? = null
     var optionsMenu: Menu? = null
-    var poiTapPoint: FloatArray? = null
-    var poiTapName: String? = null
     var voiceNavigationController: VoiceNavigationController? = null
     var notificationCreator: NotificationCreator? = null
 
@@ -267,34 +264,19 @@ class MainActivity : AppCompatActivity(), MainViewController,
             override fun onSingleTapUp(x: Float, y: Float): Boolean = false
             override fun onSingleTapConfirmed(x: Float, y: Float): Boolean {
                 confidenceHandler.longPressed = false
-                val coords = mapzenMap?.screenPositionToLngLat(PointF(x, y))
-                presenter.reverseGeoLngLat = coords
-                poiTapPoint = floatArrayOf(x, y)
+                presenter.onMapPressed(x, y)
                 return true
             }
         }
         mapzenMap?.setDoubleTapResponder({ x, y ->
             confidenceHandler.longPressed = false
-            val tappedPos = mapzenMap?.screenPositionToLngLat(PointF(x, y))
-            val currentPos = mapzenMap?.position
-            if (tappedPos != null && currentPos != null) {
-                mapzenMap?.setZoom((mapzenMap?.zoom as Float) + 1.0f, 500)
-                val lngLat = LngLat(0.5f * (tappedPos.longitude + currentPos.longitude),
-                        0.5f * (tappedPos.latitude + currentPos.latitude))
-                mapzenMap?.setPosition(lngLat, 500)
-            }
+            presenter.onMapDoubleTapped(x, y)
             true
         })
         mapzenMap?.setFeaturePickListener({
             properties, positionX, positionY ->
             confidenceHandler.longPressed = false
-            // Reassign tapPoint to center of the feature tapped
-            // Also used in placing the pin
-            poiTapPoint = floatArrayOf(positionX, positionY)
-            if (properties.contains(MAP_DATA_PROP_NAME)) {
-                poiTapName = properties[MAP_DATA_PROP_NAME]
-            }
-            presenter.onFeaturePicked(properties, poiTapPoint as FloatArray)
+            presenter.onFeaturePicked(properties, positionX, positionY)
         })
         checkPermissionAndEnableLocation()
         mapzenMap?.setFindMeOnClickListener {
@@ -308,6 +290,10 @@ class MainActivity : AppCompatActivity(), MainViewController,
         mapzenLocation.mapzenMap = mapzenMap
         routeModeView.mapzenMap = mapzenMap
         settings.mapzenMap = mapzenMap
+    }
+
+    override fun screenPositionToLngLat(x: Float, y: Float): LngLat? {
+        return mapzenMap?.screenPositionToLngLat(PointF(x, y))
     }
 
     private fun updateMute() {
@@ -537,23 +523,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         }
     }
 
-    override fun showSearchResults(features: List<Feature>?) {
-        showSearchResults(features, 0)
-    }
-
-    override fun showSearchResults(features: List<Feature>?, activeIndex: Int) {
-        if (features == null) {
-            return
-        }
-
-        hideReverseGeolocateResult()
-        showSearchResultsView(features)
-        addSearchResultsToMap(features, activeIndex)
-        layoutAttributionAboveSearchResults(features)
-        layoutFindMeAboveSearchResults(features)
-    }
-
-    private fun showSearchResultsView(features: List<Feature>) {
+    override fun showSearchResultsView(features: List<Feature>) {
         searchController.setSearchResultsAdapter(SearchResultsAdapter(this, features, displayHelper,
                 permissionManager))
         searchController.showSearchResults()
@@ -569,7 +539,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         return layoutParams
     }
 
-    private fun layoutAttributionAlignBottom() {
+    override fun layoutAttributionAlignBottom() {
         val layoutParams = baseAttributionParams()
         val margin = resources.getDimensionPixelSize(R.dimen.em_attribution_margin_bottom)
         layoutParams.bottomMargin = margin
@@ -663,48 +633,12 @@ class MainActivity : AppCompatActivity(), MainViewController,
         Toast.makeText(this, debugToastTitle, Toast.LENGTH_SHORT).show()
     }
 
-    override fun showReverseGeocodeFeature(features: List<Feature>?) {
-        if (features == null) {
-            return
-        }
-
-        hideSearchResults()
-        layoutAttributionAboveSearchResults(features)
-        layoutFindMeAboveSearchResults(features)
-
-        val lngLat: LngLat?
-        if (poiTapPoint != null) {
-            val x = poiTapPoint!![0]
-            val y = poiTapPoint!![1]
-            lngLat = mapzenMap?.screenPositionToLngLat(PointF(x, y))
-
-            // Fallback for a failed Pelias Place Callback
-            overridePlaceFeature(features[0])
-        } else {
-            lngLat = presenter.reverseGeoLngLat
-        }
-
-        showPlaceSearchFeature(features)
-
-        mapzenMap?.clearDroppedPins()
-        mapzenMap?.drawDroppedPin(lngLat)
+    override fun clearSearchResults() {
+        mapzenMap?.clearSearchResults()
     }
 
-    override fun drawTappedPoiPin() {
-        hideSearchResultsView()
-        layoutAttributionAlignBottom()
-        layoutFindMeAlignBottom()
-
-        var lngLat: LngLat? = null
-
-        val pointX = poiTapPoint?.get(0)
-        val pointY = poiTapPoint?.get(1)
-        if (pointX != null && pointY != null) {
-            lngLat = mapzenMap?.screenPositionToLngLat(PointF(pointX, pointY))
-        }
-
-        mapzenMap?.clearDroppedPins()
-        mapzenMap?.drawDroppedPin(lngLat)
+    override fun drawSearchResults(points: List<LngLat>, activeIndex: Int) {
+        mapzenMap?.drawSearchResults(points, activeIndex)
     }
 
     override fun showPlaceSearchFeature(features: List<Feature>) {
@@ -712,26 +646,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
                 displayHelper, permissionManager))
         searchController.showSearchResults()
         searchController.onSearchResultsSelectedListener = this
-    }
-
-    override fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int) {
-        if (features == null || features.isEmpty()) {
-            return
-        }
-
-        setCurrentSearchItem(activeIndex)
-        val feature = SimpleFeature.fromFeature(features[activeIndex])
-        setMapPosition(LngLat(feature.lng(), feature.lat()), 1000)
-        setMapZoom(MainPresenter.DEFAULT_ZOOM)
-
-        mapzenMap?.clearSearchResults()
-        val points: ArrayList<LngLat> = ArrayList()
-        for (feature in features) {
-            val simpleFeature = SimpleFeature.fromFeature(feature)
-            val lngLat = LngLat(simpleFeature.lng(), simpleFeature.lat())
-            points.add(lngLat)
-        }
-        mapzenMap?.drawSearchResults(points, activeIndex)
     }
 
     override fun getCurrentSearchPosition(): Int {
@@ -749,17 +663,13 @@ class MainActivity : AppCompatActivity(), MainViewController,
     override fun setMapZoom(zoom: Float) {
         mapzenMap?.zoom = zoom
     }
-
+    override fun setMapZoom(zoom: Float, duration: Int) {
+        mapzenMap?.setZoom(zoom, duration)
+    }
 
     override fun placeSearch(gid: String) {
         mapzenSearch.setLocationProvider(presenter.getPeliasLocationProvider())
         mapzenSearch.place(gid, (PlaceCallback()))
-    }
-
-    override fun emptyPlaceSearch() {
-        if (poiTapPoint != null) {
-            presenter.onReverseGeoRequested(poiTapPoint?.get(0), poiTapPoint?.get(1))
-        }
     }
 
     override fun reverseGeolocate(screenX: Float, screenY: Float) {
@@ -776,14 +686,18 @@ class MainActivity : AppCompatActivity(), MainViewController,
         mapzenMap?.clearDroppedPins()
     }
 
+    override fun showReverseGeoResult(lngLat: LngLat?) {
+        mapzenMap?.drawDroppedPin(lngLat)
+    }
+
     override fun hideSearchResults() {
         hideSearchResultsView()
         layoutAttributionAlignBottom()
         layoutFindMeAlignBottom()
-        mapzenMap?.clearSearchResults()
+        clearSearchResults()
     }
 
-    private fun hideSearchResultsView() {
+    override fun hideSearchResultsView() {
         searchController.hideSearchResults()
     }
 
@@ -1119,31 +1033,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     override fun hideRouteModeView() {
         routeModeView.visibility = View.GONE
-    }
-
-    override fun overridePlaceFeature(feature: Feature) {
-        if (poiTapPoint != null) {
-            val geometry = Geometry()
-            val coordinates = ArrayList<Double>()
-            val pointX = poiTapPoint?.get(0)
-            val pointY = poiTapPoint?.get(1)
-            if (pointX != null && pointY != null) {
-                val coords = mapzenMap?.screenPositionToLngLat(PointF(pointX, pointY))
-                val lng = coords?.longitude
-                val lat = coords?.latitude
-                if (lng != null && lat!= null) {
-                    coordinates.add(lng)
-                    coordinates.add(lat)
-                    geometry.coordinates = coordinates
-                    feature.geometry = geometry
-                }
-            }
-        }
-        if (poiTapName != null) {
-            feature.properties.name = poiTapName
-        }
-        poiTapName = null
-        poiTapPoint = null
     }
 
     override fun stopSpeaker() {

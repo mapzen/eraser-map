@@ -8,15 +8,16 @@ import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 
 interface MainViewController {
-    fun showSearchResults(features: List<Feature>?)
-    fun showSearchResults(features: List<Feature>?, currentIndex: Int)
-    fun addSearchResultsToMap(features: List<Feature>?, activeIndex: Int)
+    fun showSearchResultsView(features:List<Feature>)
+    fun clearSearchResults()
+    fun drawSearchResults(points: List<LngLat>, activeIndex: Int)
     fun showDirectionsList()
     fun hideDirectionsList()
     fun toggleShowAllSearchResultsList(features: List<Feature>?)
     fun hideSearchResults()
     fun hideReverseGeolocateResult()
-    fun showReverseGeocodeFeature(features: List<Feature>?)
+    fun showReverseGeoResult(lngLat: LngLat?)
+    fun screenPositionToLngLat(x: Float, y: Float): LngLat?
     fun showPlaceSearchFeature(features: List<Feature>)
     fun showProgress()
     fun hideProgress()
@@ -43,9 +44,8 @@ interface MainViewController {
     fun rotateCompass()
     fun reverseGeolocate(screenX: Float, screenY: Float)
     fun placeSearch(gid: String)
-    fun emptyPlaceSearch()
-    fun overridePlaceFeature(feature: Feature)
-    fun drawTappedPoiPin()
+    fun hideSearchResultsView()
+    fun layoutAttributionAlignBottom()
     fun hideSettingsBtn()
     fun showSettingsBtn()
     fun onBackPressed()
@@ -82,6 +82,7 @@ interface MainViewController {
     fun setCurrentSearchItem(position: Int)
     fun setMapPosition(lngLat: LngLat, duration: Int)
     fun setMapZoom(zoom: Float)
+    fun setMapZoom(zoom: Float, duration: Int)
     fun getCurrentSearchPosition(): Int
     fun toastify(resId: Int)
     fun focusSearchView()

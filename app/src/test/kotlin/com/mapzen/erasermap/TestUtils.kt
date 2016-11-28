@@ -1,6 +1,9 @@
 package com.mapzen.erasermap
 
 import com.google.common.io.Files
+import com.mapzen.pelias.gson.Feature
+import com.mapzen.pelias.gson.Geometry
+import com.mapzen.pelias.gson.Properties
 import com.mapzen.valhalla.Instruction
 import org.json.JSONObject
 import java.io.File
@@ -24,6 +27,14 @@ class TestUtils {
       }
 
       return fixture
+    }
+
+    fun getFeature(): Feature {
+      val feature = Feature()
+      feature.geometry = Geometry()
+      feature.geometry.coordinates = arrayListOf(0.0, 0.0)
+      feature.properties = Properties()
+      return feature
     }
   }
 
