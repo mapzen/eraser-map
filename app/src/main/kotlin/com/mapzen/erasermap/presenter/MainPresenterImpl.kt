@@ -506,7 +506,6 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     addSearchResultsToMap(features, activeIndex)
     mainViewController?.layoutAttributionAboveSearchResults(features)
     mainViewController?.layoutFindMeAboveSearchResults(features)
-    mainViewController?.toggleShowDebugSettings()
   }
 
   /**

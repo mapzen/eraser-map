@@ -539,18 +539,12 @@ class MainPresenterTest {
         assertThat(mainController.isFindMeAboveSearchResults).isTrue()
     }
 
-    @Test fun onSearchResultsAvailable_shouldToggleShowDebugSettings() {
+    @Test fun onQuerySubmit_shouldToggleShowDebugSettings() {
         mainController.debugSettingsEnabled = false
-        val result = Result()
-        val features = ArrayList<Feature>()
-        features.add(getFeature())
-        features.add(getFeature())
-        features.add(getFeature())
-        result.features = features
-        presenter.onSearchResultsAvailable(result)
+        presenter.onQuerySubmit("!!!!!!!!")
         assertThat(mainController.debugSettingsEnabled).isTrue()
 
-        presenter.onSearchResultsAvailable(result)
+        presenter.onQuerySubmit("!!!!!!!!")
         assertThat(mainController.debugSettingsEnabled).isFalse()
     }
 
