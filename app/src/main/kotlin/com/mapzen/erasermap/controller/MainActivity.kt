@@ -276,12 +276,8 @@ class MainActivity : AppCompatActivity(), MainViewController,
         })
         mapzenMap?.setLabelPickListener { labelPickResult, x, y ->
             confidenceHandler.longPressed = false
-            var properties: Map<String, String>? = null
-            var coords: LngLat? = null
-            if (labelPickResult != null) {
-                properties = labelPickResult.properties
-                coords = labelPickResult.coordinates
-            }
+            var properties = labelPickResult.properties
+            var coords = labelPickResult.coordinates
             presenter.onFeaturePicked(properties, coords, x, y)
         }
         checkPermissionAndEnableLocation()
