@@ -6,7 +6,6 @@ import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
-import com.mapzen.tangram.LabelPickResult
 import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback

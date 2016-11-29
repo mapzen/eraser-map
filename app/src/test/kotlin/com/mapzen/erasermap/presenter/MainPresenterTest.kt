@@ -2,7 +2,6 @@ package com.mapzen.erasermap.presenter
 
 import com.mapzen.android.lost.api.Status
 import com.mapzen.erasermap.R
-import com.mapzen.erasermap.TestUtils
 import com.mapzen.erasermap.TestUtils.Companion.getFeature
 import com.mapzen.erasermap.controller.TestMainController
 import com.mapzen.erasermap.dummy.TestHelper
@@ -40,7 +39,6 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Geometry
 import com.mapzen.pelias.gson.Properties
 import com.mapzen.pelias.gson.Result
-import com.mapzen.tangram.LabelPickResult
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
 import com.mapzen.valhalla.Route

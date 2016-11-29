@@ -36,7 +36,6 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Geometry
 import com.mapzen.pelias.gson.Properties
 import com.mapzen.pelias.gson.Result
-import com.mapzen.tangram.LabelPickResult
 import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
@@ -45,7 +44,6 @@ import com.squareup.otto.Subscribe
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.util.ArrayList
-import java.util.HashMap
 
 open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     val routeManager: RouteManager, val settings: AppSettings, val vsm: ViewStateManager,

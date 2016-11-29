@@ -72,7 +72,6 @@ import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
 import java.util.ArrayList
-import java.util.HashMap
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), MainViewController,
