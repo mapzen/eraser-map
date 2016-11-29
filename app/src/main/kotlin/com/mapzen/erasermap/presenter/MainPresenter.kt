@@ -6,9 +6,11 @@ import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Result
+import com.mapzen.tangram.LabelPickResult
 import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
+import java.util.HashMap
 
 interface MainPresenter {
     companion object {
@@ -31,6 +33,7 @@ interface MainPresenter {
     var mapZoom: Float?
     var poiTapPoint: FloatArray?
     var poiTapName: String?
+    var poiCoordinates: LngLat?
 
     fun onSearchResultsAvailable(result: Result?)
     fun onReverseGeocodeResultsAvailable(searchResults: Result?)
@@ -61,7 +64,7 @@ interface MainPresenter {
     fun onIntentQueryReceived(query: String?)
     fun onRouteRequest(callback: RouteCallback)
     fun generateRawFeature(): Feature
-    fun onFeaturePicked(properties: Map<String, String>, x: Float, y: Float)
+    fun onFeaturePicked(properties: Map<String, String>?, coords: LngLat?, x: Float, y: Float)
     fun checkPermissionAndEnableLocation()
     fun onClickFindMe()
     fun onRouteSuccess(route: Route)

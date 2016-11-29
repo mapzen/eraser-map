@@ -40,6 +40,7 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Geometry
 import com.mapzen.pelias.gson.Properties
 import com.mapzen.pelias.gson.Result
+import com.mapzen.tangram.LabelPickResult
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
 import com.mapzen.valhalla.Route
@@ -199,20 +200,22 @@ class MainPresenterTest {
     }
 
     @Test fun onFeaturePicked_shouldSetPoiTapPoint() {
-        presenter.onFeaturePicked(HashMap<String, String>(), 100f, 50f)
+        presenter.onFeaturePicked(HashMap<String, String>(), LngLat(0.0,0.0), 100f, 50f)
         assertThat(presenter.poiTapPoint?.get(0)).isEqualTo(100.0f)
         assertThat(presenter.poiTapPoint?.get(1)).isEqualTo(50.0f)
     }
 
     @Test fun onFeaturePicked_shouldSetPoiTapName() {
         val props = HashMap<String, String>()
+        val coordinates = LngLat(0.0,0.0)
         props.put(MainPresenterImpl.MAP_DATA_PROP_NAME, "Test Name")
-        presenter.onFeaturePicked(props, 100f, 50f)
+        presenter.onFeaturePicked(props, coordinates, 100f, 50f)
         assertThat(presenter.poiTapName).isEqualTo("Test Name")
     }
 
     @Test fun onFeaturePicked_shouldHandleSearchResultTapped() {
         val props = HashMap<String, String>()
+        val coordinates = LngLat(0.0,0.0)
         props.put(MainPresenterImpl.MAP_DATA_PROP_SEARCHINDEX, "0")
         val result = Result()
         val features = ArrayList<Feature>()
@@ -223,15 +226,38 @@ class MainPresenterTest {
         features.add(feature)
         result.features = features
         presenter.onSearchResultsAvailable(result)
-        presenter.onFeaturePicked(props, 100f, 50f)
+        presenter.onFeaturePicked(props, coordinates, 100f, 50f)
         assertThat(mainController.searchResults?.get(0)).isEqualTo(feature)
     }
 
     @Test fun onFeaturePicked_shouldHandleReverseGeoRequested() {
         val props = HashMap<String, String>()
-        presenter.onFeaturePicked(props, 100f, 50f)
+        val coordinates = LngLat(0.0,0.0)
+        presenter.onFeaturePicked(props, coordinates, 100f, 50f)
         assertThat(mainController.reverseGeolocatePoint?.longitude).isEqualTo(100.0)
         assertThat(mainController.reverseGeolocatePoint?.latitude).isEqualTo(50.0)
+    }
+
+    @Test fun onFeaturePicked_shouldSetPoiCoordinates() {
+        val props = HashMap<String, String>()
+        val coordinates = LngLat(70.0, 40.0)
+        presenter.onFeaturePicked(props, coordinates, 100f, 50f)
+        assertThat(presenter.poiCoordinates?.longitude).isEqualTo(70.0)
+        assertThat(presenter.poiCoordinates?.latitude).isEqualTo(40.0)
+    }
+
+    @Test fun onFeaturePicked_shouldNotSetPoiPointIfNoProperties() {
+        presenter.poiTapPoint = floatArrayOf(70f, 40f)
+        presenter.onFeaturePicked(null, null, 100f, 50f)
+        assertThat(presenter.poiTapPoint?.get(0)).isEqualTo(70.0f)
+        assertThat(presenter.poiTapPoint?.get(1)).isEqualTo(40.0f)
+    }
+
+    @Test fun onFeaturePicked_shouldReverseGeoWithCorrectPointsWhenNoProperties() {
+        presenter.poiTapPoint = floatArrayOf(70f, 40f)
+        presenter.onFeaturePicked(null, null, 100f, 50f)
+        assertThat(mainController.reverseGeolocatePoint?.longitude).isEqualTo(70.0)
+        assertThat(mainController.reverseGeolocatePoint?.latitude).isEqualTo(40.0)
     }
 
     @Test fun onRestoreOptionsMenu_shouldRestoreSettingsBtnAndViewAllForSearchResults() {
@@ -1259,8 +1285,9 @@ class MainPresenterTest {
 
     @Test fun onFeaturePicked_shouldReverseGeolocate() {
         val props = HashMap<String, String>()
+        val coordinates = LngLat(0.0,0.0)
         presenter.reverseGeo = true
-        presenter.onFeaturePicked(props, 40.0f, 70.0f)
+        presenter.onFeaturePicked(props, coordinates, 40.0f, 70.0f)
         assertThat(mainController.reverseGeolocatePoint?.longitude).isEqualTo(40.0)
         assertThat(mainController.reverseGeolocatePoint?.latitude).isEqualTo(70.0)
     }

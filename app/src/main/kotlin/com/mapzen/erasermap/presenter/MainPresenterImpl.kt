@@ -36,6 +36,7 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.pelias.gson.Geometry
 import com.mapzen.pelias.gson.Properties
 import com.mapzen.pelias.gson.Result
+import com.mapzen.tangram.LabelPickResult
 import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
@@ -44,6 +45,7 @@ import com.squareup.otto.Subscribe
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.util.ArrayList
+import java.util.HashMap
 
 open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     val routeManager: RouteManager, val settings: AppSettings, val vsm: ViewStateManager,
@@ -76,6 +78,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   override var mapZoom: Float? = null
   override var poiTapPoint: FloatArray? = null
   override var poiTapName: String? = null
+  override var poiCoordinates: LngLat? = null
 
   private var searchResults: Result? = null
   private var destination: Feature? = null
@@ -183,7 +186,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
 
   private fun emptyPlaceSearch() {
     if (poiTapPoint != null) {
-      onReverseGeoRequested(poiTapPoint?.get(0)?.toFloat(), poiTapPoint?.get(1)?.toFloat())
+      onReverseGeoRequested(poiTapPoint?.get(0), poiTapPoint?.get(1))
     }
   }
 
@@ -272,7 +275,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     mainViewController?.layoutFindMeAboveSearchResults(features)
 
     val lngLat: LngLat?
-    if (poiTapPoint != null) {
+    if (poiCoordinates != null) {
+      lngLat = poiCoordinates
+      overridePlaceFeature(features[0])
+    }
+    else if (poiTapPoint != null) {
       val x = poiTapPoint!![0].toFloat()
       val y = poiTapPoint!![1].toFloat()
       lngLat = mainViewController?.screenPositionToLngLat(x, y)
@@ -290,9 +297,15 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   private fun overridePlaceFeature(feature: Feature) {
-    if (poiTapPoint != null) {
-      val geometry = Geometry()
-      val coordinates = ArrayList<Double>()
+    val geometry = Geometry()
+    val coordinates = ArrayList<Double>()
+    if (poiCoordinates != null) {
+      coordinates.add(poiCoordinates?.longitude as Double)
+      coordinates.add(poiCoordinates?.latitude as Double)
+      geometry.coordinates = coordinates
+      feature.geometry = geometry
+    }
+    else if (poiTapPoint != null) {
       val pointX = poiTapPoint?.get(0)?.toFloat()
       val pointY = poiTapPoint?.get(1)?.toFloat()
       if (pointX != null && pointY != null) {
@@ -312,6 +325,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     }
     poiTapName = null
     poiTapPoint = null
+    poiCoordinates = null
   }
 
   private fun adjustLayoutAndRoute() {
@@ -842,18 +856,23 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     return rawFeature
   }
 
-  override fun onFeaturePicked(properties: Map<String, String>, x: Float, y: Float) {
+  override fun onFeaturePicked(properties: Map<String, String>?, coordinates: LngLat?, x: Float,
+      y: Float) {
     // Reassign tapPoint to center of the feature tapped
     // Also used in placing the pin
-    poiTapPoint = floatArrayOf(x, y)
-    if (properties.contains(MAP_DATA_PROP_NAME)) {
-      poiTapName = properties[MAP_DATA_PROP_NAME]
+    poiCoordinates = coordinates
+    // if the labelPickResult is null, x & y will be 0,0 so ignore setting poiTapPoint
+    if (properties != null) {
+      poiTapPoint = floatArrayOf(x, y)
+      if (properties?.contains(MAP_DATA_PROP_NAME)) {
+        poiTapName = properties?.get(MAP_DATA_PROP_NAME)
+      }
     }
-    if (properties.contains(MAP_DATA_PROP_SEARCHINDEX)) {
+    if (properties != null && properties?.contains(MAP_DATA_PROP_SEARCHINDEX)) {
       val searchIndex = properties[MAP_DATA_PROP_SEARCHINDEX]!!.toInt()
       onSearchResultTapped(searchIndex)
     } else {
-      onReverseGeoRequested(x, y)
+      onReverseGeoRequested(poiTapPoint?.get(0), poiTapPoint?.get(1))
     }
   }
 
