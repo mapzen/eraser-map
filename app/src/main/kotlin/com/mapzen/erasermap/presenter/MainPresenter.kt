@@ -9,7 +9,6 @@ import com.mapzen.pelias.gson.Result
 import com.mapzen.tangram.LngLat
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
-import java.util.HashMap
 
 interface MainPresenter {
     companion object {

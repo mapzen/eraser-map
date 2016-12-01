@@ -276,8 +276,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     if (poiCoordinates != null) {
       lngLat = poiCoordinates
       overridePlaceFeature(features[0])
-    }
-    else if (poiTapPoint != null) {
+    } else if (poiTapPoint != null) {
       val x = poiTapPoint!![0].toFloat()
       val y = poiTapPoint!![1].toFloat()
       lngLat = mainViewController?.screenPositionToLngLat(x, y)
@@ -302,8 +301,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
       coordinates.add(poiCoordinates?.latitude as Double)
       geometry.coordinates = coordinates
       feature.geometry = geometry
-    }
-    else if (poiTapPoint != null) {
+    } else if (poiTapPoint != null) {
       val pointX = poiTapPoint?.get(0)?.toFloat()
       val pointY = poiTapPoint?.get(1)?.toFloat()
       if (pointX != null && pointY != null) {
@@ -854,11 +852,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     return rawFeature
   }
 
-  override fun onFeaturePicked(properties: Map<String, String>?, coordinates: LngLat?, x: Float,
+  override fun onFeaturePicked(properties: Map<String, String>?, coords: LngLat?, x: Float,
       y: Float) {
     // Reassign tapPoint to center of the feature tapped
     // Also used in placing the pin
-    poiCoordinates = coordinates
+    poiCoordinates = coords
     // if the labelPickResult is null, x & y will be 0,0 so ignore setting poiTapPoint
     if (properties != null) {
       poiTapPoint = floatArrayOf(x, y)
