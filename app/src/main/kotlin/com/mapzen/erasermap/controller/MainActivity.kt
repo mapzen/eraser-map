@@ -273,11 +273,12 @@ class MainActivity : AppCompatActivity(), MainViewController,
             presenter.onMapDoubleTapped(x, y)
             true
         })
-        mapzenMap?.setFeaturePickListener({
-            properties, positionX, positionY ->
+        mapzenMap?.setLabelPickListener { labelPickResult, x, y ->
             confidenceHandler.longPressed = false
-            presenter.onFeaturePicked(properties, positionX, positionY)
-        })
+            var properties = labelPickResult.properties
+            var coords = labelPickResult.coordinates
+            presenter.onFeaturePicked(properties, coords, x, y)
+        }
         checkPermissionAndEnableLocation()
         mapzenMap?.setFindMeOnClickListener {
             if (!permissionManager.permissionsGranted()) {
@@ -677,9 +678,9 @@ class MainActivity : AppCompatActivity(), MainViewController,
         val coords = mapzenMap?.screenPositionToLngLat(PointF(screenX, screenY))
         presenter.reverseGeoLngLat = coords
         presenter.currentFeature = getGenericLocationFeature(coords?.latitude as Double,
-                coords?.longitude as Double)
+            coords?.longitude as Double)
         mapzenSearch.reverse(coords?.latitude as Double, coords?.longitude as Double,
-                ReversePeliasCallback())
+            ReversePeliasCallback())
     }
 
     override fun hideReverseGeolocateResult() {
