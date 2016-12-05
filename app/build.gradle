@@ -26,13 +26,13 @@ def RELEASE_KEY_ALIAS = hasProperty('releaseKeyAlias') ? releaseKeyAlias : "null
 def RELEASE_KEY_PASSWORD = hasProperty('releaseStoreFile') ? releaseKeyPassword : "null";
 
 android {
-  compileSdkVersion 24
-  buildToolsVersion "24.0.3"
+  compileSdkVersion 25
+  buildToolsVersion "25.0.1"
 
   defaultConfig {
     applicationId "com.mapzen.erasermap"
     minSdkVersion 15
-    targetSdkVersion 24
+    targetSdkVersion 25
     versionCode buildVersionCode()
     versionName version
     buildConfigField "String", "SEARCH_BASE_URL", SEARCH_BASE_URL
@@ -122,8 +122,8 @@ gradle.startParameter.getTaskNames().each { task ->
 }
 
 dependencies {
-  compile 'com.android.support:appcompat-v7:24.2.1'
-  compile 'com.android.support:support-v4:24.2.1'
+  compile 'com.android.support:appcompat-v7:25.0.1'
+  compile 'com.android.support:support-v4:25.0.1'
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   compile 'com.mapzen:mapzen-android-sdk:1.2.0-SNAPSHOT'
   compile "com.google.dagger:dagger:$dagger_version"
