@@ -2,6 +2,7 @@ package com.mapzen.erasermap.presenter
 
 import com.mapzen.android.lost.api.Status
 import com.mapzen.erasermap.R
+import com.mapzen.erasermap.TestUtils.Companion.getFeature
 import com.mapzen.erasermap.controller.TestMainController
 import com.mapzen.erasermap.dummy.TestHelper
 import com.mapzen.erasermap.dummy.TestHelper.getFixture
@@ -35,6 +36,8 @@ import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.SEARCH_RESULTS
 import com.mapzen.erasermap.view.TestRouteController
 import com.mapzen.pelias.SimpleFeature
 import com.mapzen.pelias.gson.Feature
+import com.mapzen.pelias.gson.Geometry
+import com.mapzen.pelias.gson.Properties
 import com.mapzen.pelias.gson.Result
 import com.mapzen.tangram.LngLat
 import com.mapzen.tangram.MapController
@@ -81,7 +84,7 @@ class MainPresenterTest {
     @Test fun onSearchResultsAvailable_shouldShowSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
-        features.add(Feature())
+        features.add(getFeature())
         result.features = features
         presenter.onSearchResultsAvailable(result)
         assertThat(mainController.searchResults).isEqualTo(features)
@@ -90,7 +93,7 @@ class MainPresenterTest {
     @Test fun onSearchResultsAvailable_shouldDeactivateFindMeTracking() {
         val result = Result()
         val features = ArrayList<Feature>()
-        features.add(Feature())
+        features.add(getFeature())
         result.features = features
         mainController.isFindMeTrackingEnabled = true
         presenter.onSearchResultsAvailable(result)
@@ -122,47 +125,144 @@ class MainPresenterTest {
         assertThat(mainController.focusSearchView).isTrue()
     }
 
-    @Test fun onReverseGeocodeResultsAvailable_shouldShowSearchResults() {
-        val result = Result()
-        val features = ArrayList<Feature>()
-        result.features = features
-        presenter.onReverseGeocodeResultsAvailable(result)
-        assertThat(mainController.isReverseGeocodeVisible).isTrue()
-    }
-
-    @Test fun onPlaceSearchResultsAvailable_shouldShowSearchResults() {
-        val result = Result()
-        val features = ArrayList<Feature>()
-        result.features = features
-        presenter.onPlaceSearchResultsAvailable(result)
-        assertThat(mainController.isReverseGeocodeVisible).isTrue()
-    }
-
-    @Test fun onPlaceSearchRequested_shouldShowNonEmptyResults() {
+    @Test fun onReverseGeocodeResultsAvailable_shouldShowPointOnMap() {
+        mainController.screenPosLngLat = LngLat(40.0, 70.0)
+        presenter.poiTapPoint = floatArrayOf(40f, 70f)
         val result = Result()
         val features = ArrayList<Feature>()
         val feature = Feature()
+        feature.properties = Properties()
+        features.add(feature)
+        result.features = features
+        presenter.onReverseGeocodeResultsAvailable(result)
+        assertThat(mainController.reverseGeoPointOnMap?.longitude).isEqualTo(40.0)
+        assertThat(mainController.reverseGeoPointOnMap?.latitude).isEqualTo(70.0)
+    }
+
+    @Test fun onPlaceSearchResultsAvailable_shouldShowPlaceSearchResults() {
+        presenter.poiTapPoint = floatArrayOf(40f, 70f)
+        val result = Result()
+        val features = ArrayList<Feature>()
+        val feature = Feature()
+        feature.properties = Properties()
         features.add(feature)
         result.features = features
         presenter.onPlaceSearchResultsAvailable(result)
-        assertThat(mainController.isReverseGeocodeVisible).isTrue()
+        assertThat(mainController.placeSearchResults).isEqualTo(features)
     }
 
     @Test fun onPlaceSearchRequested_shouldOverridePlaceResult() {
+        mainController.screenPosLngLat = LngLat(40.0, 70.0)
+        presenter.poiTapPoint = floatArrayOf(40f, 70f)
+        presenter.poiTapName = "Test Name"
         val result = Result()
         val features = ArrayList<Feature>()
         val feature = Feature()
+        feature.properties = Properties()
         features.add(feature)
         result.features = features
         presenter.onPlaceSearchResultsAvailable(result)
-        assertThat(mainController.isPlaceResultOverridden).isTrue()
+        assertThat(feature.geometry.coordinates[0]).isEqualTo(40.0)
+        assertThat(feature.geometry.coordinates[1]).isEqualTo(70.0)
+        assertThat(feature.properties.name).isEqualTo("Test Name")
+    }
+
+    @Test fun onMapPressed_shouldSetReverseLngLat() {
+        mainController.screenPosLngLat = LngLat(40.0, 70.0)
+        presenter.onMapPressed(0f, 0f)
+        assertThat(presenter.reverseGeoLngLat?.longitude).isEqualTo(40.0)
+        assertThat(presenter.reverseGeoLngLat?.latitude).isEqualTo(70.0)
+    }
+
+    @Test fun onMapPressed_shouldSetPoiTapPoint() {
+        presenter.onMapPressed(100f, 50f)
+        assertThat(presenter.poiTapPoint?.get(0)).isEqualTo(100f)
+        assertThat(presenter.poiTapPoint?.get(1)).isEqualTo(50f)
+    }
+
+    @Test fun onMapDoubleTapped_shouldSetCorrectZoom() {
+        mainController.screenPosLngLat = LngLat(40.0, 70.0)
+        mainController.lngLat = LngLat(100.0, 30.0)
+        mainController.zoom = 15f
+        presenter.onMapDoubleTapped(0f, 0f)
+        assertThat(mainController.zoom).isEqualTo(16f)
+    }
+
+    @Test fun onMapDoubleTapped_shouldSetCorrectPosition() {
+        mainController.screenPosLngLat = LngLat(40.0, 70.0)
+        mainController.lngLat = LngLat(100.0, 30.0)
+        mainController.zoom = 15f
+        presenter.onMapDoubleTapped(0f, 0f)
+        assertThat(mainController.lngLat?.longitude).isEqualTo(70.0)
+        assertThat(mainController.lngLat?.latitude).isEqualTo(50.0)
+    }
+
+    @Test fun onFeaturePicked_shouldSetPoiTapPoint() {
+        presenter.onFeaturePicked(HashMap<String, String>(), LngLat(0.0,0.0), 100f, 50f)
+        assertThat(presenter.poiTapPoint?.get(0)).isEqualTo(100.0f)
+        assertThat(presenter.poiTapPoint?.get(1)).isEqualTo(50.0f)
+    }
+
+    @Test fun onFeaturePicked_shouldSetPoiTapName() {
+        val props = HashMap<String, String>()
+        val coordinates = LngLat(0.0,0.0)
+        props.put(MainPresenterImpl.MAP_DATA_PROP_NAME, "Test Name")
+        presenter.onFeaturePicked(props, coordinates, 100f, 50f)
+        assertThat(presenter.poiTapName).isEqualTo("Test Name")
+    }
+
+    @Test fun onFeaturePicked_shouldHandleSearchResultTapped() {
+        val props = HashMap<String, String>()
+        val coordinates = LngLat(0.0,0.0)
+        props.put(MainPresenterImpl.MAP_DATA_PROP_SEARCHINDEX, "0")
+        val result = Result()
+        val features = ArrayList<Feature>()
+        val feature = Feature()
+        feature.properties = Properties()
+        feature.geometry = Geometry()
+        feature.geometry.coordinates = arrayListOf(0.0, 0.0)
+        features.add(feature)
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        presenter.onFeaturePicked(props, coordinates, 100f, 50f)
+        assertThat(mainController.searchResults?.get(0)).isEqualTo(feature)
+    }
+
+    @Test fun onFeaturePicked_shouldHandleReverseGeoRequested() {
+        val props = HashMap<String, String>()
+        val coordinates = LngLat(0.0,0.0)
+        presenter.onFeaturePicked(props, coordinates, 100f, 50f)
+        assertThat(mainController.reverseGeolocatePoint?.longitude).isEqualTo(100.0)
+        assertThat(mainController.reverseGeolocatePoint?.latitude).isEqualTo(50.0)
+    }
+
+    @Test fun onFeaturePicked_shouldSetPoiCoordinates() {
+        val props = HashMap<String, String>()
+        val coordinates = LngLat(70.0, 40.0)
+        presenter.onFeaturePicked(props, coordinates, 100f, 50f)
+        assertThat(presenter.poiCoordinates?.longitude).isEqualTo(70.0)
+        assertThat(presenter.poiCoordinates?.latitude).isEqualTo(40.0)
+    }
+
+    @Test fun onFeaturePicked_shouldNotSetPoiPointIfNoProperties() {
+        presenter.poiTapPoint = floatArrayOf(70f, 40f)
+        presenter.onFeaturePicked(null, null, 100f, 50f)
+        assertThat(presenter.poiTapPoint?.get(0)).isEqualTo(70.0f)
+        assertThat(presenter.poiTapPoint?.get(1)).isEqualTo(40.0f)
+    }
+
+    @Test fun onFeaturePicked_shouldReverseGeoWithCorrectPointsWhenNoProperties() {
+        presenter.poiTapPoint = floatArrayOf(70f, 40f)
+        presenter.onFeaturePicked(null, null, 100f, 50f)
+        assertThat(mainController.reverseGeolocatePoint?.longitude).isEqualTo(70.0)
+        assertThat(mainController.reverseGeolocatePoint?.latitude).isEqualTo(40.0)
     }
 
     @Test fun onRestoreOptionsMenu_shouldRestoreSettingsBtnAndViewAllForSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
-        features.add(Feature())
-        features.add(Feature())
+        features.add(getFeature())
+        features.add(getFeature())
         result.features = features
         presenter.onSearchResultsAvailable(result)
 
@@ -175,8 +275,8 @@ class MainPresenterTest {
     @Test fun onRestoreOptionsMenu_shouldShowListForSearchListVisible() {
         val result = Result()
         val features = ArrayList<Feature>()
-        features.add(Feature())
-        features.add(Feature())
+        features.add(getFeature())
+        features.add(getFeature())
         result.features = features
         presenter.onSearchResultsAvailable(result)
         presenter.resultListVisible = true
@@ -218,7 +318,7 @@ class MainPresenterTest {
     @Test fun onRestoreMapState_shouldRestorePreviousSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
-        features.add(Feature())
+        features.add(getFeature())
         result.features = features
         presenter.onSearchResultsAvailable(result)
 
@@ -231,9 +331,9 @@ class MainPresenterTest {
     @Test fun onRestoreMapState_shouldRestorePreviousSearchResultsCurrentIndex() {
         val result = Result()
         val features = ArrayList<Feature>()
-        features.add(Feature())
-        features.add(Feature())
-        features.add(Feature())
+        features.add(getFeature())
+        features.add(getFeature())
+        features.add(getFeature())
         result.features = features
         presenter.onSearchResultsAvailable(result)
         presenter.currentSearchIndex = 2
@@ -360,7 +460,7 @@ class MainPresenterTest {
     @Test fun onSearchResultsAvailable_shouldHideProgress() {
         val result = Result()
         val features = ArrayList<Feature>()
-        features.add(Feature())
+        features.add(getFeature())
         result.features = features
         mainController.showProgress()
         presenter.onSearchResultsAvailable(result)
@@ -371,9 +471,9 @@ class MainPresenterTest {
         mainController.isViewAllVisible = false
         val result = Result()
         val features = ArrayList<Feature>()
-        features.add(Feature())
-        features.add(Feature())
-        features.add(Feature())
+        features.add(getFeature())
+        features.add(getFeature())
+        features.add(getFeature())
         result.features = features
         presenter.onSearchResultsAvailable(result)
         assertThat(mainController.isViewAllVisible).isTrue()
@@ -392,6 +492,148 @@ class MainPresenterTest {
         assertThat(mainController.focusSearchView).isFalse()
     }
 
+    @Test fun onSearchResultsAvailable_shouldHideReverseGeoResult() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(getFeature())
+        features.add(getFeature())
+        features.add(getFeature())
+        result.features = features
+        mainController.reverseGeoCodeResults = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.reverseGeoCodeResults).isNull()
+    }
+
+    @Test fun onSearchResultsAvailable_shouldShowSearchResultsView() {
+        mainController.searchResultsViewHidden = true
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(getFeature())
+        features.add(getFeature())
+        features.add(getFeature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.searchResultsViewHidden).isFalse()
+    }
+
+    @Test fun onSearchResultsAvailable_shouldAddResultsToMap() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(getFeature())
+        features.add(getFeature())
+        features.add(getFeature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.searchResults).isEqualTo(features)
+    }
+
+    @Test fun onSearchResultsAvailable_shouldHaveCorrectActiveIndex() {
+        mainController.currentSearchIndex = 3
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(getFeature())
+        features.add(getFeature())
+        features.add(getFeature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.currentSearchIndex).isEqualTo(0)
+    }
+
+    @Test fun onSearchResultsAvailable_shouldLayoutAttributionAboveSearchResults() {
+        mainController.isAttributionAboveSearchResults = false
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(getFeature())
+        features.add(getFeature())
+        features.add(getFeature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.isAttributionAboveSearchResults).isTrue()
+    }
+
+    @Test fun onSearchResultsAvailable_shouldLayoutFindMeAboveSearchResults() {
+        mainController.isFindMeAboveSearchResults = false
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(getFeature())
+        features.add(getFeature())
+        features.add(getFeature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.isFindMeAboveSearchResults).isTrue()
+    }
+
+    @Test fun onQuerySubmit_shouldToggleShowDebugSettings() {
+        mainController.debugSettingsEnabled = false
+        presenter.onQuerySubmit("!!!!!!!!")
+        assertThat(mainController.debugSettingsEnabled).isTrue()
+
+        presenter.onQuerySubmit("!!!!!!!!")
+        assertThat(mainController.debugSettingsEnabled).isFalse()
+    }
+
+    @Test fun onSearchResultsAvailable_shouldSetCurrentSearchIndexToZero() {
+        mainController.currentSearchIndex = 3
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(getFeature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.currentSearchIndex).isEqualTo(0)
+    }
+
+    @Test fun onSearchResultsAvailable_shouldSetMapPosition() {
+        val result = Result()
+        val features = ArrayList<Feature>()
+        val feature = SimpleFeature.create("1", "1", "", "",
+            "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0).toFeature()
+        features.add(feature)
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.lngLat?.longitude).isEqualTo(70.0)
+        assertThat(mainController.lngLat?.latitude).isEqualTo(40.0)
+    }
+
+    @Test fun onSearchResultsAvailable_shouldSetDefaultMapZoom() {
+        mainController.zoom = MainPresenter.ROUTING_ZOOM
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(getFeature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.zoom).isEqualTo(MainPresenter.DEFAULT_ZOOM)
+    }
+
+    @Test fun onSearchResultsAvailable_shouldClearPreviousSearchResults() {
+        mainController.searchResultsCleared = false
+        val result = Result()
+        val features = ArrayList<Feature>()
+        features.add(getFeature())
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+        assertThat(mainController.searchResultsCleared).isTrue()
+    }
+
+    @Test fun onSearchResultsAvailable_shouldDrawSearchResultsAtCorrectPoints() {
+        mainController.searchResultsPoints = null
+        val result = Result()
+        val features = ArrayList<Feature>()
+        val feature = SimpleFeature.create("1", "1", "", "",
+            "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0).toFeature()
+        features.add(feature)
+        val anotherFeature = SimpleFeature.create("1", "1", "", "",
+            "", "", "", "", "", "", "", 0.0, "", "", 30.0, 80.0).toFeature()
+        features.add(anotherFeature)
+        result.features = features
+        presenter.onSearchResultsAvailable(result)
+
+        assertThat(mainController.searchResultsPoints?.size).isEqualTo(2)
+        assertThat(mainController.searchResultsPoints?.get(0)?.longitude).isEqualTo(70.0)
+        assertThat(mainController.searchResultsPoints?.get(0)?.latitude).isEqualTo(40.0)
+        assertThat(mainController.searchResultsPoints?.get(1)?.longitude).isEqualTo(80.0)
+        assertThat(mainController.searchResultsPoints?.get(1)?.latitude).isEqualTo(30.0)
+    }
+    
     @Test fun onCollapseSearchView_shouldHideActionViewAll() {
         mainController.isViewAllVisible = true
         presenter.onCollapseSearchView()
@@ -479,9 +721,9 @@ class MainPresenterTest {
     @Test fun onBackPressed_shouldRestoreSearchResultsSearchIndex() {
         val result = Result()
         val features = ArrayList<Feature>()
-        features.add(Feature())
-        features.add(Feature())
-        features.add(Feature())
+        features.add(getFeature())
+        features.add(getFeature())
+        features.add(getFeature())
         result.features = features
         presenter.onSearchResultsAvailable(result)
         presenter.currentSearchIndex = 2
@@ -494,9 +736,9 @@ class MainPresenterTest {
     @Test fun onBackPressed_shouldRestoreSearchResults() {
         val result = Result()
         val features = ArrayList<Feature>()
-        features.add(Feature())
-        features.add(Feature())
-        features.add(Feature())
+        features.add(getFeature())
+        features.add(getFeature())
+        features.add(getFeature())
         result.features = features
         presenter.onSearchResultsAvailable(result)
         presenter.currentSearchIndex = 2
@@ -593,11 +835,9 @@ class MainPresenterTest {
     @Test fun onSearchResultSelected_shouldCenterOnCurrentFeature() {
         val result = Result()
         val features = ArrayList<Feature>()
-        features.add(Feature())
-        features.add(Feature())
-        val feature = SimpleFeature.create("1", "1", "", "",
-            "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0)
-        features.add(feature.toFeature())
+        features.add(getFeature())
+        features.add(getFeature())
+        features.add(getFeature())
         result.features = features
         mainController.currentSearchItemPosition = 2
         presenter.onSearchResultsAvailable(result)
@@ -608,8 +848,8 @@ class MainPresenterTest {
     @Test fun onSearchResultSelected_shouldSetMapPositionForCurrentFeature() {
         val result = Result()
         val features = ArrayList<Feature>()
-        features.add(Feature())
-        features.add(Feature())
+        features.add(getFeature())
+        features.add(getFeature())
         val feature = SimpleFeature.create("1", "1", "", "",
             "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0)
         features.add(feature.toFeature())
@@ -624,8 +864,8 @@ class MainPresenterTest {
     @Test fun onSearchResultSelected_shouldSetMapZoomDefaultZoom() {
         val result = Result()
         val features = ArrayList<Feature>()
-        features.add(Feature())
-        features.add(Feature())
+        features.add(getFeature())
+        features.add(getFeature())
         val feature = SimpleFeature.create("1", "1", "", "",
             "", "", "", "", "", "", "", 0.0, "", "", 40.0, 70.0)
         features.add(feature.toFeature())
@@ -1042,10 +1282,10 @@ class MainPresenterTest {
     }
 
     @Test fun onFeaturePicked_shouldReverseGeolocate() {
-        val poiTapPoint = floatArrayOf(40.0f, 70.0f)
         val props = HashMap<String, String>()
+        val coordinates = LngLat(0.0,0.0)
         presenter.reverseGeo = true
-        presenter.onFeaturePicked(props, poiTapPoint)
+        presenter.onFeaturePicked(props, coordinates, 40.0f, 70.0f)
         assertThat(mainController.reverseGeolocatePoint?.longitude).isEqualTo(40.0)
         assertThat(mainController.reverseGeolocatePoint?.latitude).isEqualTo(70.0)
     }

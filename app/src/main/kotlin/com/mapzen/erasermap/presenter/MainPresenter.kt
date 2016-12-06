@@ -29,6 +29,9 @@ interface MainPresenter {
     var currentSearchIndex: Int
     var mapPosition: LngLat?
     var mapZoom: Float?
+    var poiTapPoint: FloatArray?
+    var poiTapName: String?
+    var poiCoordinates: LngLat?
 
     fun onSearchResultsAvailable(result: Result?)
     fun onReverseGeocodeResultsAvailable(searchResults: Result?)
@@ -59,8 +62,10 @@ interface MainPresenter {
     fun onIntentQueryReceived(query: String?)
     fun onRouteRequest(callback: RouteCallback)
     fun generateRawFeature(): Feature
-    fun onFeaturePicked(properties: Map<String, String>, poiPoint: FloatArray)
+    fun onFeaturePicked(properties: Map<String, String>?, coords: LngLat?, x: Float, y: Float)
     fun checkPermissionAndEnableLocation()
     fun onClickFindMe()
     fun onRouteSuccess(route: Route)
+    fun onMapPressed(x: Float, y: Float)
+    fun onMapDoubleTapped(x: Float, y: Float)
 }
