@@ -3,6 +3,11 @@
     <!-- Routing category -->
     <string name="category_routing_title">Routing</string>
 
+    <!-- Styles -->
+    <string name="category_styles">House Styles</string>
+    <string name="styles_title">Styles</string>
+    <string name="styles_default">bubbleWrap</string>
+
     <!-- Privacy category -->
     <string name="category_privacy_title">Privacy</string>
 

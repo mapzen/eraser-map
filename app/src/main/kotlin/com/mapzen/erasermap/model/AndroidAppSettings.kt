@@ -17,6 +17,7 @@ class AndroidAppSettings(val application: EraserMapApplication) : AppSettings {
 
     companion object {
         val KEY_DISTANCE_UNITS: String = "list_distance_units"
+        val KEY_MAPZEN_STYLES: String = "list_mapzen_styles"
         val KEY_MOCK_LOCATION_ENABLED: String = "checkbox_mock_location"
         val KEY_MOCK_LOCATION_VALUE: String = "edittext_mock_location"
         val KEY_MOCK_ROUTE_ENABLED: String = "checkbox_mock_route"
@@ -52,6 +53,18 @@ class AndroidAppSettings(val application: EraserMapApplication) : AppSettings {
         }
         set(value) {
             prefs.edit().putString(KEY_DISTANCE_UNITS, value.toString()).commit()
+        }
+
+    override var mapzenStyle: String
+        get()  {
+            val value = prefs.getString(KEY_MAPZEN_STYLES, null)
+            if (value != null) {
+                return value
+            }
+            return application.applicationContext.getString(R.string.styles_default);
+        }
+        set(value) {
+            prefs.edit().putString(KEY_MAPZEN_STYLES, value).commit()
         }
 
     /**

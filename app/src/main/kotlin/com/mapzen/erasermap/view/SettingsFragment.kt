@@ -41,6 +41,7 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
             initMockDebugPrefs()
         }
         initDistanceUnitsPref()
+        initMapzenStylesPref()
         initEraseHistoryPref()
     }
 
@@ -48,6 +49,10 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
         if (preference is Preference && value is String) {
             if (AndroidAppSettings.KEY_DISTANCE_UNITS.equals(preference.key)) {
                 updateDistanceUnitsPref(preference, value)
+                return true
+            }
+            if (AndroidAppSettings.KEY_MAPZEN_STYLES.equals(preference.key)) {
+                updateMapzenStylesPref(preference, value)
                 return true
             }
         }
@@ -96,9 +101,22 @@ public class SettingsFragment : PreferenceFragment(), Preference.OnPreferenceCha
         findPreference(key).onPreferenceChangeListener = this
     }
 
+    private fun initMapzenStylesPref() {
+        val key = AndroidAppSettings.KEY_MAPZEN_STYLES
+        val value = settings?.mapzenStyle
+        updateMapzenStylesPref(findPreference(key), value.toString())
+        findPreference(key).onPreferenceChangeListener = this
+    }
+
     private fun updateDistanceUnitsPref(preference: Preference, value: String) {
         val index = resources.getStringArray(R.array.distance_units_values).indexOf(value)
         val text = resources.getStringArray(R.array.distance_units_entries)[index]
+        preference.summary = text
+    }
+
+    private fun updateMapzenStylesPref(preference: Preference, value: String) {
+        val index = resources.getStringArray(R.array.mapzen_styles_values).indexOf(value)
+        val text = resources.getStringArray(R.array.mapzen_styles_entries)[index]
         preference.summary = text
     }
 
