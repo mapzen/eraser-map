@@ -906,28 +906,28 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     private fun initRoutePreviewModeBtns() {
         byCar.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
+            if (buttonView.isPressed && isChecked) {
                 routeManager.type = Router.Type.DRIVING
                 route()
             }
         }
 
         byBike.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
+            if (buttonView.isPressed && isChecked) {
                 routeManager.type = Router.Type.BIKING
                 route()
             }
         }
 
         byFoot.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
+            if (buttonView.isPressed && isChecked) {
                 routeManager.type = Router.Type.WALKING
                 route()
             }
         }
 
         byTransit.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
+            if (buttonView.isPressed && isChecked) {
                 routeManager.type = Router.Type.MULTIMODAL
                 route()
             }
