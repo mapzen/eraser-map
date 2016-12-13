@@ -19,7 +19,6 @@ import com.mapzen.erasermap.model.PermissionManager
 import com.mapzen.erasermap.model.RouteManager
 import com.mapzen.erasermap.model.event.LocationChangeEvent
 import com.mapzen.erasermap.model.event.RouteCancelEvent
-import com.mapzen.erasermap.model.event.RouteEvent
 import com.mapzen.erasermap.model.event.RoutePreviewEvent
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.DEFAULT
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
@@ -577,7 +576,6 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
       return
     }
 
-    bus.post(RouteEvent())
     mainViewController?.resetMute() //must call before generateRoutingMode()
     generateRoutingMode(true)
     vsm.viewState = ViewStateManager.ViewState.ROUTING
