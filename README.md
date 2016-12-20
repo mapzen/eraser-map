@@ -9,7 +9,6 @@ Privacy-focused mapping application for Android
 2. Create a Mapzen API key
 3. Add key to `~/.gradle/gradle.properties` or use as command line argument
 
-
 **gradle.properties**
 
 ```bash
@@ -21,8 +20,6 @@ apiKey=mapzen-???
 ```bash
 ./gradlew clean installDevDebug -PapiKey=$API_KEY
 ```
-
-
 
 ## Clone and build project
 ```bash
@@ -38,4 +35,3 @@ Beta builds (which have Splunk MINT Crash Reporting enabled) are available from 
 2. Follow instructions to enable [unit testing support](http://tools.android.com/tech-docs/unit-testing-support) in Android Studio
 3. Modify unit test run configuration working directory to `/path/to/project/eraser-map/app`
 4. Rebuild and run tests `./gradlew test --continue`
-
