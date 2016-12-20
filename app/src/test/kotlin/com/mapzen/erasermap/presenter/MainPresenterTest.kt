@@ -25,7 +25,6 @@ import com.mapzen.erasermap.model.TestRouteManager
 import com.mapzen.erasermap.model.ValhallaRouteManagerTest.TestRouteCallback
 import com.mapzen.erasermap.model.event.LocationChangeEvent
 import com.mapzen.erasermap.model.event.RouteCancelEvent
-import com.mapzen.erasermap.model.event.RouteEvent
 import com.mapzen.erasermap.model.event.RoutePreviewEvent
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.DEFAULT
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
@@ -799,13 +798,6 @@ class MainPresenterTest {
         assertThat(mainController.isRoutingModeVisible).isTrue()
     }
 
-    @Test fun onClickStartNavigation_shouldPublishRouteEvent() {
-        val subscriber = RouteEventSubscriber()
-        presenter.bus.register(subscriber)
-        presenter.onClickStartNavigation()
-        assertThat(subscriber.event).isNotNull()
-    }
-
     @Test fun onClickStartNavigation_shouldResetMute() {
         mainController.muted = true
         presenter.onClickStartNavigation()
@@ -1427,14 +1419,6 @@ class MainPresenterTest {
     @Test fun onMapRotateEvent_shouldRotateCompass() {
         presenter.onMapRotateEvent()
         assertThat(mainController.compassRotated)
-    }
-
-    class RouteEventSubscriber {
-        var event: RouteEvent? = null
-
-        @Subscribe fun onRouteEvent(event: RouteEvent) {
-            this.event = event
-        }
     }
 
     class ResolutionLocationSettingsChecker : LocationSettingsChecker {
