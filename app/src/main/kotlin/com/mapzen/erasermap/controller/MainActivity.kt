@@ -22,7 +22,13 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import com.mapzen.android.graphics.MapView
 import com.mapzen.android.graphics.MapzenMap
-import com.mapzen.android.graphics.model.*
+import com.mapzen.android.graphics.model.BubbleWrapStyle
+import com.mapzen.android.graphics.model.CameraType
+import com.mapzen.android.graphics.model.CinnabarStyle
+import com.mapzen.android.graphics.model.MapStyle
+import com.mapzen.android.graphics.model.RefillStyle
+import com.mapzen.android.graphics.model.WalkaboutStyle
+import com.mapzen.android.graphics.model.ZincStyle
 import com.mapzen.android.lost.api.Status
 import com.mapzen.android.search.MapzenSearch
 import com.mapzen.erasermap.CrashReportService
