@@ -10,6 +10,7 @@ import java.io.File
 
 class TestAppSettings : AppSettings {
     override var distanceUnits: MapzenRouter.DistanceUnits = MapzenRouter.DistanceUnits.MILES
+    override var mapzenStyle: String = "bubbleWrap"
     override var isMockLocationEnabled: Boolean = false
     override var mockLocation: Location = TestHelper.getTestAndroidLocation()
     override var isMockRouteEnabled: Boolean = false
