@@ -9,6 +9,7 @@ import java.io.File
 
 interface AppSettings {
     var distanceUnits: MapzenRouter.DistanceUnits
+    var mapzenStyle: String
     var isMockLocationEnabled: Boolean
     var mockLocation: Location
     var isMockRouteEnabled: Boolean

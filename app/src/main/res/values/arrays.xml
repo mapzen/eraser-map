@@ -8,4 +8,18 @@
         <item>miles</item>
         <item>kilometers</item>
     </string-array>
+    <string-array name="mapzen_styles_entries">
+        <item>Bubble Wrap</item>
+        <item>Refill</item>
+        <item>Walkabout</item>
+        <item>Cinnabar</item>
+        <item>Zinc</item>
+    </string-array>
+    <string-array name="mapzen_styles_values">
+        <item>bubbleWrap</item>
+        <item>refill</item>
+        <item>walkabout</item>
+        <item>cinnabar</item>
+        <item>zinc</item>
+    </string-array>
 </resources>

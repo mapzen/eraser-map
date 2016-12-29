@@ -22,7 +22,13 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import com.mapzen.android.graphics.MapView
 import com.mapzen.android.graphics.MapzenMap
+import com.mapzen.android.graphics.model.BubbleWrapStyle
 import com.mapzen.android.graphics.model.CameraType
+import com.mapzen.android.graphics.model.CinnabarStyle
+import com.mapzen.android.graphics.model.MapStyle
+import com.mapzen.android.graphics.model.RefillStyle
+import com.mapzen.android.graphics.model.WalkaboutStyle
+import com.mapzen.android.graphics.model.ZincStyle
 import com.mapzen.android.lost.api.Status
 import com.mapzen.android.search.MapzenSearch
 import com.mapzen.erasermap.CrashReportService
@@ -210,6 +216,10 @@ class MainActivity : AppCompatActivity(), MainViewController,
         autoCompleteAdapter?.clear()
         autoCompleteAdapter?.notifyDataSetChanged()
         invalidateOptionsMenu()
+
+        // Update Style all the time, as there's no access
+        // to MapzenMap.getStyle() (yet)
+        setMapStyle(settings.mapzenStyle)
 
         if (enableLocation) {
             enableLocation = false
@@ -666,6 +676,22 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
     override fun setMapZoom(zoom: Float, duration: Int) {
         mapzenMap?.setZoom(zoom, duration)
+    }
+
+    override fun setMapStyle(styleKey: String) {
+        val index = resources.getStringArray(R.array.mapzen_styles_values).indexOf(styleKey)
+        Log.i("MainActivity", "Style = " + styleKey + "; Index = " + index)
+
+        var mapStyle:MapStyle
+        when (index) {
+            0 -> mapStyle = BubbleWrapStyle()
+            1 -> mapStyle = RefillStyle()
+            2 -> mapStyle = WalkaboutStyle()
+            3 -> mapStyle = CinnabarStyle()
+            4 -> mapStyle = ZincStyle()
+            else -> mapStyle = BubbleWrapStyle()
+        }
+        mapzenMap?.setStyle(mapStyle)
     }
 
     override fun placeSearch(gid: String) {

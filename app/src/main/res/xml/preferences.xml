@@ -12,6 +12,17 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/category_styles">
+
+        <ListPreference
+            android:key="list_mapzen_styles"
+            android:title="@string/styles_title"
+            android:entries="@array/mapzen_styles_entries"
+            android:entryValues="@array/mapzen_styles_values"
+            android:defaultValue="@string/styles_default"/>
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/category_privacy_title">
 
         <com.mapzen.erasermap.view.ReadOnlyPreference

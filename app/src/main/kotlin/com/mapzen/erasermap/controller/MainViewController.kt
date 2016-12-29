@@ -83,6 +83,7 @@ interface MainViewController {
     fun setMapPosition(lngLat: LngLat, duration: Int)
     fun setMapZoom(zoom: Float)
     fun setMapZoom(zoom: Float, duration: Int)
+    fun setMapStyle(styleKey: String)
     fun getCurrentSearchPosition(): Int
     fun toastify(resId: Int)
     fun focusSearchView()

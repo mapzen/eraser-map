@@ -14,6 +14,7 @@ class TestMainController : MainViewController {
     var reverseGeoCodeResults: List<Feature>? = null
     var lngLat: LngLat? = null
     var zoom: Float = 0f
+    var mapzenStyle: String = ""
     var tilt: Float = 0f
     var muted: Boolean = false
     var rotation: Float = 0f
@@ -214,7 +215,7 @@ class TestMainController : MainViewController {
     override fun placeSearch(gid: String) {
         placeSearchPoint = LngLat(0.0, 0.0)
     }
- 
+
 //    override fun emptyPlaceSearch() {
 //        isReverseGeocodeVisible = true
 //    }
@@ -367,6 +368,10 @@ class TestMainController : MainViewController {
 
     override fun setMapZoom(zoom: Float) {
         this.zoom = zoom
+    }
+
+    override fun setMapStyle(styleKey: String) {
+        this.mapzenStyle = styleKey
     }
 
     override fun getCurrentSearchPosition(): Int {
