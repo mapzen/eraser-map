@@ -9,7 +9,7 @@ import com.mapzen.pelias.gson.Feature
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
-import retrofit.RestAdapter
+import okhttp3.logging.HttpLoggingInterceptor
 
 class ValhallaRouteManager(val settings: AppSettings,
         val routerFactory: RouterFactory, val context: Context) : RouteManager {
@@ -84,8 +84,8 @@ class ValhallaRouteManager(val settings: AppSettings,
 
     private fun getInitializedRouter(type: Router.Type): MapzenRouter {
         val endpoint = BuildConfig.ROUTE_BASE_URL ?: null
-        val logLevel = if (BuildConfig.DEBUG) RestAdapter.LogLevel.FULL else
-            RestAdapter.LogLevel.NONE
+        val logLevel = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else
+            HttpLoggingInterceptor.Level.NONE
         val httpHandler: ValhallaHttpHandler?
         if  (endpoint != null) {
             httpHandler = ValhallaHttpHandler(endpoint, logLevel)

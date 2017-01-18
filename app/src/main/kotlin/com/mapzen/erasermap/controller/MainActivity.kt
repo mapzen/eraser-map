@@ -74,9 +74,9 @@ import com.mapzen.tangram.TouchInput
 import com.mapzen.valhalla.Route
 import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
-import retrofit.Callback
-import retrofit.RetrofitError
-import retrofit.client.Response
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -494,15 +494,15 @@ class MainActivity : AppCompatActivity(), MainViewController,
     inner class PeliasCallback : Callback<Result> {
         private val TAG: String = "PeliasCallback"
 
-        override fun success(result: Result?, response: Response?) {
+        override fun onResponse(call: Call<Result>?, response: Response<Result>?) {
             presenter.reverseGeoLngLat = null
-            presenter.onSearchResultsAvailable(result)
+            presenter.onSearchResultsAvailable(response?.body())
             setOptionsMenuIconToList()
         }
 
-        override fun failure(error: RetrofitError?) {
+        override fun onFailure(call: Call<Result>?, t: Throwable?) {
             hideProgress()
-            Log.e(TAG, "Error fetching search results: " + error?.message)
+            Log.e(TAG, "Error fetching search results: " + t?.message)
             Toast.makeText(this@MainActivity, "Error fetching search results",
                     Toast.LENGTH_LONG).show()
         }
@@ -511,26 +511,26 @@ class MainActivity : AppCompatActivity(), MainViewController,
     inner class ReversePeliasCallback : Callback<Result> {
         private val TAG: String = "ReversePeliasCallback"
 
-        override fun success(result: Result?, response: Response?) {
-            presenter.onReverseGeocodeResultsAvailable(result)
+        override fun onResponse(call: Call<Result>?, response: Response<Result>?) {
+            presenter.onReverseGeocodeResultsAvailable(response?.body())
         }
 
-        override fun failure(error: RetrofitError?) {
+        override fun onFailure(call: Call<Result>?, t: Throwable?) {
             hideProgress()
-            Log.e(TAG, "Error Reverse Geolocating: " + error?.message)
+            Log.e(TAG, "Error Reverse Geolocating: " + t?.message)
         }
     }
 
     inner class PlaceCallback : Callback<Result> {
         private val TAG: String = "PlaceCallback"
 
-        override fun success(result: Result?, response: Response?) {
-            presenter.onPlaceSearchResultsAvailable(result)
+        override fun onResponse(call: Call<Result>?, response: Response<Result>?) {
+            presenter.onPlaceSearchResultsAvailable(response?.body())
         }
 
-        override fun failure(error: RetrofitError?) {
+        override fun onFailure(call: Call<Result>?, t: Throwable?) {
             hideProgress()
-            Log.e(TAG, "Error fetching place search results: " + error?.message)
+            Log.e(TAG, "Error fetching place search results: " + t?.message)
         }
     }
 

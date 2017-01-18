@@ -2,22 +2,29 @@ package com.mapzen.erasermap.model;
 
 import com.mapzen.android.routing.TurnByTurnHttpHandler;
 
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
+import java.io.IOException;
+
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 public class ValhallaHttpHandler extends TurnByTurnHttpHandler {
 
-  public ValhallaHttpHandler(String endpoint, RestAdapter.LogLevel logLevel) {
+  public ValhallaHttpHandler(String endpoint, HttpLoggingInterceptor.Level logLevel) {
     configure(endpoint, logLevel);
   }
 
-  public ValhallaHttpHandler(RestAdapter.LogLevel logLevel) {
+  public ValhallaHttpHandler(HttpLoggingInterceptor.Level logLevel) {
     configure(DEFAULT_URL, logLevel);
   }
 
   @Override
-  protected void onRequest(RequestInterceptor.RequestFacade requestFacade) {
-    super.onRequest(requestFacade);
-    requestFacade.addHeader(Http.HEADER_DNT, Http.VALUE_HEADER_DNT);
+  protected Response onRequest(Interceptor.Chain chain) throws IOException {
+    final Request request = chain.request()
+        .newBuilder()
+        .addHeader(Http.HEADER_DNT, Http.VALUE_HEADER_DNT)
+        .build();
+    return chain.proceed(request);
   }
 }
