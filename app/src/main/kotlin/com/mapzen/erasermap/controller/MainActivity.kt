@@ -563,7 +563,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
         val layoutParams = RelativeLayout.LayoutParams(size, size)
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-        val margin = resources.getDimensionPixelSize(R.dimen.mz_find_me_button_margin_bottom)
+        val margin = resources.getDimensionPixelSize(R.dimen.em_find_me_button_margin_bottom)
         layoutParams.rightMargin = margin
         return layoutParams
     }
