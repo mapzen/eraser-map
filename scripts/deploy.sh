@@ -17,3 +17,10 @@ if [ -z ${PERFORM_RELEASE} ]
     ./gradlew clean assembleProdRelease --refresh-dependencies -PmintApiKey=$MINT_API_KEY -PapiKey=$API_KEY_PROD -PbuildNumber=$RELEASE_TAG -PreleaseStoreFile=$RELEASE_STORE_FILE -PreleaseStorePassword="$RELEASE_STORE_PASSWORD" -PreleaseKeyAlias=$RELEASE_KEY_ALIAS -PreleaseKeyPassword="$RELEASE_KEY_PASSWORD" -PsearchBaseUrl="$SEARCH_BASE_URL" -ProuteBaseUrl="$ROUTE_BASE_URL"
     s3cmd put app/build/outputs/apk/app-prod-release.apk s3://android.mapzen.com/erasermap-releases/$RELEASE_TAG.apk
 fi
+
+if [ -z ${CIRCLE_PR_USERNAME} ]
+  then
+    echo "CIRCLE_PR_USERNAME does not exist"
+  else
+    echo "CIRCLE_PR_USERNAME = ${CIRCLE_PR_USERNAME}"
+fi
