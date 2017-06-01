@@ -8,6 +8,7 @@ import android.text.style.StyleSpan
 import com.mapzen.erasermap.R
 import com.mapzen.valhalla.Instruction
 import com.mapzen.valhalla.TransitInfo
+import com.mapzen.valhalla.TransitStop
 import com.mapzen.valhalla.TravelMode
 import com.mapzen.valhalla.TravelType
 import java.util.ArrayList
@@ -70,12 +71,16 @@ class InstructionGroup(val travelType: TravelType, val travelMode: TravelMode,
     return numberOfStops
   }
 
-  fun transitInstructionSpannable(instruction: Instruction): SpannableString? {
+  fun transitInstructionSpannable(context: Context, instruction: Instruction): SpannableString? {
     if (transitInstruction == null) {
       var turnInstruction = instruction.getHumanTurnInstruction()
       val pattern = Pattern.compile("\\([0-9]+ stops\\)")
       val matcher = pattern.matcher(turnInstruction)
       turnInstruction = matcher.replaceAll("")
+      val transitStops = instruction.getTransitInfo()?.getTransitStops() as ArrayList<TransitStop>
+      val departureTime = transitStops[0].getDepartureDateTime().substring(11, 16)
+      turnInstruction += " "
+      turnInstruction += context.getString(R.string.transit_time, departureTime)
       val spannableString = SpannableString(turnInstruction)
       val transitInfo = instruction.getTransitInfo() as TransitInfo
       val shortnameLoc = spannableString.indexOf(transitInfo.getShortName(), 0, true)

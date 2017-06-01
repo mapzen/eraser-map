@@ -48,6 +48,7 @@
 
     <string name="comma">,</string>
     <string name="stops">stops</string>
+    <string name="transit_time">(%s)</string>
     <string name="station">Station</string>
     <string name="no_route_found">No route found</string>
     <string name="try_another_mode">Try a different mode?</string>
