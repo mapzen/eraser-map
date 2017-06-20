@@ -29,14 +29,6 @@ public class MapzenLocationImpl(val locationClientManager: LocationClientManager
         override fun onLocationChanged(location: Location) {
             onLocationUpdate(location)
         }
-
-        override fun onProviderDisabled(provider: String) {
-
-        }
-
-        override fun onProviderEnabled(provider: String) {
-
-        }
     }
 
     private val request = LocationRequest.create()
@@ -60,7 +52,8 @@ public class MapzenLocationImpl(val locationClientManager: LocationClientManager
             LocationServices.FusedLocationApi?.setMockLocation(locationClient, settings.mockLocation)
         }
         if (settings.isMockRouteEnabled) {
-            LocationServices.FusedLocationApi?.setMockTrace(locationClient, settings.mockRoute)
+            LocationServices.FusedLocationApi?.setMockTrace(locationClient, settings.mockRoute?.path,
+                settings.mockRoute?.name)
         }
     }
 

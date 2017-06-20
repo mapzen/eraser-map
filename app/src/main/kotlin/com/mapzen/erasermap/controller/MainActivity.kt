@@ -254,7 +254,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
     }
 
     private fun initMapzenMap() {
-        mapView.getMapAsync(apiKeys.apiKey, {
+        mapView.getMapAsync({
             this.mapzenMap = it
             configureMapzenMap()
             presenter.onRestoreMapState()
