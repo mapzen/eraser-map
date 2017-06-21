@@ -22,7 +22,7 @@ test:
         parallel: true
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit
-    - cp app/build/test-results/devDebug/*.xml $CIRCLE_TEST_REPORTS/junit
+    - cp app/build/test-results/testDevDebugUnitTest/*.xml $CIRCLE_TEST_REPORTS/junit
 
 deployment:
   all:
