@@ -9,7 +9,7 @@ class TestRouter(context: Context) : MapzenRouter(context) {
     var locations: ArrayList<DoubleArray> = ArrayList()
     var isFetching: Boolean = false
     var units: MapzenRouter.DistanceUnits = MapzenRouter.DistanceUnits.MILES
-    var bearing: Float = 0f
+    var bearing: Int = 0
     var name: String? = null
 
     override fun clearLocations(): MapzenRouter {
@@ -38,7 +38,7 @@ class TestRouter(context: Context) : MapzenRouter(context) {
         return this
     }
 
-    override fun setLocation(point: DoubleArray, heading: Float): MapzenRouter {
+    override fun setLocation(point: DoubleArray, heading: Int): MapzenRouter {
         locations.add(point)
         bearing = heading
         return this
