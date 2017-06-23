@@ -1,5 +1,6 @@
 package com.mapzen.erasermap.model
 
+import com.mapzen.android.core.MapzenManager
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.erasermap.EraserMapApplication
 
@@ -24,6 +25,7 @@ class ApiKeys private constructor(val application: EraserMapApplication) {
     init {
         configureKeys()
         if (apiKey.isEmpty()) throw IllegalArgumentException("Api key cannot be empty.")
+        MapzenManager.instance(application).apiKey = apiKey
     }
 
     private fun configureKeys() {

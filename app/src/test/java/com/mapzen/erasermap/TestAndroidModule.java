@@ -83,9 +83,7 @@ public class TestAndroidModule {
     }
 
     @Provides @Singleton TileHttpHandler provideTileHttpHandler() {
-        TileHttpHandler handler = new TileHttpHandler(application);
-        handler.setApiKey(BuildConfig.API_KEY);
-        return handler;
+        return new TileHttpHandler();
     }
 
     @Provides @Singleton Bus provideBus() {

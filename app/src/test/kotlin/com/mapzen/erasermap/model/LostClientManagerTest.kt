@@ -69,6 +69,8 @@ class LostClientManagerTest {
       return connected
     }
 
+    override fun unregisterConnectionCallbacks(callbacks: LostApiClient.ConnectionCallbacks?) {
+    }
   }
   class TestRunnable: Runnable {
 

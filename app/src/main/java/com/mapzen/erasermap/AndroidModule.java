@@ -1,6 +1,5 @@
 package com.mapzen.erasermap;
 
-import com.mapzen.android.core.ApiKeyConstants;
 import com.mapzen.android.search.MapzenSearch;
 import com.mapzen.erasermap.model.AndroidAppSettings;
 import com.mapzen.erasermap.model.ApiKeys;
@@ -33,7 +32,9 @@ import com.mapzen.pelias.PeliasRequestHandler;
 import com.squareup.otto.Bus;
 
 import android.content.Context;
+import android.os.Build;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +45,8 @@ import dagger.Provides;
 
 @Module
 public class AndroidModule {
+    private static final int KITKAT = 19;
+
     private final EraserMapApplication application;
 
     public AndroidModule(EraserMapApplication application) {
@@ -91,8 +94,15 @@ public class AndroidModule {
     }
 
     @Provides @Singleton TileHttpHandler provideTileHttpHandler(ApiKeys apiKeys) {
-        final TileHttpHandler handler = new TileHttpHandler(application);
-        handler.setApiKey(apiKeys.getApiKey());
+        final TileHttpHandler handler;
+        if (Build.VERSION.SDK_INT >= KITKAT) {
+            File httpCache = new File(application.getExternalCacheDir().getAbsolutePath() +
+                "/tile_cache");
+            int size = 30 * 1024 * 1024;
+            handler = new TileHttpHandler(httpCache, size);
+        } else {
+            handler = new TileHttpHandler();
+        }
         return handler;
     }
 
@@ -116,7 +126,7 @@ public class AndroidModule {
 
             @Override public Map<String, String> queryParamsForRequest() {
                 Map<String, String> params = new HashMap<>();
-                params.put(ApiKeyConstants.API_KEY, apiKeys.getApiKey());
+                params.put(Http.PARAM_API_KEY, apiKeys.getApiKey());
                 return params;
             }
         });

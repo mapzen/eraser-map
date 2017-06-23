@@ -2,6 +2,7 @@ package com.mapzen.erasermap.model
 
 import android.content.Context
 import android.content.res.Resources
+import com.mapzen.android.core.MapzenManager
 import com.mapzen.erasermap.dummy.TestHelper.getTestFeature
 import com.mapzen.erasermap.dummy.TestHelper.getTestLocation
 import com.mapzen.valhalla.Route
@@ -9,8 +10,16 @@ import com.mapzen.valhalla.RouteCallback
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mockito
+import org.powermock.api.mockito.PowerMockito
+import org.powermock.core.classloader.annotations.PowerMockIgnore
+import org.powermock.core.classloader.annotations.PrepareForTest
+import org.powermock.modules.junit4.PowerMockRunner
 
+@PrepareForTest(MapzenManager::class)
+@RunWith(PowerMockRunner::class)
+@PowerMockIgnore("javax.net.ssl.*")
 class ValhallaRouteManagerTest {
     val routerFactory = TestRouterFactory()
     var routeManager: ValhallaRouteManager? = null
@@ -24,6 +33,9 @@ class ValhallaRouteManagerTest {
         Mockito.`when`(context.applicationContext).thenReturn(context)
         Mockito.`when`(resources.getIdentifier("turn_by_turn_key", "string", "test")).thenReturn(1)
         Mockito.`when`(resources.getString(1)).thenThrow(Resources.NotFoundException::class.java)
+        PowerMockito.mockStatic(MapzenManager::class.java)
+        PowerMockito.`when`(MapzenManager.instance(context)).thenReturn(Mockito.mock(
+            MapzenManager::class.java))
         routeManager = ValhallaRouteManager(TestAppSettings(), routerFactory, context)
         router = routerFactory.getRouter(context) as TestRouter
     }

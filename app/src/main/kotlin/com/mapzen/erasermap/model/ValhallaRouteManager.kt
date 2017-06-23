@@ -54,7 +54,7 @@ class ValhallaRouteManager(val settings: AppSettings,
             val router = getInitializedRouter(type)
 
             if (location.hasBearing()) {
-                router.setLocation(start, location.bearing)
+                router.setLocation(start, location.bearing.toInt())
             } else {
                 router.setLocation(start)
             }
