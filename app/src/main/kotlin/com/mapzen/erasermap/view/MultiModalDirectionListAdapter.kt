@@ -266,7 +266,7 @@ class MultiModalDirectionListAdapter(val context: Context, val instructionGroupe
     holder.startingStationName.text = instructionGroup.firstStationName(context, instruction)
     holder.travelTypeIcon.setImageResource(multiModalHelper.getTransitIcon(
         instruction.getTravelType()))
-    holder.instructionText.text = instructionGroup.transitInstructionSpannable(instruction)
+    holder.instructionText.text = instructionGroup.transitInstructionSpannable(context, instruction)
     holder.distanceTimeText.text = instructionGroup.numberOfStops(context, instruction)
     holder.timeView.timeInMinutes = TimeUnit.SECONDS.toMinutes(
         instructionGroup.totalTime.toLong()).toInt()
@@ -311,7 +311,12 @@ class MultiModalDirectionListAdapter(val context: Context, val instructionGroupe
         lp.bottomMargin = 0
       }
     }
-    holder.endingStationName.text = transitStops[transitStops.size-1].getName()
+    val arrivalTime = transitStops[transitStops.size-1].getArrivalDateTime().substring(11, 16)
+    val builder = StringBuilder()
+    builder.append(transitStops[transitStops.size-1].getName())
+    builder.append(" ")
+    builder.append(context.getString(R.string.transit_time, arrivalTime))
+    holder.endingStationName.text = builder
   }
 
   fun setTransitStationNamesContainer(holder: TransitViewHolder, listItem: ListRowItem,
@@ -332,7 +337,12 @@ class MultiModalDirectionListAdapter(val context: Context, val instructionGroupe
           stationRow = View.inflate(context, R.layout.transit_station_row, null)
         }
         val stationName = stationRow?.findViewById(R.id.station_name) as TextView
-        stationName.text = transitStops[i].getName()
+        val departureTime = transitStops[i].getDepartureDateTime().substring(11, 16)
+        val builder = StringBuilder()
+        builder.append(transitStops[i].getName())
+        builder.append(" ")
+        builder.append(context.getString(R.string.transit_time, departureTime))
+        stationName.text = builder
         holder.stationNamesContainer.addView(stationRow)
       }
     }
