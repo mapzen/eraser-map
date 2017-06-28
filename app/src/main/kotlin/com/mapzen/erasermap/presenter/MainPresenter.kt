@@ -32,6 +32,7 @@ interface MainPresenter {
     var poiTapPoint: FloatArray?
     var poiTapName: String?
     var poiCoordinates: LngLat?
+    var willPauseImmediately: Boolean?
 
     fun onSearchResultsAvailable(result: Result?)
     fun onReverseGeocodeResultsAvailable(searchResults: Result?)
@@ -57,7 +58,7 @@ interface MainPresenter {
     fun onMapRotateEvent(): Boolean
     fun onReverseGeoRequested(screenX: Float?, screenY: Float?): Boolean
     fun onPlaceSearchRequested(gid: String): Boolean
-    fun onExitNavigation()
+    fun onExitNavigation(visible: Boolean)
     fun configureMapzenMap()
     fun onIntentQueryReceived(query: String?)
     fun onRouteRequest(callback: RouteCallback)

@@ -69,7 +69,7 @@ class TestMainController : MainViewController {
     var placeSearchResults: List<Feature>? = null
     var searchResultsPoints: List<LngLat>? = null
     var searchResultsCleared = false
-
+    var speakerStopped = false
     var screenPosLngLat: LngLat? = null
 
     override fun showSearchResultsView(features: List<Feature>) {
@@ -241,7 +241,7 @@ class TestMainController : MainViewController {
     }
 
     override fun stopSpeaker() {
-
+        speakerStopped = true
     }
 
     override fun checkPermissionAndEnableLocation() {
