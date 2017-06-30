@@ -693,7 +693,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     routingEnabled = false
     routeManager.reverse = false
 
-
+    val currentLocation = mapzenLocation.getLastLocation()
     mapzenLocation.stopLocationUpdates()
     mainViewController?.stopSpeaker()
 
@@ -710,6 +710,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     mainViewController?.setDefaultCamera()
     mainViewController?.layoutFindMeAlignBottom()
     mainViewController?.setMapTilt(0f)
+
+    if (currentLocation is Location) {
+      mainViewController?.centerMapOnLocation(LngLat(currentLocation.longitude,
+          currentLocation.latitude), MainPresenter.DEFAULT_ZOOM)
+    }
   }
 
   override fun onMapRotateEvent(): Boolean {

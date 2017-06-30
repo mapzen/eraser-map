@@ -13,6 +13,8 @@ class TestMapzenLocation : MapzenLocation {
 
     override var mapzenMap: MapzenMap? = null
 
+    var testLastLocation = Mockito.mock(Location::class.java)
+
     override fun startLocationUpdates() {
         connected = true
     }
@@ -22,7 +24,7 @@ class TestMapzenLocation : MapzenLocation {
     }
 
     override fun getLastLocation(): Location? {
-        return Mockito.mock(Location::class.java)
+        return testLastLocation
     }
 
     override fun getLon(): Double {
