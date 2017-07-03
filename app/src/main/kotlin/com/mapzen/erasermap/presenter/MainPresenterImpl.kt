@@ -76,6 +76,7 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   override var poiTapPoint: FloatArray? = null
   override var poiTapName: String? = null
   override var poiCoordinates: LngLat? = null
+  override var willPauseImmediately: Boolean? = false
 
   private var searchResults: Result? = null
   private var destination: Feature? = null
@@ -590,13 +591,18 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
   }
 
   override fun onResume() {
-    if (!isRouting() && !isRoutingDirectionList()) {
+    if (!isRouting() && !isRoutingDirectionList() && !willPauseImmediately()) {
       mainViewController?.checkPermissionAndEnableLocation()
     }
   }
 
   private fun isRouting(): Boolean {
     return vsm.viewState == ViewStateManager.ViewState.ROUTING
+  }
+
+  private fun willPauseImmediately(): Boolean {
+    val willPause = willPauseImmediately?.let { it } ?: return false
+    return willPause
   }
 
   private fun isRoutingDirectionList(): Boolean {
@@ -682,11 +688,18 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     }
   }
 
-  override fun onExitNavigation() {
+  override fun onExitNavigation(visible: Boolean) {
     vsm.viewState = ViewStateManager.ViewState.DEFAULT
     routingEnabled = false
     routeManager.reverse = false
-    checkPermissionAndEnableLocation()
+
+    val currentLocation = mapzenLocation.getLastLocation()
+    mapzenLocation.stopLocationUpdates()
+    mainViewController?.stopSpeaker()
+
+    if (visible) {
+      checkPermissionAndEnableLocation()
+    }
     mainViewController?.stopVoiceNavigationController()
     mainViewController?.clearRoute()
     mainViewController?.hideRouteIcon()
@@ -697,6 +710,11 @@ open class MainPresenterImpl(val mapzenLocation: MapzenLocation, val bus: Bus,
     mainViewController?.setDefaultCamera()
     mainViewController?.layoutFindMeAlignBottom()
     mainViewController?.setMapTilt(0f)
+
+    if (currentLocation is Location) {
+      mainViewController?.centerMapOnLocation(LngLat(currentLocation.longitude,
+          currentLocation.latitude), MainPresenter.DEFAULT_ZOOM)
+    }
   }
 
   override fun onMapRotateEvent(): Boolean {

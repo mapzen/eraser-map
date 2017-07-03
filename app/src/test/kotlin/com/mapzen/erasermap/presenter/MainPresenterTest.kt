@@ -26,6 +26,7 @@ import com.mapzen.erasermap.model.ValhallaRouteManagerTest.TestRouteCallback
 import com.mapzen.erasermap.model.event.LocationChangeEvent
 import com.mapzen.erasermap.model.event.RouteCancelEvent
 import com.mapzen.erasermap.model.event.RoutePreviewEvent
+import com.mapzen.erasermap.presenter.MainPresenter.Companion.DEFAULT_ZOOM
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.DEFAULT
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_DIRECTION_LIST
 import com.mapzen.erasermap.presenter.ViewStateManager.ViewState.ROUTE_PREVIEW
@@ -936,6 +937,14 @@ class MainPresenterTest {
         assertThat(mapzenLocation.connected).isFalse()
     }
 
+    @Test fun onResume_shouldNotClientWhenExitRoutingNotificationInvokedWhileNotVisible() {
+        presenter.willPauseImmediately = true
+        presenter.onClickStartNavigation()
+        mapzenLocation.connected = false
+        presenter.onResume()
+        assertThat(mapzenLocation.connected).isFalse()
+    }
+
     @Test fun onBackPressed_shouldUpdateViewState() {
         vsm.viewState = ROUTE_DIRECTION_LIST
         presenter.onBackPressed()
@@ -1302,87 +1311,117 @@ class MainPresenterTest {
 
     @Test fun onExitNavigation_shouldSetViewStateDefault() {
         vsm.viewState = ROUTING
-        presenter.onExitNavigation()
+        presenter.onExitNavigation(true)
         assertThat(vsm.viewState).isEqualTo(DEFAULT)
     }
 
     @Test fun onExitNavigation_shouldDisableRouting() {
         presenter.routingEnabled = true
-        presenter.onExitNavigation()
+        presenter.onExitNavigation(true)
         assertThat(presenter.routingEnabled).isFalse()
     }
 
     @Test fun onExitNavigation_shouldResetReverse() {
         routeManager.reverse = true
-        presenter.onExitNavigation()
+        presenter.onExitNavigation(true)
         assertThat(routeManager.reverse).isFalse()
     }
 
     @Test fun onExitNavigation_shouldEnableLocation() {
         permissionManager.granted = true
         mainController.isCurrentLocationEnabled = false
-        presenter.onExitNavigation()
+        presenter.onExitNavigation(true)
         assertThat(mainController.isCurrentLocationEnabled).isTrue()
+    }
+
+    @Test fun onExitNavigation_shouldNotEnableLocation() {
+        permissionManager.granted = true
+        mainController.isCurrentLocationEnabled = false
+        presenter.onExitNavigation(false)
+        assertThat(mainController.isCurrentLocationEnabled).isFalse()
     }
 
     @Test fun onExitNavigation_shouldStopVoiceNavigationController() {
         mainController.isVoiceNavigationStopped = false
-        presenter.onExitNavigation()
+        presenter.onExitNavigation(true)
         assertThat(mainController.isVoiceNavigationStopped).isTrue()
     }
 
     @Test fun onExitNavigation_shouldClearRoute() {
         mainController.routeLine = Route(JSONObject())
-        presenter.onExitNavigation()
+        presenter.onExitNavigation(true)
         assertThat(mainController.routeLine).isNull()
     }
 
     @Test fun onExitNavigation_shouldHideRouteIcon() {
         mainController.isRouteIconVisible = true
-        presenter.onExitNavigation()
+        presenter.onExitNavigation(true)
         assertThat(mainController.isRouteIconVisible).isFalse()
     }
 
     @Test fun onExitNavigation_shouldHideRouteModeView() {
         mainController.isRouteModeViewVisible = true
-        presenter.onExitNavigation()
+        presenter.onExitNavigation(true)
         assertThat(mainController.isRouteModeViewVisible).isFalse()
     }
 
     @Test fun onExitNavigation_shouldShowActionBar() {
         mainController.isActionBarHidden = true
-        presenter.onExitNavigation()
+        presenter.onExitNavigation(true)
         assertThat(mainController.isActionBarHidden).isFalse()
     }
 
     @Test fun onExitNavigation_shouldHideRoutePreviewView() {
         mainController.isRoutePreviewViewVisible = true
-        presenter.onExitNavigation()
+        presenter.onExitNavigation(true)
         assertThat(mainController.isRoutePreviewViewVisible).isFalse()
     }
 
     @Test fun onExitNavigation_shouldResetMapResponder() {
         mainController.mapHasPanResponder = true
-        presenter.onExitNavigation()
+        presenter.onExitNavigation(true)
         assertThat(mainController.mapHasPanResponder).isFalse()
     }
 
     @Test fun onExitNavigation_shouldSetDefaultCamera() {
         mainController.mapCameraType = MapController.CameraType.PERSPECTIVE
-        presenter.onExitNavigation()
+        presenter.onExitNavigation(true)
         assertThat(mainController.mapCameraType).isEqualTo(MapController.CameraType.ISOMETRIC)
     }
 
     @Test fun onExitNavigation_shouldAlignFindMeToBottom() {
         mainController.isFindMeAboveOptions = true
-        presenter.onExitNavigation()
+        presenter.onExitNavigation(true)
         assertThat(mainController.isFindMeAboveOptions).isFalse()
     }
 
     @Test fun onExitNavigation_shouldResetMapTilt() {
         mainController.tilt = 30f
-        presenter.onExitNavigation()
+        presenter.onExitNavigation(true)
         assertThat(mainController.tilt).isEqualTo(0f)
+    }
+
+    @Test fun onExitNavigation_shouldStopLocationUpdates() {
+        mapzenLocation.startLocationUpdates()
+        presenter.onExitNavigation(true)
+        assertThat(mapzenLocation.connected).isFalse()
+    }
+
+    @Test fun onExitNavigation_shouldStopSpeaker() {
+        mainController?.speakerStopped = false
+        presenter.onExitNavigation(true)
+        assertThat(mainController?.speakerStopped).isTrue()
+    }
+
+    @Test fun onExitNavigation_shouldCenterOnLastLocation() {
+        mainController?.lngLat = null
+        mainController?.zoom = -1f
+        `when`(mapzenLocation?.testLastLocation.latitude).thenReturn(40.0)
+        `when`(mapzenLocation?.testLastLocation.longitude).thenReturn(70.0)
+        presenter.onExitNavigation(true)
+        assertThat(mainController?.lngLat?.latitude).isEqualTo(40.0)
+        assertThat(mainController?.lngLat?.longitude).isEqualTo(70.0)
+        assertThat(mainController?.zoom).isEqualTo(DEFAULT_ZOOM)
     }
 
     @Test fun centerOnCurrentFeature_shouldDoNothingForNoFeatures() {

@@ -174,9 +174,10 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     override fun onNewIntent(intent: Intent?) {
         if (intent?.getBooleanExtra(NotificationCreator.EXIT_NAVIGATION, false) as Boolean) {
-            presenter.onExitNavigation()
-            if((intent?.getBooleanExtra(NotificationBroadcastReceiver.VISIBILITY, false)
-                    as Boolean).not()) {
+            val visible = intent?.getBooleanExtra(NotificationBroadcastReceiver.VISIBILITY, false)
+            presenter.willPauseImmediately = !visible
+            presenter.onExitNavigation(visible)
+            if (!visible) {
                 moveTaskToBack(true)
             }
         } else {
@@ -229,6 +230,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
 
     override public fun onPause() {
         super.onPause()
+        presenter.willPauseImmediately = false
         app.onActivityPause()
         if (mapzenMap?.isMyLocationEnabled != null && mapzenMap?.isMyLocationEnabled as Boolean
                 && !presenter.routingEnabled) {
