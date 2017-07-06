@@ -31,7 +31,7 @@ android {
 
   defaultConfig {
     applicationId "com.mapzen.erasermap"
-    minSdkVersion 15
+    minSdkVersion 19
     targetSdkVersion 25
     versionCode buildVersionCode()
     versionName version
