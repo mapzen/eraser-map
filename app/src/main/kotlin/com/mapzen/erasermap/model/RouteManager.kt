@@ -7,7 +7,6 @@ import com.mapzen.valhalla.RouteCallback
 import com.mapzen.valhalla.Router
 
 interface RouteManager {
-    var apiKey: String
     var origin: ValhallaLocation?
     var destination: Feature?
     var type: Router.Type

@@ -1,6 +1,7 @@
 package com.mapzen.erasermap;
 
 import com.mapzen.android.search.MapzenSearch;
+import com.mapzen.android.search.MapzenSearchHttpHandler;
 import com.mapzen.erasermap.model.AndroidAppSettings;
 import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.model.AppSettings;
@@ -27,7 +28,6 @@ import com.mapzen.erasermap.util.IntentFactory;
 import com.mapzen.erasermap.view.Speaker;
 import com.mapzen.erasermap.view.SpeakerboxSpeaker;
 import com.mapzen.pelias.Pelias;
-import com.mapzen.pelias.PeliasRequestHandler;
 
 import com.squareup.otto.Bus;
 
@@ -86,14 +86,12 @@ public class AndroidModule {
                 permissionManager, confidenceHandler);
     }
 
-    @Provides @Singleton RouteManager provideRouteManager(AppSettings settings, ApiKeys apiKeys) {
-        final ValhallaRouteManager manager = new ValhallaRouteManager(settings,
+    @Provides @Singleton RouteManager provideRouteManager(AppSettings settings) {
+        return new ValhallaRouteManager(settings,
                 new ValhallaRouterFactory(), application.getApplicationContext());
-        manager.setApiKey(apiKeys.getApiKey());
-        return manager;
     }
 
-    @Provides @Singleton TileHttpHandler provideTileHttpHandler(ApiKeys apiKeys) {
+    @Provides @Singleton TileHttpHandler provideTileHttpHandler() {
         final TileHttpHandler handler;
         if (Build.VERSION.SDK_INT >= KITKAT) {
             File httpCache = new File(application.getExternalCacheDir().getAbsolutePath() +
@@ -110,26 +108,24 @@ public class AndroidModule {
         return new Bus();
     }
 
-    @Provides @Singleton MapzenSearch provideMapzenSearch(final ApiKeys apiKeys) {
+    @Provides @Singleton MapzenSearch provideMapzenSearch() {
         final String endpoint = BuildConfig.SEARCH_BASE_URL != null ?
                 BuildConfig.SEARCH_BASE_URL : Pelias.DEFAULT_SEARCH_ENDPOINT;
         MapzenSearch search = new MapzenSearch(application);
-        Pelias pelias = search.getPelias();
-        pelias.setEndpoint(endpoint);
-        pelias.setDebug(BuildConfig.DEBUG);
-        pelias.setRequestHandler(new PeliasRequestHandler() {
+        search.setHttpHandler(new MapzenSearchHttpHandler(application) {
+            @Override public Map<String, String> queryParamsForRequest() {
+                return null;
+            }
+
             @Override public Map<String, String> headersForRequest() {
                 Map<String, String> headers = new HashMap<>();
                 headers.put(Http.HEADER_DNT, Http.VALUE_HEADER_DNT);
                 return headers;
             }
-
-            @Override public Map<String, String> queryParamsForRequest() {
-                Map<String, String> params = new HashMap<>();
-                params.put(Http.PARAM_API_KEY, apiKeys.getApiKey());
-                return params;
-            }
         });
+        Pelias pelias = search.getPelias();
+        pelias.setEndpoint(endpoint);
+        pelias.setDebug(BuildConfig.DEBUG);
         return search;
     }
 
@@ -143,10 +139,6 @@ public class AndroidModule {
 
     @Provides @Singleton PermissionManager providePermissionManager() {
         return new PermissionManager();
-    }
-
-    @Provides @Singleton ApiKeys provideApiKeys() {
-        return ApiKeys.Companion.sharedInstance(application);
     }
 
     @Provides @Singleton LocationConverter provideLocationConverter() {

@@ -1,5 +1,8 @@
 package com.mapzen.erasermap;
 
+import android.content.Context;
+import android.test.mock.MockContext;
+
 import javax.inject.Singleton;
 
 import dagger.Component;
@@ -23,5 +26,9 @@ public class TestEraserMapApplication extends EraserMapApplication {
     @Override
     public ApplicationComponent component() {
         return component;
+    }
+
+    @Override public Context getApplicationContext() {
+        return new MockContext();
     }
 }
