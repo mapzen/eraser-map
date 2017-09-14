@@ -18,7 +18,6 @@ import com.mapzen.erasermap.controller.MainActivity
 import com.mapzen.erasermap.controller.MainViewController
 import com.mapzen.erasermap.controller.SearchViewController
 import com.mapzen.erasermap.model.AndroidAppSettings
-import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.pelias.PeliasLocationProvider
 import com.mapzen.pelias.SavedSearch
@@ -50,7 +49,6 @@ open class SearchResultsView(context: Context, attrs: AttributeSet)
             emptyView: View,
             presenter: MainPresenter,
             locationProvider: PeliasLocationProvider,
-            apiKeys: ApiKeys?,
             callback: MainActivity.PeliasCallback) {
 
         this.searchView = searchView

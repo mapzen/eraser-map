@@ -1,6 +1,7 @@
 package com.mapzen.erasermap.view
 
 import android.content.Intent
+import com.mapzen.android.core.MapzenManager
 import com.mapzen.erasermap.TestEraserMapApplication
 import com.mapzen.erasermap.mock.MockContext
 import org.assertj.core.api.Assertions.assertThat

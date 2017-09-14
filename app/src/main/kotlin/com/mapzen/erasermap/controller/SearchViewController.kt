@@ -1,7 +1,6 @@
 package com.mapzen.erasermap.controller
 
 import android.view.View
-import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.presenter.MainPresenter
 import com.mapzen.erasermap.view.SearchResultsAdapter
 import com.mapzen.pelias.PeliasLocationProvider
@@ -19,7 +18,6 @@ interface SearchViewController {
             emptyView: View,
             presenter: MainPresenter,
             locationProvider: PeliasLocationProvider,
-            apiKeys: ApiKeys?,
             callback: MainActivity.PeliasCallback)
     fun setSearchResultsAdapter(adapter: SearchResultsAdapter)
     fun showSearchResults()

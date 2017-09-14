@@ -1,43 +1,29 @@
 package com.mapzen.erasermap.model;
 
-import com.mapzen.android.routing.TurnByTurnHttpHandler;
+import com.mapzen.android.routing.MapzenRouterHttpHandler;
 
-import java.io.IOException;
+import android.content.Context;
 
-import okhttp3.HttpUrl;
-import okhttp3.Interceptor;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ValhallaHttpHandler extends TurnByTurnHttpHandler {
+public class ValhallaHttpHandler extends MapzenRouterHttpHandler {
 
-  private String apiKey = "";
+  Map<String, String> headers = new HashMap() {
+    {
+      put(Http.HEADER_DNT, Http.VALUE_HEADER_DNT);
+    }
+  };
 
-  public ValhallaHttpHandler(String endpoint, HttpLoggingInterceptor.Level logLevel) {
-    configure(endpoint, logLevel);
+  public ValhallaHttpHandler(Context context, String url, LogLevel logLevel) {
+    super(context, url, logLevel);
   }
 
-  public ValhallaHttpHandler(HttpLoggingInterceptor.Level logLevel) {
-    configure(DEFAULT_URL, logLevel);
+  @Override public Map<String, String> queryParamsForRequest() {
+    return null;
   }
 
-  public void setApiKey(String apiKey) {
-    this.apiKey = apiKey;
-  }
-
-  @Override
-  protected Response onRequest(Interceptor.Chain chain) throws IOException {
-    final HttpUrl url = chain.request()
-        .url()
-        .newBuilder()
-        .addQueryParameter(Http.PARAM_API_KEY, apiKey)
-        .build();
-    final Request request = chain.request()
-        .newBuilder()
-        .addHeader(Http.HEADER_DNT, Http.VALUE_HEADER_DNT)
-        .url(url)
-        .build();
-    return chain.proceed(request);
+  @Override public Map<String, String> headersForRequest() {
+    return headers;
   }
 }

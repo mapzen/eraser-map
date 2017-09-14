@@ -1,6 +1,7 @@
 package com.mapzen.erasermap;
 
 import com.mapzen.erasermap.controller.MainActivity;
+import com.mapzen.erasermap.model.ApiKeys;
 import com.mapzen.erasermap.receiver.MockLocationReceiver;
 import com.mapzen.erasermap.view.DistanceView;
 import com.mapzen.erasermap.view.InitActivity;
@@ -41,6 +42,7 @@ public class EraserMapApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        ApiKeys.Companion.sharedInstance(this);
         component = DaggerEraserMapApplication_ApplicationComponent.builder()
                 .androidModule(new AndroidModule(this))
                 .build();

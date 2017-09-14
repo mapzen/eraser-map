@@ -30,8 +30,6 @@ class TestRouteManager : RouteManager {
     var isFetching: Boolean = false
     var units: Router.DistanceUnits = Router.DistanceUnits.MILES
 
-    override var apiKey: String = BuildConfig.API_KEY
-
     fun reset() {
         locations.clear()
         origin = null

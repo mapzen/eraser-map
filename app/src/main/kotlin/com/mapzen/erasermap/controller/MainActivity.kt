@@ -22,6 +22,7 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import com.mapzen.android.graphics.MapView
 import com.mapzen.android.graphics.MapzenMap
+import com.mapzen.android.graphics.MapzenMapHttpHandler
 import com.mapzen.android.graphics.model.BubbleWrapStyle
 import com.mapzen.android.graphics.model.CameraType
 import com.mapzen.android.graphics.model.CinnabarStyle
@@ -35,7 +36,6 @@ import com.mapzen.erasermap.CrashReportService
 import com.mapzen.erasermap.EraserMapApplication
 import com.mapzen.erasermap.R
 import com.mapzen.erasermap.model.AndroidAppSettings
-import com.mapzen.erasermap.model.ApiKeys
 import com.mapzen.erasermap.model.AppSettings
 import com.mapzen.erasermap.model.ConfidenceHandler
 import com.mapzen.erasermap.model.LostClientManager
@@ -98,7 +98,6 @@ class MainActivity : AppCompatActivity(), MainViewController,
     @Inject lateinit var mapzenSearch: MapzenSearch
     @Inject lateinit var speaker: Speaker
     @Inject lateinit var permissionManager: PermissionManager
-    @Inject lateinit var apiKeys: ApiKeys
     @Inject lateinit var lostClientManager: LostClientManager
     @Inject lateinit var confidenceHandler: ConfidenceHandler
     @Inject lateinit var displayHelper: FeatureDisplayHelper
@@ -299,7 +298,7 @@ class MainActivity : AppCompatActivity(), MainViewController,
             presenter.onClickFindMe()
         }
         initMapRotateListener()
-        mapzenMap?.mapController?.setHttpHandler(tileHttpHandler)
+        mapzenMap?.setHttpHandler(tileHttpHandler)
         mapzenLocation.mapzenMap = mapzenMap
         routeModeView.mapzenMap = mapzenMap
         settings.mapzenMap = mapzenMap
@@ -385,12 +384,11 @@ class MainActivity : AppCompatActivity(), MainViewController,
         val listView = findViewById(R.id.auto_complete) as AutoCompleteListView
         val emptyView = findViewById(android.R.id.empty)
         val locationProvider = presenter.getPeliasLocationProvider()
-        val apiKeys = apiKeys
         val callback = PeliasCallback()
 
         addSearchViewToActionBar(searchView)
         searchController.mainController = this
-        searchController.initSearchView(searchView, listView, emptyView, presenter, locationProvider, apiKeys, callback)
+        searchController.initSearchView(searchView, listView, emptyView, presenter, locationProvider, callback)
         if (submitQueryOnMenuCreate != null) {
             searchView.setQuery(submitQueryOnMenuCreate, true)
             submitQueryOnMenuCreate = null

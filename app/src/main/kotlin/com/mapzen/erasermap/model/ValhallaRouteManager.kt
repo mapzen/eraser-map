@@ -1,7 +1,11 @@
 package com.mapzen.erasermap.model
 
 import android.content.Context
+import com.mapzen.android.core.GenericHttpHandler
+import com.mapzen.android.core.GenericHttpHandler.LogLevel.BODY
+import com.mapzen.android.core.GenericHttpHandler.LogLevel.NONE
 import com.mapzen.android.routing.MapzenRouter
+import com.mapzen.android.routing.MapzenRouterHttpHandler
 import com.mapzen.erasermap.BuildConfig
 import com.mapzen.model.ValhallaLocation
 import com.mapzen.pelias.SimpleFeature
@@ -13,7 +17,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 
 class ValhallaRouteManager(val settings: AppSettings,
         val routerFactory: RouterFactory, val context: Context) : RouteManager {
-    override var apiKey: String = ""
     override var origin: ValhallaLocation? = null
     override var destination: Feature? = null
     override var type: Router.Type = Router.Type.DRIVING
@@ -83,19 +86,11 @@ class ValhallaRouteManager(val settings: AppSettings,
     }
 
     private fun getInitializedRouter(type: Router.Type): MapzenRouter {
-        val endpoint = BuildConfig.ROUTE_BASE_URL ?: null
-        val logLevel = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else
-            HttpLoggingInterceptor.Level.NONE
-        val httpHandler: ValhallaHttpHandler?
-        if  (endpoint != null) {
-            httpHandler = ValhallaHttpHandler(endpoint, logLevel)
-        } else {
-            httpHandler = ValhallaHttpHandler(logLevel)
-        }
-        httpHandler.setApiKey(apiKey);
-
+        val endpoint = BuildConfig.ROUTE_BASE_URL ?: MapzenRouterHttpHandler.DEFAULT_URL
+        val logLevel = if (BuildConfig.DEBUG) BODY else NONE
+        val httpHandler = ValhallaHttpHandler(context, endpoint, logLevel)
         val router = routerFactory.getRouter(context)
-        router.router.setHttpHandler(httpHandler)
+        router.setHttpHandler(httpHandler)
 
         when(type) {
             Router.Type.DRIVING -> return router.setDriving()
